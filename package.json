@@ -6,10 +6,12 @@
   "dependencies": {
     "bootstrap": "^4.4.1",
     "cra-template": "1.0.3",
+    "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-bootstrap": "^1.0.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.1"
+    "react-scripts": "3.4.1",
+    "tslib": "^1.11.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -33,5 +35,11 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/react": "^16.9.34",
+    "@types/react-dom": "^16.9.7",
+    "typescript": "^3.8.3",
+    "webpack": "^4.43.0"
   }
 }
