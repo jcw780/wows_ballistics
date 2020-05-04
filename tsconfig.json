@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "traceResolution": true,
     "noImplicitAny": false,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,

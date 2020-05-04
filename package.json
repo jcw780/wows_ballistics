@@ -4,13 +4,10 @@
   "private": true,
   "homepage": "http://jcw780.github.io/wows_ballistics_2",
   "dependencies": {
-    "bootstrap": "^4.4.1",
-    "cra-template": "1.0.3",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
-    "react-bootstrap": "^1.0.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.1",
+    "react-scripts": "^3.4.1",
     "tslib": "^1.11.1"
   },
   "scripts": {
@@ -39,7 +36,11 @@
   "devDependencies": {
     "@types/react": "^16.9.34",
     "@types/react-dom": "^16.9.7",
+    "bootstrap": "^4.4.1",
+    "react-bootstrap": "^1.0.1",
+    "react-scripts-ts": "^4.0.8",
+    "ts-loader": "^7.0.2",
     "typescript": "^3.8.3",
-    "webpack": "^4.43.0"
+    "webpack": "^4.42.0"
   }
 }

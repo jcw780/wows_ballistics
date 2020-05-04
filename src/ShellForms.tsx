@@ -1,4 +1,4 @@
-import React, {SyntheticEvent} from 'react';
+import React from 'react';
 //import logo from './logo.svg';
 import './App.css';
 
@@ -6,7 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Dropdown from 'react-bootstrap/Dropdown';
-import DefaultShips from './DefaultForms'
+import DefaultShips from 'DefaultForms'
 
 
 class ParameterForm extends React.Component
@@ -41,9 +41,7 @@ type: string, label: string}>{
 class ShellParameters extends React.Component<{handleValueChange: any, handleNameChange: any,
 	formLabels : any}>{
 	nameForm = React.createRef<ParameterForm>()
-	constructor(props){
-		super(props);
-	}
+
 	handleValueChange = (value, k) => {
 		this.props.handleValueChange(value, k);
 	}
@@ -95,9 +93,7 @@ class ShellForms extends React.Component<{index: string | number}> {
 		HESAP: ['HE/SAP penetration (mm)', 0, React.createRef()],
 	})
 	name = ''
-	constructor(props){
-		super(props);
-	}
+
 	handleValueChange = (value : string, k : string) => {
 		this.values[k][1] = parseFloat(value);
 	}
@@ -120,7 +116,7 @@ class ShellForms extends React.Component<{index: string | number}> {
 		if(data.alphaPiercingCS > this.values.HESAP[1]){
 			this.values.HESAP[1] = data.alphaPiercingCS;
 		}
-		if(this.parameters){
+		if(this.parameters.current){
 			this.parameters.current!.updateShells(name);
 		}
 	}
