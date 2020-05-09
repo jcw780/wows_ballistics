@@ -5,15 +5,21 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Modal from 'react-bootstrap/Modal';
 import DefaultShips from 'DefaultForms'
 import Button from 'react-bootstrap/Button';
 
-
-class ParameterForm extends React.Component
-<{newValue: any, controlId: string, handleValueChange: Function,
-type: string, label: string}>{
+interface parameterFormProps {
+	newValue: any, controlId: string, handleValueChange: Function,
+	type: string, label: string, 
+	labelWidth: number, formWidth: number, placeholder: string
+}
+class ParameterForm extends React.Component<parameterFormProps>{
+	public static defaultProps = {
+		labelWidth: 6, formWidth: 2, placeholder: ""
+	}
 	state = {value: ""};
 	constructor(props){
 		super(props);
@@ -31,18 +37,22 @@ type: string, label: string}>{
 	render(){
 		return (
 			<Form.Group className="form-inline">
-				<Form.Label column sm="6">{this.props.label}</Form.Label>
-				<Col sm="2">
+				<Form.Label column sm={this.props.labelWidth}>{this.props.label}</Form.Label>
+				<Col sm={this.props.formWidth}>
 					<Form.Control type={this.props.type} value={this.state.value} 
-					onChange={this.handleChange}/>
+					placeholder={this.props.placeholder} onChange={this.handleChange}/>
 				</Col>
 			</Form.Group>
 		);
 	}
 }
+export {ParameterForm};
 
-class ShellParameters extends React.Component<{handleValueChange: any,
-	formLabels : any}>{
+interface shellParametersProps {
+	handleValueChange: any,
+	formLabels : any
+}
+class ShellParameters extends React.Component<shellParametersProps>{
 	nameForm = React.createRef<ParameterForm>()
 
 	handleValueChange = (value, k) => {
@@ -73,7 +83,10 @@ class ShellParameters extends React.Component<{handleValueChange: any,
 	}
 }
 
-class ShellForms extends React.Component<{index: number, deleteShip : Function}> {
+interface shellFormsProps{
+	index: number, keyProp: number, deleteShip : Function
+}
+class ShellForms extends React.Component<shellFormsProps> {
 	parameters = React.createRef<ShellParameters>()
 	defaults = React.createRef<DefaultShips>()
 	values = Object.seal({
@@ -123,13 +136,13 @@ class ShellForms extends React.Component<{index: number, deleteShip : Function}>
 
 	}
 	deleteShip = () => {
-		this.props.deleteShip(this.props.index);
+		this.props.deleteShip(this.props.keyProp);
 	}
 	render() {
 		return(
 			<Modal.Dialog>
 				<Modal.Header closeButton onClick={this.deleteShip}>
-					<Modal.Title>Ship {this.props.index}</Modal.Title>
+					<Modal.Title>Shell {this.props.index + 1}</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>
 					<Col sm='4'>
@@ -147,21 +160,13 @@ class ShellForms extends React.Component<{index: number, deleteShip : Function}>
 						</Dropdown.Toggle>
 						<Dropdown.Menu>
 							<Dropdown.Item>
-								<Col sm="12">
+								<Col sm="10">
 								<ShellParameters handleValueChange={this.handleValueChange}
 										formLabels={this.values} ref={this.parameters}/>
 								</Col>
 							</Dropdown.Item>
 						</Dropdown.Menu>
 					</Dropdown>
-					<div className="rows">
-						<div className="row">
-							
-						</div>
-						<div className="row">
-
-						</div>
-					</div>
 				</Modal.Footer>
 			</Modal.Dialog>
 		);
@@ -204,13 +209,18 @@ class ShellFormsContainer extends React.Component{
 	render(){
 		return(
 			<>
+				<h2>Shell Selection</h2>
 				<div className='rows'>
 					{Array.from(this.state.keys).map((value, i) => {
-						return <div className='row' key={value.toString()}>
-							<ShellForms index={i} deleteShip={this.deleteShip}/></div>;
+						return <div className='row' key={value.toString()}><Col sm="11">
+							<ShellForms index={i} deleteShip={this.deleteShip} keyProp={value}/></Col></div>;
 					})}
 				</div>
-				<Button onClick={this.addShip}>Add Ship</Button>
+				<Row>
+					<Col/>
+					<Col sm="6"><Button className="form-control" onClick={this.addShip}>Add Ship</Button></Col>
+					<Col/>
+				</Row>
 			</>
 		);
 	}

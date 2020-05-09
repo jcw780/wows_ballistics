@@ -41,6 +41,7 @@
     "react-scripts-ts": "^4.0.8",
     "ts-loader": "^7.0.2",
     "typescript": "^3.8.3",
+    "wasm-feature-detect": "^1.2.3",
     "webpack": "^4.42.0"
   }
 }
