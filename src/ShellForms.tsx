@@ -8,6 +8,7 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Modal from 'react-bootstrap/Modal';
+import Container from 'react-bootstrap/Container';
 import DefaultShips from 'DefaultForms'
 import Button from 'react-bootstrap/Button';
 
@@ -18,7 +19,7 @@ interface parameterFormProps {
 }
 class ParameterForm extends React.Component<parameterFormProps>{
 	public static defaultProps = {
-		labelWidth: 6, formWidth: 2, placeholder: ""
+		labelWidth: 4, formWidth: 8, placeholder: ""
 	}
 	state = {value: ""};
 	constructor(props){
@@ -35,13 +36,22 @@ class ParameterForm extends React.Component<parameterFormProps>{
 		});
 	}
 	render(){
+		const FW = this.props.formWidth / 12 * 100;
+		const FCwidth : string = FW.toString() + '%';
 		return (
 			<Form.Group className="form-inline">
-				<Form.Label column sm={this.props.labelWidth}>{this.props.label}</Form.Label>
-				<Col sm={this.props.formWidth}>
+				<Container>
+					<Row>
+						<Col sm={this.props.labelWidth}>
+					<Form.Label column >{this.props.label}</Form.Label>
+						</Col>
+						<Col sm={this.props.formWidth}>
 					<Form.Control type={this.props.type} value={this.state.value} 
+					style={{width: '100%'}} 
 					placeholder={this.props.placeholder} onChange={this.handleChange}/>
-				</Col>
+						</Col>
+					</Row>
+				</Container>
 			</Form.Group>
 		);
 	}

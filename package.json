@@ -37,6 +37,8 @@
     "@types/react": "^16.9.34",
     "@types/react-dom": "^16.9.7",
     "bootstrap": "^4.4.1",
+    "gh-pages": "^2.2.0",
+    "mdbreact": "^4.26.0",
     "react-bootstrap": "^1.0.1",
     "react-scripts-ts": "^4.0.8",
     "ts-loader": "^7.0.2",

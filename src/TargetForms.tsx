@@ -3,6 +3,35 @@ import {ParameterForm} from 'ShellForms';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import Container from 'react-bootstrap/Container';
+
+interface angleFormProps {
+    newValue: any, controlId: string, 
+    label: string, placeholder: string, keyProp : number, 
+    handleValueChange: Function, deleteElement : Function,
+}
+class AngleForm extends React.Component<angleFormProps>{
+    public static defaultProps = {
+        placeholder : "",
+    }
+    deleteElement = () => {
+        this.props.deleteElement(this.props.keyProp, parseInt(this.props.controlId));
+    }
+    render(){
+        return (
+            <Modal.Dialog style={{width: '100%'}}>
+                <Modal.Header closeButton onClick={this.deleteElement}>
+            <ParameterForm controlId={this.props.controlId} 
+            newValue={this.props.newValue}
+            handleValueChange={this.props.handleValueChange} 
+            type="number" label={this.props.label}
+            labelWidth={4} formWidth={6}/>
+                </Modal.Header>
+            </Modal.Dialog>
+        );
+    }
+}
 
 class TargetFormsContainer extends React.Component
 <{}, {angleKeys: Set<number>}>{
@@ -30,7 +59,7 @@ class TargetFormsContainer extends React.Component
         });
 	}
 
-	deleteAngle = (key, index) => {
+	deleteAngle = (key : number, index : number) => {
 		let set = this.state.angleKeys;
         set.delete(key);
         this.targetData.angles.splice(index, 1);
@@ -46,16 +75,15 @@ class TargetFormsContainer extends React.Component
     }
     render(){
         let angleElements : Array<Array<JSX.Element>> = [];
-        const elementColumn = 4;
+        const elementColumn = 2;
         Array.from(this.state.angleKeys).forEach((value, i) => {
             const common = 
-                <ParameterForm key={value} controlId={i.toString()} 
-                    newValue={this.targetData.angles[i]}
-                    handleValueChange={this.handleAngleChange} 
-                    type="number" label={"Angle " + (i + 1)}
-                    labelWidth={3} formWidth={4}/>
+                <AngleForm key={value} keyProp={value} controlId={i.toString()} 
+                newValue={this.targetData.angles[i]} deleteElement={this.deleteAngle}
+                handleValueChange={this.handleAngleChange}
+                label={"Angle " + (i + 1)}/>
             const columnIndex = Math.floor(i / elementColumn);
-            if(i % elementColumn == 0){
+            if(i % elementColumn === 0){
                 angleElements.push([]);
             }
             angleElements[columnIndex].push(common);
@@ -63,25 +91,30 @@ class TargetFormsContainer extends React.Component
         return(
         <>
             <h2>Target Data</h2>
+            <div className="row" style={{display: 'flex', justifyContent: 'center'}}>
             <ParameterForm controlId="armor"
             newValue={this.targetData.armor} 
             handleValueChange={this.handleChange} type="number"
-            label="Armor Thickness"/>
+            label="Armor Thickness" labelWidth={4} formWidth={8}/>
             <ParameterForm controlId="inclination"
             newValue={this.targetData.inclination} 
             handleValueChange={this.handleChange} type="number"
-            label="Armor Inclination"/>
-            <div className="rows">
+            label="Armor Inclination" labelWidth={4} formWidth={8}/>
+            </div>
+            <Container>
+                <Row>
             {angleElements.map((values, i) => {
                 return (
-                    <div className="row" key={"R" + i}>
+                    <Col key={"R" + i} sm="3">
                         {values.map((value) => {
                             return value;
                         })}
-                    </div>
+                    </Col>
                 );
             })}
-            </div>
+                </Row>
+            </Container>
+            
             <Row>
                 <Col/>
                 <Col sm="6"><Button className="form-control" onClick={this.addAngle}>Add Angle</Button></Col>
@@ -89,6 +122,10 @@ class TargetFormsContainer extends React.Component
             </Row>
         </>
         );
+    }
+
+    componentDidUpdate(){
+        console.log(this.targetData);
     }
 }
 
