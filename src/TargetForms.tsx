@@ -23,12 +23,12 @@ class AngleForm extends React.Component<angleFormProps>{
             <Modal.Dialog style={{width: '100%'}}>
                 <Modal.Header 
                 style={{padding: 0, paddingTop: '0.5rem', paddingRight: '0.5rem', paddingLeft: '0.5rem'}}
-                closeButton onClick={this.deleteElement}>
+                closeButton onHide={this.deleteElement}>
             <ParameterForm controlId={this.props.controlId} 
             newValue={this.props.newValue}
             handleValueChange={this.props.handleValueChange} 
             type="number" label={this.props.label}
-            labelWidth={4} formWidth={'50%'}/>
+            labelWidth={4} formWidth={'60%'}/>
                 </Modal.Header>
             </Modal.Dialog>
         );
@@ -68,7 +68,10 @@ class TargetFormsContainer extends React.Component
 		this.setState((current) => {
 			return {angleKeys: set};
 		});
-	}
+    }
+    returnData = () => {
+        return this.targetData;
+    }
     handleChange = (value : string, id : string) => {
         this.targetData[id] = parseFloat(value);
     }
