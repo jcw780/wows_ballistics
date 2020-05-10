@@ -15,11 +15,11 @@ import Button from 'react-bootstrap/Button';
 interface parameterFormProps {
 	newValue: any, controlId: string, handleValueChange: Function,
 	type: string, label: string, 
-	labelWidth: number, formWidth: number, placeholder: string
+	labelWidth: number, formWidth: string, placeholder: string
 }
 class ParameterForm extends React.Component<parameterFormProps>{
 	public static defaultProps = {
-		labelWidth: 4, formWidth: 8, placeholder: ""
+		labelWidth: 3, formWidth: "", placeholder: ""
 	}
 	state = {value: ""};
 	constructor(props){
@@ -36,23 +36,13 @@ class ParameterForm extends React.Component<parameterFormProps>{
 		});
 	}
 	render(){
-		const FW = this.props.formWidth / 12 * 100;
-		const FCwidth : string = FW.toString() + '%';
 		return (
-			<Form.Group className="form-inline">
-				<Container>
-					<Row>
-						<Col sm={this.props.labelWidth}>
-					<Form.Label column >{this.props.label}</Form.Label>
-						</Col>
-						<Col sm={this.props.formWidth}>
-					<Form.Control type={this.props.type} value={this.state.value} 
-					style={{width: '100%'}} 
-					placeholder={this.props.placeholder} onChange={this.handleChange}/>
-						</Col>
-					</Row>
-				</Container>
-			</Form.Group>
+<Form.Group className="form-inline">
+	<Form.Label column sm={this.props.labelWidth}>{this.props.label}</Form.Label>
+	<Form.Control type={this.props.type} value={this.state.value} 
+	style={{width: this.props.formWidth}} 
+	placeholder={this.props.placeholder} onChange={this.handleChange}/>
+</Form.Group>
 		);
 	}
 }
@@ -155,13 +145,15 @@ class ShellForms extends React.Component<shellFormsProps> {
 					<Modal.Title>Shell {this.props.index + 1}</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>
-					<Col sm='4'>
+					<Container>
+					<Col sm='12'>
 						<ParameterForm label="Ship Label" controlId='shipName'
 								handleValueChange={this.handleNameChange}
 								type="text" newValue=""
 								ref={this.nameForm}></ParameterForm>
 						<DefaultShips sendDefault={this.getDefaultData} ref={this.defaults}/>
 					</Col>
+					</Container>
 				</Modal.Body>
 				<Modal.Footer>
 					<Dropdown>
@@ -170,10 +162,12 @@ class ShellForms extends React.Component<shellFormsProps> {
 						</Dropdown.Toggle>
 						<Dropdown.Menu>
 							<Dropdown.Item>
+							<Container>
 								<Col sm="10">
 								<ShellParameters handleValueChange={this.handleValueChange}
 										formLabels={this.values} ref={this.parameters}/>
 								</Col>
+								</Container>
 							</Dropdown.Item>
 						</Dropdown.Menu>
 					</Dropdown>
@@ -220,12 +214,13 @@ class ShellFormsContainer extends React.Component{
 		return(
 			<>
 				<h2>Shell Selection</h2>
-				<div className='rows'>
+				<Container>
+					<Row>
 					{Array.from(this.state.keys).map((value, i) => {
-						return <div className='row' key={value.toString()}><Col sm="11">
-							<ShellForms index={i} deleteShip={this.deleteShip} keyProp={value}/></Col></div>;
+						return <ShellForms index={i} deleteShip={this.deleteShip} key={value} keyProp={value}/>;
 					})}
-				</div>
+					</Row>
+				</Container>
 				<Row>
 					<Col/>
 					<Col sm="6"><Button className="form-control" onClick={this.addShip}>Add Ship</Button></Col>
