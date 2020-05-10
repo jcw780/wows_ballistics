@@ -21,12 +21,14 @@ class AngleForm extends React.Component<angleFormProps>{
     render(){
         return (
             <Modal.Dialog style={{width: '100%'}}>
-                <Modal.Header closeButton onClick={this.deleteElement}>
+                <Modal.Header 
+                style={{padding: 0, paddingTop: '0.5rem', paddingRight: '0.5rem', paddingLeft: '0.5rem'}}
+                closeButton onClick={this.deleteElement}>
             <ParameterForm controlId={this.props.controlId} 
             newValue={this.props.newValue}
             handleValueChange={this.props.handleValueChange} 
             type="number" label={this.props.label}
-            labelWidth={4} formWidth={6}/>
+            labelWidth={4} formWidth={'50%'}/>
                 </Modal.Header>
             </Modal.Dialog>
         );
@@ -95,11 +97,11 @@ class TargetFormsContainer extends React.Component
             <ParameterForm controlId="armor"
             newValue={this.targetData.armor} 
             handleValueChange={this.handleChange} type="number"
-            label="Armor Thickness" labelWidth={4} formWidth={8}/>
+            label="Armor Thickness" labelWidth={4} />
             <ParameterForm controlId="inclination"
             newValue={this.targetData.inclination} 
             handleValueChange={this.handleChange} type="number"
-            label="Armor Inclination" labelWidth={4} formWidth={8}/>
+            label="Armor Inclination" labelWidth={4} />
             </div>
             <Container>
                 <Row>
@@ -124,9 +126,9 @@ class TargetFormsContainer extends React.Component
         );
     }
 
-    componentDidUpdate(){
+    /*componentDidUpdate(){
         console.log(this.targetData);
-    }
+    }*/
 }
 
 export default TargetFormsContainer;

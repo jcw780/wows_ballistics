@@ -2,6 +2,7 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
+import Container from 'react-bootstrap/Container';
 
 class DefaultForm extends React.Component
 <{handleValueChange: Function, controlId: string, label : string, }> {
@@ -27,13 +28,11 @@ class DefaultForm extends React.Component
 	render(){
 		return (
 			<Form.Group className="form-inline">
-				<Form.Label column sm="6">{this.props.label}</Form.Label>
-				<Col sm="2">
-					<Form.Control as="select" placeholder="" 
-					onChange={this.handleChange} ref={this.form}>
-						{this.state.options.map((value ,i) => {return (<option key={i}>{value}</option>);})}
-					</Form.Control>
-				</Col>
+				<Form.Label column sm="3">{this.props.label}</Form.Label>
+				<Form.Control as="select" placeholder="" 
+				onChange={this.handleChange} ref={this.form}>
+					{this.state.options.map((value ,i) => {return (<option key={i}>{value}</option>);})}
+				</Form.Control>
 			</Form.Group>
 		);
 	}
