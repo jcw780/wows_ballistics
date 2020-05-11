@@ -10,6 +10,7 @@ import TargetFormsContainer from 'TargetForms';
 class App extends React.Component {
 	SFCref = React.createRef<ShellFormsContainer>();
 	TFCref = React.createRef<TargetFormsContainer>();
+	Module : any;
 	generate = () => {
 		const shellData = this.SFCref.current!.returnShellData();
 		const tgtData = this.TFCref.current!.returnData();
@@ -23,6 +24,8 @@ class App extends React.Component {
 				<Button onClick={this.generate}>Generate</Button>
 			</div>
 		);
+	}
+	componentDidMount(){
 	}
 }
 
