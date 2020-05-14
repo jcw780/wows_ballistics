@@ -9,8 +9,9 @@ import Row from 'react-bootstrap/Row';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Modal from 'react-bootstrap/Modal';
 import Container from 'react-bootstrap/Container';
-import DefaultShips from 'DefaultForms'
 import Button from 'react-bootstrap/Button';
+
+import DefaultShips from './DefaultForms'
 
 interface parameterFormProps {
 	newValue: any, controlId: string, handleValueChange: Function,
@@ -149,7 +150,7 @@ class ShellForms extends React.Component<shellFormsProps> {
 	}
 	render() {
 		return(
-			<Modal.Dialog>
+			<Modal.Dialog style={{margin: 0}}>
 				<Modal.Header closeButton onHide={this.deleteShip}>
 					<Modal.Title>Shell {this.props.index + 1}</Modal.Title>
 				</Modal.Header>
@@ -236,7 +237,7 @@ class ShellFormsContainer extends React.Component{
 		return(
 <>
 	<h2>Shell Selection</h2>
-	<Container>
+	<Container style={{marginBottom : "1.75rem"}}>
 		<Row>
 		{Array.from(this.state.keys).map((value, i) => {
 			return <ShellForms index={i} deleteShip={this.deleteShip} 

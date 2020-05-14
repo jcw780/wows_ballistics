@@ -1,11 +1,11 @@
 import React from 'react';
-import {ParameterForm} from 'ShellForms';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Container from 'react-bootstrap/Container';
 
+import {ParameterForm} from './ShellForms';
 interface angleFormProps {
     newValue: any, controlId: string, 
     label: string, placeholder: string, keyProp : number, 

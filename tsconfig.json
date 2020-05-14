@@ -29,7 +29,7 @@
       "dom",
       "dom.iterable",
       "esnext",
-      "es6",
+      "es6"
     ],
     "skipLibCheck": true,
     "esModuleInterop": true,
