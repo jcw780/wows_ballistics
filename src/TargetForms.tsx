@@ -20,7 +20,7 @@ class AngleForm extends React.Component<angleFormProps>{
     }
     render(){
         return (
-            <Modal.Dialog style={{width: '100%'}}>
+            <Modal.Dialog style={{width: '100%', margin: 0}}>
                 <Modal.Header 
                 style={{padding: 0, paddingTop: '0.5rem', paddingRight: '0.5rem', paddingLeft: '0.5rem'}}
                 closeButton onHide={this.deleteElement}>
@@ -41,6 +41,7 @@ class TargetFormsContainer extends React.Component
     targetData = {
         armor: 70.,
         inclination: 0.,
+        width: 18.,
         angles: [0, 5, 10, 15],
     };
     addAngle = () => {
@@ -105,12 +106,16 @@ class TargetFormsContainer extends React.Component
             newValue={this.targetData.inclination} 
             handleValueChange={this.handleChange} type="number"
             label="Armor Inclination" labelWidth={4} />
+            <ParameterForm controlId="width"
+            newValue={this.targetData.width} 
+            handleValueChange={this.handleChange} type="number"
+            label="Target Width" labelWidth={4} />
             </div>
             <Container>
                 <Row>
             {angleElements.map((values, i) => {
                 return (
-                    <Col key={"R" + i} sm="3">
+                    <Col key={"R" + i} sm="3" style={{margin: 0, padding: 0}}>
                         {values.map((value) => {
                             return value;
                         })}

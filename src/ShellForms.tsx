@@ -154,13 +154,13 @@ class ShellForms extends React.Component<shellFormsProps> {
 				<Modal.Header closeButton onHide={this.deleteShip}>
 					<Modal.Title>Shell {this.props.index + 1}</Modal.Title>
 				</Modal.Header>
-				<Modal.Body>
+				<Modal.Body style={{padding: 0}}>
 					<Container>
 					<Col sm='12'>
 						<ParameterForm label="Ship Label" controlId='shipName'
 								handleValueChange={this.handleNameChange}
 								type="text" newValue=""
-								ref={this.nameForm}></ParameterForm>
+								ref={this.nameForm}/>
 						<DefaultShips sendDefault={this.getDefaultData} ref={this.defaults}/>
 					</Col>
 					</Container>
@@ -238,10 +238,12 @@ class ShellFormsContainer extends React.Component{
 <>
 	<h2>Shell Selection</h2>
 	<Container style={{marginBottom : "1.75rem"}}>
-		<Row>
+		<Row sm={3}>
 		{Array.from(this.state.keys).map((value, i) => {
-			return <ShellForms index={i} deleteShip={this.deleteShip} 
-			key={value} keyProp={value} ref={this.shellRefs[i]}/>;
+			return <Col key={value} style={{margin: 0, padding: 0}}>
+				<ShellForms index={i} deleteShip={this.deleteShip} 
+				keyProp={value} ref={this.shellRefs[i]}/>
+			</Col>;
 		})}
 		</Row>
 	</Container>
