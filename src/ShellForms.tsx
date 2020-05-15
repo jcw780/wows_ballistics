@@ -9,8 +9,9 @@ import Row from 'react-bootstrap/Row';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Modal from 'react-bootstrap/Modal';
 import Container from 'react-bootstrap/Container';
-import DefaultShips from 'DefaultForms'
 import Button from 'react-bootstrap/Button';
+
+import DefaultShips from './DefaultForms'
 
 interface parameterFormProps {
 	newValue: any, controlId: string, handleValueChange: Function,
@@ -103,6 +104,15 @@ class ShellForms extends React.Component<shellFormsProps> {
 		HESAP: ['HE/SAP penetration (mm)', 0, React.createRef()],
 	})
 	name = ''
+	returnData = () => {
+		let condensed : Record<string, any> = {name: this.name};
+		Object.entries(this.values).forEach((kv) => {
+			const key = kv[0]; 
+			const value = kv[1];
+			condensed[key] = value[1]; 
+		})
+		return condensed;
+	}
 	nameForm = React.createRef<ParameterForm>()
 	handleNameChange = (value, id) => {
 		this.name = value;
@@ -136,26 +146,27 @@ class ShellForms extends React.Component<shellFormsProps> {
 
 	}
 	deleteShip = () => {
-		this.props.deleteShip(this.props.keyProp);
+		this.props.deleteShip(this.props.keyProp, this.props.index);
 	}
 	render() {
 		return(
-			<Modal.Dialog>
-				<Modal.Header closeButton onClick={this.deleteShip}>
+			<Modal.Dialog style={{margin: 0}}>
+				<Modal.Header closeButton onHide={this.deleteShip}>
 					<Modal.Title>Shell {this.props.index + 1}</Modal.Title>
 				</Modal.Header>
-				<Modal.Body>
+				<Modal.Body style={{padding: 0}}>
 					<Container>
 					<Col sm='12'>
 						<ParameterForm label="Ship Label" controlId='shipName'
 								handleValueChange={this.handleNameChange}
 								type="text" newValue=""
-								ref={this.nameForm}></ParameterForm>
+								ref={this.nameForm}/>
 						<DefaultShips sendDefault={this.getDefaultData} ref={this.defaults}/>
 					</Col>
 					</Container>
 				</Modal.Body>
 				<Modal.Footer>
+					<Container>
 					<Dropdown>
 						<Dropdown.Toggle variant="success" id="dropdown-basic">
 						Show Detailed Parameters
@@ -167,10 +178,11 @@ class ShellForms extends React.Component<shellFormsProps> {
 								<ShellParameters handleValueChange={this.handleValueChange}
 										formLabels={this.values} ref={this.parameters}/>
 								</Col>
-								</Container>
+							</Container>
 							</Dropdown.Item>
 						</Dropdown.Menu>
 					</Dropdown>
+					</Container>
 				</Modal.Footer>
 			</Modal.Dialog>
 		);
@@ -184,6 +196,7 @@ export {ShellForms};
 
 class ShellFormsContainer extends React.Component{
 	state = {keys: new Set([0, 1])};
+	shellRefs = [React.createRef<ShellForms>(), React.createRef<ShellForms>()];
 
 	addShip = () => {
 		let index: number = 0;
@@ -196,37 +209,51 @@ class ShellFormsContainer extends React.Component{
 				listed = false;
 			}
 		}
+		this.shellRefs.push(React.createRef<ShellForms>());
 		this.setState((current) => {
 			let set = current['keys'];
 			return {keys: set.add(index)};
 		});
 	}
 
-	deleteShip = (key) => {
+	deleteShip = (key, index) => {
 		let set = this.state.keys;
 		set.delete(key);
+		this.shellRefs.splice(index, 1);
 		this.setState((current) => {
 			return {keys: set};
 		})
 	}
 
+	returnShellData = () => {
+		let data = Array<any>(this.shellRefs.length);
+		this.shellRefs.forEach((reference, i) => {
+			data[i] = reference.current!.returnData();
+		});
+		return data;
+	}
+
 	render(){
 		return(
-			<>
-				<h2>Shell Selection</h2>
-				<Container>
-					<Row>
-					{Array.from(this.state.keys).map((value, i) => {
-						return <ShellForms index={i} deleteShip={this.deleteShip} key={value} keyProp={value}/>;
-					})}
-					</Row>
-				</Container>
-				<Row>
-					<Col/>
-					<Col sm="6"><Button className="form-control" onClick={this.addShip}>Add Ship</Button></Col>
-					<Col/>
-				</Row>
-			</>
+<>
+	<h2>Shell Selection</h2>
+	<Container style={{marginBottom : "1.75rem"}}>
+		<Row sm={3}>
+		{Array.from(this.state.keys).map((value, i) => {
+			return <Col key={value} style={{margin: 0, padding: 0}}>
+				<ShellForms index={i} deleteShip={this.deleteShip} 
+				keyProp={value} ref={this.shellRefs[i]}/>
+			</Col>;
+		})}
+		</Row>
+	</Container>
+	<Row>
+		<Col/>
+		<Col sm="6"><Button className="form-control" onClick={this.addShip}>
+			Add Ship</Button></Col>
+		<Col/>
+	</Row>
+</>
 		);
 	}
 }

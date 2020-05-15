@@ -1,8 +1,6 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Form from 'react-bootstrap/Form';
-import Col from 'react-bootstrap/Col';
-import Container from 'react-bootstrap/Container';
 
 class DefaultForm extends React.Component
 <{handleValueChange: Function, controlId: string, label : string, }> {
@@ -27,7 +25,7 @@ class DefaultForm extends React.Component
 
 	render(){
 		return (
-			<Form.Group className="form-inline">
+			<Form.Group className="form-inline" style={{marginBottom: 0}}>
 				<Form.Label column sm="3">{this.props.label}</Form.Label>
 				<Form.Control as="select" placeholder="" 
 				onChange={this.handleChange} ref={this.form}>

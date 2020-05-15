@@ -1,0 +1,13 @@
+{
+    "overrides": [
+        {
+            "files": ["*.wasm.js"],
+            "rules": {
+                "no-unused-expressions": "off",
+                "no-restricted-globals": "off",
+                "no-undef": "off",
+                "import/no-amd": "off"
+            }
+        }
+    ]
+}

@@ -1,11 +1,11 @@
 import React from 'react';
-import {ParameterForm} from 'ShellForms';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Container from 'react-bootstrap/Container';
 
+import {ParameterForm} from './ShellForms';
 interface angleFormProps {
     newValue: any, controlId: string, 
     label: string, placeholder: string, keyProp : number, 
@@ -20,15 +20,15 @@ class AngleForm extends React.Component<angleFormProps>{
     }
     render(){
         return (
-            <Modal.Dialog style={{width: '100%'}}>
+            <Modal.Dialog style={{width: '100%', margin: 0}}>
                 <Modal.Header 
                 style={{padding: 0, paddingTop: '0.5rem', paddingRight: '0.5rem', paddingLeft: '0.5rem'}}
-                closeButton onClick={this.deleteElement}>
+                closeButton onHide={this.deleteElement}>
             <ParameterForm controlId={this.props.controlId} 
             newValue={this.props.newValue}
             handleValueChange={this.props.handleValueChange} 
             type="number" label={this.props.label}
-            labelWidth={4} formWidth={'50%'}/>
+            labelWidth={4} formWidth={'60%'}/>
                 </Modal.Header>
             </Modal.Dialog>
         );
@@ -41,6 +41,7 @@ class TargetFormsContainer extends React.Component
     targetData = {
         armor: 70.,
         inclination: 0.,
+        width: 18.,
         angles: [0, 5, 10, 15],
     };
     addAngle = () => {
@@ -68,7 +69,10 @@ class TargetFormsContainer extends React.Component
 		this.setState((current) => {
 			return {angleKeys: set};
 		});
-	}
+    }
+    returnData = () => {
+        return this.targetData;
+    }
     handleChange = (value : string, id : string) => {
         this.targetData[id] = parseFloat(value);
     }
@@ -102,12 +106,16 @@ class TargetFormsContainer extends React.Component
             newValue={this.targetData.inclination} 
             handleValueChange={this.handleChange} type="number"
             label="Armor Inclination" labelWidth={4} />
+            <ParameterForm controlId="width"
+            newValue={this.targetData.width} 
+            handleValueChange={this.handleChange} type="number"
+            label="Target Width" labelWidth={4} />
             </div>
             <Container>
                 <Row>
             {angleElements.map((values, i) => {
                 return (
-                    <Col key={"R" + i} sm="3">
+                    <Col key={"R" + i} sm="3" style={{margin: 0, padding: 0}}>
                         {values.map((value) => {
                             return value;
                         })}
