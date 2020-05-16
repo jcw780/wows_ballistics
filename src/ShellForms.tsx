@@ -236,7 +236,7 @@ class ShellFormsContainer extends React.Component{
 
 	selectColor = (number, colors) => {
 		const hue = number * 137.507764 % 360; // use golden angle approximation
-		console.log(hue);
+		//console.log(hue);
 		//return this.hslToRgb(hue, .8, .5);
 		return `hsl(${hue},50%,60%)`;
 	}
@@ -274,10 +274,10 @@ class ShellFormsContainer extends React.Component{
 	generateColors = (index : number, total : number) => {
 		const colors = Array<string>(3);
 		for(let i=0; i<3; i++){
-			console.log(index * 3 + i, total * 3);
+			//console.log(index * 3 + i, total * 3);
 			colors[i] = this.selectColor(index * 3 + i, total * 3);
 		}
-		console.log(colors, index, total);
+		//console.log(colors, index, total);
 		return colors;
 	}
 

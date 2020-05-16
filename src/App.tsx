@@ -83,8 +83,10 @@ class App extends React.Component<{},{}> {
 			numShells : numShells,
 			names : Array<string>(numShells),
 			colors : Array<Array<string>>(numShells),
+			targets : Array<Record<string, number>>(1),
+			angles : tgtData.angles
 		}
-
+		output.targets[0] = {armor: tgtData.armor, inclination: tgtData.inclination, width: tgtData.width}
 		shellData.forEach((value, i) => {
 			output.names[i] = value.name;
 			output.colors[i] = value.colors;
