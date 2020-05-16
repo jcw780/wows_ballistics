@@ -24,7 +24,7 @@ class App extends React.Component<{},{}> {
 		ShellWasm().then((M) => {
 			//console.log('compiled')
 			this.instance = new M.shell(2);
-			//console.log(this.arrayIndices);
+			console.log(this.arrayIndices);
 			Object.entries(this.arrayIndices).forEach((kv: any) => {
 				const k = kv[0];
 				const v = kv[1];
@@ -78,7 +78,7 @@ class App extends React.Component<{},{}> {
 			post: {
 				shipWidth : Array.from({length: 1}, _ => new Array<Record<string, number>>(impactSize)),
 				notFused: Array.from({length: numShells * numAngles}, _ => new Array<Record<string, number>>()),
-				Fused: Array.from({length: numShells * numAngles}, _ => new Array<Record<string, number>>()),
+				fused: Array.from({length: numShells * numAngles}, _ => new Array<Record<string, number>>()),
 			},
 			numShells : numShells,
 			names : Array<string>(numShells),
@@ -97,7 +97,7 @@ class App extends React.Component<{},{}> {
 			let maxDistS = 0;
 			for(let i=0; i<impactSize; i++){
 				//console.log(i, j);
-				const dist = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex.distance, j);
+				const dist : number = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex.distance, j);
 				maxDistS = dist > maxDistS ? dist : maxDistS;
 				Object.entries(output.impact).forEach((kv : any) => {
 					const k = kv[0];
@@ -117,6 +117,19 @@ class App extends React.Component<{},{}> {
 						y: this.instance.getAnglePoint(i, this.arrayIndices.angleDataIndex[k], j)
 					};
 				});
+				for(let k=0; k<numAngles; k++){
+					const detDist : number
+						= this.instance.getPostPenPoint(i, this.arrayIndices.postPenDataIndex.x, k, j);
+					const fused : number
+						= this.instance.getPostPenPoint(i, this.arrayIndices.postPenDataIndex.xwf, k, j);
+					const point : Record<string, number> = {x: dist, y: detDist};
+					console.log(dist, fused);
+					if(fused < 0){
+						output.post.notFused[k+j*numAngles].push(point);
+					}else{
+						output.post.fused[k+j*numAngles].push(point);
+					}
+				}
 				/*Object.entries(output.post).forEach((kv : any) => {
 					const k = kv[0];
 					const v = kv[1];
@@ -130,6 +143,10 @@ class App extends React.Component<{},{}> {
 			const greater = maxDistS > maxDist;
 			maxDist = greater ? maxDistS : maxDist;
 			maxShell = greater ? j : maxShell;
+		}
+		for(let i=0; i<impactSize; i++){
+			const dist = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex.distance, maxShell);
+			output.post.shipWidth[0][i] = {x: dist, y: tgtData.width}
 		}
 		console.log(output);
 		if(this.graphsRef.current){
