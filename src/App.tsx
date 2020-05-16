@@ -24,7 +24,7 @@ class App extends React.Component<{},{}> {
 		ShellWasm().then((M) => {
 			//console.log('compiled')
 			this.instance = new M.shell(2);
-			console.log(this.arrayIndices);
+			//console.log(this.arrayIndices);
 			Object.entries(this.arrayIndices).forEach((kv: any) => {
 				const k = kv[0];
 				const v = kv[1];
@@ -37,7 +37,7 @@ class App extends React.Component<{},{}> {
 						v[k1] = v1.value;
 					}
 				});
-			})
+			});
 			//console.log(this.arrayIndices);
 		});
 	}
@@ -123,7 +123,7 @@ class App extends React.Component<{},{}> {
 					const fused : number
 						= this.instance.getPostPenPoint(i, this.arrayIndices.postPenDataIndex.xwf, k, j);
 					const point : Record<string, number> = {x: dist, y: detDist};
-					console.log(dist, fused);
+					//console.log(dist, fused);
 					if(fused < 0){
 						output.post.notFused[k+j*numAngles].push(point);
 					}else{
@@ -164,7 +164,7 @@ class App extends React.Component<{},{}> {
 		);
 	}
 	componentDidMount(){
-		console.log("done rendering");
+		//console.log("done rendering");
 		//console.log(this);
 	}
 }

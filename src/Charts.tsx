@@ -32,6 +32,7 @@ dimensions: Record<string, number>}> {
 
 class ChartGroup extends React.Component
 <{}>{
+    state={updateTrigger: true}; //State needs value otherwise render won't trigger
     commonStyle = {};
     dimensions = {height: 300, width: 1200};
     chartConfigs : Record<string, Array<[Record<string, any>, React.RefObject<SingleChart>]>> = {
@@ -66,6 +67,7 @@ class ChartGroup extends React.Component
             scaleLabel: {display: true,
                 labelString: "Distance from Launch (m)",
             },
+            type: 'linear',
             ticks:{callback: addCommas,}
         }];
 
@@ -134,7 +136,7 @@ class ChartGroup extends React.Component
                 text: 'Maximum Angle for Perforation | ' + targetedArmor + ' | ' + targetInclination
             },
             scales: {
-                xAxes: xAxesDistance,
+                //xAxes: xAxesDistance,
                 yAxes: [{
                     id: "angle", postition: "left",
                     scaleLabel: {
@@ -154,7 +156,7 @@ class ChartGroup extends React.Component
                 text: 'Minimum Fusing Angle | ' + targetedArmor + ' | ' + targetInclination
             },
             scales: {
-                xAxes: xAxesDistance,
+                //xAxes: xAxesDistance,
                 yAxes: [{
                     id: "angle", postition: "left",
                     scaleLabel: {
@@ -167,17 +169,45 @@ class ChartGroup extends React.Component
         }
         //Post-Penetration
         let addDeleteChart = false;
-        const angleLengthDiff = graphData.angles.length - this.chartConfigs.post.length;
+        const configPost = this.chartConfigs.post; const postData = graphData.post;
+        const angleLengthDiff = graphData.angles.length - configPost.length;
+        //console.log(this, configPost);
         if(angleLengthDiff > 0){
             for(let i=0; i<angleLengthDiff; i++){
-                this.chartConfigs.post.push([{data: {datasets : Array<any>(),}, options: {}}, React.createRef<SingleChart>()]);
+                configPost.push([{data: {datasets : Array<any>(),}, options: {}}, React.createRef<SingleChart>()]);
             }
             addDeleteChart = true;
         }else if(angleLengthDiff < 0){
-            this.chartConfigs.post.splice(angleLengthDiff, Math.abs(angleLengthDiff));
+            configPost.splice(angleLengthDiff, Math.abs(angleLengthDiff));
             addDeleteChart = true;
         }
-
+        //console.log(angleLengthDiff, addDeleteChart);
+        const WFL = "Fused ", NFL = "No Fusing ";
+        configPost.forEach((value, i) => {
+            value[0].data.datasets = []; // clear dataset
+            value[0].data.datasets.push(
+            {
+                data: postData.shipWidth[0], showLine: true, borderDash: [5, 5], label: "Ship Width (m)",
+                borderColor: "#505050", fill: false, pointRadius: commonPointRadius, pointHitRadius: 5
+            });
+            value[0].options = {
+                title: {
+                    display: true,
+                    text: 'Internal Width Traveled before Detonation | ' + targetedArmor 
+                    + ' | ' + targetInclination + ' | Horizontal Impact Angle: ' 
+                    + graphData.angles[i] + "°"
+                },
+                scales: {
+                    xAxes: xAxesDistance,
+                    yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: "Shell Detonation Distance (m)",
+                        },
+                    }],
+                },
+            }
+        });
 
         //Setup Datasets
         configImpact.forEach((value) => {
@@ -203,6 +233,20 @@ class ChartGroup extends React.Component
                 data: data, showLine: true, label: label, 
                 yAxisID: "angle", //backgroundColor: Samples.utils.transparentize(colors[index][0]),
                 borderColor: color, fill: false, pointRadius: commonPointRadius, pointHitRadius: 5
+            }
+        }
+        const postLine = (data : Array<Record<string, number>>, 
+            label: string, color : string = "", show : boolean = true) : Record<string, any> => {
+            if(show){
+                return {
+                    data: data, showLine: true, label: label, 
+                    borderColor: color, fill: false, pointRadius: commonPointRadius, pointHitRadius: 5
+                };
+            }else{
+                return {
+                    data: data, showLine: false, label: label, 
+                    borderColor: color, fill: false, pointRadius: 0, pointHitRadius: 5
+                };
             }
         }
 
@@ -232,6 +276,28 @@ class ChartGroup extends React.Component
             )
 
             //Post
+            configPost.forEach((value, index) => {
+                //console.log(index);
+                //console.log(postData.fused[index + graphData.angles.length*i]);
+                //console.log(postData.notFused[index + graphData.angles.length*i]);
+
+                let pL : Array<any> = [
+                    postData.fused[index + graphData.angles.length*i],
+                    postData.notFused[index + graphData.angles.length*i]
+                ];
+                let pLShow : boolean[] = [true, true];
+                for(let j=0; j<2; j++){
+                    if(pL[j].length === 0){
+                        pL[j] = [{x: 0, y: 0}];
+                        pLShow[j] = false;
+                    }
+                }
+
+                value[0].data.datasets.push(
+                    postLine(pL[0], WFL + name, colors[0], pLShow[0]),
+                    postLine(pL[1], NFL + name, colors[1], pLShow[1]),
+                )
+            });
         }
         if(addDeleteChart){
             this.setState(this.state); //trigger re-render
@@ -258,6 +324,15 @@ class ChartGroup extends React.Component
         this.chartConfigs.angle.forEach((value, i) => {
             updateAngle(i);
         });
+        const updatePost = (chart : number) => {
+            const ref = this.chartConfigs.post[chart][1];
+            if(ref.current !== undefined){
+                ref.current!.update();
+            }
+        }
+        this.chartConfigs.post.forEach((value, i) => {
+            updatePost(i);
+        });
         
     }
     render(){
@@ -271,12 +346,16 @@ class ChartGroup extends React.Component
                 {this.chartConfigs.angle.map((value, i) => {
                     return (<SingleChart config={value[0]} dimensions={this.dimensions} ref={value[1]} key={i}/>);
                 })}
+                <h3 style={{textAlign: "center"}}>Post Penetration Charts</h3>
+                {this.chartConfigs.post.map((value, i) => {
+                    return (<SingleChart config={value[0]} dimensions={this.dimensions} ref={value[1]} key={i}/>);
+                })}
             </>
         );
     }
-    componentDidMount(){
-        //console.log(this, defaults);
-    }
+    /*componentDidUpdate(){
+        console.log(this.chartConfigs);
+    }*/
 }
 
 export default ChartGroup;
