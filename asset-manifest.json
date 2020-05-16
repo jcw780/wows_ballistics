@@ -1,25 +1,25 @@
 {
   "files": {
     "main.css": "/wows_ballistics_2/static/css/main.e755ffad.chunk.css",
-    "main.js": "/wows_ballistics_2/static/js/main.c5026786.chunk.js",
-    "main.js.map": "/wows_ballistics_2/static/js/main.c5026786.chunk.js.map",
+    "main.js": "/wows_ballistics_2/static/js/main.a336e216.chunk.js",
+    "main.js.map": "/wows_ballistics_2/static/js/main.a336e216.chunk.js.map",
     "runtime-main.js": "/wows_ballistics_2/static/js/runtime-main.cb8ed3e3.js",
     "runtime-main.js.map": "/wows_ballistics_2/static/js/runtime-main.cb8ed3e3.js.map",
     "static/css/2.69121389.chunk.css": "/wows_ballistics_2/static/css/2.69121389.chunk.css",
-    "static/js/2.5074f52e.chunk.js": "/wows_ballistics_2/static/js/2.5074f52e.chunk.js",
-    "static/js/2.5074f52e.chunk.js.map": "/wows_ballistics_2/static/js/2.5074f52e.chunk.js.map",
+    "static/js/2.c7d8871e.chunk.js": "/wows_ballistics_2/static/js/2.c7d8871e.chunk.js",
+    "static/js/2.c7d8871e.chunk.js.map": "/wows_ballistics_2/static/js/2.c7d8871e.chunk.js.map",
     "index.html": "/wows_ballistics_2/index.html",
-    "precache-manifest.a571409a72b6424334fb0b8271f8919a.js": "/wows_ballistics_2/precache-manifest.a571409a72b6424334fb0b8271f8919a.js",
+    "precache-manifest.2796a442094dacc8437c2b3419e0ef17.js": "/wows_ballistics_2/precache-manifest.2796a442094dacc8437c2b3419e0ef17.js",
     "service-worker.js": "/wows_ballistics_2/service-worker.js",
     "static/css/2.69121389.chunk.css.map": "/wows_ballistics_2/static/css/2.69121389.chunk.css.map",
     "static/css/main.e755ffad.chunk.css.map": "/wows_ballistics_2/static/css/main.e755ffad.chunk.css.map",
-    "static/js/2.5074f52e.chunk.js.LICENSE.txt": "/wows_ballistics_2/static/js/2.5074f52e.chunk.js.LICENSE.txt"
+    "static/js/2.c7d8871e.chunk.js.LICENSE.txt": "/wows_ballistics_2/static/js/2.c7d8871e.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.cb8ed3e3.js",
     "static/css/2.69121389.chunk.css",
-    "static/js/2.5074f52e.chunk.js",
+    "static/js/2.c7d8871e.chunk.js",
     "static/css/main.e755ffad.chunk.css",
-    "static/js/main.c5026786.chunk.js"
+    "static/js/main.a336e216.chunk.js"
   ]
 }
