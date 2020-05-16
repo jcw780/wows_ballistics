@@ -111,7 +111,7 @@ class TargetFormsContainer extends React.Component
             handleValueChange={this.handleChange} type="number"
             label="Target Width" labelWidth={4} />
             </div>
-            <Container>
+            <Container style={{marginBottom: "1rem"}}>
                 <Row>
             {angleElements.map((values, i) => {
                 return (
@@ -125,7 +125,7 @@ class TargetFormsContainer extends React.Component
                 </Row>
             </Container>
             
-            <Row>
+            <Row style={{marginBottom: "1rem"}}>
                 <Col/>
                 <Col sm="6"><Button className="form-control" onClick={this.addAngle}>Add Angle</Button></Col>
                 <Col/>

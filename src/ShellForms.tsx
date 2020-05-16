@@ -85,7 +85,7 @@ class ShellParameters extends React.Component<shellParametersProps>{
 }
 
 interface shellFormsProps{
-	index: number, keyProp: number, deleteShip : Function
+	index: number, colors: Array<string>, keyProp: number, deleteShip : Function
 }
 class ShellForms extends React.Component<shellFormsProps> {
 	parameters = React.createRef<ShellParameters>()
@@ -111,6 +111,7 @@ class ShellForms extends React.Component<shellFormsProps> {
 			const value = kv[1];
 			condensed[key] = value[1]; 
 		})
+		condensed['colors'] = this.props.colors;
 		return condensed;
 	}
 	nameForm = React.createRef<ParameterForm>()
@@ -151,13 +152,13 @@ class ShellForms extends React.Component<shellFormsProps> {
 	render() {
 		return(
 			<Modal.Dialog style={{margin: 0}}>
-				<Modal.Header closeButton onHide={this.deleteShip}>
-					<Modal.Title>Shell {this.props.index + 1}</Modal.Title>
+				<Modal.Header closeButton onHide={this.deleteShip} style={{padding: "0.5rem"}}>
+					<Modal.Title style={{marginLeft: "40%", marginRight: "auto", }}>Shell {this.props.index + 1}</Modal.Title>
 				</Modal.Header>
 				<Modal.Body style={{padding: 0}}>
 					<Container>
 					<Col sm='12'>
-						<ParameterForm label="Ship Label" controlId='shipName'
+						<ParameterForm label="Shell Label" controlId='shipName'
 								handleValueChange={this.handleNameChange}
 								type="text" newValue=""
 								ref={this.nameForm}/>
@@ -233,6 +234,53 @@ class ShellFormsContainer extends React.Component{
 		return data;
 	}
 
+	selectColor = (number, colors) => {
+		const hue = number * 137.507764 % 360; // use golden angle approximation
+		console.log(hue);
+		//return this.hslToRgb(hue, .8, .5);
+		return `hsl(${hue},50%,60%)`;
+	}
+	
+	hslToRgb = (h: number, s: number, l: number) => {
+		var r, g, b;
+	
+		if(s == 0){
+			r = g = b = l; // achromatic
+		}else{
+			var hue2rgb = function hue2rgb(p, q, t){
+				if(t < 0) t += 1;
+				if(t > 1) t -= 1;
+				if(t < 1/6) return p + (q - p) * 6 * t;
+				if(t < 1/2) return q;
+				if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+				return p;
+			}
+	
+			var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+			var p = 2 * l - q;
+			r = hue2rgb(p, q, h + 1/3);
+			g = hue2rgb(p, q, h);
+			b = hue2rgb(p, q, h - 1/3);
+		}
+		return 'rgb(' + Math.round(r * 255) + ',' + Math.round(g * 255) + ',' + Math.round(b * 255) + ')'
+		//return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+	}
+	/*
+	selectColor = (colorNum, colors) => {
+		if (colors < 1) colors = 1; // defaults to one color - avoid divide by zero
+		return "hsl(" + (colorNum * (360 / colors) % 360) + ",100%,50%)";
+	}*/
+
+	generateColors = (index : number, total : number) => {
+		const colors = Array<string>(3);
+		for(let i=0; i<3; i++){
+			console.log(index * 3 + i, total * 3);
+			colors[i] = this.selectColor(index * 3 + i, total * 3);
+		}
+		console.log(colors, index, total);
+		return colors;
+	}
+
 	render(){
 		return(
 <>
@@ -241,7 +289,7 @@ class ShellFormsContainer extends React.Component{
 		<Row sm={3}>
 		{Array.from(this.state.keys).map((value, i) => {
 			return <Col key={value} style={{margin: 0, padding: 0}}>
-				<ShellForms index={i} deleteShip={this.deleteShip} 
+				<ShellForms colors={this.generateColors(i, this.state.keys.size)} index={i} deleteShip={this.deleteShip} 
 				keyProp={value} ref={this.shellRefs[i]}/>
 			</Col>;
 		})}

@@ -5,14 +5,13 @@ import Button from 'react-bootstrap/Button';
 
 import ShellFormsContainer from './ShellForms';
 import TargetFormsContainer from './TargetForms';
+import ChartGroup from './Charts';
 
 import ShellWasm from './shellWasm.wasm';
-import { string } from 'prop-types';
-
-
 class App extends React.Component<{},{}> {
 	SFCref = React.createRef<ShellFormsContainer>();
 	TFCref = React.createRef<TargetFormsContainer>();
+	graphsRef : React.RefObject<ChartGroup> = React.createRef<ChartGroup>();
 	instance : any;
 	arrayIndices : Record<string, Record<string, number>> = {
 		impactDataIndex: {}, 
@@ -39,7 +38,7 @@ class App extends React.Component<{},{}> {
 					}
 				});
 			})
-			console.log(this.arrayIndices);
+			//console.log(this.arrayIndices);
 		});
 	}
 	generate = () => {
@@ -77,11 +76,19 @@ class App extends React.Component<{},{}> {
 				ra1D : Array.from({length: numShells}, _ => new Array<Record<string, number>>(impactSize)),
 			},
 			post: {
-				shipWidth : Array.from({length: numShells}, _ => new Array<Record<string, number>>(impactSize)),
+				shipWidth : Array.from({length: 1}, _ => new Array<Record<string, number>>(impactSize)),
 				notFused: Array.from({length: numShells * numAngles}, _ => new Array<Record<string, number>>()),
 				Fused: Array.from({length: numShells * numAngles}, _ => new Array<Record<string, number>>()),
-			}
+			},
+			numShells : numShells,
+			names : Array<string>(numShells),
+			colors : Array<Array<string>>(numShells),
 		}
+
+		shellData.forEach((value, i) => {
+			output.names[i] = value.name;
+			output.colors[i] = value.colors;
+		});
 		let maxDist = 0;
 		let maxShell = 0;
 		for(let j=0; j<numShells; j++){
@@ -123,6 +130,9 @@ class App extends React.Component<{},{}> {
 			maxShell = greater ? j : maxShell;
 		}
 		console.log(output);
+		if(this.graphsRef.current){
+			this.graphsRef.current.updateData(output);
+		}
 	}
 	render () {
 		return (
@@ -130,11 +140,13 @@ class App extends React.Component<{},{}> {
 				<ShellFormsContainer ref={this.SFCref}/>
 				<TargetFormsContainer ref={this.TFCref}/>
 				<Button onClick={this.generate}>Generate</Button>
+				<ChartGroup ref={this.graphsRef}/>
 			</div>
 		);
 	}
 	componentDidMount(){
 		console.log("done rendering");
+		//console.log(this);
 	}
 }
 
