@@ -178,13 +178,13 @@ class DefaultShips extends React.Component
 	}
 	render(){
 		return(
-			<Form>
+			<>
 				{Object.entries(this.defaultForms).map( ([k, v], i) => {
 					this.defaultForms[k][3] = i;
 					return (<DefaultForm label={v[0]} key={i} controlId={k}
 					handleValueChange={this.changeForm} ref={v[2]}> </DefaultForm>);
 				})}
-			</Form>
+			</>
 		);
 	}
 }

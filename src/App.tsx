@@ -18,10 +18,8 @@ class App extends React.Component<{},{}> {
 		angleDataIndex: {}, 
 		postPenDataIndex: {} 
 	}
-	constructor(props){
-		super(props);
-		//console.log(this.arrayIndices);
-		ShellWasm().then((M) => {
+	compile = () => {
+		return ShellWasm().then((M) => {
 			//console.log('compiled')
 			this.instance = new M.shell(2);
 			//console.log(this.arrayIndices);
@@ -38,8 +36,14 @@ class App extends React.Component<{},{}> {
 					}
 				});
 			});
+			return "done";
 			//console.log(this.arrayIndices);
 		});
+	}
+	constructor(props){
+		super(props);
+		//console.log(this.arrayIndices);
+		this.compile();
 	}
 	generate = () => {
 		const shellData = this.SFCref.current!.returnShellData();
@@ -103,9 +107,11 @@ class App extends React.Component<{},{}> {
 					const k = kv[0];
 					const v = kv[1];
 					//console.log(i, j, kv, v[j][i], v[0] === v[1]);
+					let y = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex[k], j);
+					if(k === 'impactAHD'){y *= -1}
 					v[j][i] = {
 						x: dist, 
-						y: this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex[k], j)
+						y: y
 					};
 				});
 				Object.entries(output.angle).forEach((kv : any) => {
@@ -130,15 +136,6 @@ class App extends React.Component<{},{}> {
 						output.post.fused[k+j*numAngles].push(point);
 					}
 				}
-				/*Object.entries(output.post).forEach((kv : any) => {
-					const k = kv[0];
-					const v = kv[1];
-					//console.log(i, j, kv, v[j][i], v[0] === v[1]);
-					v[j][i] = {
-						x: dist, 
-						y: this.instance.getPostPenPoint(i, this.arrayIndices.postPenDataIndex[k], j)
-					};
-				});*/
 			}
 			const greater = maxDistS > maxDist;
 			maxDist = greater ? maxDistS : maxDist;
@@ -156,9 +153,10 @@ class App extends React.Component<{},{}> {
 	render () {
 		return (
 			<div className="App">
+				<h1 style={{textAlign: 'center'}}>World of Warships Ballistics Calculator 2</h1>
 				<ShellFormsContainer ref={this.SFCref}/>
 				<TargetFormsContainer ref={this.TFCref}/>
-				<Button onClick={this.generate}>Generate</Button>
+				<Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem"}} onClick={this.generate}>Generate</Button>
 				<ChartGroup ref={this.graphsRef}/>
 			</div>
 		);

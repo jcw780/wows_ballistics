@@ -15,12 +15,12 @@ import DefaultShips from './DefaultForms'
 
 interface parameterFormProps {
 	newValue: any, controlId: string, handleValueChange: Function,
-	type: string, label: string, 
-	labelWidth: number, formWidth: string, placeholder: string
+	type: string, label: string, style: Record<string, any>
+	labelWidth: number, placeholder: string
 }
 class ParameterForm extends React.Component<parameterFormProps>{
 	public static defaultProps = {
-		labelWidth: 3, formWidth: "", placeholder: ""
+		labelWidth: 5, placeholder: "", style : {}
 	}
 	state = {value: ""};
 	constructor(props){
@@ -38,10 +38,10 @@ class ParameterForm extends React.Component<parameterFormProps>{
 	}
 	render(){
 		return (
-<Form.Group className="form-inline">
+<Form.Group className="form-inline" style={{marginBottom: "0.5rem"}}>
 	<Form.Label column sm={this.props.labelWidth}>{this.props.label}</Form.Label>
 	<Form.Control type={this.props.type} value={this.state.value} 
-	style={{width: this.props.formWidth}} 
+	style={this.props.style} 
 	placeholder={this.props.placeholder} onChange={this.handleChange}/>
 </Form.Group>
 		);
@@ -151,13 +151,13 @@ class ShellForms extends React.Component<shellFormsProps> {
 	}
 	render() {
 		return(
-			<Modal.Dialog style={{margin: 0}}>
+			<Modal.Dialog style={{minWidth: 350}}>
 				<Modal.Header closeButton onHide={this.deleteShip} style={{padding: "0.5rem"}}>
 					<Modal.Title style={{marginLeft: "40%", marginRight: "auto", }}>Shell {this.props.index + 1}</Modal.Title>
 				</Modal.Header>
-				<Modal.Body style={{padding: 0}}>
-					<Container>
-					<Col sm='12'>
+				<Modal.Body style={{padding: "0.5rem"}}>
+					<Container style={{padding: 0}}>
+					<Col sm='12' style={{padding: 0}}>
 						<ParameterForm label="Shell Label" controlId='shipName'
 								handleValueChange={this.handleNameChange}
 								type="text" newValue=""
@@ -166,16 +166,16 @@ class ShellForms extends React.Component<shellFormsProps> {
 					</Col>
 					</Container>
 				</Modal.Body>
-				<Modal.Footer>
+				<Modal.Footer style={{padding: "0.5rem"}}>
 					<Container>
 					<Dropdown>
 						<Dropdown.Toggle variant="success" id="dropdown-basic">
 						Show Detailed Parameters
 						</Dropdown.Toggle>
 						<Dropdown.Menu>
-							<Dropdown.Item>
-							<Container>
-								<Col sm="10">
+							<Dropdown.Item style={{padding: 0, minWidth: 500}}>
+							<Container style={{padding: 0}}>
+								<Col sm="12" style={{padding: 0}}>
 								<ShellParameters handleValueChange={this.handleValueChange}
 										formLabels={this.values} ref={this.parameters}/>
 								</Col>
@@ -196,12 +196,11 @@ class ShellForms extends React.Component<shellFormsProps> {
 export {ShellForms};
 
 class ShellFormsContainer extends React.Component{
-	state = {keys: new Set([0, 1])};
+	state = {keys: new Set([0, 1, 2])};
 	shellRefs = [React.createRef<ShellForms>(), React.createRef<ShellForms>()];
 
 	addShip = () => {
-		let index: number = 0;
-		let listed: boolean = true;
+		let index: number = 0; let listed: boolean = true;
 		const set = this.state.keys;
 		while(listed){
 			if(set.has(index)){
@@ -218,8 +217,7 @@ class ShellFormsContainer extends React.Component{
 	}
 
 	deleteShip = (key, index) => {
-		let set = this.state.keys;
-		set.delete(key);
+		let set = this.state.keys; set.delete(key);
 		this.shellRefs.splice(index, 1);
 		this.setState((current) => {
 			return {keys: set};
@@ -236,26 +234,22 @@ class ShellFormsContainer extends React.Component{
 
 	selectColor = (number, colors) => {
 		const hue = number * 137.507764 % 360; // use golden angle approximation
-		//console.log(hue);
-		//return this.hslToRgb(hue, .8, .5);
 		return `hsl(${hue},50%,60%)`;
 	}
 
 	generateColors = (index : number, total : number) => {
 		const colors = Array<string>(3);
 		for(let i=0; i<3; i++){
-			//console.log(index * 3 + i, total * 3);
 			colors[i] = this.selectColor(index * 3 + i, total * 3);
 		}
-		//console.log(colors, index, total);
 		return colors;
 	}
 
 	render(){
 		return(
 <>
-	<h2>Shell Selection</h2>
-	<Container style={{marginBottom : "1.75rem"}}>
+	<h2>Shell Parameters</h2>
+	<Container style={{marginBottom : "1rem", paddingRight: 0, paddingLeft: 0}}>
 		<Row sm={3}>
 		{Array.from(this.state.keys).map((value, i) => {
 			return <Col key={value} style={{margin: 0, padding: 0}}>

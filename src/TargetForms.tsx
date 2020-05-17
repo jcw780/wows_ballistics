@@ -28,7 +28,7 @@ class AngleForm extends React.Component<angleFormProps>{
             newValue={this.props.newValue}
             handleValueChange={this.props.handleValueChange} 
             type="number" label={this.props.label}
-            labelWidth={4} formWidth={'60%'}/>
+            labelWidth={4} style={{width: '60%'}}/>
                 </Modal.Header>
             </Modal.Dialog>
         );
@@ -37,12 +37,13 @@ class AngleForm extends React.Component<angleFormProps>{
 
 class TargetFormsContainer extends React.Component
 <{}, {angleKeys: Set<number>}>{
-    state = {angleKeys: new Set([0, 1, 2, 3])};
+    state = {angleKeys: new Set([0, 1, 2, 3, 4, 5, 6, 7])};
     targetData = {
         armor: 70.,
         inclination: 0.,
         width: 18.,
-        angles: [0, 5, 10, 15],
+        angles: [0, 5, 10, 15, 
+                20, 25, 30, 35],
     };
     addAngle = () => {
 		let index: number = 0;
@@ -81,13 +82,13 @@ class TargetFormsContainer extends React.Component
     }
     render(){
         let angleElements : Array<Array<JSX.Element>> = [];
-        const elementColumn = 2;
+        const elementColumn = 1;
         Array.from(this.state.angleKeys).forEach((value, i) => {
             const common = 
                 <AngleForm key={value} keyProp={value} controlId={i.toString()} 
                 newValue={this.targetData.angles[i]} deleteElement={this.deleteAngle}
                 handleValueChange={this.handleAngleChange}
-                label={"Angle " + (i + 1)}/>
+                label={"Angle " + (i + 1) + " (°)"}/>
             const columnIndex = Math.floor(i / elementColumn);
             if(i % elementColumn === 0){
                 angleElements.push([]);
@@ -96,7 +97,7 @@ class TargetFormsContainer extends React.Component
         });
         return(
         <>
-            <h2>Target Data</h2>
+            <h2>Target Parameters</h2>
             <div className="row" style={{display: 'flex', justifyContent: 'center'}}>
             <ParameterForm controlId="armor"
             newValue={this.targetData.armor} 
@@ -111,6 +112,7 @@ class TargetFormsContainer extends React.Component
             handleValueChange={this.handleChange} type="number"
             label="Target Width" labelWidth={4} />
             </div>
+            <h3>Horizontal Impact Angles</h3>
             <Container style={{marginBottom: "1rem"}}>
                 <Row>
             {angleElements.map((values, i) => {
