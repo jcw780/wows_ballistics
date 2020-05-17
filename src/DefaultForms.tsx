@@ -1,6 +1,7 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Form from 'react-bootstrap/Form';
+import Container from 'react-bootstrap/Container';
 
 class DefaultForm extends React.Component
 <{handleValueChange: Function, controlId: string, label : string, }> {
@@ -26,7 +27,7 @@ class DefaultForm extends React.Component
 	render(){
 		return (
 			<Form.Group className="form-inline" style={{marginBottom: 0}}>
-				<Form.Label column sm="3">{this.props.label}</Form.Label>
+				<Form.Label column sm="5">{this.props.label}</Form.Label>
 				<Form.Control as="select" placeholder="" 
 				onChange={this.handleChange} ref={this.form}>
 					{this.state.options.map((value ,i) => {return (<option key={i}>{value}</option>);})}
@@ -57,7 +58,7 @@ function fetchJson(target, onSucess){
     );
 }
 
-function fetchJsonData(target){
+async function fetchJsonData(target){
     return fetch(target)
         .then((response) => {
             if (!response.ok) {
@@ -178,13 +179,13 @@ class DefaultShips extends React.Component
 	}
 	render(){
 		return(
-			<>
+			<Container>
 				{Object.entries(this.defaultForms).map( ([k, v], i) => {
 					this.defaultForms[k][3] = i;
 					return (<DefaultForm label={v[0]} key={i} controlId={k}
 					handleValueChange={this.changeForm} ref={v[2]}> </DefaultForm>);
 				})}
-			</>
+			</Container>
 		);
 	}
 }

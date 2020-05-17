@@ -42,9 +42,15 @@ class TargetFormsContainer extends React.Component
         armor: 70.,
         inclination: 0.,
         width: 18.,
-        angles: [0, 5, 10, 15, 
-                20, 25, 30, 35],
+        angles: Array<number>(8),
     };
+    constructor(props){
+        super(props);
+        Array.from(this.state.angleKeys).forEach((value, i) => {
+            this.targetData.angles[i] = value * 5;
+        })
+    }
+
     addAngle = () => {
 		let index: number = 0;
 		let listed: boolean = true;

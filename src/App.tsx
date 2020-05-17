@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+
 import Button from 'react-bootstrap/Button';
 
 import ShellFormsContainer from './ShellForms';
@@ -17,6 +18,18 @@ class App extends React.Component<{},{}> {
 		impactDataIndex: {}, 
 		angleDataIndex: {}, 
 		postPenDataIndex: {} 
+	}
+	settings : Record<string, any> = { //*implement
+		distance: {
+			min: 0, max: null, stepSize: 1000, 
+		},
+		rounding: 3,
+		shortNames: true,
+		calculationMethod: 0,
+		timeStep: 0.01,
+		launchAngle : {
+			minimum: 0, maximum: 25
+		}
 	}
 	compile = () => {
 		return ShellWasm().then((M) => {
@@ -106,7 +119,6 @@ class App extends React.Component<{},{}> {
 				Object.entries(output.impact).forEach((kv : any) => {
 					const k = kv[0];
 					const v = kv[1];
-					//console.log(i, j, kv, v[j][i], v[0] === v[1]);
 					let y = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex[k], j);
 					if(k === 'impactAHD'){y *= -1}
 					v[j][i] = {
@@ -117,7 +129,6 @@ class App extends React.Component<{},{}> {
 				Object.entries(output.angle).forEach((kv : any) => {
 					const k = kv[0];
 					const v = kv[1];
-					//console.log(i, j, kv, v[j][i], v[0] === v[1]);
 					v[j][i] = {
 						x: dist, 
 						y: this.instance.getAnglePoint(i, this.arrayIndices.angleDataIndex[k], j)
@@ -129,7 +140,6 @@ class App extends React.Component<{},{}> {
 					const fused : number
 						= this.instance.getPostPenPoint(i, this.arrayIndices.postPenDataIndex.xwf, k, j);
 					const point : Record<string, number> = {x: dist, y: detDist};
-					//console.log(dist, fused);
 					if(fused < 0){
 						output.post.notFused[k+j*numAngles].push(point);
 					}else{
@@ -155,9 +165,11 @@ class App extends React.Component<{},{}> {
 			<div className="App">
 				<h1 style={{textAlign: 'center'}}>World of Warships Ballistics Calculator 2</h1>
 				<ShellFormsContainer ref={this.SFCref}/>
+				<hr/>
 				<TargetFormsContainer ref={this.TFCref}/>
+				<hr/>
 				<Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem"}} onClick={this.generate}>Generate</Button>
-				<ChartGroup ref={this.graphsRef}/>
+				<ChartGroup ref={this.graphsRef} settings={this.settings}/>
 			</div>
 		);
 	}

@@ -16,7 +16,7 @@ import DefaultShips from './DefaultForms'
 interface parameterFormProps {
 	newValue: any, controlId: string, handleValueChange: Function,
 	type: string, label: string, style: Record<string, any>
-	labelWidth: number, placeholder: string
+	labelWidth: number, placeholder: string, //counter?: number[]
 }
 class ParameterForm extends React.Component<parameterFormProps>{
 	public static defaultProps = {
@@ -59,6 +59,7 @@ class ShellParameters extends React.Component<shellParametersProps>{
 	handleValueChange = (value, k) => {
 		this.props.handleValueChange(value, k);
 	}
+	//counter = [0]
 	updateShells() {
 		Object.entries(this.props.formLabels).forEach((kv : any): void => {
 			const value = kv[1];
@@ -85,7 +86,7 @@ class ShellParameters extends React.Component<shellParametersProps>{
 }
 
 interface shellFormsProps{
-	index: number, colors: Array<string>, keyProp: number, deleteShip : Function
+	index: number, colors: Array<string>, keyProp: number, deleteShip : Function, reset: Function
 }
 class ShellForms extends React.Component<shellFormsProps> {
 	parameters = React.createRef<ShellParameters>()
@@ -122,7 +123,7 @@ class ShellForms extends React.Component<shellFormsProps> {
 	handleValueChange = (value : string, k : string) => {
 		this.values[k][1] = parseFloat(value);
 	}
-	getDefaultData = (data, name) => {
+	getDefaultData = (data, name) => { //Query Version End
 		this.values.caliber[1] = data.bulletDiametr;
 		this.values.muzzleVelocity[1] = data.bulletSpeed;
 		this.values.dragCoefficient[1] = data.bulletAirDrag;
@@ -144,7 +145,7 @@ class ShellForms extends React.Component<shellFormsProps> {
 		if(this.parameters.current){
 			this.parameters.current!.updateShells();
 		}
-
+		this.props.reset();
 	}
 	deleteShip = () => {
 		this.props.deleteShip(this.props.keyProp, this.props.index);
@@ -158,10 +159,12 @@ class ShellForms extends React.Component<shellFormsProps> {
 				<Modal.Body style={{padding: "0.5rem"}}>
 					<Container style={{padding: 0}}>
 					<Col sm='12' style={{padding: 0}}>
+						
 						<ParameterForm label="Shell Label" controlId='shipName'
 								handleValueChange={this.handleNameChange}
 								type="text" newValue=""
-								ref={this.nameForm}/>
+								ref={this.nameForm} style={{width: '50%'}}/>
+						<hr/>
 						<DefaultShips sendDefault={this.getDefaultData} ref={this.defaults}/>
 					</Col>
 					</Container>
@@ -195,33 +198,42 @@ class ShellForms extends React.Component<shellFormsProps> {
 }
 export {ShellForms};
 
-class ShellFormsContainer extends React.Component{
-	state = {keys: new Set([0, 1, 2])};
+class ShellFormsContainer extends React.Component<{}, {keys: Set<number>, disabled: boolean}>{
+	state = {keys: new Set([0, 1]), disabled: false};
 	shellRefs = [React.createRef<ShellForms>(), React.createRef<ShellForms>()];
-
 	addShip = () => {
-		let index: number = 0; let listed: boolean = true;
-		const set = this.state.keys;
-		while(listed){
-			if(set.has(index)){
-				index++;
-			}else{
-				listed = false;
+		if(this.state.disabled && (this.state.keys.size > 0)){
+			return
+		}else{
+			let index: number = 0; let listed: boolean = true;
+			const set = this.state.keys;
+			while(listed){
+				if(set.has(index)){
+					index++;
+				}else{
+					listed = false;
+				}
 			}
+			this.shellRefs.push(React.createRef<ShellForms>());
+			this.setState((current) => {
+				let set = current.keys;
+				return {keys: set.add(index), disabled: true};
+			});
 		}
-		this.shellRefs.push(React.createRef<ShellForms>());
-		this.setState((current) => {
-			let set = current['keys'];
-			return {keys: set.add(index)};
-		});
 	}
 
 	deleteShip = (key, index) => {
-		let set = this.state.keys; set.delete(key);
-		this.shellRefs.splice(index, 1);
-		this.setState((current) => {
-			return {keys: set};
-		})
+		if(this.state.disabled){
+			return;
+		}else{
+			if(this.state.keys.size > 0){
+				let set = this.state.keys; set.delete(key);
+				this.shellRefs.splice(index, 1);
+				this.setState((current) => {
+					return {keys: set, disabled: true};
+				});
+			}
+		}
 	}
 
 	returnShellData = () => {
@@ -245,21 +257,33 @@ class ShellFormsContainer extends React.Component{
 		return colors;
 	}
 
+	reset = () => {
+		if(this.state.disabled){
+			this.setState((current) => {
+				return {keys: current.keys, disabled: false}
+			});
+		}
+	}
+
+	shouldComponentUpdate(nextProps, nextState){
+		return nextState.disabled;
+	}
+
 	render(){
 		return(
 <>
 	<h2>Shell Parameters</h2>
-	<Container style={{marginBottom : "1rem", paddingRight: 0, paddingLeft: 0}}>
+	<Container style={{marginBottom : "0rem", paddingRight: 0, paddingLeft: 0}}>
 		<Row sm={3}>
 		{Array.from(this.state.keys).map((value, i) => {
 			return <Col key={value} style={{margin: 0, padding: 0}}>
 				<ShellForms colors={this.generateColors(i, this.state.keys.size)} index={i} deleteShip={this.deleteShip} 
-				keyProp={value} ref={this.shellRefs[i]}/>
+				keyProp={value} ref={this.shellRefs[i]} reset={this.reset}/>
 			</Col>;
 		})}
 		</Row>
 	</Container>
-	<Row>
+	<Row style={{marginBottom : "1rem"}}>
 		<Col/>
 		<Col sm="6"><Button className="form-control" onClick={this.addShip}>
 			Add Ship</Button></Col>
@@ -268,6 +292,11 @@ class ShellFormsContainer extends React.Component{
 </>
 		);
 	}
+
+	componentDidUpdate(){
+		//this.reset(); //put somewhere to disable button entirely while renders occur - currently risk of crash if ppl click too fast
+	}
+	
 }
 
 export default ShellFormsContainer;

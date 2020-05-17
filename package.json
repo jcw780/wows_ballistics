@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "http://jcw780.github.io/wows_ballistics_2",
   "dependencies": {
+    "@forevolve/bootstrap-dark": "^1.0.0-alpha.981",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

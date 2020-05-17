@@ -23,17 +23,21 @@ class DownloadButton extends React.Component{
     }
 }
 
-class SingleChart extends React.Component
-<{config: Record<string, any>, title?: string,
-dimensions: Record<string, number>}, {open: boolean}> {
+interface singleChartProps{
+    config: Record<string, any>, title?: string,
+    dimensions: Record<string, number>
+}
+interface singleChartState{
+    open: boolean
+}
+class SingleChart extends React.Component<singleChartProps, singleChartState> {
     public static defaultProps = {
         config : {data: {datasets : [],}, options: {}},
         title : ""
     }
     state = {open : true}; 
     //apparently you need a value in state or else set state doesn't trigger rerender
-    valueIndex = 0;
-    values = ["", ""] // 0: Hide 1: Show
+    valueIndex : number = 0; values : Readonly<Array<string>> = ["", ""]; // 0: Hide 1: Show
     graphHref: string = ''; graphDownload: string = '.png'
 
     chartRef : React.RefObject<Scatter> = React.createRef<Scatter>();
@@ -59,7 +63,7 @@ dimensions: Record<string, number>}, {open: boolean}> {
         }]
         return(
             <>
-                <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem"}}
+                <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
                     onClick={this.toggleCollapse}
                     aria-controls="collapseChart"
                     aria-expanded={this.state.open}
@@ -92,9 +96,10 @@ dimensions: Record<string, number>}, {open: boolean}> {
     }
 }
 
-
-class ChartGroup extends React.Component
-<{}>{
+interface chartGroupProps{
+    settings: Record<string, any>
+}
+class ChartGroup extends React.Component<chartGroupProps>{
     state={updateTrigger: true}; //State needs value otherwise render won't trigger
     commonStyle = {};
     dimensions = {height: 300, width: 1200};
@@ -136,24 +141,24 @@ class ChartGroup extends React.Component
         });
     }
 
-    //maybe use global so we don't have to GC as hard?
+    //maybe pass prop so we don't have to GC as hard?
     updateData = (graphData) => {
         console.log(graphData, this.chartConfigs);
         //Common Utility Functions / Values
         const addCommas = (value, index, values) => {return value.toLocaleString();}
         const commonPointRadius = 0;
-        /*const yAxesPenetration = {
-            id: "Penetration", postition: "left",
-            scaleLabel: {display: true,},
-            ticks: {stepSize: 100, callback: addCommas}
-        }*/
         const xAxesDistance = [{
             scaleLabel: {display: true,
                 labelString: "Distance from Launch (m)",
             },
-            type: 'linear',
-            ticks:{callback: addCommas,}
+            type: 'linear', ticks:{callback: addCommas}
         }];
+        Object.entries(this.props.settings.distance).forEach((kv) => {
+            const key: string = kv[0]; const value: any = kv[1];
+            if(value != null){
+                xAxesDistance[0].ticks[key] = value;
+            }
+        });
 
         defaults.scatter.scales.xAxes[0] = xAxesDistance;
         console.log(defaults);
@@ -172,7 +177,7 @@ class ChartGroup extends React.Component
             title: {display: true,
                 text: 'Horizontal Penetration and Impact Angle'
             },
-            scales: {yAxes: [
+            scales: {xAxes: xAxesDistance, yAxes: [
                         {id: "Penetration", position: "left", 
                             scaleLabel: {display: true, labelString: "Belt Penetration (mm)"}
                         }, 
@@ -188,7 +193,7 @@ class ChartGroup extends React.Component
             title: {display: true,
                 text: 'Deck Penetration and Impact Angle'
             },
-            scales: {yAxes: [
+            scales: {xAxes: xAxesDistance, yAxes: [
                         {id: "Penetration", position: "left", 
                             scaleLabel: {display: true, labelString: "Deck Penetration (mm)"}
                         }, 
@@ -202,7 +207,7 @@ class ChartGroup extends React.Component
         configImpact[2][0].options = {
             title: {display: true,
                 text: 'Shell Flight Time and Impact Velocity'},
-            scales: {
+            scales: {xAxes: xAxesDistance,
                 yAxes: [{
                     id: "Impact Velocity", postition: "left",
                     scaleLabel: {display: true, labelString: "Impact Velocity (m/s)"},
@@ -228,7 +233,7 @@ class ChartGroup extends React.Component
                 display: true,
                 text: 'Maximum Angle for Perforation | ' + targetedArmor + ' | ' + targetInclination
             },
-            scales: {
+            scales: {xAxes: xAxesDistance,
                 yAxes: [{
                     id: "angle", postition: "left",
                     scaleLabel: {
@@ -247,7 +252,7 @@ class ChartGroup extends React.Component
                 display: true,
                 text: 'Minimum Fusing Angle | ' + targetedArmor + ' | ' + targetInclination
             },
-            scales: {
+            scales: {xAxes: xAxesDistance,
                 yAxes: [{
                     id: "angle", postition: "left",
                     scaleLabel: {
@@ -369,10 +374,6 @@ class ChartGroup extends React.Component
 
             //Post
             configPost.forEach((value, index) => {
-                //console.log(index);
-                //console.log(postData.fused[index + graphData.angles.length*i]);
-                //console.log(postData.notFused[index + graphData.angles.length*i]);
-
                 let pL : Array<any> = [
                     postData.fused[index + graphData.angles.length*i],
                     postData.notFused[index + graphData.angles.length*i]
@@ -391,11 +392,6 @@ class ChartGroup extends React.Component
                 )
             });
         }
-        /*if(addDeleteChart){
-            this.setState(this.state); //trigger re-render
-        }else{
-            this.updateCharts();
-        }*/
         this.setState(this.state); //trigger re-render
     }
     updateCharts = () => {
