@@ -4,15 +4,19 @@ import {Scatter, defaults} from 'react-chartjs-2';
 import Collapse from 'react-bootstrap/Collapse';
 import Button from 'react-bootstrap/Button';
 
-class DownloadButton extends React.Component{
+//For downloading graphs as images
+class DownloadButton extends React.Component<{updateData: Function}>{
     state = {href: '', download: ''} 
     update = (href, download) => {
         this.setState({href: href, download: download});
     }
+    click = () => {
+        this.props.updateData()
+    }
     render(){
         return (
             <a download={this.state.download} href={this.state.href}>
-                <Button>
+                <Button onClick={this.click}>
                     Download Graph
                 </Button>
             </a>
@@ -53,14 +57,7 @@ class SingleChart extends React.Component<singleChartProps, singleChartState> {
         }
         this.setState((current) => {return {open: !current.open}});
     }
-
     render(){
-        //this.props.config.options.animations = {duration: 0};
-        this.props.config.options.plugins = [{
-            afterRender : function () {
-                this.updateDownload();
-            }
-        }]
         return(
             <>
                 <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
@@ -76,7 +73,7 @@ class SingleChart extends React.Component<singleChartProps, singleChartState> {
                     ref={this.chartRef}/>
                     </div>
                 </Collapse> 
-                <DownloadButton ref={this.DownloadRef}/>
+                <DownloadButton ref={this.DownloadRef} updateData={this.updateDownload}/>
             </> 
         );
     }
@@ -87,14 +84,21 @@ class SingleChart extends React.Component<singleChartProps, singleChartState> {
         this.updateDownload();
     }
     updateDownload = () => {
-        //console.log(this.chartRef);
         const url = this.chartRef.current!.chartInstance.toBase64Image();
         this.graphDownload = this.chartRef.current!.chartInstance.options.title.text + '.png';
         this.graphHref = url;
-        //this.updateDownload();
         this.DownloadRef.current!.update(url, this.chartRef.current!.chartInstance.options.title.text + '.png');
     }
 }
+
+// Config Type for Chart Labels / Data
+interface lineT {lineLabel: string, data: string}
+interface axisT {id: string, axLabel?: string, lines: lineT[]}
+interface configsT{title: string, axes: axisT[]}
+
+// chartConfigs type
+interface chartDataOption{data: Record<string, any>, options: Record<string, any>}
+type singleChartType = [chartDataOption, React.RefObject<SingleChart>, string]
 
 interface chartGroupProps{
     settings: Record<string, any>
@@ -103,8 +107,8 @@ class ChartGroup extends React.Component<chartGroupProps>{
     state={updateTrigger: true}; //State needs value otherwise render won't trigger
     commonStyle = {};
     dimensions = {height: 300, width: 1200};
-    chartConfigs : Record<string, Array<[Record<string, any>, React.RefObject<SingleChart>, string]>> = {
-        impact: [
+    chartConfigs : Record<string, singleChartType[]> = {
+        impact: [ //impact charts
             [{data: {datasets : Array<any>(),}, options: {}}, 
                 React.createRef<SingleChart>(), 'Horizontal Penetration and Impact Angle'],
             [{data: {datasets : Array<any>(),}, options: {}}, 
@@ -112,13 +116,13 @@ class ChartGroup extends React.Component<chartGroupProps>{
             [{data: {datasets : Array<any>(),}, options: {}}, 
                 React.createRef<SingleChart>(), 'Shell Flight Time and Impact Velocity'],
         ],
-        angle: [
+        angle: [ //angle charts
             [{data: {datasets : Array<any>(),}, options: {}}, 
                 React.createRef<SingleChart>(), 'Maximum Angle for Perforation'],
             [{data: {datasets : Array<any>(),}, options: {}}, 
                 React.createRef<SingleChart>(), 'Minimum Fusing Angle'],
         ],
-        post: [
+        post: [ //postpenetration charts
             [{data: {datasets : Array<any>(),}, options: {}}, 
                 React.createRef<SingleChart>(), ''],
             [{data: {datasets : Array<any>(),}, options: {}}, 
@@ -127,23 +131,34 @@ class ChartGroup extends React.Component<chartGroupProps>{
                 React.createRef<SingleChart>(), ''],
             [{data: {datasets : Array<any>(),}, options: {}}, 
                 React.createRef<SingleChart>(), ''],
+            [{data: {datasets : Array<any>(),}, options: {}}, 
+                React.createRef<SingleChart>(), ''],
+            [{data: {datasets : Array<any>(),}, options: {}}, 
+                React.createRef<SingleChart>(), ''],
+            [{data: {datasets : Array<any>(),}, options: {}}, 
+                React.createRef<SingleChart>(), ''],
+            [{data: {datasets : Array<any>(),}, options: {}}, 
+                React.createRef<SingleChart>(), ''],
+            
         ]
     }
     constructor(props){
         super(props);
         defaults.global.animation = false;
-        Chart.plugins.register({
+        Chart.plugins.register({ //Allows viewing of downloaded image on bright backgrounds
             beforeDraw: function(chartInstance) {
                 var ctx = chartInstance.chart.ctx;
                 ctx.fillStyle = "white";
                 ctx.fillRect(0, 0, chartInstance.chart.width, chartInstance.chart.height);
             }
         });
+        //Preinitialize postpenetration names
+        this.chartConfigs.post.forEach((value, i) => {
+            value[2] = 'Horizontal Impact Angle ' + (i + 1);
+        })
     }
-
     //maybe pass prop so we don't have to GC as hard?
     updateData = (graphData) => {
-        console.log(graphData, this.chartConfigs);
         //Common Utility Functions / Values
         const addCommas = (value, index, values) => {return value.toLocaleString();}
         const commonPointRadius = 0;
@@ -159,66 +174,52 @@ class ChartGroup extends React.Component<chartGroupProps>{
                 xAxesDistance[0].ticks[key] = value;
             }
         });
-
         defaults.scatter.scales.xAxes[0] = xAxesDistance;
-        console.log(defaults);
-    
-        /*const yAxesRightAngle = Object.freeze({
-            id: "Angle", position: "right",
-            scaleLabel: {display: true,},
-        });*/
-
         //Impact Charts
         const impactData = graphData.impact; const configImpact = this.chartConfigs.impact;
-        //0
-        const  EPL = "Effective Penetration ";
-        const IAL = "Impact Angle ";
-        configImpact[0][0].options = {
-            title: {display: true,
-                text: 'Horizontal Penetration and Impact Angle'
-            },
-            scales: {xAxes: xAxesDistance, yAxes: [
-                        {id: "Penetration", position: "left", 
-                            scaleLabel: {display: true, labelString: "Belt Penetration (mm)"}
-                        }, 
-                        {id: "Angle", position: "right", 
-                            scaleLabel: {display: true, labelString: "Belt Impact Angle (°)"}
-                        },
-                    ]},
-        };
-        //1
-        const EDP = "Effective Deck Penetration ";
-        const DIA = "Deck Impact Angle ";
-        configImpact[1][0].options = {
-            title: {display: true,
-                text: 'Deck Penetration and Impact Angle'
-            },
-            scales: {xAxes: xAxesDistance, yAxes: [
-                        {id: "Penetration", position: "left", 
-                            scaleLabel: {display: true, labelString: "Deck Penetration (mm)"}
-                        }, 
-                        {id: "Angle", position: "right", 
-                            scaleLabel: {display: true, labelString: "Deck Impact Angle (°)"}
-                        },
-                    ]},
-        }
-        //2
-        const IVL = "Impact Velocity "; const FTL = "Flight Time ";
-        configImpact[2][0].options = {
-            title: {display: true,
-                text: 'Shell Flight Time and Impact Velocity'},
-            scales: {xAxes: xAxesDistance,
-                yAxes: [{
-                    id: "Impact Velocity", postition: "left",
-                    scaleLabel: {display: true, labelString: "Impact Velocity (m/s)"},
-                    ticks: {stepSize: 100}
-                },{
-                    id: "Time", position: "right",
-                    scaleLabel: {display: true,
-                        labelString: "Flight Time (s)",},
-                }],
+        const setupImpact = (row) => {
+            return {
+                title: {display: true,
+                    text: row.title
+                },
+                scales: {xAxes: xAxesDistance, yAxes: [
+                    {id: row.axes[0].id, position: "left", 
+                        scaleLabel: {display: true, labelString: row.axes[0].axLabel}
+                    }, 
+                    {id: row.axes[1].id, position: "right", 
+                        scaleLabel: {display: true, labelString: row.axes[1].axLabel}
+                    },
+                ]},
             }
-        };
+        }
+        const impactConfigs : configsT[] = [
+            {title: 'Horizontal Penetration and Impact Angle', axes: [
+                    {id: 'Penetration', axLabel: 'Belt Penetration (mm)', 
+                    lines: [{lineLabel: 'Effective Penetration ', data: 'ePenHN'}]},
+                    {id: 'Angle', axLabel: 'Belt Impact Angle (°)', 
+                    lines: [{lineLabel: 'Impact Angle ', data: 'impactAHD'}]}
+                ],
+            },
+            {title: 'Deck Penetration and Impact Angle', axes : [
+                    {id: 'Penetration', axLabel: 'Deck Penetration (mm)', 
+                    lines: [{lineLabel: 'Effective Deck Penetration ', data: 'ePenDN'}]},
+                    {id: 'Angle', axLabel: 'Deck Impact Angle (°)', 
+                    lines: [{lineLabel: 'Deck Impact Angle ', data: 'impactADD'}]} 
+                ],
+            },
+            {title: 'Shell Flight Time and Impact Velocity', axes : [ 
+                    {id: 'Impact Velocity', axLabel: 'Impact Velocity (m/s)', 
+                    lines: [{lineLabel: 'Impact Velocity ', data: 'impactV'}]},
+                    {id: 'Time', axLabel: 'Flight Time (s)', 
+                    lines: [{lineLabel: 'Flight Time ', data: 'tToTargetA'}]}
+                ],
+            },
+        ]
+        configImpact.forEach((value, i) => {
+            const row = impactConfigs[i];
+            value[0].options = setupImpact(row);
+            value[0].data.datasets = [];
+        })
 
         //Angle
         const angleData = graphData.angle; const configAngle = this.chartConfigs.angle;
@@ -226,62 +227,62 @@ class ChartGroup extends React.Component<chartGroupProps>{
         const targetInclination = 'Vertical Inclination: ' + graphData.targets[0].inclination + '°'; 
         const ra0L = "Start Ricochet "; const ra1L = "Always Ricochet ";
 
-        //0
-        const armorL = "Maximum Perforation Angle ";
-        configAngle[0][0].options = {
-            title: {
-                display: true,
-                text: 'Maximum Angle for Perforation | ' + targetedArmor + ' | ' + targetInclination
-            },
-            scales: {xAxes: xAxesDistance,
-                yAxes: [{
-                    id: "angle", postition: "left",
-                    scaleLabel: {
-                        display: true,
-                        labelString: "Lateral Angle (°)",
-                    },
-                    ticks:{min: 0}
-                }]
-            },
+        const setupAngle = (row) => {
+            return {
+                title: {
+                    display: true,
+                    text: row.title
+                },
+                scales: {xAxes: xAxesDistance,
+                    yAxes: [{
+                        id: "angle", postition: "left",
+                        scaleLabel: {
+                            display: true,
+                            labelString: "Lateral Angle (°)",
+                        },
+                        ticks:{min: 0}
+                    }]
+                },
+            }
         }
+        const angleConfigs : configsT[] = [
+            {title: 'Maximum Angle for Perforation | ' + targetedArmor + ' | ' + targetInclination, axes: [
+                {id: 'angle',
+                lines: [
+                    {lineLabel: 'Maximum Perforation Angle ', data: 'armorD'}, 
+                    {lineLabel: ra0L, data: 'ra0D'}, 
+                    {lineLabel: ra1L, data: 'ra1D'}, 
+                ]},
+            ]}, 
+            {title: 'Minimum Fusing Angle | ' + targetedArmor + ' | ' + targetInclination, axes: [
+                {id: 'angle',
+                lines: [
+                    {lineLabel: 'Minimum Fusing Angle ', data: 'fuseD'}, 
+                    {lineLabel: ra0L, data: 'ra0D'}, 
+                    {lineLabel: ra1L, data: 'ra1D'}, 
+                ]},
+            ]}
+        ]
+        configAngle.forEach((value, i) => {
+            const row = angleConfigs[i]
+            value[0].options = setupAngle(row);
+            value[0].data.datasets = [];
+        });
 
-        //1
-        const fuseL = "Minimum Fusing Angle ";
-        configAngle[1][0].options = {
-            title: {
-                display: true,
-                text: 'Minimum Fusing Angle | ' + targetedArmor + ' | ' + targetInclination
-            },
-            scales: {xAxes: xAxesDistance,
-                yAxes: [{
-                    id: "angle", postition: "left",
-                    scaleLabel: {
-                        display: true,
-                        labelString: "Lateral Angle (°)",
-                    },
-                    ticks:{min: 0}
-                }],
-            },
-        }
         //Post-Penetration
-        //let addDeleteChart = false;
         const configPost = this.chartConfigs.post; const postData = graphData.post;
         const angleLengthDiff = graphData.angles.length - configPost.length;
-        //console.log(this, configPost);
         if(angleLengthDiff > 0){
             for(let i=0; i<angleLengthDiff; i++){
                 configPost.push([{data: {datasets : Array<any>(),}, options: {}}, React.createRef<SingleChart>(), '']);
             }
-            //addDeleteChart = true;
         }else if(angleLengthDiff < 0){
             configPost.splice(angleLengthDiff, Math.abs(angleLengthDiff));
-            //addDeleteChart = true;
         }
-        //console.log(angleLengthDiff, addDeleteChart);
         const WFL = "Fused ", NFL = "No Fusing ";
         configPost.forEach((value, i) => {
             value[0].data.datasets = []; // clear dataset
-            value[0].data.datasets.push(
+            value[0].data.datasets.push( // add ship width line
             {
                 data: postData.shipWidth[0], showLine: true, borderDash: [5, 5], label: "Ship Width (m)",
                 borderColor: "#505050", fill: false, pointRadius: commonPointRadius, pointHitRadius: 5
@@ -303,15 +304,7 @@ class ChartGroup extends React.Component<chartGroupProps>{
                     }],
                 },
             }
-            value[2] = "Horizontal Impact Angle " + i + ": " + graphData.angles[i] + '°'
-        });
-        console.log(configPost);
-        //Setup Datasets
-        configImpact.forEach((value) => {
-            value[0].data.datasets = [];
-        });
-        configAngle.forEach((value) => {
-            value[0].data.datasets = [];
+            value[2] = "Horizontal Impact Angle " + (i + 1) + ": " + graphData.angles[i] + '°'
         });
         //Add Lines
         const impactLine = (data : Array<Record<string, number>>, 
@@ -323,69 +316,59 @@ class ChartGroup extends React.Component<chartGroupProps>{
                 borderColor: color
             };
         }
-        const angleLine = (data : Array<Record<string, number>>, 
-                            label: string, yAxisID : string, 
+        /*const angleLine = (data : Array<Record<string, number>>, // no difference between impact and angle rn
+                            label: string, yAxisID: string,      // fills are not implemented yet
                             color : string = "") : Record<string, any> => {
             return {
                 data: data, showLine: true, label: label, 
                 yAxisID: "angle", //backgroundColor: Samples.utils.transparentize(colors[index][0]),
                 borderColor: color, fill: false, pointRadius: commonPointRadius, pointHitRadius: 5
             }
-        }
+        }*/
         const postLine = (data : Array<Record<string, number>>, 
             label: string, color : string = "", show : boolean = true) : Record<string, any> => {
-            if(show){
-                return {
+            if(show){return {
                     data: data, showLine: true, label: label, 
                     borderColor: color, fill: false, pointRadius: commonPointRadius, pointHitRadius: 5
                 };
-            }else{
-                return {
+            }else{return {
                     data: data, showLine: false, label: label, 
-                    borderColor: color, fill: false, pointRadius: 0, pointHitRadius: 5
+                    borderColor: color, fill: false, pointRadius: 0, pointHitRadius: 0
                 };
             }
         }
-
+        const defaultColorFunction = (axisIndex: number, lineIndex: number) => {return axisIndex + lineIndex;}
+        const assignPredefined = (shellIndex: number, name: string, target, configs : configsT[], 
+            graphData, colors : string[], colorFunction=defaultColorFunction) => {
+            target.forEach((value, rowIndex) => {
+                configs[rowIndex].axes.forEach((axis, axisIndex) => {
+                    axis.lines.forEach((line, lineIndex) => {
+                        value[0].data.datasets.push(impactLine(
+                            graphData[line.data][shellIndex], 
+                            line.lineLabel + name, 
+                            axis.id, 
+                            colors[defaultColorFunction(axisIndex, lineIndex)]));
+                    })
+                })
+            })
+        }
         for(let i=0; i<graphData.numShells; i++){
             const name = graphData.names[i]; const colors = graphData.colors[i];
-            //Impact
-            configImpact[0][0].data.datasets.push(
-                impactLine(impactData.ePenHN[i], EPL + name, "Penetration", colors[0]),
-                impactLine(impactData.impactAHD[i], IAL + name, "Angle", colors[1]));
-            configImpact[1][0].data.datasets.push(
-                impactLine(impactData.ePenDN[i], EDP + name, "Penetration", colors[0]),
-                impactLine(impactData.impactADD[i], DIA + name, "Angle", colors[1]));
-            configImpact[2][0].data.datasets.push(
-                impactLine(impactData.impactV[i], IVL + name, "Impact Velocity", colors[0]),
-                impactLine(impactData.tToTargetA[i], FTL + name, "Time", colors[1]));
-            
-            //Angle
-            configAngle[0][0].data.datasets.push(
-                angleLine(angleData.armorD[i], armorL + name, "angle", colors[0]),
-                angleLine(angleData.ra0D[i], ra0L + name, "angle", colors[1]),
-                angleLine(angleData.ra1D[i], ra1L + name, "angle", colors[2]),
-            )
-            configAngle[1][0].data.datasets.push(
-                angleLine(angleData.fuseD[i], fuseL + name, "angle", colors[0]),
-                angleLine(angleData.ra0D[i], ra0L + name, "angle", colors[1]),
-                angleLine(angleData.ra1D[i], ra1L + name, "angle", colors[2]),
-            )
-
-            //Post
-            configPost.forEach((value, index) => {
+            assignPredefined(i, name, configImpact, impactConfigs, impactData, colors); //Impact
+            assignPredefined(i, name, configAngle, angleConfigs, angleData, colors); //Angle
+            configPost.forEach((value, index) => { //Post
                 let pL : Array<any> = [
                     postData.fused[index + graphData.angles.length*i],
                     postData.notFused[index + graphData.angles.length*i]
                 ];
                 let pLShow : boolean[] = [true, true];
                 for(let j=0; j<2; j++){
-                    if(pL[j].length === 0){
-                        pL[j] = [{x: 0, y: 0}];
+                    //react-chartjs-2 doesn't like undefined data
+                    if(pL[j].length === 0){ 
+                        pL[j] = [{x: 0, y: 0}]; 
                         pLShow[j] = false;
                     }
                 }
-
                 value[0].data.datasets.push(
                     postLine(pL[0], WFL + name, colors[0], pLShow[0]),
                     postLine(pL[1], NFL + name, colors[1], pLShow[1]),
@@ -395,34 +378,11 @@ class ChartGroup extends React.Component<chartGroupProps>{
         this.setState(this.state); //trigger re-render
     }
     updateCharts = () => {
-        const updateImpact = (chart : number) => {
-            const ref = this.chartConfigs.impact[chart][1];
-            if(ref.current !== undefined){
-                ref.current!.update();
-            }
+        const trigger = (value, i) => {
+            const ref = value[1];
+            if(ref.current !== undefined){ref.current!.update();}
         }
-        this.chartConfigs.impact.forEach((value, i) => {
-            updateImpact(i);
-        });
-        const updateAngle = (chart : number) => {
-            const ref = this.chartConfigs.angle[chart][1];
-            if(ref.current !== undefined){
-                ref.current!.update();
-            }
-        }
-        this.chartConfigs.angle.forEach((value, i) => {
-            updateAngle(i);
-        });
-        const updatePost = (chart : number) => {
-            const ref = this.chartConfigs.post[chart][1];
-            if(ref.current !== undefined){
-                ref.current!.update();
-            }
-        }
-        this.chartConfigs.post.forEach((value, i) => {
-            updatePost(i);
-        });
-        
+        Object.entries(this.chartConfigs).forEach((kv) => {kv[1].forEach(trigger)});
     }
     render(){
         return(

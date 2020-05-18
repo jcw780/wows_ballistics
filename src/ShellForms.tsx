@@ -63,7 +63,7 @@ class ShellParameters extends React.Component<shellParametersProps>{
 	updateShells() {
 		Object.entries(this.props.formLabels).forEach((kv : any): void => {
 			const value = kv[1];
-			value[2].current.updateValue(value[1]);
+			kv[1][2].current.updateValue(value[1]);
 		});
 	}
 	render() {
@@ -80,18 +80,18 @@ class ShellParameters extends React.Component<shellParametersProps>{
 			</Form>
 		);
 	}
-	componentDidUpdate(){
-		this.updateShells();
-	}
+	componentDidUpdate(){this.updateShells();}
 }
-
+type valuesComponent = [string, number, React.RefObject<ParameterForm>];
+type valuesT = Record<string, valuesComponent>
 interface shellFormsProps{
-	index: number, colors: Array<string>, keyProp: number, deleteShip : Function, reset: Function
+	index: number, colors: Array<string>, keyProp: number, deleteShip : Function, 
+	reset: Function, settings : Record<string, any>
 }
 class ShellForms extends React.Component<shellFormsProps> {
-	parameters = React.createRef<ShellParameters>()
-	defaults = React.createRef<DefaultShips>()
-	values = Object.seal({
+	parameters : React.RefObject<ShellParameters> = React.createRef<ShellParameters>()
+	defaults : React.RefObject<DefaultShips> = React.createRef<DefaultShips>()
+	values : valuesT = Object.seal({
 		caliber: ['Caliber (m)', 0, React.createRef()], 
 		muzzleVelocity: ['Muzzle Velocity', 0, React.createRef()], 
 		dragCoefficient: ['Drag Coefficient', 0, React.createRef()],
@@ -104,7 +104,7 @@ class ShellForms extends React.Component<shellFormsProps> {
 		ra1: ['Always Ricochet (°)', 0, React.createRef()], 
 		HESAP: ['HE/SAP penetration (mm)', 0, React.createRef()],
 	})
-	name = ''
+	name: string = ''
 	returnData = () => {
 		let condensed : Record<string, any> = {name: this.name};
 		Object.entries(this.values).forEach((kv) => {
@@ -115,15 +115,16 @@ class ShellForms extends React.Component<shellFormsProps> {
 		condensed['colors'] = this.props.colors;
 		return condensed;
 	}
-	nameForm = React.createRef<ParameterForm>()
-	handleNameChange = (value, id) => {
-		this.name = value;
-	}
-
+	nameForm : React.RefObject<ParameterForm> = React.createRef<ParameterForm>()
+	handleNameChange = (value, id) => {this.name = value;}
 	handleValueChange = (value : string, k : string) => {
 		this.values[k][1] = parseFloat(value);
 	}
-	getDefaultData = (data, name) => { //Query Version End
+	getDefaultData = (data, namePreProcessed) => { //Query Version End
+		let name = namePreProcessed;
+		if(this.props.settings.shortNames){
+			name = name.split("_").slice(1).join("");;
+		}
 		this.values.caliber[1] = data.bulletDiametr;
 		this.values.muzzleVelocity[1] = data.bulletSpeed;
 		this.values.dragCoefficient[1] = data.bulletAirDrag;
@@ -135,10 +136,8 @@ class ShellForms extends React.Component<shellFormsProps> {
 		this.values.ra0[1] = data.bulletRicochetAt;
 		this.values.ra1[1] = data.bulletAlwaysRicochetAt;
 		this.values.HESAP[1] = data.alphaPiercingHE;
-
 		this.name = name;
 		this.nameForm.current!.updateValue(name);
-
 		if(data.alphaPiercingCS > this.values.HESAP[1]){
 			this.values.HESAP[1] = data.alphaPiercingCS;
 		}
@@ -159,7 +158,6 @@ class ShellForms extends React.Component<shellFormsProps> {
 				<Modal.Body style={{padding: "0.5rem"}}>
 					<Container style={{padding: 0}}>
 					<Col sm='12' style={{padding: 0}}>
-						
 						<ParameterForm label="Shell Label" controlId='shipName'
 								handleValueChange={this.handleNameChange}
 								type="text" newValue=""
@@ -180,7 +178,7 @@ class ShellForms extends React.Component<shellFormsProps> {
 							<Container style={{padding: 0}}>
 								<Col sm="12" style={{padding: 0}}>
 								<ShellParameters handleValueChange={this.handleValueChange}
-										formLabels={this.values} ref={this.parameters}/>
+									formLabels={this.values} ref={this.parameters}/>
 								</Col>
 							</Container>
 							</Dropdown.Item>
@@ -198,7 +196,7 @@ class ShellForms extends React.Component<shellFormsProps> {
 }
 export {ShellForms};
 
-class ShellFormsContainer extends React.Component<{}, {keys: Set<number>, disabled: boolean}>{
+class ShellFormsContainer extends React.Component<{settings : Record<string, any>}, {keys: Set<number>, disabled: boolean}>{
 	state = {keys: new Set([0, 1]), disabled: false};
 	shellRefs = [React.createRef<ShellForms>(), React.createRef<ShellForms>()];
 	addShip = () => {
@@ -208,11 +206,8 @@ class ShellFormsContainer extends React.Component<{}, {keys: Set<number>, disabl
 			let index: number = 0; let listed: boolean = true;
 			const set = this.state.keys;
 			while(listed){
-				if(set.has(index)){
-					index++;
-				}else{
-					listed = false;
-				}
+				if(set.has(index)){index++;}
+				else{listed = false;}
 			}
 			this.shellRefs.push(React.createRef<ShellForms>());
 			this.setState((current) => {
@@ -278,7 +273,7 @@ class ShellFormsContainer extends React.Component<{}, {keys: Set<number>, disabl
 		{Array.from(this.state.keys).map((value, i) => {
 			return <Col key={value} style={{margin: 0, padding: 0}}>
 				<ShellForms colors={this.generateColors(i, this.state.keys.size)} index={i} deleteShip={this.deleteShip} 
-				keyProp={value} ref={this.shellRefs[i]} reset={this.reset}/>
+				keyProp={value} ref={this.shellRefs[i]} reset={this.reset} settings={this.props.settings}/>
 			</Col>;
 		})}
 		</Row>

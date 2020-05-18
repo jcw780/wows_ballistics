@@ -62,7 +62,7 @@ class App extends React.Component<{},{}> {
 		const shellData = this.SFCref.current!.returnShellData();
 		const tgtData = this.TFCref.current!.returnData();
 		const numShells: number = shellData.length;
-		console.log(shellData, tgtData);
+		//console.log(shellData, tgtData);
 		this.instance.resize(numShells);
 		shellData.forEach((value, i) => {
 			this.instance.setValues(value.caliber, 
@@ -155,7 +155,6 @@ class App extends React.Component<{},{}> {
 			const dist = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex.distance, maxShell);
 			output.post.shipWidth[0][i] = {x: dist, y: tgtData.width}
 		}
-		console.log(output);
 		if(this.graphsRef.current){
 			this.graphsRef.current.updateData(output);
 		}
@@ -164,11 +163,13 @@ class App extends React.Component<{},{}> {
 		return (
 			<div className="App">
 				<h1 style={{textAlign: 'center'}}>World of Warships Ballistics Calculator 2</h1>
-				<ShellFormsContainer ref={this.SFCref}/>
+				<hr/>
+				<ShellFormsContainer ref={this.SFCref} settings={this.settings}/>
 				<hr/>
 				<TargetFormsContainer ref={this.TFCref}/>
 				<hr/>
-				<Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem"}} onClick={this.generate}>Generate</Button>
+				<Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem"}} 
+				onClick={this.generate}>Make Graphs!</Button>
 				<ChartGroup ref={this.graphsRef} settings={this.settings}/>
 			</div>
 		);
