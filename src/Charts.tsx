@@ -74,9 +74,9 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
                     <Scatter data={this.props.config.data} options={this.props.config.options}
                     width={this.props.dimensions.width} height={this.props.dimensions.height}
                     ref={this.chartRef}/>
+                    <DownloadButton ref={this.DownloadRef} updateData={this.updateDownload}/>
                     </div>
                 </Collapse> 
-                <DownloadButton ref={this.DownloadRef} updateData={this.updateDownload}/>
             </> 
         );
     }
