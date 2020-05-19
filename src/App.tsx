@@ -1,25 +1,34 @@
 import React from 'react';
 import './App.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Button from 'react-bootstrap/Button';
+
+import { linkType } from 'commonTypes';
 
 import ShellFormsContainer from './ShellForms';
 import TargetFormsContainer from './TargetForms';
 import ChartGroup from './Charts';
+import NavbarCustom from './Navbar';
 
 import ShellWasm from './shellWasm.wasm';
 class App extends React.Component<{},{}> {
 	SFCref = React.createRef<ShellFormsContainer>();
 	TFCref = React.createRef<TargetFormsContainer>();
 	graphsRef : React.RefObject<ChartGroup> = React.createRef<ChartGroup>();
+	navRef : React.RefObject<NavbarCustom> = React.createRef<NavbarCustom>();
 	instance : any;
+	links : linkType = {
+		parameters : [],
+		impact : [],
+		angle : [],
+		post : [],
+	}
 	arrayIndices : Record<string, Record<string, number>> = {
 		impactDataIndex: {}, 
 		angleDataIndex: {}, 
 		postPenDataIndex: {} 
 	}
-	settings : Record<string, any> = { //*implement
+	settings : Record<string, any> = { //*implement component
 		distance: {min: 0, max: null, stepSize: 1000, },
 		rounding: 3, shortNames: true,
 		calculationMethod: 0, timeStep: 0.01,
@@ -119,9 +128,13 @@ class App extends React.Component<{},{}> {
 			if(this.graphsRef.current){this.graphsRef.current.updateData(output);}
 		}
 	}
+	onUpdate = () =>{
+		this.navRef.current!.update();
+	}	
 	render () {
 		return (
 			<div className="App">
+				<NavbarCustom links={this.links} ref={this.navRef}/>
 				<h1 style={{textAlign: 'center'}}>World of Warships Ballistics Calculator 2</h1>
 				<hr/>
 				<ShellFormsContainer ref={this.SFCref} settings={this.settings}/>
@@ -130,11 +143,14 @@ class App extends React.Component<{},{}> {
 				<hr/>
 				<Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem"}} 
 				onClick={this.generate}>Make Graphs!</Button>
-				<ChartGroup ref={this.graphsRef} settings={this.settings}/>
+				<ChartGroup ref={this.graphsRef} settings={this.settings} links={this.links} onUpdate={this.onUpdate}/>
 			</div>
 		);
 	}
-	//componentDidMount(){}
+	componentDidMount(){
+		console.log(this.SFCref, this.TFCref);
+		this.links.parameters.push(['Shell Parameters', this.SFCref], ['Target Parameters', this.TFCref])
+	}
 }
 
 

@@ -4,6 +4,8 @@ import {Scatter, defaults} from 'react-chartjs-2';
 import Collapse from 'react-bootstrap/Collapse';
 import Button from 'react-bootstrap/Button';
 
+import {linkType, chartTypes} from 'commonTypes';
+
 //For downloading graphs as images
 class DownloadButton extends React.Component<{updateData: Function}>{
     state = {href: '', download: ''} 
@@ -34,7 +36,7 @@ interface singleChartProps{
 interface singleChartState{
     open: boolean
 }
-class SingleChart extends React.Component<singleChartProps, singleChartState> {
+export class SingleChart extends React.Component<singleChartProps, singleChartState> {
     public static defaultProps = {
         config : {data: {datasets : [],}, options: {}},
         title : ""
@@ -45,6 +47,7 @@ class SingleChart extends React.Component<singleChartProps, singleChartState> {
     graphHref: string = ''; graphDownload: string = '.png'
 
     chartRef : React.RefObject<Scatter> = React.createRef<Scatter>();
+    scrollRef : React.RefObject<Button & HTMLButtonElement> = React.createRef<Button & HTMLButtonElement>();
     DownloadRef : React.RefObject<DownloadButton> = React.createRef<DownloadButton>();
     update = () => {
         this.setState(this.state); //trigger rerender
@@ -61,7 +64,7 @@ class SingleChart extends React.Component<singleChartProps, singleChartState> {
         return(
             <>
                 <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
-                    onClick={this.toggleCollapse}
+                    onClick={this.toggleCollapse} ref={this.scrollRef}
                     aria-controls="collapseChart"
                     aria-expanded={this.state.open}
                     className={this.state.open === true ? 'active' : ''}
@@ -77,12 +80,12 @@ class SingleChart extends React.Component<singleChartProps, singleChartState> {
             </> 
         );
     }
-    componentDidMount(){
+    //componentDidMount(){
         //this.updateDownload();
-    }
-    componentDidUpdate(){
+    //}
+    //componentDidUpdate(){
         //this.updateDownload();
-    }
+    //}
     updateDownload = () => {
         const url = this.chartRef.current!.chartInstance.toBase64Image();
         this.graphDownload = this.chartRef.current!.chartInstance.options.title.text + '.png';
@@ -101,13 +104,13 @@ interface chartDataOption{data: Record<string, any>, options: Record<string, any
 type singleChartType = [chartDataOption, React.RefObject<SingleChart>, string]
 
 interface chartGroupProps{
-    settings: Record<string, any>
+    settings: Record<string, any>, links: linkType, onUpdate: Function
 }
-class ChartGroup extends React.Component<chartGroupProps>{
+export class ChartGroup extends React.Component<chartGroupProps>{
     state={updateTrigger: true}; //State needs value otherwise render won't trigger
     commonStyle = {};
     dimensions = {height: 300, width: 1200};
-    chartConfigs : Record<string, singleChartType[]> = {
+    chartConfigs : Record<chartTypes, singleChartType[]> = {
         impact: [ //impact charts
             [{data: {datasets : Array<any>(),}, options: {}}, 
                 React.createRef<SingleChart>(), 'Horizontal Penetration and Impact Angle'],
@@ -139,7 +142,6 @@ class ChartGroup extends React.Component<chartGroupProps>{
                 React.createRef<SingleChart>(), ''],
             [{data: {datasets : Array<any>(),}, options: {}}, 
                 React.createRef<SingleChart>(), ''],
-            
         ]
     }
     callbackFunctions = {
@@ -254,21 +256,21 @@ class ChartGroup extends React.Component<chartGroupProps>{
             }
         }
         const impactConfigs : configsT[] = [
-            {title: 'Horizontal Penetration and Impact Angle', axes: [
+            {title: configImpact[0][2], axes: [
                     {id: 'Penetration', axLabel: 'Belt Penetration (mm)', 
                     lines: [{lineLabel: 'Effective Penetration ', data: 'ePenHN'}]},
                     {id: 'Angle', axLabel: 'Belt Impact Angle (°)', 
                     lines: [{lineLabel: 'Impact Angle ', data: 'impactAHD'}]}
                 ],
             },
-            {title: 'Deck Penetration and Impact Angle', axes : [
+            {title: configImpact[1][2], axes : [
                     {id: 'Penetration', axLabel: 'Deck Penetration (mm)', 
                     lines: [{lineLabel: 'Effective Deck Penetration ', data: 'ePenDN'}]},
                     {id: 'Angle', axLabel: 'Deck Impact Angle (°)', 
                     lines: [{lineLabel: 'Deck Impact Angle ', data: 'impactADD'}]} 
                 ],
             },
-            {title: 'Shell Flight Time and Impact Velocity', axes : [ 
+            {title: configImpact[2][2], axes : [ 
                     {id: 'Impact Velocity', axLabel: 'Impact Velocity (m/s)', 
                     lines: [{lineLabel: 'Impact Velocity ', data: 'impactV'}]},
                     {id: 'Time', axLabel: 'Flight Time (s)', 
@@ -298,14 +300,14 @@ class ChartGroup extends React.Component<chartGroupProps>{
             }
         }
         const angleConfigs : configsT[] = [
-            {title: 'Maximum Angle for Perforation | ' + targetedArmor + ' | ' + targetInclination, axes: [
+            {title: configAngle[0][2] + ' | ' + targetedArmor + ' | ' + targetInclination, axes: [
                 {id: 'angle',
                 lines: [
                     {lineLabel: 'Maximum Perforation Angle ', data: 'armorD'}, 
                     {lineLabel: ra0L, data: 'ra0D'}, {lineLabel: ra1L, data: 'ra1D'}, 
                 ]},
             ]}, 
-            {title: 'Minimum Fusing Angle | ' + targetedArmor + ' | ' + targetInclination, axes: [
+            {title: configAngle[1][2] + ' | ' + targetedArmor + ' | ' + targetInclination, axes: [
                 {id: 'angle',
                 lines: [
                     {lineLabel: 'Minimum Fusing Angle ', data: 'fuseD'}, 
@@ -318,13 +320,17 @@ class ChartGroup extends React.Component<chartGroupProps>{
         });
         //Post-Penetration
         const configPost = this.chartConfigs.post; const postData = graphData.post;
+
+        //Resizing chartConfigs.post and props.links upon addition or deletion of angles
         const angleLengthDiff = graphData.angles.length - configPost.length;
         if(angleLengthDiff > 0){
             for(let i=0; i<angleLengthDiff; i++){
                 configPost.push([{data: {datasets : Array<any>(),}, options: {}}, React.createRef<SingleChart>(), '']);
+                this.props.links.post.push(['', React.createRef<SingleChart>()]); // navbar links
             }
         }else if(angleLengthDiff < 0){
             configPost.splice(angleLengthDiff, Math.abs(angleLengthDiff));
+            this.props.links.post.splice(angleLengthDiff, Math.abs(angleLengthDiff)); // navbar links
         }
 
         const WFL = "Fused ", NFL = "No Fusing ";
@@ -423,7 +429,7 @@ class ChartGroup extends React.Component<chartGroupProps>{
                 )
             });
         }
-        this.setState(this.state); //trigger re-render
+        this.setState(this.state); //graph updates completed, trigger re-render
     }
     updateCharts = () => {
         const trigger = (value, i) => {
@@ -432,31 +438,45 @@ class ChartGroup extends React.Component<chartGroupProps>{
         Object.entries(this.chartConfigs).forEach((kv) => {kv[1].forEach(trigger)});
     }
     render(){
+        const addChart = (target : chartTypes) => {
+            return this.chartConfigs[target].map((value, i) => {
+                return (<SingleChart config={value[0]} dimensions={this.dimensions} ref={value[1]} key={i} title={value[2]}/>);
+            });
+        }
         return(
             <>
                 <h3 style={{textAlign: "center"}}>Impact Charts</h3>
-                {this.chartConfigs.impact.map((value, i) => {
-                    return (<SingleChart config={value[0]} dimensions={this.dimensions} ref={value[1]} key={i} title={value[2]}/>);
-                })}
+                {addChart('impact')}
                 <h3 style={{textAlign: "center"}}>Angle Charts</h3>
-                {this.chartConfigs.angle.map((value, i) => {
-                    return (<SingleChart config={value[0]} dimensions={this.dimensions} ref={value[1]} key={i} title={value[2]}/>);
-                })}
+                {addChart('angle')}
                 <h3 style={{textAlign: "center"}}>Post Penetration Charts</h3>
-                {this.chartConfigs.post.map((value, i) => {
-                    return (<SingleChart config={value[0]} dimensions={this.dimensions} ref={value[1]} key={i} title={value[2]}/>);
-                })}
+                {addChart('post')}
             </>
         );
     }
     componentDidMount(){
-        //Preinitialize chart after mounting
+        //Initialize Links Names
+        const setupNavbarCharts = (target : chartTypes) => {
+            const link = this.props.links[target];
+            this.chartConfigs[target].forEach((value, i) => {
+                if(link.length == i){ link.push(['', React.createRef<SingleChart>()]);}
+                link[i][0] = value[2]; link[i][1] = value[1];
+            });
+        }
+        Object.keys(this.chartConfigs).forEach((value : chartTypes) => {setupNavbarCharts(value)});
+        //Preinitialize chart after mounting - to mitigate user confusion
+        //Also due to the fact that getting wasm to run on startup is apparently impossible
         const initialJson = require('./initialData.json');
         this.updateData(initialJson);
     }
-    /*componentDidUpdate(){
-        console.log(this.chartConfigs);
-    }*/
+    componentDidUpdate(){
+        //console.log(this.chartConfigs);
+        this.chartConfigs.post.forEach((value, i) => {
+            this.props.links.post[i][0] = value[2];
+            this.props.links.post[i][1] = value[1];
+        })
+        this.props.onUpdate();
+    }
 }
 
 export default ChartGroup;

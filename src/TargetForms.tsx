@@ -44,6 +44,7 @@ class TargetFormsContainer extends React.Component
         width: 18.,
         angles: Array<number>(8),
     };
+    scrollRef : React.RefObject<HTMLHeadingElement> = React.createRef<HTMLHeadingElement>();
     constructor(props){
         super(props);
         Array.from(this.state.angleKeys).forEach((value, i) => {
@@ -103,7 +104,7 @@ class TargetFormsContainer extends React.Component
         });
         return(
         <>
-            <h2>Target Parameters</h2>
+            <h2 ref={this.scrollRef}>Target Parameters</h2>
             <div className="row" style={{display: 'flex', justifyContent: 'center'}}>
             <ParameterForm controlId="armor"
             newValue={this.targetData.armor} 

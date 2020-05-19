@@ -186,6 +186,7 @@ export {ShellForms};
 class ShellFormsContainer extends React.Component<{settings : Record<string, any>}, {keys: Set<number>, disabled: boolean}>{
 	state = {keys: new Set([0, 1]), disabled: false};
 	shellRefs = [React.createRef<ShellForms>(), React.createRef<ShellForms>()];
+	scrollRef : React.RefObject<HTMLHeadingElement> = React.createRef<HTMLHeadingElement>();
 	addShip = () => {
 		if(this.state.disabled && (this.state.keys.size > 0)){return;}
 		else{
@@ -248,7 +249,7 @@ class ShellFormsContainer extends React.Component<{settings : Record<string, any
 	render(){
 		return(
 <>
-	<h2>Shell Parameters</h2>
+	<h2 ref={this.scrollRef}>Shell Parameters</h2>
 	<Container style={{marginBottom : "0rem", paddingRight: 0, paddingLeft: 0}}>
 		<Row sm={3}>
 		{Array.from(this.state.keys).map((value, i) => {
