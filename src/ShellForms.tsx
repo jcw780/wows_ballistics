@@ -49,16 +49,10 @@ class ParameterForm extends React.Component<parameterFormProps>{
 }
 export {ParameterForm};
 
-interface shellParametersProps {
-	handleValueChange: any,
-	formLabels : any
-}
+interface shellParametersProps {handleValueChange: any, formLabels : any}
 class ShellParameters extends React.Component<shellParametersProps>{
 	nameForm = React.createRef<ParameterForm>()
-
-	handleValueChange = (value, k) => {
-		this.props.handleValueChange(value, k);
-	}
+	handleValueChange = (value, k) => {this.props.handleValueChange(value, k);}
 	//counter = [0]
 	updateShells() {
 		Object.entries(this.props.formLabels).forEach((kv : any): void => {
@@ -86,7 +80,7 @@ type valuesComponent = [string, number, React.RefObject<ParameterForm>];
 type valuesT = Record<string, valuesComponent>
 interface shellFormsProps{
 	index: number, colors: Array<string>, keyProp: number, deleteShip : Function, 
-	reset: Function, settings : Record<string, any>
+	reset: Function, settings : Record<string, any>, size: number
 }
 class ShellForms extends React.Component<shellFormsProps> {
 	parameters : React.RefObject<ShellParameters> = React.createRef<ShellParameters>()
@@ -123,7 +117,7 @@ class ShellForms extends React.Component<shellFormsProps> {
 	getDefaultData = (data, namePreProcessed) => { //Query Version End
 		let name = namePreProcessed;
 		if(this.props.settings.shortNames){
-			name = name.split("_").slice(1).join("");;
+			name = name.split("_").slice(1).join(" ");;
 		}
 		this.values.caliber[1] = data.bulletDiametr;
 		this.values.muzzleVelocity[1] = data.bulletSpeed;
@@ -136,19 +130,16 @@ class ShellForms extends React.Component<shellFormsProps> {
 		this.values.ra0[1] = data.bulletRicochetAt;
 		this.values.ra1[1] = data.bulletAlwaysRicochetAt;
 		this.values.HESAP[1] = data.alphaPiercingHE;
-		this.name = name;
-		this.nameForm.current!.updateValue(name);
-		if(data.alphaPiercingCS > this.values.HESAP[1]){
-			this.values.HESAP[1] = data.alphaPiercingCS;
+		this.name = name; this.nameForm.current!.updateValue(name);
+		if(data.alphaPiercingCS > this.values.HESAP[1]){this.values.HESAP[1] = data.alphaPiercingCS;}
+		if(this.parameters.current){this.parameters.current!.updateShells();}
+		//console.log(this.props.size, this.props.index);
+		if(this.props.index + 1 == this.props.size){
+			this.props.reset();
 		}
-		if(this.parameters.current){
-			this.parameters.current!.updateShells();
-		}
-		this.props.reset();
+		//this.props.reset();
 	}
-	deleteShip = () => {
-		this.props.deleteShip(this.props.keyProp, this.props.index);
-	}
+	deleteShip = () => {this.props.deleteShip(this.props.keyProp, this.props.index);}
 	render() {
 		return(
 			<Modal.Dialog style={{minWidth: 350}}>
@@ -163,7 +154,7 @@ class ShellForms extends React.Component<shellFormsProps> {
 								type="text" newValue=""
 								ref={this.nameForm} style={{width: '50%'}}/>
 						<hr/>
-						<DefaultShips sendDefault={this.getDefaultData} ref={this.defaults}/>
+						<DefaultShips sendDefault={this.getDefaultData} ref={this.defaults} reset={this.props.reset} index={this.props.index}/>
 					</Col>
 					</Container>
 				</Modal.Body>
@@ -189,10 +180,7 @@ class ShellForms extends React.Component<shellFormsProps> {
 			</Modal.Dialog>
 		);
 	}
-
-	componentDidMount(){
-		this.defaults.current!.queryVersion();
-	}
+	componentDidMount(){this.defaults.current!.queryVersion();}
 }
 export {ShellForms};
 
@@ -200,9 +188,8 @@ class ShellFormsContainer extends React.Component<{settings : Record<string, any
 	state = {keys: new Set([0, 1]), disabled: false};
 	shellRefs = [React.createRef<ShellForms>(), React.createRef<ShellForms>()];
 	addShip = () => {
-		if(this.state.disabled && (this.state.keys.size > 0)){
-			return
-		}else{
+		if(this.state.disabled && (this.state.keys.size > 0)){return;}
+		else{
 			let index: number = 0; let listed: boolean = true;
 			const set = this.state.keys;
 			while(listed){
@@ -216,11 +203,9 @@ class ShellFormsContainer extends React.Component<{settings : Record<string, any
 			});
 		}
 	}
-
 	deleteShip = (key, index) => {
-		if(this.state.disabled){
-			return;
-		}else{
+		if(this.state.disabled){return;}
+		else{
 			if(this.state.keys.size > 0){
 				let set = this.state.keys; set.delete(key);
 				this.shellRefs.splice(index, 1);
@@ -241,9 +226,10 @@ class ShellFormsContainer extends React.Component<{settings : Record<string, any
 
 	selectColor = (number, colors) => {
 		const hue = number * 137.507764 % 360; // use golden angle approximation
-		return `hsl(${hue},50%,60%)`;
+		const saturation = String(this.props.settings.colors.saturation * 100) + '%';
+		const light = String(this.props.settings.colors.light * 100) + '%';
+		return `hsl(${hue},${saturation},${light})`;
 	}
-
 	generateColors = (index : number, total : number) => {
 		const colors = Array<string>(3);
 		for(let i=0; i<3; i++){
@@ -259,11 +245,7 @@ class ShellFormsContainer extends React.Component<{settings : Record<string, any
 			});
 		}
 	}
-
-	shouldComponentUpdate(nextProps, nextState){
-		return nextState.disabled;
-	}
-
+	shouldComponentUpdate(nextProps, nextState){return nextState.disabled;}
 	render(){
 		return(
 <>
@@ -273,7 +255,7 @@ class ShellFormsContainer extends React.Component<{settings : Record<string, any
 		{Array.from(this.state.keys).map((value, i) => {
 			return <Col key={value} style={{margin: 0, padding: 0}}>
 				<ShellForms colors={this.generateColors(i, this.state.keys.size)} index={i} deleteShip={this.deleteShip} 
-				keyProp={value} ref={this.shellRefs[i]} reset={this.reset} settings={this.props.settings}/>
+				keyProp={value} ref={this.shellRefs[i]} reset={this.reset} settings={this.props.settings} size={this.state.keys.size}/>
 			</Col>;
 		})}
 		</Row>
@@ -287,11 +269,7 @@ class ShellFormsContainer extends React.Component<{settings : Record<string, any
 </>
 		);
 	}
-
-	componentDidUpdate(){
-		//this.reset(); //put somewhere to disable button entirely while renders occur - currently risk of crash if ppl click too fast
-	}
-	
+	//componentDidUpdate(){}
 }
 
 export default ShellFormsContainer;

@@ -35,10 +35,7 @@ class DefaultForm extends React.Component
 			</Form.Group>
 		);
 	}
-
-	componentDidUpdate(){
-		this.props.handleValueChange(this.form!.current!.value, this.props.controlId);
-	}
+	componentDidUpdate(){this.props.handleValueChange(this.form!.current!.value, this.props.controlId);}
 }
 
 const dataURL = "https://jcw780.github.io/wows_ballistics/static/data/"
@@ -75,17 +72,14 @@ async function fetchJsonData(target){
 
 export{DefaultForm};
 
+type singleFormT = [string, string, React.RefObject<DefaultForm>, number]
 interface defaultFormType{
-	version: [string, string, React.RefObject<DefaultForm>, number];
-	nation: [string, string, React.RefObject<DefaultForm>, number];
-	shipType: [string, string, React.RefObject<DefaultForm>, number];
-	ship: [string, string, React.RefObject<DefaultForm>, number];
-	artillery: [string, string, React.RefObject<DefaultForm>, number];
-	shellType: [string, string, React.RefObject<DefaultForm>, number];
+	version: singleFormT, nation: singleFormT, shipType: singleFormT, 
+	ship: singleFormT, artillery: singleFormT, shellType: singleFormT,
 }
 
 class DefaultShips extends React.Component
-<{sendDefault: Function, }> {
+<{sendDefault: Function, reset: Function, index: number}> {
 	defaultForms : defaultFormType = Object.seal({
 		version:   ['Version'   , '', React.createRef<DefaultForm>(), 0],
 		nation:    ['Nation'    , '', React.createRef<DefaultForm>(), 0], 
@@ -125,6 +119,7 @@ class DefaultShips extends React.Component
 		this.defaultForms[target][2].current.updateOptions(options);
 	}
 	queryVersion = () => {
+		this.counter = 0;
 		const updateForm = this.updateForm;
 		fetchJson(dataURL + "versions.json", function(data){
 			var dataSorted = data.reverse();
@@ -187,6 +182,11 @@ class DefaultShips extends React.Component
 				})}
 			</Container>
 		);
+	}
+	counter: number = 0;
+	componentDidUpdate(){
+		//this.props.reset();
+		//console.log('done', this.counter, this.props.index);
 	}
 }
 

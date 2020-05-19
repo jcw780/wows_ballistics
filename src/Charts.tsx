@@ -78,10 +78,10 @@ class SingleChart extends React.Component<singleChartProps, singleChartState> {
         );
     }
     componentDidMount(){
-        this.updateDownload();
+        //this.updateDownload();
     }
     componentDidUpdate(){
-        this.updateDownload();
+        //this.updateDownload();
     }
     updateDownload = () => {
         const url = this.chartRef.current!.chartInstance.toBase64Image();
@@ -142,6 +142,14 @@ class ChartGroup extends React.Component<chartGroupProps>{
             
         ]
     }
+    callbackFunctions = {
+        Penetration: (x, y) => {return '(' + x + 'm, ' + y + 'mm)';},
+        Angle: (x, y) => {return '(' + x + 'm, ' + y + '°)';},
+        'Impact Velocity': (x, y) => {return '(' + x + 'm, ' + y + 'm/s)';}, 
+        Time: (x, y) => {return '(' + x + 'm, ' + y + 's)';},
+        angle: (x, y) => {return '(' + x + 'm, ' + y + '°)';},
+        detDist: (x, y) => {return '(' + x + 'm, ' + y + 'm)';},
+    }
     constructor(props){
         super(props);
         defaults.global.animation = false;
@@ -163,25 +171,80 @@ class ChartGroup extends React.Component<chartGroupProps>{
         const addCommas = (value, index, values) => {return value.toLocaleString();}
         const commonPointRadius = 0;
         const xAxesDistance = [{
-            scaleLabel: {display: true,
-                labelString: "Distance from Launch (m)",
-            },
+            scaleLabel: {display: true, labelString: "Distance from Launch (m)",},
             type: 'linear', ticks:{callback: addCommas}
         }];
         Object.entries(this.props.settings.distance).forEach((kv) => {
             const key: string = kv[0]; const value: any = kv[1];
-            if(value != null){
-                xAxesDistance[0].ticks[key] = value;
-            }
+            if(value != null){xAxesDistance[0].ticks[key] = value;}
         });
         defaults.scatter.scales.xAxes[0] = xAxesDistance;
+        const roundStringNumberWithoutTrailingZeroes = (num) => {
+            const dp = this.props.settings.rounding; num = String(num);
+            if (dp > 0){
+                if (num.indexOf('e+') !== -1) {
+                    // Can't round numbers this large because their string representation
+                    // contains an exponent, like 9.99e+37
+                    throw new Error("num too large");
+                }
+                if (num.indexOf('.') === -1) {// Nothing to do
+                    return num;
+                }
+                var parts = num.split('.'),
+                    beforePoint = parts[0],
+                    afterPoint = parts[1],
+                    shouldRoundUp = afterPoint[dp] >= 5,
+                    finalNumber;
+                afterPoint = afterPoint.slice(0, dp);
+                if (!shouldRoundUp) {
+                    finalNumber = beforePoint + '.' + afterPoint;
+                } else if (/^9+$/.test(afterPoint)) {
+                    // If we need to round up a number like 1.9999, increment the integer
+                    // before the decimal point and discard the fractional part.
+                    finalNumber = String(Number(beforePoint)+1);
+                } else {
+                    // Starting from the last digit, increment digits until we find one
+                    // that is not 9, then stop
+                    var i = dp-1;
+                    while (true) {
+                        if (afterPoint[i] === '9') {
+                            afterPoint = afterPoint.substr(0, i) +
+                                        '0' +
+                                        afterPoint.substr(i+1);
+                            i--;
+                        } else {
+                            afterPoint = afterPoint.substr(0, i) +
+                                        (Number(afterPoint[i]) + 1) +
+                                        afterPoint.substr(i+1);
+                            break;
+                        }
+                    }
+                    finalNumber = beforePoint + '.' + afterPoint;
+                }
+                // Remove trailing zeroes from fractional part before returning
+                return finalNumber.replace(/0+$/, '')
+            }else{
+                return num;
+            }
+
+        }
+        const callbackFunction = (tooltipItem, chart) => {
+            var x = tooltipItem.label; var y = tooltipItem.value;
+            x = roundStringNumberWithoutTrailingZeroes(x); y = roundStringNumberWithoutTrailingZeroes(y);
+            const namePS = (chart.datasets[tooltipItem.datasetIndex].label).split(' ');
+            const name = namePS[namePS.length - 1];
+            const callbackFunctions = this.callbackFunctions;
+            return name + ' ' + callbackFunctions[chart.datasets[tooltipItem.datasetIndex].yAxisID](x, y);
+        }
+        const callbackColor = (tooltipItem, chart) => {
+            const color = chart.config.data.datasets[tooltipItem.datasetIndex].borderColor;
+            return {borderColor: color,backgroundColor: color}
+        }
         //Impact Charts
         const impactData = graphData.impact; const configImpact = this.chartConfigs.impact;
         const setupImpact = (row) => {
             return {
-                title: {display: true,
-                    text: row.title
-                },
+                title: {display: true, text: row.title},
                 scales: {xAxes: xAxesDistance, yAxes: [
                     {id: row.axes[0].id, position: "left", 
                         scaleLabel: {display: true, labelString: row.axes[0].axLabel}
@@ -190,6 +253,7 @@ class ChartGroup extends React.Component<chartGroupProps>{
                         scaleLabel: {display: true, labelString: row.axes[1].axLabel}
                     },
                 ]},
+                tooltips: {callbacks: {label: callbackFunction, labelColor: callbackColor}}
             }
         }
         const impactConfigs : configsT[] = [
@@ -216,11 +280,8 @@ class ChartGroup extends React.Component<chartGroupProps>{
             },
         ]
         configImpact.forEach((value, i) => {
-            const row = impactConfigs[i];
-            value[0].options = setupImpact(row);
-            value[0].data.datasets = [];
+            const row = impactConfigs[i]; value[0].options = {}; value[0].options = setupImpact(row); value[0].data.datasets = [];
         })
-
         //Angle
         const angleData = graphData.angle; const configAngle = this.chartConfigs.angle;
         const targetedArmor = 'Armor Thickness: ' + graphData.targets[0].armor + 'mm';
@@ -229,20 +290,14 @@ class ChartGroup extends React.Component<chartGroupProps>{
 
         const setupAngle = (row) => {
             return {
-                title: {
-                    display: true,
-                    text: row.title
-                },
+                title: {display: true, text: row.title},
                 scales: {xAxes: xAxesDistance,
-                    yAxes: [{
-                        id: "angle", postition: "left",
-                        scaleLabel: {
-                            display: true,
-                            labelString: "Lateral Angle (°)",
-                        },
+                    yAxes: [{id: "angle", postition: "left",
+                        scaleLabel: {display: true, labelString: "Lateral Angle (°)",},
                         ticks:{min: 0}
                     }]
                 },
+                tooltips: {callbacks: {label: callbackFunction, labelColor: callbackColor}}
             }
         }
         const angleConfigs : configsT[] = [
@@ -250,25 +305,20 @@ class ChartGroup extends React.Component<chartGroupProps>{
                 {id: 'angle',
                 lines: [
                     {lineLabel: 'Maximum Perforation Angle ', data: 'armorD'}, 
-                    {lineLabel: ra0L, data: 'ra0D'}, 
-                    {lineLabel: ra1L, data: 'ra1D'}, 
+                    {lineLabel: ra0L, data: 'ra0D'}, {lineLabel: ra1L, data: 'ra1D'}, 
                 ]},
             ]}, 
             {title: 'Minimum Fusing Angle | ' + targetedArmor + ' | ' + targetInclination, axes: [
                 {id: 'angle',
                 lines: [
                     {lineLabel: 'Minimum Fusing Angle ', data: 'fuseD'}, 
-                    {lineLabel: ra0L, data: 'ra0D'}, 
-                    {lineLabel: ra1L, data: 'ra1D'}, 
+                    {lineLabel: ra0L, data: 'ra0D'}, {lineLabel: ra1L, data: 'ra1D'}, 
                 ]},
             ]}
         ]
         configAngle.forEach((value, i) => {
-            const row = angleConfigs[i]
-            value[0].options = setupAngle(row);
-            value[0].data.datasets = [];
+            const row = angleConfigs[i]; value[0].options = {}; value[0].options = setupAngle(row); value[0].data.datasets = [];
         });
-
         //Post-Penetration
         const configPost = this.chartConfigs.post; const postData = graphData.post;
         const angleLengthDiff = graphData.angles.length - configPost.length;
@@ -279,14 +329,17 @@ class ChartGroup extends React.Component<chartGroupProps>{
         }else if(angleLengthDiff < 0){
             configPost.splice(angleLengthDiff, Math.abs(angleLengthDiff));
         }
+
         const WFL = "Fused ", NFL = "No Fusing ";
         configPost.forEach((value, i) => {
             value[0].data.datasets = []; // clear dataset
             value[0].data.datasets.push( // add ship width line
             {
-                data: postData.shipWidth[0], showLine: true, borderDash: [5, 5], label: "Ship Width (m)",
-                borderColor: "#505050", fill: false, pointRadius: commonPointRadius, pointHitRadius: 5
+                data: postData.shipWidth[0], showLine: true, borderDash: [5, 5], label: "Ship Width", 
+                yAxisID: 'detDist', borderColor: "#505050", fill: false, 
+                pointRadius: commonPointRadius, pointHitRadius: 5 
             });
+            value[0].options = {};
             value[0].options = {
                 title: {
                     display: true,
@@ -297,12 +350,14 @@ class ChartGroup extends React.Component<chartGroupProps>{
                 scales: {
                     xAxes: xAxesDistance,
                     yAxes: [{
+                        id: 'detDist',
                         scaleLabel: {
                             display: true,
                             labelString: "Shell Detonation Distance (m)",
                         },
                     }],
                 },
+                tooltips: {callbacks: {label: callbackFunction, labelColor: callbackColor}}
             }
             value[2] = "Horizontal Impact Angle " + (i + 1) + ": " + graphData.angles[i] + '°'
         });
@@ -328,11 +383,11 @@ class ChartGroup extends React.Component<chartGroupProps>{
         const postLine = (data : Array<Record<string, number>>, 
             label: string, color : string = "", show : boolean = true) : Record<string, any> => {
             if(show){return {
-                    data: data, showLine: true, label: label, 
+                    data: data, showLine: true, label: label, yAxisID: 'detDist',
                     borderColor: color, fill: false, pointRadius: commonPointRadius, pointHitRadius: 5
                 };
             }else{return {
-                    data: data, showLine: false, label: label, 
+                    data: data, showLine: false, label: label, yAxisID: 'detDist',
                     borderColor: color, fill: false, pointRadius: 0, pointHitRadius: 0
                 };
             }
@@ -362,12 +417,8 @@ class ChartGroup extends React.Component<chartGroupProps>{
                     postData.notFused[index + graphData.angles.length*i]
                 ];
                 let pLShow : boolean[] = [true, true];
-                for(let j=0; j<2; j++){
-                    //react-chartjs-2 doesn't like undefined data
-                    if(pL[j].length === 0){ 
-                        pL[j] = [{x: 0, y: 0}]; 
-                        pLShow[j] = false;
-                    }
+                for(let j=0; j<2; j++){ //react-chartjs-2 doesn't like undefined data
+                    if(pL[j].length === 0){pL[j] = [{x: 0, y: 0}]; pLShow[j] = false;}
                 }
                 value[0].data.datasets.push(
                     postLine(pL[0], WFL + name, colors[0], pLShow[0]),
@@ -379,8 +430,7 @@ class ChartGroup extends React.Component<chartGroupProps>{
     }
     updateCharts = () => {
         const trigger = (value, i) => {
-            const ref = value[1];
-            if(ref.current !== undefined){ref.current!.update();}
+            const ref = value[1]; if(ref.current !== undefined){ref.current!.update();}
         }
         Object.entries(this.chartConfigs).forEach((kv) => {kv[1].forEach(trigger)});
     }
