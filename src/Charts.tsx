@@ -452,6 +452,11 @@ class ChartGroup extends React.Component<chartGroupProps>{
             </>
         );
     }
+    componentDidMount(){
+        //Preinitialize chart after mounting
+        const initialJson = require('./initialData.json');
+        this.updateData(initialJson);
+    }
     /*componentDidUpdate(){
         console.log(this.chartConfigs);
     }*/

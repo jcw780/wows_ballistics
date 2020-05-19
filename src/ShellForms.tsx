@@ -74,7 +74,6 @@ class ShellParameters extends React.Component<shellParametersProps>{
 			</Form>
 		);
 	}
-	componentDidUpdate(){this.updateShells();}
 }
 type valuesComponent = [string, number, React.RefObject<ParameterForm>];
 type valuesT = Record<string, valuesComponent>

@@ -115,6 +115,7 @@ class App extends React.Component<{},{}> {
 				const dist = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex.distance, maxShell);
 				output.post.shipWidth[0][i] = {x: dist, y: tgtData.width}
 			}
+			//console.log(JSON.stringify(output));
 			if(this.graphsRef.current){this.graphsRef.current.updateData(output);}
 		}
 	}
