@@ -20,163 +20,121 @@ class App extends React.Component<{},{}> {
 		postPenDataIndex: {} 
 	}
 	settings : Record<string, any> = { //*implement
-		distance: {
-			min: 0, max: null, stepSize: 1000, 
-		},
-		rounding: 3,
-		shortNames: true,
-		calculationMethod: 0,
-		timeStep: 0.01,
-		launchAngle : {
-			minimum: 0, maximum: 25
-		}
+		distance: {min: 0, max: null, stepSize: 1000, },
+		rounding: 3, shortNames: true,
+		calculationMethod: 0, timeStep: 0.01,
+		launchAngle : {minimum: 0, maximum: 25},
+		colors : {saturation: .5, light: .6, batch: false}
 	}
 	compile = () => {
 		return ShellWasm().then((M) => {
-			//console.log('compiled')
 			this.instance = new M.shell(2);
-			//console.log(this.arrayIndices);
 			Object.entries(this.arrayIndices).forEach((kv: any) => {
-				const k = kv[0];
-				const v = kv[1];
-				//console.log(v);
+				const k = kv[0]; const v = kv[1];
 				Object.entries(M[k]).forEach((kv1: any) => {
-					//console.log(kv1);
-					const k1 = kv1[0];
-					const v1 = kv1[1];
-					if(k1 !== "values"){
-						v[k1] = v1.value;
-					}
+					const k1 = kv1[0]; const v1 = kv1[1];
+					if(k1 !== "values"){v[k1] = v1.value;}
 				});
 			});
 			return "done";
-			//console.log(this.arrayIndices);
 		});
 	}
-	constructor(props){
-		super(props);
-		//console.log(this.arrayIndices);
-		this.compile();
-	}
+	constructor(props){super(props); this.compile();}
 	generate = () => {
 		const shellData = this.SFCref.current!.returnShellData();
 		const tgtData = this.TFCref.current!.returnData();
 		const numShells: number = shellData.length;
-		console.log(shellData, tgtData);
-		this.instance.resize(numShells);
-		shellData.forEach((value, i) => {
-			this.instance.setValues(value.caliber, 
-				value.muzzleVelocity, value.dragCoefficient,
-				value.mass, value.krupp, value.normalization,
-				value.fusetime, value.threshold, value.ra0,
-				value.ra1, i);
-		})
-		this.instance.calcImpactForwardEuler();
-		this.instance.calcAngles(tgtData.armor, tgtData.inclination);
-		this.instance.calcPostPen(tgtData.armor, tgtData.inclination,
-			tgtData.angles, true, true);
-		const impactSize: number = this.instance.getImpactSize();
-		const numAngles: number = tgtData.angles.length;
-		const output = {
-			impact: {
-				ePenHN : Array.from({length: numShells}, _ => new Array<Record<string, number>>(impactSize)),
-				impactAHD : Array.from({length: numShells}, _ => new Array<Record<string, number>>(impactSize)),
-				ePenDN : Array.from({length: numShells}, _ => new Array<Record<string, number>>(impactSize)),
-				impactADD : Array.from({length: numShells}, _ => new Array<Record<string, number>>(impactSize)),
-				impactV: Array.from({length: numShells}, _ => new Array<Record<string, number>>(impactSize)),
-				tToTargetA: Array.from({length: numShells}, _ => new Array<Record<string, number>>(impactSize)),
-			},
-			angle: {
-				armorD : Array.from({length: numShells}, _ => new Array<Record<string, number>>(impactSize)),
-				fuseD : Array.from({length: numShells}, _ => new Array<Record<string, number>>(impactSize)),
-				ra0D : Array.from({length: numShells}, _ => new Array<Record<string, number>>(impactSize)),
-				ra1D : Array.from({length: numShells}, _ => new Array<Record<string, number>>(impactSize)),
-			},
-			post: {
-				shipWidth : Array.from({length: 1}, _ => new Array<Record<string, number>>(impactSize)),
-				notFused: Array.from({length: numShells * numAngles}, _ => new Array<Record<string, number>>()),
-				fused: Array.from({length: numShells * numAngles}, _ => new Array<Record<string, number>>()),
-			},
-			numShells : numShells,
-			names : Array<string>(numShells),
-			colors : Array<Array<string>>(numShells),
-			targets : Array<Record<string, number>>(1),
-			angles : tgtData.angles
-		}
-		output.targets[0] = {armor: tgtData.armor, inclination: tgtData.inclination, width: tgtData.width}
-		shellData.forEach((value, i) => {
-			output.names[i] = value.name;
-			output.colors[i] = value.colors;
-		});
-		let maxDist = 0;
-		let maxShell = 0;
-		for(let j=0; j<numShells; j++){
-			let maxDistS = 0;
-			for(let i=0; i<impactSize; i++){
-				//console.log(i, j);
-				const dist : number = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex.distance, j);
-				maxDistS = dist > maxDistS ? dist : maxDistS;
-				Object.entries(output.impact).forEach((kv : any) => {
-					const k = kv[0];
-					const v = kv[1];
-					let y = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex[k], j);
-					if(k === 'impactAHD'){y *= -1}
-					v[j][i] = {
-						x: dist, 
-						y: y
-					};
-				});
-				Object.entries(output.angle).forEach((kv : any) => {
-					const k = kv[0];
-					const v = kv[1];
-					v[j][i] = {
-						x: dist, 
-						y: this.instance.getAnglePoint(i, this.arrayIndices.angleDataIndex[k], j)
-					};
-				});
-				for(let k=0; k<numAngles; k++){
-					const detDist : number
-						= this.instance.getPostPenPoint(i, this.arrayIndices.postPenDataIndex.x, k, j);
-					const fused : number
-						= this.instance.getPostPenPoint(i, this.arrayIndices.postPenDataIndex.xwf, k, j);
-					const point : Record<string, number> = {x: dist, y: detDist};
-					if(fused < 0){
-						output.post.notFused[k+j*numAngles].push(point);
-					}else{
-						output.post.fused[k+j*numAngles].push(point);
+		if(numShells <= 0){return
+		}else{
+			this.instance.resize(numShells);
+			shellData.forEach((value, i) => {
+				this.instance.setValues(value.caliber, 
+					value.muzzleVelocity, value.dragCoefficient,
+					value.mass, value.krupp, value.normalization,
+					value.fusetime, value.threshold, value.ra0,
+					value.ra1, i);
+			})
+			this.instance.calcImpactForwardEuler();
+			this.instance.calcAngles(tgtData.armor, tgtData.inclination);
+			this.instance.calcPostPen(tgtData.armor, tgtData.inclination,
+				tgtData.angles, true, true);
+			const impactSize: number = this.instance.getImpactSize(); const numAngles: number = tgtData.angles.length;
+			const output = {
+				impact: {
+					ePenHN : Array.from({length: numShells}, _ => new Array<Record<string, number>>(impactSize)),
+					impactAHD : Array.from({length: numShells}, _ => new Array<Record<string, number>>(impactSize)),
+					ePenDN : Array.from({length: numShells}, _ => new Array<Record<string, number>>(impactSize)),
+					impactADD : Array.from({length: numShells}, _ => new Array<Record<string, number>>(impactSize)),
+					impactV: Array.from({length: numShells}, _ => new Array<Record<string, number>>(impactSize)),
+					tToTargetA: Array.from({length: numShells}, _ => new Array<Record<string, number>>(impactSize)),
+				}, angle: {
+					armorD : Array.from({length: numShells}, _ => new Array<Record<string, number>>(impactSize)),
+					fuseD : Array.from({length: numShells}, _ => new Array<Record<string, number>>(impactSize)),
+					ra0D : Array.from({length: numShells}, _ => new Array<Record<string, number>>(impactSize)),
+					ra1D : Array.from({length: numShells}, _ => new Array<Record<string, number>>(impactSize)),
+				}, post: {
+					shipWidth : Array.from({length: 1}, _ => new Array<Record<string, number>>(impactSize)),
+					notFused: Array.from({length: numShells * numAngles}, _ => new Array<Record<string, number>>()),
+					fused: Array.from({length: numShells * numAngles}, _ => new Array<Record<string, number>>()),
+				},
+				numShells : numShells, names : Array<string>(numShells), colors : Array<Array<string>>(numShells),
+				targets : Array<Record<string, number>>(1), angles : tgtData.angles
+			}
+			output.targets[0] = {armor: tgtData.armor, inclination: tgtData.inclination, width: tgtData.width}
+			shellData.forEach((value, i) => {output.names[i] = value.name; output.colors[i] = value.colors;});
+			let maxDist = 0; let maxShell = 0;
+			for(let j=0; j<numShells; j++){
+				let maxDistS = 0;
+				for(let i=0; i<impactSize; i++){
+					const dist : number = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex.distance, j);
+					maxDistS = dist > maxDistS ? dist : maxDistS;
+					Object.entries(output.impact).forEach((kv : any) => {
+						const k = kv[0]; const v = kv[1];
+						let y = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex[k], j);
+						if(k === 'impactAHD'){y *= -1}
+						v[j][i] = {x: dist, y: y};
+					});
+					Object.entries(output.angle).forEach((kv : any) => {
+						const k = kv[0]; const v = kv[1];
+						v[j][i] = {x: dist, y: this.instance.getAnglePoint(i, this.arrayIndices.angleDataIndex[k], j)};
+					});
+					for(let k=0; k<numAngles; k++){
+						const detDist : number
+							= this.instance.getPostPenPoint(i, this.arrayIndices.postPenDataIndex.x, k, j);
+						const fused : number
+							= this.instance.getPostPenPoint(i, this.arrayIndices.postPenDataIndex.xwf, k, j);
+						const point : Record<string, number> = {x: dist, y: detDist};
+						if(fused < 0){output.post.notFused[k+j*numAngles].push(point);
+						}else{output.post.fused[k+j*numAngles].push(point);}
 					}
 				}
+				const greater = maxDistS > maxDist;
+				maxDist = greater ? maxDistS : maxDist; maxShell = greater ? j : maxShell;
 			}
-			const greater = maxDistS > maxDist;
-			maxDist = greater ? maxDistS : maxDist;
-			maxShell = greater ? j : maxShell;
-		}
-		for(let i=0; i<impactSize; i++){
-			const dist = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex.distance, maxShell);
-			output.post.shipWidth[0][i] = {x: dist, y: tgtData.width}
-		}
-		console.log(output);
-		if(this.graphsRef.current){
-			this.graphsRef.current.updateData(output);
+			for(let i=0; i<impactSize; i++){
+				const dist = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex.distance, maxShell);
+				output.post.shipWidth[0][i] = {x: dist, y: tgtData.width}
+			}
+			//console.log(JSON.stringify(output));
+			if(this.graphsRef.current){this.graphsRef.current.updateData(output);}
 		}
 	}
 	render () {
 		return (
 			<div className="App">
 				<h1 style={{textAlign: 'center'}}>World of Warships Ballistics Calculator 2</h1>
-				<ShellFormsContainer ref={this.SFCref}/>
+				<hr/>
+				<ShellFormsContainer ref={this.SFCref} settings={this.settings}/>
 				<hr/>
 				<TargetFormsContainer ref={this.TFCref}/>
 				<hr/>
-				<Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem"}} onClick={this.generate}>Generate</Button>
+				<Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem"}} 
+				onClick={this.generate}>Make Graphs!</Button>
 				<ChartGroup ref={this.graphsRef} settings={this.settings}/>
 			</div>
 		);
 	}
-	componentDidMount(){
-		//console.log("done rendering");
-		//console.log(this);
-	}
+	//componentDidMount(){}
 }
 
 

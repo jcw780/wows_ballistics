@@ -118,7 +118,7 @@ class TargetFormsContainer extends React.Component
             handleValueChange={this.handleChange} type="number"
             label="Target Width" labelWidth={4} />
             </div>
-            <h3>Horizontal Impact Angles</h3>
+            <h3>Target Angles</h3>
             <Container style={{marginBottom: "1rem"}}>
                 <Row>
             {angleElements.map((values, i) => {
