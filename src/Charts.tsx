@@ -223,10 +223,7 @@ class ChartGroup extends React.Component<chartGroupProps>{
                 }
                 // Remove trailing zeroes from fractional part before returning
                 return finalNumber.replace(/0+$/, '')
-            }else{
-                return num;
-            }
-
+            }else{return num;}
         }
         const callbackFunction = (tooltipItem, chart) => {
             var x = tooltipItem.label; var y = tooltipItem.value;
