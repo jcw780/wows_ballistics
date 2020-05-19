@@ -1,25 +1,25 @@
 {
   "files": {
-    "main.css": "/wows_ballistics_2/static/css/main.b5332668.chunk.css",
-    "main.js": "/wows_ballistics_2/static/js/main.b3657e41.chunk.js",
-    "main.js.map": "/wows_ballistics_2/static/js/main.b3657e41.chunk.js.map",
+    "main.css": "/wows_ballistics_2/static/css/main.bf63aed4.chunk.css",
+    "main.js": "/wows_ballistics_2/static/js/main.2d94c5b5.chunk.js",
+    "main.js.map": "/wows_ballistics_2/static/js/main.2d94c5b5.chunk.js.map",
     "runtime-main.js": "/wows_ballistics_2/static/js/runtime-main.cb8ed3e3.js",
     "runtime-main.js.map": "/wows_ballistics_2/static/js/runtime-main.cb8ed3e3.js.map",
     "static/css/2.69121389.chunk.css": "/wows_ballistics_2/static/css/2.69121389.chunk.css",
-    "static/js/2.dc558d4d.chunk.js": "/wows_ballistics_2/static/js/2.dc558d4d.chunk.js",
-    "static/js/2.dc558d4d.chunk.js.map": "/wows_ballistics_2/static/js/2.dc558d4d.chunk.js.map",
+    "static/js/2.f09c4473.chunk.js": "/wows_ballistics_2/static/js/2.f09c4473.chunk.js",
+    "static/js/2.f09c4473.chunk.js.map": "/wows_ballistics_2/static/js/2.f09c4473.chunk.js.map",
     "index.html": "/wows_ballistics_2/index.html",
-    "precache-manifest.4d3243f2a2848117ed4865e8d10ab604.js": "/wows_ballistics_2/precache-manifest.4d3243f2a2848117ed4865e8d10ab604.js",
+    "precache-manifest.d4de2e4fd61052a59c50af80b18ac695.js": "/wows_ballistics_2/precache-manifest.d4de2e4fd61052a59c50af80b18ac695.js",
     "service-worker.js": "/wows_ballistics_2/service-worker.js",
     "static/css/2.69121389.chunk.css.map": "/wows_ballistics_2/static/css/2.69121389.chunk.css.map",
-    "static/css/main.b5332668.chunk.css.map": "/wows_ballistics_2/static/css/main.b5332668.chunk.css.map",
-    "static/js/2.dc558d4d.chunk.js.LICENSE.txt": "/wows_ballistics_2/static/js/2.dc558d4d.chunk.js.LICENSE.txt"
+    "static/css/main.bf63aed4.chunk.css.map": "/wows_ballistics_2/static/css/main.bf63aed4.chunk.css.map",
+    "static/js/2.f09c4473.chunk.js.LICENSE.txt": "/wows_ballistics_2/static/js/2.f09c4473.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.cb8ed3e3.js",
     "static/css/2.69121389.chunk.css",
-    "static/js/2.dc558d4d.chunk.js",
-    "static/css/main.b5332668.chunk.css",
-    "static/js/main.b3657e41.chunk.js"
+    "static/js/2.f09c4473.chunk.js",
+    "static/css/main.bf63aed4.chunk.css",
+    "static/js/main.2d94c5b5.chunk.js"
   ]
 }
