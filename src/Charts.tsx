@@ -164,8 +164,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         });
         //Preinitialize postpenetration names
         this.chartConfigs.post.forEach((value, i) => {
-            value[2] = 'Horizontal Impact Angle ' + (i + 1);
-        })
+            value[2] = 'Horizontal Impact Angle ' + (i + 1);});
     }
     //maybe pass prop so we don't have to GC as hard?
     updateData = (graphData) => {
