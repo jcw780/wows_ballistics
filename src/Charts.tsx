@@ -74,9 +74,9 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
                     <Scatter data={this.props.config.data} options={this.props.config.options}
                     width={this.props.dimensions.width} height={this.props.dimensions.height}
                     ref={this.chartRef}/>
+                    <DownloadButton ref={this.DownloadRef} updateData={this.updateDownload}/>
                     </div>
                 </Collapse> 
-                <DownloadButton ref={this.DownloadRef} updateData={this.updateDownload}/>
             </> 
         );
     }
@@ -164,8 +164,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         });
         //Preinitialize postpenetration names
         this.chartConfigs.post.forEach((value, i) => {
-            value[2] = 'Horizontal Impact Angle ' + (i + 1);
-        })
+            value[2] = 'Horizontal Impact Angle ' + (i + 1);});
     }
     //maybe pass prop so we don't have to GC as hard?
     updateData = (graphData) => {
