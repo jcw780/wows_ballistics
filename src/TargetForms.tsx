@@ -109,15 +109,15 @@ class TargetFormsContainer extends React.Component
             <ParameterForm controlId="armor"
             newValue={this.targetData.armor} 
             handleValueChange={this.handleChange} type="number"
-            label="Armor Thickness" labelWidth={4} />
+            label="Armor Thickness (mm)" labelWidth={4} />
             <ParameterForm controlId="inclination"
             newValue={this.targetData.inclination} 
             handleValueChange={this.handleChange} type="number"
-            label="Armor Inclination" labelWidth={4} />
+            label="Armor Inclination (°)" labelWidth={4} />
             <ParameterForm controlId="width"
             newValue={this.targetData.width} 
             handleValueChange={this.handleChange} type="number"
-            label="Target Width" labelWidth={4} />
+            label="Target Width (m)" labelWidth={4} />
             </div>
             <h3>Target Angles</h3>
             <Container style={{marginBottom: "1rem"}}>
@@ -136,7 +136,8 @@ class TargetFormsContainer extends React.Component
             
             <Row style={{marginBottom: "1rem"}}>
                 <Col/>
-                <Col sm="6"><Button className="form-control" onClick={this.addAngle}>Add Angle</Button></Col>
+                <Col sm="6"><Button className="form-control" onClick={this.addAngle} variant="success">
+                    Add Angle</Button></Col>
                 <Col/>
             </Row>
         </>

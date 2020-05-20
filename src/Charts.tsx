@@ -18,7 +18,7 @@ class DownloadButton extends React.Component<{updateData: Function}>{
     render(){
         return (
             <a download={this.state.download} href={this.state.href}>
-                <Button onClick={this.click}>
+                <Button variant="outline-primary" onClick={this.click}>
                     Download Graph
                 </Button>
             </a>
@@ -43,7 +43,7 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
     }
     state = {open : true}; 
     //apparently you need a value in state or else set state doesn't trigger rerender
-    valueIndex : number = 0; values : Readonly<Array<string>> = ["", ""]; // 0: Hide 1: Show
+    valueIndex : number = 0; values : Readonly<Array<string>> = ["Hide: ", "Show: "]; // 0: Hide 1: Show
     graphHref: string = ''; graphDownload: string = '.png'
 
     chartRef : React.RefObject<Scatter> = React.createRef<Scatter>();
@@ -345,9 +345,8 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             value[0].options = {
                 title: {
                     display: true,
-                    text: 'Internal Width Traveled before Detonation | ' + targetedArmor 
-                    + ' | ' + targetInclination + ' | Horizontal Impact Angle: ' 
-                    + graphData.angles[i] + "°"
+                    text: 
+                    `Internal Width Traveled before Detonation | ${targetedArmor} | ${targetInclination} | Horizontal Impact Angle: ${graphData.angles[i]}°`
                 },
                 scales: {
                     xAxes: xAxesDistance,
@@ -361,7 +360,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 },
                 tooltips: {callbacks: {label: callbackFunction, labelColor: callbackColor}}
             }
-            value[2] = "Horizontal Impact Angle " + (i + 1) + ": " + graphData.angles[i] + '°'
+            value[2] = `Horizontal Impact Angle ${i + 1}: ${graphData.angles[i]}°`
         });
         //Add Lines
         const impactLine = (data : Array<Record<string, number>>, 
@@ -471,9 +470,8 @@ export class ChartGroup extends React.Component<chartGroupProps>{
     componentDidUpdate(){
         //console.log(this.chartConfigs);
         this.chartConfigs.post.forEach((value, i) => {
-            this.props.links.post[i][0] = value[2];
-            this.props.links.post[i][1] = value[1];
-        })
+            this.props.links.post[i][0] = value[2]; this.props.links.post[i][1] = value[1];
+        });
         this.props.onUpdate();
     }
 }

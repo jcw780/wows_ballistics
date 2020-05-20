@@ -116,7 +116,9 @@ class DefaultShips extends React.Component
 		}
 	}
 	updateForm = (target, options) => {
-		this.defaultForms[target][2].current.updateOptions(options);
+		if(this.defaultForms[target][2].current){
+			this.defaultForms[target][2].current.updateOptions(options);
+		}
 	}
 	queryVersion = () => {
 		this.counter = 0;

@@ -1,7 +1,8 @@
 import React from 'react';
 import './App.css';
-
 import Button from 'react-bootstrap/Button';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
 
 import { linkType } from 'commonTypes';
 
@@ -93,13 +94,14 @@ class App extends React.Component<{},{}> {
 			shellData.forEach((value, i) => {output.names[i] = value.name; output.colors[i] = value.colors;});
 			let maxDist = 0; let maxShell = 0;
 			for(let j=0; j<numShells; j++){
-				let maxDistS = 0;
+				let maxDistS = 0; const nonAP = shellData[j].HESAP > 0;
 				for(let i=0; i<impactSize; i++){
 					const dist : number = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex.distance, j);
 					maxDistS = dist > maxDistS ? dist : maxDistS;
 					Object.entries(output.impact).forEach((kv : any) => {
-						const k = kv[0]; const v = kv[1];
-						let y = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex[k], j);
+						const k = kv[0]; const v = kv[1]; let y = 0;
+						if((k === 'ePenHN' || k === 'ePenDN') && (nonAP)){y = shellData[j].HESAP;}
+						else{y = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex[k], j);}
 						if(k === 'impactAHD'){y *= -1}
 						v[j][i] = {x: dist, y: y};
 					});
@@ -141,14 +143,20 @@ class App extends React.Component<{},{}> {
 				<hr/>
 				<TargetFormsContainer ref={this.TFCref}/>
 				<hr/>
-				<Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem"}} 
-				onClick={this.generate}>Make Graphs!</Button>
+				<Row>
+					<Col/>
+					<Col sm="9">
+						<Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem"}}
+					variant="primary" onClick={this.generate}>Make Graphs!</Button>
+					</Col>
+					<Col/>
+				</Row>
+				<hr/>
 				<ChartGroup ref={this.graphsRef} settings={this.settings} links={this.links} onUpdate={this.onUpdate}/>
 			</div>
 		);
 	}
 	componentDidMount(){
-		console.log(this.SFCref, this.TFCref);
 		this.links.parameters.push(['Shell Parameters', this.SFCref], ['Target Parameters', this.TFCref])
 	}
 }

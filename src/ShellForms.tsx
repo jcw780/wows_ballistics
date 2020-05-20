@@ -76,7 +76,9 @@ class ShellParameters extends React.Component<shellParametersProps>{
 	}
 }
 type valuesComponent = [string, number, React.RefObject<ParameterForm>];
-type valuesT = Record<string, valuesComponent>
+type parametersType = 'caliber' | 'muzzleVelocity' | 'dragCoefficient' | 'mass' 
+| 'krupp' | 'fusetime' | 'threshold' | 'normalization' | 'ra0' | 'ra1' | 'HESAP';
+type valuesT = Record<parametersType, valuesComponent>
 interface shellFormsProps{
 	index: number, colors: Array<string>, keyProp: number, deleteShip : Function, 
 	reset: Function, settings : Record<string, any>, size: number
@@ -97,7 +99,7 @@ class ShellForms extends React.Component<shellFormsProps> {
 		ra1: ['Always Ricochet (°)', 0, React.createRef()], 
 		HESAP: ['HE/SAP penetration (mm)', 0, React.createRef()],
 	})
-	name: string = ''
+	name: string = '';
 	returnData = () => {
 		let condensed : Record<string, any> = {name: this.name};
 		Object.entries(this.values).forEach((kv) => {
@@ -113,11 +115,12 @@ class ShellForms extends React.Component<shellFormsProps> {
 	handleValueChange = (value : string, k : string) => {
 		this.values[k][1] = parseFloat(value);
 	}
-	getDefaultData = (data, namePreProcessed) => { //Query Version End
-		let name = namePreProcessed;
+	getDefaultData = (data, nameUnprocessed) => { //Query Version End
+		let name = nameUnprocessed;
 		if(this.props.settings.shortNames){
-			name = name.split("_").slice(1).join(" ");;
+			name = name.split("_").slice(1).join(" ");
 		}
+		console.log(this.defaults.current!.defaultForms);
 		this.values.caliber[1] = data.bulletDiametr;
 		this.values.muzzleVelocity[1] = data.bulletSpeed;
 		this.values.dragCoefficient[1] = data.bulletAirDrag;
@@ -160,7 +163,7 @@ class ShellForms extends React.Component<shellFormsProps> {
 				<Modal.Footer style={{padding: "0.5rem"}}>
 					<Container>
 					<Dropdown>
-						<Dropdown.Toggle variant="success" id="dropdown-basic">
+						<Dropdown.Toggle variant="secondary" id="dropdown-basic">
 						Show Detailed Parameters
 						</Dropdown.Toggle>
 						<Dropdown.Menu>
@@ -262,7 +265,7 @@ class ShellFormsContainer extends React.Component<{settings : Record<string, any
 	</Container>
 	<Row style={{marginBottom : "1rem"}}>
 		<Col/>
-		<Col sm="6"><Button className="form-control" onClick={this.addShip}>
+		<Col sm="6"><Button className="form-control" variant="success" onClick={this.addShip}>
 			Add Ship</Button></Col>
 		<Col/>
 	</Row>
