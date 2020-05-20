@@ -137,6 +137,8 @@ class ShellForms extends React.Component<shellFormsProps> {
 		if(this.parameters.current){this.parameters.current!.updateShells();}
 		//console.log(this.props.size, this.props.index);
 		if(this.props.index + 1 == this.props.size){
+			//only resets add / delete when last item has finished mounting
+			//otherwise potential for crashes when adding ships
 			this.props.reset();
 		}
 		//this.props.reset();

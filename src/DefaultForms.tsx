@@ -116,7 +116,9 @@ class DefaultShips extends React.Component
 		}
 	}
 	updateForm = (target, options) => {
-		if(this.defaultForms[target][2].current){
+		if(this.defaultForms[target][2].current){ 
+			//apparently prevents async calls from updating deleted functions I guess...
+			//fixes delete ship crash bug
 			this.defaultForms[target][2].current.updateOptions(options);
 		}
 	}
