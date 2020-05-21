@@ -1,7 +1,6 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Form from 'react-bootstrap/Form';
-import Container from 'react-bootstrap/Container';
+import {Form, Container} from 'react-bootstrap';
 
 class DefaultForm extends React.Component
 <{handleValueChange: Function, controlId: string, label : string, }> {

@@ -1,19 +1,12 @@
 import React from 'react';
 //import logo from './logo.svg';
-import './App.css';
 
-import 'bootstrap/dist/css/bootstrap.min.css';
-import Form from 'react-bootstrap/Form';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
-import Dropdown from 'react-bootstrap/Dropdown';
-import Modal from 'react-bootstrap/Modal';
-import Container from 'react-bootstrap/Container';
-import Button from 'react-bootstrap/Button';
+import {Form, Col, Row, Dropdown, Modal, Container, Button} from 'react-bootstrap';
 
 import * as T from 'commonTypes';
 import {ParameterForm} from 'ParameterForm';
 import DefaultShips from './DefaultForms'
+import { FormControl, InputGroup } from 'react-bootstrap';
 
 interface shellParametersProps {handleValueChange: any, formLabels : any}
 class ShellParameters extends React.Component<shellParametersProps>{
@@ -22,7 +15,7 @@ class ShellParameters extends React.Component<shellParametersProps>{
 	updateShells() {
 		Object.entries(this.props.formLabels).forEach((kv : any): void => {
 			const value = kv[1];
-			kv[1][2].current.updateValue(value[1]);
+			value[3].current.updateValue(value[2]);
 		});
 	}
 	render() {
@@ -33,14 +26,14 @@ class ShellParameters extends React.Component<shellParametersProps>{
 					const value = kv[1];
 					return (<ParameterForm label={value[0]} key={i} controlId={key}
 					handleValueChange={this.handleValueChange}
-					type="number" newValue={value[1]}
-					ref={this.props.formLabels[key][2]}></ParameterForm>);
+					type="number" newValue={String(value[2])} append={value[1]}
+					ref={this.props.formLabels[key][3]} style={{inputGroup:{width: "50%"}}}/>);
 				})}	
 			</Form>
 		);
 	}
 }
-type valuesComponent = [string, number, React.RefObject<ParameterForm>];
+type valuesComponent = [string, string, number, React.RefObject<ParameterForm>];
 type parametersType = 'caliber' | 'muzzleVelocity' | 'dragCoefficient' | 'mass' 
 | 'krupp' | 'fusetime' | 'threshold' | 'normalization' | 'ra0' | 'ra1' | 'HESAP';
 type valuesT = Record<parametersType, valuesComponent>
@@ -57,17 +50,17 @@ class ShellForms extends React.Component<shellFormsProps> {
 	parameters : React.RefObject<ShellParameters> = React.createRef<ShellParameters>()
 	defaults : React.RefObject<DefaultShips> = React.createRef<DefaultShips>()
 	values : valuesT = Object.seal({
-		caliber: ['Caliber (m)', 0, React.createRef()], 
-		muzzleVelocity: ['Muzzle Velocity', 0, React.createRef()], 
-		dragCoefficient: ['Drag Coefficient', 0, React.createRef()],
-		mass: ['Mass (kg)', 0, React.createRef()], 
-		krupp: ['Krupp', 0, React.createRef()], 
-		fusetime: ['Fusetime (s)', 0, React.createRef()], 
-		threshold: ['Fusing Threshold (mm)', 0, React.createRef()], 
-		normalization: ['Normalization (°)', 0, React.createRef()], 
-		ra0: ['Start Ricochet (°)', 0, React.createRef()], 
-		ra1: ['Always Ricochet (°)', 0, React.createRef()], 
-		HESAP: ['HE/SAP penetration (mm)', 0, React.createRef()],
+		caliber: ['Caliber', 'm', 0, React.createRef()], 
+		muzzleVelocity: ['Muzzle Velocity', 'm/s', 0, React.createRef()], 
+		dragCoefficient: ['Drag Coefficient', '(1)', 0, React.createRef()],
+		mass: ['Mass', 'kg', 0, React.createRef()], 
+		krupp: ['Krupp', '(1)', 0, React.createRef()], 
+		fusetime: ['Fusetime', 's', 0, React.createRef()], 
+		threshold: ['Fusing Threshold', 'mm', 0, React.createRef()], 
+		normalization: ['Normalization', '°', 0, React.createRef()], 
+		ra0: ['Start Ricochet', '°', 0, React.createRef()], 
+		ra1: ['Always Ricochet', '°', 0, React.createRef()], 
+		HESAP: ['HE/SAP penetration', 'mm', 0, React.createRef()],
 	})
 	name: string = '';
 	returnData = () => {
@@ -81,7 +74,7 @@ class ShellForms extends React.Component<shellFormsProps> {
 		Object.entries(this.values).forEach((kv) => {
 			const key = kv[0]; 
 			const value = kv[1];
-			condensed[key] = value[1]; 
+			condensed[key] = value[2]; 
 		})
 		condensed['colors'] = this.props.colors;
 		return condensed;
@@ -96,19 +89,19 @@ class ShellForms extends React.Component<shellFormsProps> {
 		if(this.props.settings.format.shortNames){
 			name = name.split("_").slice(1).join(" ");
 		}
-		this.values.caliber[1] = data.bulletDiametr;
-		this.values.muzzleVelocity[1] = data.bulletSpeed;
-		this.values.dragCoefficient[1] = data.bulletAirDrag;
-		this.values.mass[1] = data.bulletMass;
-		this.values.krupp[1] = data.bulletKrupp;
-		this.values.fusetime[1] = data.bulletDetonator;
-		this.values.threshold[1] = data.bulletDetonatorThreshold;
-		this.values.normalization[1] = data.bulletCapNormalizeMaxAngle;
-		this.values.ra0[1] = data.bulletRicochetAt;
-		this.values.ra1[1] = data.bulletAlwaysRicochetAt;
-		this.values.HESAP[1] = data.alphaPiercingHE;
+		this.values.caliber[2] = data.bulletDiametr;
+		this.values.muzzleVelocity[2] = data.bulletSpeed;
+		this.values.dragCoefficient[2] = data.bulletAirDrag;
+		this.values.mass[2] = data.bulletMass;
+		this.values.krupp[2] = data.bulletKrupp;
+		this.values.fusetime[2] = data.bulletDetonator;
+		this.values.threshold[2] = data.bulletDetonatorThreshold;
+		this.values.normalization[2] = data.bulletCapNormalizeMaxAngle;
+		this.values.ra0[2] = data.bulletRicochetAt;
+		this.values.ra1[2] = data.bulletAlwaysRicochetAt;
+		this.values.HESAP[2] = data.alphaPiercingHE;
 		this.name = name; this.nameForm.current!.updateValue(name);
-		if(data.alphaPiercingCS > this.values.HESAP[1]){this.values.HESAP[1] = data.alphaPiercingCS;}
+		if(data.alphaPiercingCS > this.values.HESAP[2]){this.values.HESAP[2] = data.alphaPiercingCS;}
 		if(this.parameters.current){this.parameters.current!.updateShells();}
 		//console.log(this.props.size, this.props.index);
 		if(this.props.index + 1 === this.props.size){
@@ -130,7 +123,7 @@ class ShellForms extends React.Component<shellFormsProps> {
 						<ParameterForm label="Shell Label" controlId='shipName'
 								handleValueChange={this.handleNameChange}
 								type="text" newValue=""
-								ref={this.nameForm} style={{width: '50%'}}/>
+								ref={this.nameForm} style={{formControl: {width: '50%'}}}/>
 						<hr/>
 						<DefaultShips sendDefault={this.getDefaultData} ref={this.defaults} reset={this.props.reset} index={this.props.index}/>
 					</Col>

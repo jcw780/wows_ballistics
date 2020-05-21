@@ -1,8 +1,7 @@
 import React from 'react';
 import Chart from 'chart.js';
 import {Scatter, defaults} from 'react-chartjs-2';
-import Collapse from 'react-bootstrap/Collapse';
-import Button from 'react-bootstrap/Button';
+import {Button, Collapse} from 'react-bootstrap';
 
 import * as T from 'commonTypes';
 

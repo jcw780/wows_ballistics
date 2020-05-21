@@ -1,11 +1,8 @@
 import React from 'react';
 import './App.css';
-import Button from 'react-bootstrap/Button';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
+import {Button, Col, Row} from 'react-bootstrap';
 
 import * as T from 'commonTypes';
-
 import ShellFormsContainer from './ShellForms';
 import TargetFormsContainer from './TargetForms';
 import ChartGroup from './Charts';
