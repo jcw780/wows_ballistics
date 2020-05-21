@@ -4,6 +4,11 @@ import {ChartGroup, SingleChart} from 'Charts';
 import ShellFormsContainer from 'ShellForms';
 import TargetFormsContainer from 'TargetForms';
 
+export interface styleT{
+	formGroup?: React.CSSProperties, formLabel?: React.CSSProperties, inputGroup?: React.CSSProperties, 
+	formControl?: React.CSSProperties, inputGroupAppend?: React.CSSProperties
+}
+
 export type handleValueChangeT = (value: string, id: string) => void | string;
 
 export interface distanceSettingsT {

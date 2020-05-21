@@ -1,12 +1,5 @@
 import React from 'react';
-import Button from 'react-bootstrap/Button';
-import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
-import ToggleButton from 'react-bootstrap/ToggleButton';
-
-import Collapse from 'react-bootstrap/Collapse';
-import Container from 'react-bootstrap/Container';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
+import {Button, ToggleButtonGroup, ToggleButton, Collapse, Container, Col, Row} from 'react-bootstrap';
 
 import * as T from 'commonTypes';
 import {ParameterForm} from 'ParameterForm';
@@ -59,11 +52,11 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
     forms = {
         graphs : {
             distance : [
-                ['min', 'Minimum Distance (m)'], ['max', 'Maximum Distance (m)'], ['stepSize', 'Step Size (m)']
+                ['min', 'Minimum Distance'], ['max', 'Maximum Distance'], ['stepSize', 'Step Size']
             ]
         },
         calculations : [
-            ['min', 'Minimum Launch Angle (°)'], ['max', 'Maximum Launch Angle (°)'], ['timeStep', 'Calculation Time Step (s)']
+            ['min', 'Minimum Launch Angle', '°'], ['max', 'Maximum Launch Angle', '°'], ['timeStep', 'Calculation Time Step', 's']
         ]
     }
     calcSettingsFinder = (id) => {
@@ -91,7 +84,7 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
             return this.forms.graphs.distance.map((value, i) => {
                 return(
                     <ParameterForm newValue={String(this.props.settings.distance[value[0]])} controlId={value[0]} key={i}
-                    label={value[1]} type="number" handleValueChange={handleGraphChange}/>
+                    label={value[1]} type="number" handleValueChange={handleGraphChange} labelWidth={3} append="m"/>
                 );
             });
         }
@@ -109,7 +102,7 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
             return this.forms.calculations.map((value, i) => {
                 return(
                     <ParameterForm newValue={String(this.calcSettingsFinder(value[0]))} controlId={value[0]} key={i}
-                    label={value[1]} type="number" handleValueChange={handleCalculationChange} labelWidth={6}/>
+                    label={value[1]} type="number" handleValueChange={handleCalculationChange} labelWidth={5} append={value[2]}/>
                 );
             });
         }
@@ -126,18 +119,19 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
             if(value === ''){
                 return 'error';
             }
-            const numValues = parseFloat(value);
+            const numValues = parseFloat(value) / 100;
             if(numValues > 1 || numValues < 0){
                 return 'error';
             }
             this.props.settings.format.colors[id] = numValues;
+            console.log(this.props.settings.format.colors[id]);
         }
 
         return(<>
             <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
                     onClick={this.toggleCollapse}
                     aria-controls="collapseSettings"
-                    aria-expanded={this.state.open}
+                    aria-expanded={this.state.open} variant="dark"
                     className={this.state.open === true ? 'active' : ''}
                 >{this.values[this.valueIndex] + 'Settings'}</Button>
             <Collapse in={this.state.open}><div id="collapseSettings">
@@ -155,12 +149,12 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
                             <ToggleButton value="0" onChange={handleShortNameChange}>Short Names</ToggleButton>
                         </ToggleButtonGroup>
                         <ParameterForm newValue={String(this.props.settings.format.rounding)} controlId="rounding" label="Tooltip Rounding"
-                        type="number" handleValueChange={handleRoundingChange} labelWidth={4}/>
+                        type="number" handleValueChange={handleRoundingChange} labelWidth={3} append="dp"/>
                         <h4>Colors</h4>
-                        <ParameterForm newValue={String(this.props.settings.format.colors.saturation)} controlId="saturation" label="Saturation"
-                        type="number" handleValueChange={handleColorChange} labelWidth={4}/>
-                        <ParameterForm newValue={String(this.props.settings.format.colors.light)} controlId="light" label="Light"
-                        type="number" handleValueChange={handleColorChange} labelWidth={4}/>
+                        <ParameterForm newValue={String(this.props.settings.format.colors.saturation * 100)} controlId="saturation" label="Saturation"
+                        type="number" handleValueChange={handleColorChange} labelWidth={3} append="%"/>
+                        <ParameterForm newValue={String(this.props.settings.format.colors.light * 100)} controlId="light" label="Light"
+                        type="number" handleValueChange={handleColorChange} labelWidth={3} append="%"/>
                         </Col>
                         </Row>
                     </Col>
