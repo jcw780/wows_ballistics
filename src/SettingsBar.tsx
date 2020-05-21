@@ -47,7 +47,7 @@ interface settingsBarProps{
 }
 export class SettingsBar extends React.Component<settingsBarProps, settingsBarState>{
     state = {open : false}; 
-    valueIndex : number = 0; values : Readonly<Array<string>> = ["Hide: ", "Show: "]; // 0: Hide 1: Show
+    valueIndex : number = 1; values : Readonly<Array<string>> = ["Hide: ", "Show: "]; // 0: Hide 1: Show
     toggleCollapse = () => {
         if(this.state.open){
             this.valueIndex = 1;
