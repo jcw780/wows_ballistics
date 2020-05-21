@@ -119,7 +119,7 @@ class ShellForms extends React.Component<shellFormsProps> {
 					<Col sm='12' style={{padding: 0}}>
 						<ParameterForm label="Shell Label" controlId='shipName'
 								handleValueChange={this.handleNameChange}
-								type="text" newValue=""
+								type="text" newValue="" labelWidth={4}
 								ref={this.nameForm} style={{formControl: {width: '50%'}}}/>
 						<hr/>
 						<DefaultShips sendDefault={this.getDefaultData} ref={this.defaults} reset={this.props.reset} index={this.props.index}/>
