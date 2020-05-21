@@ -135,7 +135,7 @@ class TargetFormsContainer extends React.Component
             
             <Row style={{marginBottom: "1rem"}}>
                 <Col/>
-                <Col sm="6"><Button className="form-control" onClick={this.addAngle} variant="success">
+                <Col sm="6"><Button className="form-control" variant="outline-primary" onClick={this.addAngle}>
                     Add Angle</Button></Col>
                 <Col/>
             </Row>

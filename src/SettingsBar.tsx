@@ -131,7 +131,7 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
             <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
                     onClick={this.toggleCollapse}
                     aria-controls="collapseSettings"
-                    aria-expanded={this.state.open}
+                    aria-expanded={this.state.open} variant="dark"
                     className={this.state.open === true ? 'active' : ''}
                 >{this.values[this.valueIndex] + 'Settings'}</Button>
             <Collapse in={this.state.open}><div id="collapseSettings">

@@ -3,9 +3,7 @@ import {InputGroup, Form} from 'react-bootstrap';
 
 import * as T from 'commonTypes';
 
-interface parameterFormState {
-    value: string, invalid: boolean
-}
+interface parameterFormState {value: string, invalid: boolean}
 interface parameterFormProps {
 	newValue: string, controlId: string, handleValueChange: T.handleValueChangeT,
 	type: string, label: string, style: T.styleT

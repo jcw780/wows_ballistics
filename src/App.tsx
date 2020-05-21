@@ -1,5 +1,4 @@
-import React from 'react';
-import './App.css';
+import React from 'react'; import './App.css';
 import {Button, Col, Row} from 'react-bootstrap';
 
 import * as T from 'commonTypes';

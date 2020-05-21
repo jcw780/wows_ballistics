@@ -63,8 +63,8 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
         return(
             <>
                 <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
-                    onClick={this.toggleCollapse} ref={this.scrollRef}
-                    aria-controls="collapseChart"
+                    onClick={this.toggleCollapse} ref={this.scrollRef} variant="dark"
+                    aria-controls="collapseChart" 
                     aria-expanded={this.state.open}
                     className={this.state.open === true ? 'active' : ''}
                 >{this.values[this.valueIndex] + this.props.title}</Button>

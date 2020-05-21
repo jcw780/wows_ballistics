@@ -1,12 +1,9 @@
 import React from 'react';
-//import logo from './logo.svg';
-
 import {Form, Col, Row, Dropdown, Modal, Container, Button} from 'react-bootstrap';
 
 import * as T from 'commonTypes';
 import {ParameterForm} from 'ParameterForm';
 import DefaultShips from './DefaultForms'
-import { FormControl, InputGroup } from 'react-bootstrap';
 
 interface shellParametersProps {handleValueChange: any, formLabels : any}
 class ShellParameters extends React.Component<shellParametersProps>{
@@ -132,8 +129,8 @@ class ShellForms extends React.Component<shellFormsProps> {
 				<Modal.Footer style={{padding: "0.5rem"}}>
 					<Container>
 					<Dropdown>
-						<Dropdown.Toggle variant="secondary" id="dropdown-basic">
-						Show Detailed Parameters
+						<Dropdown.Toggle variant="dark" id="dropdown-basic">
+						Detailed Parameters
 						</Dropdown.Toggle>
 						<Dropdown.Menu>
 							<Dropdown.Item style={{padding: 0, minWidth: 500}}>
@@ -235,7 +232,7 @@ class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {key
 	</Container>
 	<Row style={{marginBottom : "1rem"}}>
 		<Col/>
-		<Col sm="6"><Button className="form-control" variant="success" onClick={this.addShip}>
+		<Col sm="6"><Button className="form-control" variant="outline-primary" onClick={this.addShip}>
 			Add Ship</Button></Col>
 		<Col/>
 	</Row>
