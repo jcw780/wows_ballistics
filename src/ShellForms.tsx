@@ -11,49 +11,14 @@ import Modal from 'react-bootstrap/Modal';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 
+import * as T from 'commonTypes';
+import {ParameterForm} from 'ParameterForm';
 import DefaultShips from './DefaultForms'
-
-interface parameterFormProps {
-	newValue: any, controlId: string, handleValueChange: Function,
-	type: string, label: string, style: Record<string, any>
-	labelWidth: number, placeholder: string, //counter?: number[]
-}
-class ParameterForm extends React.Component<parameterFormProps>{
-	public static defaultProps = {
-		labelWidth: 5, placeholder: "", style : {}
-	}
-	state = {value: ""};
-	constructor(props){
-		super(props);
-		this.state = {value: this.props.newValue};
-	}
-	handleChange = (event) => {
-		this.updateValue(event.target.value);
-		this.props.handleValueChange(event.target.value, this.props.controlId);
-	}
-	updateValue = (newValue) => {
-		this.setState((state) => {
-			return {value: newValue};
-		});
-	}
-	render(){
-		return (
-<Form.Group className="form-inline" style={{marginBottom: "0.5rem"}}>
-	<Form.Label column sm={this.props.labelWidth}>{this.props.label}</Form.Label>
-	<Form.Control type={this.props.type} value={this.state.value} 
-	style={this.props.style} 
-	placeholder={this.props.placeholder} onChange={this.handleChange}/>
-</Form.Group>
-		);
-	}
-}
-export {ParameterForm};
 
 interface shellParametersProps {handleValueChange: any, formLabels : any}
 class ShellParameters extends React.Component<shellParametersProps>{
 	nameForm = React.createRef<ParameterForm>()
 	handleValueChange = (value, k) => {this.props.handleValueChange(value, k);}
-	//counter = [0]
 	updateShells() {
 		Object.entries(this.props.formLabels).forEach((kv : any): void => {
 			const value = kv[1];
@@ -83,6 +48,11 @@ interface shellFormsProps{
 	index: number, colors: Array<string>, keyProp: number, deleteShip : Function, 
 	reset: Function, settings : Record<string, any>, size: number
 }
+interface condensedDataType{
+	caliber: number, muzzleVelocity: number, dragCoefficient: number, mass: number, 
+	krupp: number, fusetime: number, threshold: number, normalization: number, 
+	ra0: number, ra1: number, HESAP: number, name: string, colors: string[]
+}
 class ShellForms extends React.Component<shellFormsProps> {
 	parameters : React.RefObject<ShellParameters> = React.createRef<ShellParameters>()
 	defaults : React.RefObject<DefaultShips> = React.createRef<DefaultShips>()
@@ -101,7 +71,13 @@ class ShellForms extends React.Component<shellFormsProps> {
 	})
 	name: string = '';
 	returnData = () => {
-		let condensed : Record<string, any> = {name: this.name};
+		let condensed : condensedDataType = {
+			caliber: 0, muzzleVelocity: 0, dragCoefficient: 0,
+			mass: 0, krupp: 0, fusetime: 0, threshold: 0, 
+			normalization: 0, ra0: 0, ra1: 0, HESAP: 0,
+			name : this.name, colors : [],
+		};
+
 		Object.entries(this.values).forEach((kv) => {
 			const key = kv[0]; 
 			const value = kv[1];
@@ -115,12 +91,11 @@ class ShellForms extends React.Component<shellFormsProps> {
 	handleValueChange = (value : string, k : string) => {
 		this.values[k][1] = parseFloat(value);
 	}
-	getDefaultData = (data, nameUnprocessed) => { //Query Version End
+	getDefaultData = (data, nameUnprocessed : string) => { //Query Version End
 		let name = nameUnprocessed;
-		if(this.props.settings.shortNames){
+		if(this.props.settings.format.shortNames){
 			name = name.split("_").slice(1).join(" ");
 		}
-		console.log(this.defaults.current!.defaultForms);
 		this.values.caliber[1] = data.bulletDiametr;
 		this.values.muzzleVelocity[1] = data.bulletSpeed;
 		this.values.dragCoefficient[1] = data.bulletAirDrag;
@@ -136,12 +111,11 @@ class ShellForms extends React.Component<shellFormsProps> {
 		if(data.alphaPiercingCS > this.values.HESAP[1]){this.values.HESAP[1] = data.alphaPiercingCS;}
 		if(this.parameters.current){this.parameters.current!.updateShells();}
 		//console.log(this.props.size, this.props.index);
-		if(this.props.index + 1 == this.props.size){
+		if(this.props.index + 1 === this.props.size){
 			//only resets add / delete when last item has finished mounting
 			//otherwise potential for crashes when adding ships
 			this.props.reset();
 		}
-		//this.props.reset();
 	}
 	deleteShip = () => {this.props.deleteShip(this.props.keyProp, this.props.index);}
 	render() {
@@ -188,7 +162,7 @@ class ShellForms extends React.Component<shellFormsProps> {
 }
 export {ShellForms};
 
-class ShellFormsContainer extends React.Component<{settings : Record<string, any>}, {keys: Set<number>, disabled: boolean}>{
+class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {keys: Set<number>, disabled: boolean}>{
 	state = {keys: new Set([0, 1]), disabled: false};
 	shellRefs = [React.createRef<ShellForms>(), React.createRef<ShellForms>()];
 	scrollRef : React.RefObject<HTMLHeadingElement> = React.createRef<HTMLHeadingElement>();
@@ -230,9 +204,10 @@ class ShellFormsContainer extends React.Component<{settings : Record<string, any
 	}
 
 	selectColor = (number, colors) => {
+		const colorSettings = this.props.settings.format.colors;
 		const hue = number * 137.507764 % 360; // use golden angle approximation
-		const saturation = String(this.props.settings.colors.saturation * 100) + '%';
-		const light = String(this.props.settings.colors.light * 100) + '%';
+		const saturation = String(colorSettings.saturation * 100) + '%';
+		const light = String(colorSettings.light * 100) + '%';
 		return `hsl(${hue},${saturation},${light})`;
 	}
 	generateColors = (index : number, total : number) => {

@@ -4,7 +4,7 @@ import {Scatter, defaults} from 'react-chartjs-2';
 import Collapse from 'react-bootstrap/Collapse';
 import Button from 'react-bootstrap/Button';
 
-import {linkType, chartTypes} from 'commonTypes';
+import * as T from 'commonTypes';
 
 //For downloading graphs as images
 class DownloadButton extends React.Component<{updateData: Function}>{
@@ -104,13 +104,13 @@ interface chartDataOption{data: Record<string, any>, options: Record<string, any
 type singleChartType = [chartDataOption, React.RefObject<SingleChart>, string]
 
 interface chartGroupProps{
-    settings: Record<string, any>, links: linkType, onUpdate: Function
+    settings: Record<string, any>, links: T.linkT, onUpdate: Function
 }
 export class ChartGroup extends React.Component<chartGroupProps>{
     state={updateTrigger: true}; //State needs value otherwise render won't trigger
     commonStyle = {};
     dimensions = {height: 300, width: 1200};
-    chartConfigs : Record<chartTypes, singleChartType[]> = {
+    chartConfigs : Record<T.chartT, singleChartType[]> = {
         impact: [ //impact charts
             [{data: {datasets : Array<any>(),}, options: {}}, 
                 React.createRef<SingleChart>(), 'Horizontal Penetration and Impact Angle'],
@@ -172,16 +172,16 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         const addCommas = (value, index, values) => {return value.toLocaleString();}
         const commonPointRadius = 0;
         const xAxesDistance = [{
-            scaleLabel: {display: true, labelString: "Distance from Launch (m)",},
+            scaleLabel: {display: true, labelString: "Range (m)",},
             type: 'linear', ticks:{callback: addCommas}
         }];
         Object.entries(this.props.settings.distance).forEach((kv) => {
             const key: string = kv[0]; const value: any = kv[1];
-            if(value != null){xAxesDistance[0].ticks[key] = value;}
+            if(value !== null || true ){xAxesDistance[0].ticks[key] = value;}
         });
-        defaults.scatter.scales.xAxes[0] = xAxesDistance;
+        //defaults.scatter.scales.xAxes[0] = xAxesDistance;
         const roundStringNumberWithoutTrailingZeroes = (num) => {
-            const dp = this.props.settings.rounding; num = String(num);
+            const dp = this.props.settings.format.rounding ; num = String(num);
             if (dp > 0){
                 if (num.indexOf('e+') !== -1) {
                     // Can't round numbers this large because their string representation
@@ -436,7 +436,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         Object.entries(this.chartConfigs).forEach((kv) => {kv[1].forEach(trigger)});
     }
     render(){
-        const addChart = (target : chartTypes) => {
+        const addChart = (target : T.chartT) => {
             return this.chartConfigs[target].map((value, i) => {
                 return (<SingleChart config={value[0]} dimensions={this.dimensions} ref={value[1]} key={i} title={value[2]}/>);
             });
@@ -454,14 +454,14 @@ export class ChartGroup extends React.Component<chartGroupProps>{
     }
     componentDidMount(){
         //Initialize Links Names
-        const setupNavbarCharts = (target : chartTypes) => {
+        const setupNavbarCharts = (target : T.chartT) => {
             const link = this.props.links[target];
             this.chartConfigs[target].forEach((value, i) => {
-                if(link.length == i){ link.push(['', React.createRef<SingleChart>()]);}
+                if(link.length === i){ link.push(['', React.createRef<SingleChart>()]);}
                 link[i][0] = value[2]; link[i][1] = value[1];
             });
         }
-        Object.keys(this.chartConfigs).forEach((value : chartTypes) => {setupNavbarCharts(value)});
+        Object.keys(this.chartConfigs).forEach((value : T.chartT) => {setupNavbarCharts(value)});
         //Preinitialize chart after mounting - to mitigate user confusion
         //Also due to the fact that getting wasm to run on startup is apparently impossible
         const initialJson = require('./initialData.json');

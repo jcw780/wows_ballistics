@@ -4,14 +4,33 @@ import {ChartGroup, SingleChart} from 'Charts';
 import ShellFormsContainer from 'ShellForms';
 import TargetFormsContainer from 'TargetForms';
 
-export type chartTypes = 'impact' | 'angle' | 'post';
-export type chartRefType = React.RefObject<SingleChart>;
+export type handleValueChangeT = (value: string, id: string) => void | string;
 
-export type singleLinkType = [string, chartRefType | parameterRefType];
-export type parameterRefType = React.RefObject<ShellFormsContainer | TargetFormsContainer>;
-export type linkKeyType = chartTypes | 'parameters';
-export interface linkType {
-    impact: singleLinkType[], angle: singleLinkType[], post: singleLinkType[], parameters: singleLinkType[],
+export interface distanceSettingsT {
+    min: number | undefined, max: number | undefined, stepSize: number | undefined
+}
+export interface calculationSettingsT {
+    calculationMethod: number, timeStep: number, 
+    launchAngle: {min: number, max: number}
+}
+export interface formatSettingsT {
+    rounding: number | null, shortNames: boolean, 
+    colors: {saturation: number, light: number, batch: boolean}
+}
+export interface settingsT{
+    distance: distanceSettingsT, calculationSettings: calculationSettingsT,
+    format: formatSettingsT
 }
 
-export default linkType;
+
+export type chartT = 'impact' | 'angle' | 'post';
+export type chartRefT = React.RefObject<SingleChart>;
+
+export type singleLinkT = [string, chartRefT | parameterRefT];
+export type parameterRefT = React.RefObject<ShellFormsContainer 
+| TargetFormsContainer>;
+export type linkKeyT = chartT | 'parameters';
+export interface linkT {
+    impact: singleLinkT[], angle: singleLinkT[], 
+    post: singleLinkT[], parameters: singleLinkT[],
+}
