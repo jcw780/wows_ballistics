@@ -3,21 +3,19 @@ import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 
-import {linkType, linkKeyType, parameterRefType, chartRefType} from 'commonTypes';
+import * as T from 'commonTypes';
 
-class NavbarCustom extends React.Component<{links: linkType}>{
+class NavbarCustom extends React.Component<{links: T.linkT}>{
     state = {update: true};
-    update = () => {
-        this.setState(this.state);
-    }
+    update = () => {this.setState(this.state);}
 
     render(){
         //Parameters
-        const scrollToRef = (ref : chartRefType | parameterRefType) => {
+        const scrollToRef = (ref : T.chartRefT | T.parameterRefT) => {
             window.scrollTo(0, ref.current!.scrollRef.current!.offsetTop);
         }
         //Charts
-        const makeDropdowns = (target : linkKeyType) => {
+        const makeDropdowns = (target : T.linkKeyT) => {
             return this.props.links[target].map((value, i) => {
                 return <NavDropdown.Item onSelect={() => {scrollToRef(value[1])}} key={i}>{value[0]}</NavDropdown.Item>
             });

@@ -4,12 +4,13 @@ import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 
-import { linkType } from 'commonTypes';
+import * as T from 'commonTypes';
 
 import ShellFormsContainer from './ShellForms';
 import TargetFormsContainer from './TargetForms';
 import ChartGroup from './Charts';
 import NavbarCustom from './Navbar';
+import SettingsBar from 'SettingsBar';
 
 import ShellWasm from './shellWasm.wasm';
 class App extends React.Component<{},{}> {
@@ -18,23 +19,22 @@ class App extends React.Component<{},{}> {
 	graphsRef : React.RefObject<ChartGroup> = React.createRef<ChartGroup>();
 	navRef : React.RefObject<NavbarCustom> = React.createRef<NavbarCustom>();
 	instance : any;
-	links : linkType = {
-		parameters : [],
-		impact : [],
-		angle : [],
-		post : [],
-	}
+	links : T.linkT = {parameters : [], impact : [], angle : [], post : [],}
 	arrayIndices : Record<string, Record<string, number>> = {
 		impactDataIndex: {}, 
 		angleDataIndex: {}, 
 		postPenDataIndex: {} 
 	}
-	settings : Record<string, any> = { //*implement component
-		distance: {min: 0, max: null, stepSize: 1000, },
-		rounding: 3, shortNames: true,
-		calculationMethod: 0, timeStep: 0.01,
-		launchAngle : {minimum: 0, maximum: 25},
-		colors : {saturation: .5, light: .6, batch: false}
+	settings : T.settingsT = { //*implement component
+		distance: {min: 0, max: undefined, stepSize: 1000, },
+		calculationSettings: {
+			calculationMethod: 1, timeStep: 0.02,
+			launchAngle : {min: 0, max: 25},
+		},
+		format: {
+			rounding: 3, shortNames: true,
+			colors : {saturation: .5, light: .6, batch: false}
+		},
 	}
 	compile = () => {
 		return ShellWasm().then((M) => {
@@ -50,6 +50,13 @@ class App extends React.Component<{},{}> {
 		});
 	}
 	constructor(props){super(props); this.compile();}
+	applyCalculationSettings = () => {
+		const instance = this.instance; 
+		const calcSettings = this.settings.calculationSettings;
+		const launchAngle = calcSettings.launchAngle;
+		instance.setMax(launchAngle.max); instance.setMin(launchAngle.min);
+		instance.setPrecision(calcSettings.timeStep);
+	}
 	generate = () => {
 		const shellData = this.SFCref.current!.returnShellData();
 		const tgtData = this.TFCref.current!.returnData();
@@ -57,6 +64,7 @@ class App extends React.Component<{},{}> {
 		if(numShells <= 0){return
 		}else{
 			this.instance.resize(numShells);
+			this.applyCalculationSettings();
 			shellData.forEach((value, i) => {
 				this.instance.setValues(value.caliber, 
 					value.muzzleVelocity, value.dragCoefficient,
@@ -64,7 +72,19 @@ class App extends React.Component<{},{}> {
 					value.fusetime, value.threshold, value.ra0,
 					value.ra1, i);
 			})
-			this.instance.calcImpactForwardEuler();
+			const calculationMethod = this.settings.calculationSettings.calculationMethod;
+			switch(calculationMethod){
+				case 0:
+					this.instance.calcImpactAdamsBashforth5(); break;
+				case 1:
+					this.instance.calcImpactForwardEuler(); break;
+				case 2:
+					this.instance.calcImpactRungeKutta2(); break;
+				case 3:
+					this.instance.calcImpactRungeKutta4(); break;
+				default:
+					console.log('Error', calculationMethod); break;
+			}
 			this.instance.calcAngles(tgtData.armor, tgtData.inclination);
 			this.instance.calcPostPen(tgtData.armor, tgtData.inclination,
 				tgtData.angles, true, true);
@@ -130,9 +150,7 @@ class App extends React.Component<{},{}> {
 			if(this.graphsRef.current){this.graphsRef.current.updateData(output);}
 		}
 	}
-	onUpdate = () =>{
-		this.navRef.current!.update();
-	}	
+	onUpdate = () =>{this.navRef.current!.update();}	
 	render () {
 		return (
 			<div className="App">
@@ -142,6 +160,8 @@ class App extends React.Component<{},{}> {
 				<ShellFormsContainer ref={this.SFCref} settings={this.settings}/>
 				<hr/>
 				<TargetFormsContainer ref={this.TFCref}/>
+				<hr/>
+				<SettingsBar settings={this.settings}/>
 				<hr/>
 				<Row>
 					<Col/>
@@ -157,7 +177,7 @@ class App extends React.Component<{},{}> {
 		);
 	}
 	componentDidMount(){
-		this.links.parameters.push(['Shell Parameters', this.SFCref], ['Target Parameters', this.TFCref])
+		this.links.parameters.push(['Shell Parameters', this.SFCref], ['Target Parameters', this.TFCref]);
 	}
 }
 

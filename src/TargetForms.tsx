@@ -5,11 +5,12 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Container from 'react-bootstrap/Container';
 
-import {ParameterForm} from './ShellForms';
+import * as T from 'commonTypes';
+import {ParameterForm} from 'ParameterForm';
 interface angleFormProps {
     newValue: any, controlId: string, 
     label: string, placeholder: string, keyProp : number, 
-    handleValueChange: Function, deleteElement : Function,
+    handleValueChange: T.handleValueChangeT, deleteElement : Function,
 }
 class AngleForm extends React.Component<angleFormProps>{
     public static defaultProps = {
@@ -84,7 +85,7 @@ class TargetFormsContainer extends React.Component
     handleChange = (value : string, id : string) => {
         this.targetData[id] = parseFloat(value);
     }
-    handleAngleChange = (value: string, id : string) => {
+    handleAngleChange = (value: string, id : string) : void => {
         this.targetData.angles[parseInt(id)] = parseFloat(value);
     }
     render(){
@@ -93,7 +94,7 @@ class TargetFormsContainer extends React.Component
         Array.from(this.state.angleKeys).forEach((value, i) => {
             const common = 
                 <AngleForm key={value} keyProp={value} controlId={i.toString()} 
-                newValue={this.targetData.angles[i]} deleteElement={this.deleteAngle}
+                newValue={String(this.targetData.angles[i])} deleteElement={this.deleteAngle}
                 handleValueChange={this.handleAngleChange}
                 label={"Angle " + (i + 1) + " (°)"}/>
             const columnIndex = Math.floor(i / elementColumn);
@@ -107,15 +108,15 @@ class TargetFormsContainer extends React.Component
             <h2 ref={this.scrollRef}>Target Parameters</h2>
             <div className="row" style={{display: 'flex', justifyContent: 'center'}}>
             <ParameterForm controlId="armor"
-            newValue={this.targetData.armor} 
+            newValue={String(this.targetData.armor)} 
             handleValueChange={this.handleChange} type="number"
             label="Armor Thickness (mm)" labelWidth={4} />
             <ParameterForm controlId="inclination"
-            newValue={this.targetData.inclination} 
+            newValue={String(this.targetData.inclination)} 
             handleValueChange={this.handleChange} type="number"
             label="Armor Inclination (°)" labelWidth={4} />
             <ParameterForm controlId="width"
-            newValue={this.targetData.width} 
+            newValue={String(this.targetData.width)} 
             handleValueChange={this.handleChange} type="number"
             label="Target Width (m)" labelWidth={4} />
             </div>
