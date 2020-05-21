@@ -118,14 +118,21 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
             if(numValue < 0){return 'error';} if(value === ''){numValue = null;}
             this.props.settings.format.rounding = numValue; 
         } 
-        const handleShortNames = (event) => {
-            this.props.settings.format.shortNames = event.target.checked;
+        const handleShortNameChange = (event) => {this.props.settings.format.shortNames = event.target.checked;}
+        let shortNamesDefault : string[] | undefined = undefined;
+        if(this.props.settings.format.shortNames){shortNamesDefault=["0"];}
+        
+        const handleColorChange = (value: string, id: string) : void | string => {
+            if(value === ''){
+                return 'error';
+            }
+            const numValues = parseFloat(value);
+            if(numValues > 1 || numValues < 0){
+                return 'error';
+            }
+            this.props.settings.format.colors[id] = numValues;
         }
 
-        let shortNamesDefault : string[] | undefined = undefined;
-        if(this.props.settings.format.shortNames){
-            shortNamesDefault=["0"];
-        }
         return(<>
             <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
                     onClick={this.toggleCollapse}
@@ -145,10 +152,15 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
                         <Col style={{padding: 0}}>
                         <h4>Labeling</h4>
                         <ToggleButtonGroup type="checkbox" vertical defaultValue={shortNamesDefault}>
-                            <ToggleButton value="0" onChange={handleShortNames}>Short Names</ToggleButton>
+                            <ToggleButton value="0" onChange={handleShortNameChange}>Short Names</ToggleButton>
                         </ToggleButtonGroup>
                         <ParameterForm newValue={String(this.props.settings.format.rounding)} controlId="rounding" label="Tooltip Rounding"
                         type="number" handleValueChange={handleRoundingChange} labelWidth={4}/>
+                        <h4>Colors</h4>
+                        <ParameterForm newValue={String(this.props.settings.format.colors.saturation)} controlId="saturation" label="Saturation"
+                        type="number" handleValueChange={handleColorChange} labelWidth={4}/>
+                        <ParameterForm newValue={String(this.props.settings.format.colors.light)} controlId="light" label="Light"
+                        type="number" handleValueChange={handleColorChange} labelWidth={4}/>
                         </Col>
                         </Row>
                     </Col>
@@ -159,7 +171,7 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
                         <h4>Numerical Parameters</h4>
                         {generateCalculationForm()}
                         </Col>
-                        <Col sm="4" style={{paddingRight: 0, paddingLeft: 0}}>
+                        <Col sm="5" style={{paddingRight: 0, paddingLeft: 0}}>
                         <h4>Numerical Method</h4>
                         <CalculationRadio settings={this.props.settings}/>
                         </Col>
