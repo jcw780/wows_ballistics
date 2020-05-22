@@ -51,8 +51,6 @@ body{
   max-height: 56px;
 }
 
-hr.vertical {
-  width: 0px;
-  height: 100%;
-  /* or height in PX */
+.popover{
+  max-width: 100%! important;
 }

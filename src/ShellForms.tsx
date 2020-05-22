@@ -1,5 +1,5 @@
 import React from 'react';
-import {Form, Col, Row, Dropdown, Modal, Container, Button} from 'react-bootstrap';
+import {Form, Col, Row, Modal, Container, Button, Popover, OverlayTrigger} from 'react-bootstrap';
 
 import * as T from 'commonTypes';
 import {ParameterForm} from 'ParameterForm';
@@ -79,7 +79,7 @@ class ShellForms extends React.Component<shellFormsProps> {
 	nameForm : React.RefObject<ParameterForm> = React.createRef<ParameterForm>()
 	handleNameChange = (value, id) => {this.name = value;}
 	handleValueChange = (value : string, k : string) => {
-		this.values[k][1] = parseFloat(value);
+		this.values[k][2] = parseFloat(value);
 	}
 	getDefaultData = (data, nameUnprocessed : string) => { //Query Version End
 		let name = nameUnprocessed;
@@ -128,21 +128,20 @@ class ShellForms extends React.Component<shellFormsProps> {
 				</Modal.Body>
 				<Modal.Footer style={{padding: "0.5rem"}}>
 					<Container>
-					<Dropdown>
-						<Dropdown.Toggle variant="dark" id="dropdown-basic">
-						Detailed Parameters
-						</Dropdown.Toggle>
-						<Dropdown.Menu>
-							<Dropdown.Item style={{padding: 0, minWidth: 500}}>
+					<OverlayTrigger trigger="click" placement="bottom" overlay={
+						<Popover id='popover'>
+							<Popover.Content>
 							<Container style={{padding: 0}}>
 								<Col sm="12" style={{padding: 0}}>
 								<ShellParameters handleValueChange={this.handleValueChange}
 									formLabels={this.values} ref={this.parameters}/>
 								</Col>
 							</Container>
-							</Dropdown.Item>
-						</Dropdown.Menu>
-					</Dropdown>
+							</Popover.Content>
+						</Popover>
+					}>
+						<Button variant="dark">Detailed Parameters</Button>
+					</OverlayTrigger>
 					</Container>
 				</Modal.Footer>
 			</Modal.Dialog>
