@@ -231,7 +231,7 @@ class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {key
 	</Container>
 	<Row style={{marginBottom : "1rem"}}>
 		<Col/>
-		<Col sm="6"><Button className="form-control" variant="outline-primary" onClick={this.addShip}>
+		<Col sm="6"><Button className="form-control" variant="outline-secondary" onClick={this.addShip}>
 			Add Ship</Button></Col>
 		<Col/>
 	</Row>

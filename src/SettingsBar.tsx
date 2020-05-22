@@ -17,16 +17,16 @@ class CalculationRadio extends React.Component<{settings: T.settingsT}, {value: 
     render(){
         return(
             <ToggleButtonGroup toggle vertical type="radio" name="radio" value={this.state.value}>
-                <ToggleButton onChange={this.setCalcMethod} type="radio" value={0}>
+                <ToggleButton onChange={this.setCalcMethod} type="radio" value={0} variant="secondary">
                 Adams-Bashforth 5
                 </ToggleButton>
-                <ToggleButton onChange={this.setCalcMethod} type="radio" value={1}>
+                <ToggleButton onChange={this.setCalcMethod} type="radio" value={1} variant="secondary">
                 Forward Euler
                 </ToggleButton>
-                <ToggleButton onChange={this.setCalcMethod} type="radio" value={2}>
+                <ToggleButton onChange={this.setCalcMethod} type="radio" value={2} variant="secondary">
                 Runge-Kutta 2
                 </ToggleButton>
-                <ToggleButton onChange={this.setCalcMethod} type="radio" value={3}>
+                <ToggleButton onChange={this.setCalcMethod} type="radio" value={3} variant="secondary">
                 Runge-Kutta 4
                 </ToggleButton>
             </ToggleButtonGroup>
@@ -146,7 +146,7 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
                         <Col style={{padding: 0}}>
                         <h4>Labeling</h4>
                         <ToggleButtonGroup type="checkbox" vertical defaultValue={shortNamesDefault}>
-                            <ToggleButton value="0" onChange={handleShortNameChange}>Short Names</ToggleButton>
+                            <ToggleButton value="0" onChange={handleShortNameChange} variant="secondary">Short Names</ToggleButton>
                         </ToggleButtonGroup>
                         <ParameterForm newValue={String(this.props.settings.format.rounding)} controlId="rounding" label="Tooltip Rounding"
                         type="number" handleValueChange={handleRoundingChange} labelWidth={3} append="dp"/>

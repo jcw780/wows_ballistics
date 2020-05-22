@@ -44,11 +44,11 @@
 }
 
 body{
-  padding: 56px 0 0 0;
+  padding: 3.5rem 0 0 0;
 }
 
 .navbar {
-  max-height: 56px;
+  max-height: 3.5rem;
 }
 
 .popover{

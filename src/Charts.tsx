@@ -17,7 +17,7 @@ class DownloadButton extends React.Component<{updateData: Function}>{
     render(){
         return (
             <a download={this.state.download} href={this.state.href}>
-                <Button variant="outline-primary" onClick={this.click}>
+                <Button variant="outline-secondary" onClick={this.click}>
                     Download Graph
                 </Button>
             </a>
