@@ -108,7 +108,7 @@ class TargetFormsContainer extends React.Component
             {Object.entries(this.fixedTargetLabels).map((kv, i) => {
                 const key = kv[0]; const value = kv[1];
                 return (
-                    <Col>
+                    <Col key={i}>
                         <ParameterForm controlId={key}
                         newValue={String(this.targetData[key])} 
                         handleValueChange={this.handleChange} type="number"
