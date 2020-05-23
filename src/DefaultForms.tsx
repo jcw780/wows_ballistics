@@ -29,7 +29,7 @@ class DefaultForm extends React.Component
 				<Form.Label column sm="4">{this.props.label}</Form.Label>
 				<Form.Control as="select" placeholder="" 
 				onChange={this.handleChange} ref={this.form}>
-					{this.state.options.map((value ,i) => {return (<option key={i}>{value}</option>);})}
+					{this.state.options.map((value,i) => {return (<option aria-label={value} key={i}>{value}</option>);})}
 				</Form.Control>
 			</Form.Group>
 		);
