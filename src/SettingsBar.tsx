@@ -66,18 +66,12 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
             return this.props.settings.calculationSettings.launchAngle[id];
         }
     }
-    setCalcMethod = (event) => {
-        console.log(event);
-    }
     render(){
         const handleGraphChange = (value: string, id: string) => {
             var numValue : number | undefined;
-            if(value === ''){
-                numValue = undefined;
-            } else{
-                numValue = parseFloat(value);
-            }
-            console.log(id, numValue);
+            if(value === ''){numValue = undefined;} 
+            else{numValue = parseFloat(value);}
+            //console.log(id, numValue);
             this.props.settings.distance[id] = numValue; 
         }
         const generateGraphForm = () => {
@@ -124,7 +118,7 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
                 return 'error';
             }
             this.props.settings.format.colors[id] = numValues;
-            console.log(this.props.settings.format.colors[id]);
+            //console.log(this.props.settings.format.colors[id]);
         }
 
         return(<>
