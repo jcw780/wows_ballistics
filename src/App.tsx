@@ -66,7 +66,7 @@ class App extends React.Component<{},{}> {
 					value.muzzleVelocity, value.dragCoefficient,
 					value.mass, value.krupp, value.normalization,
 					value.fusetime, value.threshold, value.ra0,
-					value.ra1, i);
+					value.ra1, value.HESAP, i);
 			})
 			const calculationMethod = this.settings.calculationSettings.calculationMethod;
 			switch(calculationMethod){
@@ -110,15 +110,13 @@ class App extends React.Component<{},{}> {
 			shellData.forEach((value, i) => {output.names[i] = value.name; output.colors[i] = value.colors;});
 			let maxDist = 0; let maxShell = 0;
 			for(let j=0; j<numShells; j++){
-				let maxDistS = 0; const nonAP = shellData[j].HESAP > 0;
+				let maxDistS = 0;
 				for(let i=0; i<impactSize; i++){
 					const dist : number = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex.distance, j);
 					maxDistS = dist > maxDistS ? dist : maxDistS;
 					Object.entries(output.impact).forEach((kv : any) => {
-						const k = kv[0]; const v = kv[1]; let y = 0;
-						if((k === 'ePenHN' || k === 'ePenDN') && (nonAP)){y = shellData[j].HESAP;}
-						else{y = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex[k], j);}
-						if(k === 'impactAHD'){y *= -1}
+						const k = kv[0]; const v = kv[1];
+						const y = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex[k], j);
 						v[j][i] = {x: dist, y: y};
 					});
 					Object.entries(output.angle).forEach((kv : any) => {
