@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "8a71ea23b2e4517828718e2b44e1ac66",
+    "revision": "6083ff1c27769ef9cb2126b3689d5c08",
     "url": "/wows_ballistics/index.html"
   },
   {
