@@ -37,7 +37,7 @@ class DefaultForm extends React.Component
 	componentDidUpdate(){this.props.handleValueChange(this.form!.current!.value, this.props.controlId);}
 }
 
-const dataURL = "https://jcw780.github.io/wows_ballistics/static/data/"
+const dataURL = "https://jcw780.github.io/LiveGameData/"
 
 function fetchJson(target, onSucess){
     fetch(target)
