@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/wows_ballistics/precache-manifest.fe505da158e42bf077eeca7722e9fd47.js"
+  "/wows_ballistics/precache-manifest.b73455d560397773321c3cf64a8eccb6.js"
 );
 
 self.addEventListener('message', (event) => {
