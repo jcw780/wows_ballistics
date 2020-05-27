@@ -149,7 +149,7 @@ class App extends React.Component<{},{}> {
 		return (
 			<div className="App">
 				<NavbarCustom links={this.links} ref={this.navRef}/>
-				<h1 style={{textAlign: 'center'}}>World of Warships Ballistics Calculator 2</h1>
+				<h1 style={{textAlign: 'center'}}>World of Warships Ballistics Calculator</h1>
 				<hr/>
 				<ShellFormsContainer ref={this.SFCref} settings={this.settings}/>
 				<hr/>

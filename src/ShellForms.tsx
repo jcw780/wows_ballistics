@@ -147,23 +147,24 @@ class ShellForms extends React.Component<shellFormsProps> {
 			</Modal.Dialog>
 		);
 	}
-	componentDidMount(){this.defaults.current!.queryVersion();}
+	componentDidMount(){console.log(this.props.keyProp); this.defaults.current!.queryVersion();}
 }
 export {ShellForms};
 
 class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {keys: Set<number>, disabled: boolean}>{
-	state = {keys: new Set([0, 1]), disabled: false};
+	state = {keys: new Set([0, 1]), disabled: false}; deletedKeys: number[] = [];
 	shellRefs = [React.createRef<ShellForms>(), React.createRef<ShellForms>()];
 	scrollRef : React.RefObject<HTMLHeadingElement> = React.createRef<HTMLHeadingElement>();
 	addShip = () => {
 		if(this.state.disabled && (this.state.keys.size > 0)){return;}
 		else{
-			let index: number = 0; let listed: boolean = true;
-			const set = this.state.keys;
-			while(listed){
-				if(set.has(index)){index++;}
-				else{listed = false;}
+			let index: number = 0;
+			if(this.deletedKeys.length > 0){
+				index = this.deletedKeys.pop()!;
+			}else{
+				index = this.state.keys.size;
 			}
+			
 			this.shellRefs.push(React.createRef<ShellForms>());
 			this.setState((current) => {
 				let set = current.keys;
@@ -175,7 +176,7 @@ class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {key
 		if(this.state.disabled){return;}
 		else{
 			if(this.state.keys.size > 0){
-				let set = this.state.keys; set.delete(key);
+				let set = this.state.keys; set.delete(key); this.deletedKeys.push(key);
 				this.shellRefs.splice(index, 1);
 				this.setState((current) => {
 					return {keys: set, disabled: true};

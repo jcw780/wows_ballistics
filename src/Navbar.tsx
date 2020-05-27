@@ -21,7 +21,7 @@ class NavbarCustom extends React.Component<{links: T.linkT}>{
 
         return(
             <Navbar variant="dark" bg="dark" expand="lg" fixed="top">
-                <Navbar.Brand onClick={() => {window.scrollTo(0, 0);}}>World of Warships Ballistics Calculator 2</Navbar.Brand>
+                <Navbar.Brand onClick={() => {window.scrollTo(0, 0);}}>World of Warships Ballistics Calculator</Navbar.Brand>
                 <Nav className="mr-auto">
                     <NavDropdown title="Parameters" id="basic-nav-dropdown">
                         {makeDropdowns('parameters')}
