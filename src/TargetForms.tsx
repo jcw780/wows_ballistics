@@ -35,6 +35,7 @@ class AngleForm extends React.Component<angleFormProps>{
 class TargetFormsContainer extends React.Component
 <{}, {angleKeys: Set<number>}>{
     state = {angleKeys: new Set([0, 1, 2, 3, 4, 5, 6, 7])};
+    deletedKeys : number[] = [];
     targetData = {
         armor: 70.,
         inclination: 0.,
@@ -56,14 +57,10 @@ class TargetFormsContainer extends React.Component
 
     addAngle = () => {
 		let index: number = 0;
-		let listed: boolean = true;
-		const set = this.state.angleKeys;
-		while(listed){
-			if(set.has(index)){
-				index++;
-			}else{
-				listed = false;
-			}
+        if(this.deletedKeys.length > 0){
+            index = this.deletedKeys.pop()!;
+        }else{
+            index = this.state.angleKeys.size;
         }
         this.targetData.angles.push(this.targetData.angles.length * 5);
 		this.setState((current) => {
@@ -74,7 +71,7 @@ class TargetFormsContainer extends React.Component
 
 	deleteAngle = (key : number, index : number) => {
 		let set = this.state.angleKeys;
-        set.delete(key);
+        set.delete(key); this.deletedKeys.push(key);
         this.targetData.angles.splice(index, 1);
 		this.setState((current) => {
 			return {angleKeys: set};

@@ -147,7 +147,7 @@ class ShellForms extends React.Component<shellFormsProps> {
 			</Modal.Dialog>
 		);
 	}
-	componentDidMount(){console.log(this.props.keyProp); this.defaults.current!.queryVersion();}
+	componentDidMount(){this.defaults.current!.queryVersion();}
 }
 export {ShellForms};
 
