@@ -1,7 +1,7 @@
 import React from 'react';
 import Chart from 'chart.js';
 import {Scatter, defaults} from 'react-chartjs-2';
-import {Button, Collapse, Container, Row, Col} from 'react-bootstrap';
+import {Button, Collapse, Row, Col} from 'react-bootstrap';
 
 import * as T from 'commonTypes';
 
@@ -96,9 +96,6 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
                 </Collapse> 
             </> 
         );
-    }
-    componentDidUpdate(){
-        console.log(this.chartRef);
     }
 }
 

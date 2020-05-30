@@ -24,7 +24,7 @@ export interface distanceSettingsT {
 }
 export interface calculationSettingsT {
     calculationMethod: number, timeStep: number, 
-    launchAngle: {min: number, max: number}
+    launchAngle: {min: number, max: number, precision: number}
 }
 export interface formatSettingsT {
     rounding: number | null, shortNames: boolean, 

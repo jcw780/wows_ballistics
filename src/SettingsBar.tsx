@@ -40,8 +40,8 @@ interface settingsBarProps{
 }
 export class SettingsBar extends React.Component<settingsBarProps, settingsBarState>{
     state = {open : false}; 
-    valueIndex : number = 1; values : Readonly<Array<string>> = ["Hide: ", "Show: "]; // 0: Hide 1: Show
-    toggleCollapse = () => {
+    private valueIndex : number = 1; values : Readonly<Array<string>> = ["Hide: ", "Show: "]; // 0: Hide 1: Show
+    private toggleCollapse = () => {
         if(this.state.open){
             this.valueIndex = 1;
         }else{
@@ -49,14 +49,15 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
         }
         this.setState((current) => {return {open: !current.open}});
     }
-    forms = {
+    private forms = {
         graphs : {
             distance : [
                 ['min', 'Minimum Distance'], ['max', 'Maximum Distance'], ['stepSize', 'Step Size']
             ]
         },
         calculations : [
-            ['min', 'Minimum Launch Angle', '°'], ['max', 'Maximum Launch Angle', '°'], ['timeStep', 'Calculation Time Step', 's']
+            ['min', 'Minimum Launch Angle', '°'], ['max', 'Maximum Launch Angle', '°'], 
+            ['precision', 'Launch Angle Increment', '°'], ['timeStep', 'Calculation Time Step', 's']
         ]
     }
     calcSettingsFinder = (id) => {
@@ -144,7 +145,7 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
                         </ToggleButtonGroup>
                         <ParameterForm newValue={String(this.props.settings.format.rounding)} controlId="rounding" label="Tooltip Rounding"
                         type="number" handleValueChange={handleRoundingChange} labelWidth={3} append="dp"/>
-                        <h4>Colors</h4>
+                        <h4>Color Generation</h4>
                         <ParameterForm newValue={String(this.props.settings.format.colors.saturation * 100)} controlId="saturation" label="Saturation"
                         type="number" handleValueChange={handleColorChange} labelWidth={3} append="%"/>
                         <ParameterForm newValue={String(this.props.settings.format.colors.light * 100)} controlId="light" label="Light"
@@ -155,14 +156,14 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
                     <Col style={{padding: 0}}>
                         <h3>Calculations</h3>
                         <Row>
-                        <Col style={{padding: 0}}>
-                        <h4>Numerical Parameters</h4>
-                        {generateCalculationForm()}
-                        </Col>
-                        <Col sm="5" style={{paddingRight: 0, paddingLeft: 0}}>
-                        <h4>Numerical Method</h4>
-                        <CalculationRadio settings={this.props.settings}/>
-                        </Col>
+                            <Col style={{padding: 0}}>
+                                <h4>Launch Angle</h4>
+                                {generateCalculationForm()}
+                            </Col>
+                            <Col sm="5" style={{paddingRight: 0, paddingLeft: 0}}>
+                                <h4>Numerical Method</h4>
+                                <CalculationRadio settings={this.props.settings}/>
+                            </Col>
                         </Row>
                     </Col>
                 </Row></Container>

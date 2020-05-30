@@ -25,7 +25,7 @@ class App extends React.Component<{},{}> {
 		distance: {min: 0, max: undefined, stepSize: 1000, },
 		calculationSettings: {
 			calculationMethod: 1, timeStep: 0.02,
-			launchAngle : {min: 0, max: 25},
+			launchAngle : {min: 0, max: 25, precision: 0.1},
 		},
 		format: {
 			rounding: 3, shortNames: true,
@@ -80,6 +80,7 @@ class App extends React.Component<{},{}> {
 		const calcSettings = this.settings.calculationSettings;
 		const launchAngle = calcSettings.launchAngle;
 		instance.setMax(launchAngle.max); instance.setMin(launchAngle.min);
+		instance.setPrecision(launchAngle.precision);
 		instance.setDtMin(calcSettings.timeStep);
 	}
 	calcImpact = (method) => {
