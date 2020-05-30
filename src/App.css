@@ -64,3 +64,8 @@ body{
   margin-left: 0! important;
   margin-right: 0! important;
 }
+ 
+.input-group-text{
+  padding-left: .3rem! important;
+  padding-right: .3rem! important;
+}
