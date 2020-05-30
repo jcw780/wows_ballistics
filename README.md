@@ -17,8 +17,10 @@ https://jcw780.github.io/wows_ballistics/
 - Minimum angle for fusing </br>  
 - Lateral ricochet angles </br> 
 ### Calculate AP performance post penetration
-- Shell detonation distance after penetration - Checking whether the armor is thick enough to arm the shell
+- Shell detonation distance after penetration 
+- Checking whether the armor is thick enough to arm the shell
 ## Development Status
+### Current Status
 - [Issues](https://github.com/jcw780/wows_ballistics/issues)
 - Calculations may be refined if contradicting data is provided
 ### Future Features
