@@ -1,12 +1,12 @@
 import React from 'react';
 import Chart from 'chart.js';
 import {Scatter, defaults} from 'react-chartjs-2';
-import {Button, Collapse} from 'react-bootstrap';
+import {Button, Collapse, Container, Row, Col} from 'react-bootstrap';
 
 import * as T from 'commonTypes';
 
 //For downloading graphs as images
-class DownloadButton extends React.Component<{updateData: Function}>{
+class DownloadButton extends React.Component<{updateData: Function, label: string}>{
     state = {href: '', download: ''} 
     update = (href, download) => {
         this.setState({href: href, download: download});
@@ -18,7 +18,7 @@ class DownloadButton extends React.Component<{updateData: Function}>{
         return (
             <a download={this.state.download} href={this.state.href}>
                 <Button variant="outline-secondary" onClick={this.click}>
-                    Download Graph
+                    {this.props.label}
                 </Button>
             </a>
         );
@@ -43,11 +43,12 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
     state = {open : true}; 
     //apparently you need a value in state or else set state doesn't trigger rerender
     valueIndex : number = 0; values : Readonly<Array<string>> = ["Hide: ", "Show: "]; // 0: Hide 1: Show
-    graphHref: string = ''; graphDownload: string = '.png'
 
     chartRef : React.RefObject<Scatter> = React.createRef<Scatter>();
     scrollRef : React.RefObject<Button & HTMLButtonElement> = React.createRef<Button & HTMLButtonElement>();
-    DownloadRef : React.RefObject<DownloadButton> = React.createRef<DownloadButton>();
+    DownloadRef : React.RefObject<DownloadButton>[] = [
+        React.createRef<DownloadButton>(), React.createRef<DownloadButton>()
+    ];
     update = () => {
         this.setState(this.state); //trigger rerender
     }
@@ -58,6 +59,16 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
             this.valueIndex = 0;
         }
         this.setState((current) => {return {open: !current.open}});
+    }
+    updateDownloadGraph = () => {
+        const url = this.chartRef.current!.chartInstance.toBase64Image();
+        this.DownloadRef[0].current!.update(url, this.chartRef.current!.chartInstance.options.title.text + '.png');
+    }
+    updateDownloadJSON = () => {
+        const data = this.chartRef.current!.chartInstance.config.data.datasets;
+        const selectedData = data.map((line) => {return {label: line.label, data: line.data}});
+        const url = URL.createObjectURL(new Blob([JSON.stringify(selectedData)], {type: 'text/json;charset=utf-8'}));
+        this.DownloadRef[1].current!.update(url, this.chartRef.current!.chartInstance.options.title.text + '.json');
     }
     render(){
         return(
@@ -73,23 +84,21 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
                     <Scatter data={this.props.config.data} options={this.props.config.options}
                     width={this.props.dimensions.width} height={this.props.dimensions.height}
                     ref={this.chartRef}/>
-                    <DownloadButton ref={this.DownloadRef} updateData={this.updateDownload}/>
+                    <Row style={{margin: 0}}>
+                        <Col sm="4" style={{padding: 0}}/>
+                        <Col sm="2" style={{padding: 0}}><DownloadButton ref={this.DownloadRef[0]} updateData={this.updateDownloadGraph} 
+                        label="Download Graph"/></Col>
+                        <Col sm="2" style={{padding: 0}}><DownloadButton ref={this.DownloadRef[1]} updateData={this.updateDownloadJSON} 
+                        label="Download JSON"/></Col>
+                        <Col sm="4" style={{padding: 0}}/>
+                    </Row>
                     </div>
                 </Collapse> 
             </> 
         );
     }
-    //componentDidMount(){
-        //this.updateDownload();
-    //}
-    //componentDidUpdate(){
-        //this.updateDownload();
-    //}
-    updateDownload = () => {
-        const url = this.chartRef.current!.chartInstance.toBase64Image();
-        this.graphDownload = this.chartRef.current!.chartInstance.options.title.text + '.png';
-        this.graphHref = url;
-        this.DownloadRef.current!.update(url, this.chartRef.current!.chartInstance.options.title.text + '.png');
+    componentDidUpdate(){
+        console.log(this.chartRef);
     }
 }
 
