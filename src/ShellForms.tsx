@@ -100,7 +100,7 @@ class ShellForms extends React.Component<shellFormsProps> {
 	deleteShip = () => {this.props.deleteShip(this.props.keyProp, this.props.index);}
 	render() {
 		return(
-			<Modal.Dialog style={{minWidth: 350}}>
+			<Modal.Dialog>
 				<Modal.Header closeButton onHide={this.deleteShip} style={{padding: "0.5rem"}}>
 					<Modal.Title style={{marginLeft: "40%", marginRight: "auto", }}>Shell {this.props.index + 1}</Modal.Title>
 				</Modal.Header>
