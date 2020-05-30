@@ -11,9 +11,7 @@ class DownloadButton extends React.Component<{updateData: Function, label: strin
     update = (href, download) => {
         this.setState({href: href, download: download});
     }
-    click = () => {
-        this.props.updateData()
-    }
+    private click = () => {this.props.updateData()}
     render(){
         return (
             <a download={this.state.download} href={this.state.href}>
@@ -22,9 +20,6 @@ class DownloadButton extends React.Component<{updateData: Function, label: strin
                 </Button>
             </a>
         );
-    }
-    componentDidUpdate(){
-        //console.log('updated', this.state.href);
     }
 }
 
@@ -149,7 +144,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 React.createRef<SingleChart>(), ''],
         ]
     }
-    callbackFunctions = {
+    private callbackFunctions = {
         Penetration: (x, y) => {return '(' + x + 'm, ' + y + 'mm)';},
         Angle: (x, y) => {return '(' + x + 'm, ' + y + '°)';},
         'Impact Velocity': (x, y) => {return '(' + x + 'm, ' + y + 'm/s)';}, 
@@ -197,8 +192,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     return num;
                 }
                 var parts = num.split('.'),
-                    beforePoint = parts[0],
-                    afterPoint = parts[1],
+                    beforePoint = parts[0], afterPoint = parts[1],
                     shouldRoundUp = afterPoint[dp] >= 5,
                     finalNumber;
                 afterPoint = afterPoint.slice(0, dp);
@@ -368,7 +362,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             value[2] = `Horizontal Impact Angle ${i + 1}: ${graphData.angles[i]}°`
         });
         //Add Lines
-        const impactLine = (data : Array<Record<string, number>>, 
+        const impactAngleLine = (data : Array<Record<string, number>>, 
                             label: string, yAxisID : string, 
                             color : string = "") : Record<string, any> => {
             return {
@@ -377,15 +371,6 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 borderColor: color
             };
         }
-        /*const angleLine = (data : Array<Record<string, number>>, // no difference between impact and angle rn
-                            label: string, yAxisID: string,      // fills are not implemented yet
-                            color : string = "") : Record<string, any> => {
-            return {
-                data: data, showLine: true, label: label, 
-                yAxisID: "angle", //backgroundColor: Samples.utils.transparentize(colors[index][0]),
-                borderColor: color, fill: false, pointRadius: commonPointRadius, pointHitRadius: 5
-            }
-        }*/
         const postLine = (data : Array<Record<string, number>>, 
             label: string, color : string = "", show : boolean = true) : Record<string, any> => {
             if(show){return {
@@ -404,7 +389,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             target.forEach((value, rowIndex) => {
                 configs[rowIndex].axes.forEach((axis, axisIndex) => {
                     axis.lines.forEach((line, lineIndex) => {
-                        value[0].data.datasets.push(impactLine(
+                        value[0].data.datasets.push(impactAngleLine(
                             graphData[line.data][shellIndex], 
                             line.lineLabel + name, 
                             axis.id, 
