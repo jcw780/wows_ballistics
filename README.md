@@ -4,6 +4,8 @@
 ### Languages and Major Libraries
 - HTML, CSS, Javascript, Typescript, React
 - Wasm backend: [jcw780/ShellCPP](https://github.com/jcw780/ShellCPP)
+## Legal
+- All copyrighted material provided by Wargaming.net are owned by Wargaming.net.
 ## Functionality
 ### Calculate shell performance at impact and in flight
 - Belt/Deck Penetration </br> 
@@ -20,7 +22,7 @@
 - Checking whether the armor is thick enough to arm the shell
 ## Development Status
 - [Issues](https://github.com/jcw780/wows_ballistics/issues)
-- Feels free to open an issue for questions, bugs, feature requests etc. 
+- Feel free to open an issue for questions, bugs, feature requests etc. 
 ### Current Status
 - Calculations may be refined if contradicting data is provided
 ### Future Features
