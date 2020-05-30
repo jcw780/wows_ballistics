@@ -109,9 +109,9 @@ class ShellForms extends React.Component<shellFormsProps> {
 					<Col sm='12' style={{padding: 0}}>
 						<ParameterForm label="Shell Label" controlId='shipName'
 								handleValueChange={this.handleNameChange}
-								type="text" newValue="" labelWidth={4}
-								ref={this.nameForm} style={{formControl: {width: '50%'}}}/>
-						<hr/>
+								type="text" newValue="" labelWidth={3}
+								ref={this.nameForm} style={{formControl: {width: '70%'}}}/>
+						<hr style={{marginTop: 0}}/>
 						<DefaultShips sendDefault={this.getDefaultData} ref={this.defaults} 
 						reset={this.props.reset} index={this.props.index}/>
 					</Col>
@@ -211,10 +211,10 @@ class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {key
 		return(
 <>
 	<h2 ref={this.scrollRef}>Shell Parameters</h2>
-	<Container style={{marginBottom : "0rem", paddingRight: 0, paddingLeft: 0}}>
-		<Row sm={3}>
+	<Container style={{marginBottom : "0rem", paddingRight: 0, paddingLeft: 0, maxWidth: '90%'}}>
+		<Row>
 		{Array.from(this.state.keys).map((value, i) => {
-			return <Col key={value} style={{margin: 0, padding: 0}}>
+			return <Col key={value} style={{margin: 0, padding: "0.5rem"}} sm="4">
 				<ShellForms colors={this.generateColors(i, this.state.keys.size)} index={i} deleteShip={this.deleteShip} 
 				keyProp={value} ref={this.shellRefs[i]} reset={this.reset} settings={this.props.settings} size={this.state.keys.size}/>
 			</Col>;

@@ -9,7 +9,6 @@ import NavbarCustom from './Navbar';
 import SettingsBar from 'SettingsBar';
 
 import ShellWasm from './shellWasm.wasm';
-import { array } from 'prop-types';
 class App extends React.Component<{},{}> {
 	SFCref = React.createRef<ShellFormsContainer>();
 	TFCref = React.createRef<TargetFormsContainer>();
@@ -51,23 +50,26 @@ class App extends React.Component<{},{}> {
 		super(props); this.compile();
 		//initialize calculatedData
 		const numShells = 2; const impactSize = 251; const numAngles = 8;
+		const createNewPointArray = (lines, points) => {
+			return Array.from({length: lines}, _ => new Array<T.scatterPoint>(points))
+		}
 		this.calculatedData = {
 			impact: {
-				ePenHN : Array.from({length: numShells}, _ => new Array<T.scatterPoint>(impactSize)),
-				impactAHD : Array.from({length: numShells}, _ => new Array<T.scatterPoint>(impactSize)),
-				ePenDN : Array.from({length: numShells}, _ => new Array<T.scatterPoint>(impactSize)),
-				impactADD : Array.from({length: numShells}, _ => new Array<T.scatterPoint>(impactSize)),
-				impactV: Array.from({length: numShells}, _ => new Array<T.scatterPoint>(impactSize)),
-				tToTargetA: Array.from({length: numShells}, _ => new Array<T.scatterPoint>(impactSize)),
+				ePenHN : createNewPointArray(numShells, impactSize),
+				impactAHD : createNewPointArray(numShells, impactSize),
+				ePenDN : createNewPointArray(numShells, impactSize),
+				impactADD : createNewPointArray(numShells, impactSize),
+				impactV: createNewPointArray(numShells, impactSize),
+				tToTargetA: createNewPointArray(numShells, impactSize),
 			}, angle: {
-				armorD : Array.from({length: numShells}, _ => new Array<T.scatterPoint>(impactSize)),
-				fuseD : Array.from({length: numShells}, _ => new Array<T.scatterPoint>(impactSize)),
-				ra0D : Array.from({length: numShells}, _ => new Array<T.scatterPoint>(impactSize)),
-				ra1D : Array.from({length: numShells}, _ => new Array<T.scatterPoint>(impactSize)),
+				armorD : createNewPointArray(numShells, impactSize),
+				fuseD : createNewPointArray(numShells, impactSize),
+				ra0D : createNewPointArray(numShells, impactSize),
+				ra1D : createNewPointArray(numShells, impactSize),
 			}, post: {
-				shipWidth : Array.from({length: 1}, _ => new Array<T.scatterPoint>(impactSize)),
-				notFused: Array.from({length: numShells * numAngles}, _ => new Array<T.scatterPoint>()),
-				fused: Array.from({length: numShells * numAngles}, _ => new Array<T.scatterPoint>()),
+				shipWidth : createNewPointArray(1, impactSize),
+				notFused: createNewPointArray(numShells * numAngles, 0),
+				fused: createNewPointArray(numShells * numAngles, 0),
 			},
 			numShells : numShells, names : Array<string>(numShells), colors : Array<Array<string>>(numShells),
 			targets : Array<T.targetDataNoAngleT>(1), angles : []
@@ -78,7 +80,7 @@ class App extends React.Component<{},{}> {
 		const calcSettings = this.settings.calculationSettings;
 		const launchAngle = calcSettings.launchAngle;
 		instance.setMax(launchAngle.max); instance.setMin(launchAngle.min);
-		instance.setPrecision(calcSettings.timeStep);
+		instance.setDtMin(calcSettings.timeStep);
 	}
 	calcImpact = (method) => {
 		const calcImpactFunc = {
@@ -91,7 +93,7 @@ class App extends React.Component<{},{}> {
 			calcImpactFunc[method]();
 		}else{
 			console.log('Error', method);
-			throw 'Invalid parameter';
+			throw new Error('Invalid parameter');
 		}
 	}
 
@@ -100,27 +102,20 @@ class App extends React.Component<{},{}> {
 		const diff = newLength - array.length;
 		if(diff > 0){
 			if(fill !== undefined){
-				array = array.concat(Array.from({length: diff}, _ => new fill));
-			}else{
-				array = array.concat(Array.from({length: diff}));
-			}
-		}else if(diff < 0){
-			array.slice(0, newLength);
-		}
+				for(let i=0; i<diff; i++){const nObj : K = new fill(); array.push(nObj);}
+			}else{for(let i=0; i<diff; i++){array.push();}}
+		}else if(diff < 0){array.length = newLength;}
 	}
 	resizePointArray = (array: Array<Array<any>>, newLength: [number, number]) => {
 		this.resizeArray(array, newLength[0], Array);
-		array.forEach((subArray) => {
-			this.resizeArray(subArray, newLength[1]);
-		});
+		array.forEach((subArray) => {this.resizeArray(subArray, newLength[1]);});
 	}
 	resizeCalculatedData = (numShells, impactSize, numAngles) => {
 		this.calculatedData.numShells = numShells;
 		const chartIndicesNonPost : Array<'impact' | 'angle'> = ['impact', 'angle'];
 		chartIndicesNonPost.forEach((index) => {
 			Object.entries(this.calculatedData[index]).forEach((kv) => {
-				const key = kv[0]; const value = kv[1];
-				this.resizePointArray(value, [numShells, impactSize]);
+				const value = kv[1]; this.resizePointArray(value, [numShells, impactSize]);
 			})
 		})
 		const angleShells = numAngles * numShells;
@@ -148,41 +143,22 @@ class App extends React.Component<{},{}> {
 			this.instance.calcPostPen(tgtData.armor, tgtData.inclination,
 				tgtData.angles, true, true);
 			const impactSize: number = this.instance.getImpactSize(); const numAngles: number = tgtData.angles.length;
-			const output : T.calculatedData = {
-				impact: {
-					ePenHN : Array.from({length: numShells}, _ => new Array<T.scatterPoint>(impactSize)),
-					impactAHD : Array.from({length: numShells}, _ => new Array<T.scatterPoint>(impactSize)),
-					ePenDN : Array.from({length: numShells}, _ => new Array<T.scatterPoint>(impactSize)),
-					impactADD : Array.from({length: numShells}, _ => new Array<T.scatterPoint>(impactSize)),
-					impactV: Array.from({length: numShells}, _ => new Array<T.scatterPoint>(impactSize)),
-					tToTargetA: Array.from({length: numShells}, _ => new Array<T.scatterPoint>(impactSize)),
-				}, angle: {
-					armorD : Array.from({length: numShells}, _ => new Array<T.scatterPoint>(impactSize)),
-					fuseD : Array.from({length: numShells}, _ => new Array<T.scatterPoint>(impactSize)),
-					ra0D : Array.from({length: numShells}, _ => new Array<T.scatterPoint>(impactSize)),
-					ra1D : Array.from({length: numShells}, _ => new Array<T.scatterPoint>(impactSize)),
-				}, post: {
-					shipWidth : Array.from({length: 1}, _ => new Array<T.scatterPoint>(impactSize)),
-					notFused: Array.from({length: numShells * numAngles}, _ => new Array<T.scatterPoint>()),
-					fused: Array.from({length: numShells * numAngles}, _ => new Array<T.scatterPoint>()),
-				},
-				numShells : numShells, names : Array<string>(numShells), colors : Array<Array<string>>(numShells),
-				targets : Array<T.targetDataNoAngleT>(1), angles : tgtData.angles
-			}
-			output.targets[0] = {armor: tgtData.armor, inclination: tgtData.inclination, width: tgtData.width}
-			shellData.forEach((value, i) => {output.names[i] = value.name; output.colors[i] = value.colors;});
+			this.resizeCalculatedData(numShells, impactSize, numAngles);
+			this.calculatedData.angles = tgtData.angles;
+			this.calculatedData.targets[0] = {armor: tgtData.armor, inclination: tgtData.inclination, width: tgtData.width}
+			shellData.forEach((value, i) => {this.calculatedData.names[i] = value.name; this.calculatedData.colors[i] = value.colors;});
 			let maxDist = 0; let maxShell = 0;
 			for(let j=0; j<numShells; j++){
 				let maxDistS = 0;
 				for(let i=0; i<impactSize; i++){
 					const dist : number = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex.distance, j);
 					maxDistS = dist > maxDistS ? dist : maxDistS;
-					Object.entries(output.impact).forEach((kv : any) => {
+					Object.entries(this.calculatedData.impact).forEach((kv : any) => {
 						const k = kv[0]; const v = kv[1];
 						const y = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex[k], j);
 						v[j][i] = {x: dist, y: y};
 					});
-					Object.entries(output.angle).forEach((kv : any) => {
+					Object.entries(this.calculatedData.angle).forEach((kv : any) => {
 						const k = kv[0]; const v = kv[1];
 						v[j][i] = {x: dist, y: this.instance.getAnglePoint(i, this.arrayIndices.angleDataIndex[k], j)};
 					});
@@ -192,8 +168,8 @@ class App extends React.Component<{},{}> {
 						const fused : number
 							= this.instance.getPostPenPoint(i, this.arrayIndices.postPenDataIndex.xwf, k, j);
 						const point : T.scatterPoint = {x: dist, y: detDist};
-						if(fused < 0){output.post.notFused[k+j*numAngles].push(point);
-						}else{output.post.fused[k+j*numAngles].push(point);}
+						if(fused < 0){this.calculatedData.post.notFused[k+j*numAngles].push(point);
+						}else{this.calculatedData.post.fused[k+j*numAngles].push(point);}
 					}
 				}
 				const greater = maxDistS > maxDist;
@@ -201,10 +177,10 @@ class App extends React.Component<{},{}> {
 			}
 			for(let i=0; i<impactSize; i++){
 				const dist = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex.distance, maxShell);
-				output.post.shipWidth[0][i] = {x: dist, y: tgtData.width}
+				this.calculatedData.post.shipWidth[0][i] = {x: dist, y: tgtData.width}
 			}
 			//console.log(JSON.stringify(output));
-			if(this.graphsRef.current){this.graphsRef.current.updateData(output);}
+			if(this.graphsRef.current){this.graphsRef.current.updateData(this.calculatedData);}
 		}
 	}
 	onUpdate = () =>{this.navRef.current!.update();}	
