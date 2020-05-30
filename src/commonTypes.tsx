@@ -3,6 +3,7 @@ import React from 'react';
 import {ChartGroup, SingleChart} from 'Charts';
 import ShellFormsContainer from 'ShellForms';
 import TargetFormsContainer from 'TargetForms';
+import SettingsBar from 'SettingsBar';
 
 export interface styleT{
 	formGroup?: React.CSSProperties, formLabel?: React.CSSProperties, inputGroup?: React.CSSProperties, 
@@ -60,7 +61,7 @@ export type chartRefT = React.RefObject<SingleChart>;
 
 export type singleLinkT = [string, chartRefT | parameterRefT];
 export type parameterRefT = React.RefObject<ShellFormsContainer 
-| TargetFormsContainer>;
+| TargetFormsContainer | SettingsBar>;
 export type linkKeyT = chartT | 'parameters';
 export interface linkT {
     impact: singleLinkT[], angle: singleLinkT[], 

@@ -36,6 +36,12 @@ class NavbarCustom extends React.Component<{links: T.linkT}>{
                         {makeDropdowns('post')}
                     </NavDropdown>
                 </Nav>
+                <Nav className="navbar-right">
+                    <NavDropdown title="Support" id="basic-nav-dropdown" alignRight>
+                        <NavDropdown.Item href="https://github.com/jcw780/wows_ballistics">Github</NavDropdown.Item>
+                        <NavDropdown.Item href="https://github.com/jcw780/wows_ballistics/issues">Issues</NavDropdown.Item>
+                    </NavDropdown>
+                </Nav>
             </Navbar>
         );
     }

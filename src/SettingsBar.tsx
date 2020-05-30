@@ -41,7 +41,7 @@ interface settingsBarProps{
     settings: T.settingsT,
 }
 export class SettingsBar extends React.Component<settingsBarProps, settingsBarState>{
-    state = {open : false}; 
+    state = {open : false}; scrollRef = React.createRef<Button & HTMLButtonElement>();
     private valueIndex : number = 1; values : Readonly<Array<string>> = ["Hide: ", "Show: "]; // 0: Hide 1: Show
     private toggleCollapse = () => {
         if(this.state.open){
@@ -125,7 +125,7 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
 
         return(<>
             <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
-                    onClick={this.toggleCollapse}
+                    onClick={this.toggleCollapse} ref={this.scrollRef}
                     aria-controls="collapseSettings"
                     aria-expanded={this.state.open} variant="dark"
                     className={this.state.open === true ? 'active' : ''}
@@ -135,23 +135,23 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
                     <Col sm="6" style={{padding: 0}}>
                         <h3>Graphs</h3>
                         <Row>
-                        <Col style={{paddingRight: 0}}>
-                        <h4>Range Axis</h4>
-                        {generateGraphForm()}
-                        </Col>
+                            <Col style={{paddingRight: 0}}>
+                            <h4>Range Axis</h4>
+                            {generateGraphForm()}
+                            </Col>
                         <Col style={{padding: 0}}>
-                        <h4>Labeling</h4>
-                        <ToggleButtonGroup type="checkbox" vertical defaultValue={shortNamesDefault}>
-                            <ToggleButton value="0" onChange={handleShortNameChange} variant="secondary">Short Names</ToggleButton>
-                        </ToggleButtonGroup>
-                        <ParameterForm newValue={String(this.props.settings.format.rounding)} controlId="rounding" label="Tooltip Rounding"
-                        type="number" handleValueChange={handleRoundingChange} labelWidth={3} append="dp"/>
-                        <h4>Color Generation</h4>
-                        <ParameterForm newValue={String(this.props.settings.format.colors.saturation * 100)} controlId="saturation" label="Saturation"
-                        type="number" handleValueChange={handleColorChange} labelWidth={3} append="%"/>
-                        <ParameterForm newValue={String(this.props.settings.format.colors.light * 100)} controlId="light" label="Light"
-                        type="number" handleValueChange={handleColorChange} labelWidth={3} append="%"/>
-                        </Col>
+                            <h4>Labeling</h4>
+                            <ToggleButtonGroup type="checkbox" vertical defaultValue={shortNamesDefault}>
+                                <ToggleButton value="0" onChange={handleShortNameChange} variant="secondary">Short Names</ToggleButton>
+                            </ToggleButtonGroup>
+                            <ParameterForm newValue={String(this.props.settings.format.rounding)} controlId="rounding" label="Tooltip Rounding"
+                            type="number" handleValueChange={handleRoundingChange} labelWidth={3} append="dp"/>
+                            <h4>Color Generation</h4>
+                            <ParameterForm newValue={String(this.props.settings.format.colors.saturation * 100)} controlId="saturation" label="Saturation"
+                            type="number" handleValueChange={handleColorChange} labelWidth={3} append="%"/>
+                            <ParameterForm newValue={String(this.props.settings.format.colors.light * 100)} controlId="light" label="Light"
+                            type="number" handleValueChange={handleColorChange} labelWidth={3} append="%"/>
+                            </Col>
                         </Row>
                     </Col>
                     <Col style={{padding: 0}}>
