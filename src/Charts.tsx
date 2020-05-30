@@ -1,30 +1,25 @@
 import React from 'react';
 import Chart from 'chart.js';
 import {Scatter, defaults} from 'react-chartjs-2';
-import {Button, Collapse} from 'react-bootstrap';
+import {Button, Collapse, Row, Col} from 'react-bootstrap';
 
 import * as T from 'commonTypes';
 
 //For downloading graphs as images
-class DownloadButton extends React.Component<{updateData: Function}>{
+class DownloadButton extends React.Component<{updateData: Function, label: string}>{
     state = {href: '', download: ''} 
     update = (href, download) => {
         this.setState({href: href, download: download});
     }
-    click = () => {
-        this.props.updateData()
-    }
+    private click = () => {this.props.updateData()}
     render(){
         return (
             <a download={this.state.download} href={this.state.href}>
                 <Button variant="outline-secondary" onClick={this.click}>
-                    Download Graph
+                    {this.props.label}
                 </Button>
             </a>
         );
-    }
-    componentDidUpdate(){
-        //console.log('updated', this.state.href);
     }
 }
 
@@ -43,11 +38,12 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
     state = {open : true}; 
     //apparently you need a value in state or else set state doesn't trigger rerender
     valueIndex : number = 0; values : Readonly<Array<string>> = ["Hide: ", "Show: "]; // 0: Hide 1: Show
-    graphHref: string = ''; graphDownload: string = '.png'
 
     chartRef : React.RefObject<Scatter> = React.createRef<Scatter>();
     scrollRef : React.RefObject<Button & HTMLButtonElement> = React.createRef<Button & HTMLButtonElement>();
-    DownloadRef : React.RefObject<DownloadButton> = React.createRef<DownloadButton>();
+    DownloadRef : React.RefObject<DownloadButton>[] = [
+        React.createRef<DownloadButton>(), React.createRef<DownloadButton>()
+    ];
     update = () => {
         this.setState(this.state); //trigger rerender
     }
@@ -58,6 +54,16 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
             this.valueIndex = 0;
         }
         this.setState((current) => {return {open: !current.open}});
+    }
+    updateDownloadGraph = () => {
+        const url = this.chartRef.current!.chartInstance.toBase64Image();
+        this.DownloadRef[0].current!.update(url, this.chartRef.current!.chartInstance.options.title.text + '.png');
+    }
+    updateDownloadJSON = () => {
+        const data = this.chartRef.current!.chartInstance.config.data.datasets;
+        const selectedData = data.map((line) => {return {label: line.label, data: line.data}});
+        const url = URL.createObjectURL(new Blob([JSON.stringify(selectedData)], {type: 'text/json;charset=utf-8'}));
+        this.DownloadRef[1].current!.update(url, this.chartRef.current!.chartInstance.options.title.text + '.json');
     }
     render(){
         return(
@@ -73,23 +79,18 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
                     <Scatter data={this.props.config.data} options={this.props.config.options}
                     width={this.props.dimensions.width} height={this.props.dimensions.height}
                     ref={this.chartRef}/>
-                    <DownloadButton ref={this.DownloadRef} updateData={this.updateDownload}/>
+                    <Row style={{margin: 0}}>
+                        <Col sm="4" style={{padding: 0}}/>
+                        <Col sm="2" style={{padding: 0}}><DownloadButton ref={this.DownloadRef[0]} updateData={this.updateDownloadGraph} 
+                        label="Download Graph"/></Col>
+                        <Col sm="2" style={{padding: 0}}><DownloadButton ref={this.DownloadRef[1]} updateData={this.updateDownloadJSON} 
+                        label="Download JSON"/></Col>
+                        <Col sm="4" style={{padding: 0}}/>
+                    </Row>
                     </div>
                 </Collapse> 
             </> 
         );
-    }
-    //componentDidMount(){
-        //this.updateDownload();
-    //}
-    //componentDidUpdate(){
-        //this.updateDownload();
-    //}
-    updateDownload = () => {
-        const url = this.chartRef.current!.chartInstance.toBase64Image();
-        this.graphDownload = this.chartRef.current!.chartInstance.options.title.text + '.png';
-        this.graphHref = url;
-        this.DownloadRef.current!.update(url, this.chartRef.current!.chartInstance.options.title.text + '.png');
     }
 }
 
@@ -143,7 +144,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 React.createRef<SingleChart>(), ''],
         ]
     }
-    callbackFunctions = {
+    private callbackFunctions = {
         Penetration: (x, y) => {return '(' + x + 'm, ' + y + 'mm)';},
         Angle: (x, y) => {return '(' + x + 'm, ' + y + '°)';},
         'Impact Velocity': (x, y) => {return '(' + x + 'm, ' + y + 'm/s)';}, 
@@ -191,8 +192,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     return num;
                 }
                 var parts = num.split('.'),
-                    beforePoint = parts[0],
-                    afterPoint = parts[1],
+                    beforePoint = parts[0], afterPoint = parts[1],
                     shouldRoundUp = afterPoint[dp] >= 5,
                     finalNumber;
                 afterPoint = afterPoint.slice(0, dp);
@@ -362,7 +362,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             value[2] = `Horizontal Impact Angle ${i + 1}: ${graphData.angles[i]}°`
         });
         //Add Lines
-        const impactLine = (data : Array<Record<string, number>>, 
+        const impactAngleLine = (data : Array<Record<string, number>>, 
                             label: string, yAxisID : string, 
                             color : string = "") : Record<string, any> => {
             return {
@@ -371,15 +371,6 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 borderColor: color
             };
         }
-        /*const angleLine = (data : Array<Record<string, number>>, // no difference between impact and angle rn
-                            label: string, yAxisID: string,      // fills are not implemented yet
-                            color : string = "") : Record<string, any> => {
-            return {
-                data: data, showLine: true, label: label, 
-                yAxisID: "angle", //backgroundColor: Samples.utils.transparentize(colors[index][0]),
-                borderColor: color, fill: false, pointRadius: commonPointRadius, pointHitRadius: 5
-            }
-        }*/
         const postLine = (data : Array<Record<string, number>>, 
             label: string, color : string = "", show : boolean = true) : Record<string, any> => {
             if(show){return {
@@ -398,7 +389,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             target.forEach((value, rowIndex) => {
                 configs[rowIndex].axes.forEach((axis, axisIndex) => {
                     axis.lines.forEach((line, lineIndex) => {
-                        value[0].data.datasets.push(impactLine(
+                        value[0].data.datasets.push(impactAngleLine(
                             graphData[line.data][shellIndex], 
                             line.lineLabel + name, 
                             axis.id, 

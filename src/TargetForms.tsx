@@ -36,7 +36,7 @@ class TargetFormsContainer extends React.Component
 <{}, {angleKeys: Set<number>}>{
     state = {angleKeys: new Set([0, 1, 2, 3, 4, 5, 6, 7])};
     deletedKeys : number[] = [];
-    targetData = {
+    targetData : T.targetDataT = {
         armor: 70.,
         inclination: 0.,
         width: 18.,

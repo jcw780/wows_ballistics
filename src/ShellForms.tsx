@@ -5,14 +5,14 @@ import * as T from 'commonTypes';
 import {ParameterForm} from 'ParameterForm';
 import DefaultShips from './DefaultForms'
 
-interface shellParametersProps {handleValueChange: any, formLabels : any}
+interface shellParametersProps {handleValueChange: any, formLabels : formValuesT, formValues: formDataT}
 class ShellParameters extends React.Component<shellParametersProps>{
 	nameForm = React.createRef<ParameterForm>()
 	handleValueChange = (value, k) => {this.props.handleValueChange(value, k);}
 	updateShells() {
 		Object.entries(this.props.formLabels).forEach((kv : any): void => {
-			const value = kv[1];
-			value[3].current.updateValue(value[2]);
+			const key : string = kv[0]; const value = kv[1];
+			value[2].current.updateValue(this.props.formValues[key]);
 		});
 	}
 	render() {
@@ -23,22 +23,22 @@ class ShellParameters extends React.Component<shellParametersProps>{
 					const value = kv[1];
 					return (<ParameterForm label={value[0]} key={i} controlId={key}
 					handleValueChange={this.handleValueChange}
-					type="number" newValue={String(value[2])} append={value[1]}
-					ref={this.props.formLabels[key][3]} style={{inputGroup:{width: "50%"}}}/>);
+					type="number" newValue={String(this.props.formValues[key])} append={value[1]}
+					ref={this.props.formLabels[key][2]} style={{inputGroup:{width: "50%"}}}/>);
 				})}	
 			</Form>
 		);
 	}
 }
-type valuesComponent = [string, string, number, React.RefObject<ParameterForm>];
+type valuesComponent = [string, string, React.RefObject<ParameterForm>];
 type parametersType = 'caliber' | 'muzzleVelocity' | 'dragCoefficient' | 'mass' 
 | 'krupp' | 'fusetime' | 'threshold' | 'normalization' | 'ra0' | 'ra1' | 'HESAP';
-type valuesT = Record<parametersType, valuesComponent>
+type formValuesT = Record<parametersType, valuesComponent>
 interface shellFormsProps{
 	index: number, colors: Array<string>, keyProp: number, deleteShip : Function, 
 	reset: Function, settings : Record<string, any>, size: number
 }
-interface condensedDataType{
+interface formDataT{
 	caliber: number, muzzleVelocity: number, dragCoefficient: number, mass: number, 
 	krupp: number, fusetime: number, threshold: number, normalization: number, 
 	ra0: number, ra1: number, HESAP: number, name: string, colors: string[]
@@ -46,59 +46,49 @@ interface condensedDataType{
 class ShellForms extends React.Component<shellFormsProps> {
 	parameters : React.RefObject<ShellParameters> = React.createRef<ShellParameters>()
 	defaults : React.RefObject<DefaultShips> = React.createRef<DefaultShips>()
-	values : valuesT = Object.seal({
-		caliber: ['Caliber', 'm', 0, React.createRef()], 
-		muzzleVelocity: ['Muzzle Velocity', 'm/s', 0, React.createRef()], 
-		dragCoefficient: ['Drag Coefficient', '(1)', 0, React.createRef()],
-		mass: ['Mass', 'kg', 0, React.createRef()], 
-		krupp: ['Krupp', '(1)', 0, React.createRef()], 
-		fusetime: ['Fusetime', 's', 0, React.createRef()], 
-		threshold: ['Fusing Threshold', 'mm', 0, React.createRef()], 
-		normalization: ['Normalization', '°', 0, React.createRef()], 
-		ra0: ['Start Ricochet', '°', 0, React.createRef()], 
-		ra1: ['Always Ricochet', '°', 0, React.createRef()], 
-		HESAP: ['HE/SAP penetration', 'mm', 0, React.createRef()],
-	})
-	name: string = '';
-	returnData = () => {
-		let condensed : condensedDataType = {
-			caliber: 0, muzzleVelocity: 0, dragCoefficient: 0,
-			mass: 0, krupp: 0, fusetime: 0, threshold: 0, 
-			normalization: 0, ra0: 0, ra1: 0, HESAP: 0,
-			name : this.name, colors : [],
-		};
-
-		Object.entries(this.values).forEach((kv) => {
-			const key = kv[0]; 
-			const value = kv[1];
-			condensed[key] = value[2]; 
-		})
-		condensed['colors'] = this.props.colors;
-		return condensed;
-	}
 	nameForm : React.RefObject<ParameterForm> = React.createRef<ParameterForm>()
-	handleNameChange = (value, id) => {this.name = value;}
+	formLabels : formValuesT = Object.seal({
+		caliber: ['Caliber', 'm', React.createRef()], 
+		muzzleVelocity: ['Muzzle Velocity', 'm/s', React.createRef()], 
+		dragCoefficient: ['Drag Coefficient', '(1)', React.createRef()],
+		mass: ['Mass', 'kg', React.createRef()], 
+		krupp: ['Krupp', '(1)', React.createRef()], 
+		fusetime: ['Fusetime', 's', React.createRef()], 
+		threshold: ['Fusing Threshold', 'mm', React.createRef()], 
+		normalization: ['Normalization', '°', React.createRef()], 
+		ra0: ['Start Ricochet', '°', React.createRef()], 
+		ra1: ['Always Ricochet', '°', React.createRef()], 
+		HESAP: ['HE/SAP penetration', 'mm', React.createRef()],
+	})
+	formData : formDataT = Object.seal({
+		caliber: 0, muzzleVelocity: 0, dragCoefficient: 0,
+		mass: 0, krupp: 0, fusetime: 0, threshold: 0, 
+		normalization: 0, ra0: 0, ra1: 0, HESAP: 0,
+		name : '', colors : this.props.colors,
+	})
+	returnData = () => {return this.formData;}
+	handleNameChange = (value, id) => {this.formData.name = value;}
 	handleValueChange = (value : string, k : string) => {
-		this.values[k][2] = parseFloat(value);
+		this.formData[k] = parseFloat(value);
 	}
 	getDefaultData = (data, nameUnprocessed : string) => { //Query Version End
 		let name = nameUnprocessed;
 		if(this.props.settings.format.shortNames){
 			name = name.split("_").slice(1).join(" ");
 		}
-		this.values.caliber[2] = data.bulletDiametr;
-		this.values.muzzleVelocity[2] = data.bulletSpeed;
-		this.values.dragCoefficient[2] = data.bulletAirDrag;
-		this.values.mass[2] = data.bulletMass;
-		this.values.krupp[2] = data.bulletKrupp;
-		this.values.fusetime[2] = data.bulletDetonator;
-		this.values.threshold[2] = data.bulletDetonatorThreshold;
-		this.values.normalization[2] = data.bulletCapNormalizeMaxAngle;
-		this.values.ra0[2] = data.bulletRicochetAt;
-		this.values.ra1[2] = data.bulletAlwaysRicochetAt;
-		this.values.HESAP[2] = data.alphaPiercingHE;
-		this.name = name; this.nameForm.current!.updateValue(name);
-		if(data.alphaPiercingCS > this.values.HESAP[2]){this.values.HESAP[2] = data.alphaPiercingCS;}
+		this.formData.caliber = data.bulletDiametr;
+		this.formData.muzzleVelocity = data.bulletSpeed;
+		this.formData.dragCoefficient = data.bulletAirDrag;
+		this.formData.mass = data.bulletMass;
+		this.formData.krupp = data.bulletKrupp;
+		this.formData.fusetime = data.bulletDetonator;
+		this.formData.threshold = data.bulletDetonatorThreshold;
+		this.formData.normalization = data.bulletCapNormalizeMaxAngle;
+		this.formData.ra0 = data.bulletRicochetAt;
+		this.formData.ra1 = data.bulletAlwaysRicochetAt;
+		this.formData.HESAP = data.alphaPiercingHE;
+		this.formData.name = name; this.nameForm.current!.updateValue(name);
+		if(data.alphaPiercingCS > this.formData.HESAP){this.formData.HESAP = data.alphaPiercingCS;}
 		if(this.parameters.current){this.parameters.current!.updateShells();}
 		//console.log(this.props.size, this.props.index);
 		if(this.props.index + 1 === this.props.size){
@@ -119,27 +109,28 @@ class ShellForms extends React.Component<shellFormsProps> {
 					<Col sm='12' style={{padding: 0}}>
 						<ParameterForm label="Shell Label" controlId='shipName'
 								handleValueChange={this.handleNameChange}
-								type="text" newValue="" labelWidth={4}
-								ref={this.nameForm} style={{formControl: {width: '50%'}}}/>
-						<hr/>
-						<DefaultShips sendDefault={this.getDefaultData} ref={this.defaults} reset={this.props.reset} index={this.props.index}/>
+								type="text" newValue="" labelWidth={3}
+								ref={this.nameForm} style={{formControl: {width: '70%'}}}/>
+						<hr style={{marginTop: 0}}/>
+						<DefaultShips sendDefault={this.getDefaultData} ref={this.defaults} 
+						reset={this.props.reset} index={this.props.index}/>
 					</Col>
 					</Container>
 				</Modal.Body>
 				<Modal.Footer style={{padding: "0.5rem"}}>
 					<Container>
 					<OverlayTrigger trigger="click" placement="bottom" overlay={
-						<Popover id='popover'>
-							<Popover.Content>
-							<Container style={{padding: 0}}>
-								<Col sm="12" style={{padding: 0}}>
-								<ShellParameters handleValueChange={this.handleValueChange}
-									formLabels={this.values} ref={this.parameters}/>
-								</Col>
-							</Container>
-							</Popover.Content>
-						</Popover>
-					}>
+							<Popover id='popover'>
+								<Popover.Content>
+								<Container style={{padding: 0}}>
+									<Col sm="12" style={{padding: 0}}>
+									<ShellParameters handleValueChange={this.handleValueChange}
+										formLabels={this.formLabels} ref={this.parameters} formValues={this.formData}/>
+									</Col>
+								</Container>
+								</Popover.Content>
+							</Popover>
+						}>
 						<Button variant="dark">Detailed Parameters</Button>
 					</OverlayTrigger>
 					</Container>
@@ -220,10 +211,10 @@ class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {key
 		return(
 <>
 	<h2 ref={this.scrollRef}>Shell Parameters</h2>
-	<Container style={{marginBottom : "0rem", paddingRight: 0, paddingLeft: 0}}>
-		<Row sm={3}>
+	<Container style={{marginBottom : "0rem", paddingRight: 0, paddingLeft: 0, maxWidth: '90%'}}>
+		<Row>
 		{Array.from(this.state.keys).map((value, i) => {
-			return <Col key={value} style={{margin: 0, padding: 0}}>
+			return <Col key={value} style={{margin: 0, padding: "0.5rem"}} sm="4">
 				<ShellForms colors={this.generateColors(i, this.state.keys.size)} index={i} deleteShip={this.deleteShip} 
 				keyProp={value} ref={this.shellRefs[i]} reset={this.reset} settings={this.props.settings} size={this.state.keys.size}/>
 			</Col>;
