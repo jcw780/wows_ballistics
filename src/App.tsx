@@ -12,6 +12,7 @@ import ShellWasm from './shellWasm.wasm';
 class App extends React.Component<{},{}> {
 	SFCref = React.createRef<ShellFormsContainer>();
 	TFCref = React.createRef<TargetFormsContainer>();
+	Settingsref = React.createRef<SettingsBar>();
 	graphsRef : React.RefObject<ChartGroup> = React.createRef<ChartGroup>();
 	navRef : React.RefObject<NavbarCustom> = React.createRef<NavbarCustom>();
 	instance : any;
@@ -195,7 +196,7 @@ class App extends React.Component<{},{}> {
 				<hr/>
 				<TargetFormsContainer ref={this.TFCref}/>
 				<hr/>
-				<SettingsBar settings={this.settings}/>
+				<SettingsBar settings={this.settings} ref={this.Settingsref}/>
 				<hr/>
 				<Row>
 					<Col/>
@@ -211,7 +212,7 @@ class App extends React.Component<{},{}> {
 		);
 	}
 	componentDidMount(){
-		this.links.parameters.push(['Shell Parameters', this.SFCref], ['Target Parameters', this.TFCref]);
+		this.links.parameters.push(['Shell Parameters', this.SFCref], ['Target Parameters', this.TFCref], ['Settings', this.Settingsref]);
 	}
 }
 

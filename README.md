@@ -19,8 +19,9 @@
 - Shell detonation distance after penetration 
 - Checking whether the armor is thick enough to arm the shell
 ## Development Status
-### Current Status
 - [Issues](https://github.com/jcw780/wows_ballistics/issues)
+- Feels free to open an issue for questions, bugs, feature requests etc. 
+### Current Status
 - Calculations may be refined if contradicting data is provided
 ### Future Features
 - More tooltips
