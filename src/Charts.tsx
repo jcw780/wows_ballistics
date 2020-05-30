@@ -84,7 +84,7 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
                         <Col sm="2" style={{padding: 0}}><DownloadButton ref={this.DownloadRef[0]} updateData={this.updateDownloadGraph} 
                         label="Download Graph"/></Col>
                         <Col sm="2" style={{padding: 0}}><DownloadButton ref={this.DownloadRef[1]} updateData={this.updateDownloadJSON} 
-                        label="Download JSON"/></Col>
+                        label="Download Data"/></Col>
                         <Col sm="4" style={{padding: 0}}/>
                     </Row>
                     </div>
