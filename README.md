@@ -4,7 +4,7 @@ https://jcw780.github.io/wows_ballistics/
 ## Code Information
 ### Languages and Major Libraries
 - HTML, CSS, Javascript, Typescript, React
-### Wasm backend: [jcw780/ShellCPP](https://github.com/jcw780/ShellCPP)
+- Wasm backend: [jcw780/ShellCPP](https://github.com/jcw780/ShellCPP)
 ## Functionality
 ### Calculate shell performance at impact and in flight
 - Belt/Deck penetration </br> 
