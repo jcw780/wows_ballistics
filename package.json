@@ -21,7 +21,8 @@
     "webpack-dev-server": "webpack-dev-server",
     "dev": "webpack-dev-server --mode=development",
     "prod": "webpack --mode=production",
-    "version": "auto-changelog -p && git add CHANGELOG.md"
+    "version": "auto-changelog -p && git add CHANGELOG.md",
+    "changelog": "auto-changelog -p -u --commit-limit false"
   },
   "auto-changelog": {
     "output": "HISTORY.md",
