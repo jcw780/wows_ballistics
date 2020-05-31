@@ -59,6 +59,7 @@ export interface calculatedData {
 export type chartT = 'impact' | 'angle' | 'post';
 export type chartRefT = React.RefObject<SingleChart>;
 
+export enum singleLinkIndex {name, ref}
 export type singleLinkT = [string, chartRefT | parameterRefT];
 export type parameterRefT = React.RefObject<ShellFormsContainer 
 | TargetFormsContainer | SettingsBar>;

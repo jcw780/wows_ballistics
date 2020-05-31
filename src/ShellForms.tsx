@@ -10,26 +10,25 @@ class ShellParameters extends React.Component<shellParametersProps>{
 	nameForm = React.createRef<ParameterForm>()
 	handleValueChange = (value, k) => {this.props.handleValueChange(value, k);}
 	updateShells() {
-		Object.entries(this.props.formLabels).forEach((kv : any): void => {
-			const key : string = kv[0]; const value = kv[1];
-			value[2].current.updateValue(this.props.formValues[key]);
+		Object.entries(this.props.formLabels).forEach(([key, value] : any): void => {
+			//const key : string = kv[0]; const value = kv[1];
+			value[valuesComponentIndex.ref].current.updateValue(this.props.formValues[key]);
 		});
 	}
 	render() {
 		return(
 			<Form>
-				{Object.entries(this.props.formLabels).map((kv : any, i) => {
-					const key: string = kv[0];
-					const value = kv[1];
-					return (<ParameterForm label={value[0]} key={i} controlId={key}
+				{Object.entries(this.props.formLabels).map(([key, value] : any, i) => {
+					return (<ParameterForm label={value[valuesComponentIndex.name]} key={i} controlId={key}
 					handleValueChange={this.handleValueChange}
-					type="number" newValue={String(this.props.formValues[key])} append={value[1]}
-					ref={this.props.formLabels[key][2]} style={{inputGroup:{width: "50%"}}}/>);
+					type="number" newValue={String(this.props.formValues[key])} append={value[valuesComponentIndex.unit]}
+					ref={this.props.formLabels[key][valuesComponentIndex.ref]} style={{inputGroup:{width: "50%"}}}/>);
 				})}	
 			</Form>
 		);
 	}
 }
+enum valuesComponentIndex {name, unit, ref}
 type valuesComponent = [string, string, React.RefObject<ParameterForm>];
 type parametersType = 'caliber' | 'muzzleVelocity' | 'dragCoefficient' | 'mass' 
 | 'krupp' | 'fusetime' | 'threshold' | 'normalization' | 'ra0' | 'ra1' | 'HESAP';

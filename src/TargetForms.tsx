@@ -9,9 +9,7 @@ interface angleFormProps {
     handleValueChange: T.handleValueChangeT, deleteElement : Function,
 }
 class AngleForm extends React.Component<angleFormProps>{
-    public static defaultProps = {
-        placeholder : "",
-    }
+    public static defaultProps = {placeholder : "",}
     deleteElement = () => {
         this.props.deleteElement(this.props.keyProp, parseInt(this.props.controlId));
     }
@@ -37,10 +35,8 @@ class TargetFormsContainer extends React.Component
     state = {angleKeys: new Set([0, 1, 2, 3, 4, 5, 6, 7])};
     deletedKeys : number[] = [];
     targetData : T.targetDataT = {
-        armor: 70.,
-        inclination: 0.,
-        width: 18.,
-        angles: Array<number>(8),
+        armor: 70., inclination: 0.,
+        width: 18., angles: Array<number>(8),
     };
     fixedTargetLabels = {
         armor: ['Armor Thickness', 'mm'],
@@ -57,11 +53,8 @@ class TargetFormsContainer extends React.Component
 
     addAngle = () => {
 		let index: number = 0;
-        if(this.deletedKeys.length > 0){
-            index = this.deletedKeys.pop()!;
-        }else{
-            index = this.state.angleKeys.size;
-        }
+        if(this.deletedKeys.length > 0){index = this.deletedKeys.pop()!;}
+        else{index = this.state.angleKeys.size;}
         this.targetData.angles.push(this.targetData.angles.length * 5);
 		this.setState((current) => {
 			let set = current['angleKeys'];
@@ -73,9 +66,7 @@ class TargetFormsContainer extends React.Component
 		let set = this.state.angleKeys;
         set.delete(key); this.deletedKeys.push(key);
         this.targetData.angles.splice(index, 1);
-		this.setState((current) => {
-			return {angleKeys: set};
-		});
+		this.setState((current) => {return {angleKeys: set};});
     }
     returnData = () => {return this.targetData;}
     handleChange = (value : string, id : string) => {this.targetData[id] = parseFloat(value);}
@@ -92,9 +83,7 @@ class TargetFormsContainer extends React.Component
                 handleValueChange={this.handleAngleChange}
                 label={`Angle ${i + 1}`}/> //start at 0 for display
             const columnIndex = Math.floor(i / elementColumn);
-            if(i % elementColumn === 0){
-                angleElements.push([]);
-            }
+            if(i % elementColumn === 0){angleElements.push([]);}
             angleElements[columnIndex].push(common);
         });
         return(
@@ -102,8 +91,7 @@ class TargetFormsContainer extends React.Component
             <h2 ref={this.scrollRef}>Target Parameters</h2>
             <Row>
                 <Col sm={1}/>
-            {Object.entries(this.fixedTargetLabels).map((kv, i) => {
-                const key = kv[0]; const value = kv[1];
+            {Object.entries(this.fixedTargetLabels).map(([key, value], i) => {
                 return (
                     <Col key={i}>
                         <ParameterForm controlId={key}
