@@ -122,8 +122,7 @@ class DefaultShips extends React.Component
 	}
 	queryArtillery = () => {
 		const shipName : string = this.defaultForms.ship[singleFormIndex.value];
-		const shipInfo = this.queriedData[shipName];
-		var options: string[] = [];
+		const shipInfo = this.queriedData[shipName]; var options: string[] = [];
 		Object.keys(shipInfo).forEach((key : string) : void => {
 			if(key.includes('Artillery')){options.push(key);}
 		});

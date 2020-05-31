@@ -146,12 +146,12 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         ]
     }
     private callbackFunctions = {
-        Penetration: (x, y) => {return '(' + x + 'm, ' + y + 'mm)';},
-        Angle: (x, y) => {return '(' + x + 'm, ' + y + '°)';},
-        'Impact Velocity': (x, y) => {return '(' + x + 'm, ' + y + 'm/s)';}, 
-        Time: (x, y) => {return '(' + x + 'm, ' + y + 's)';},
-        angle: (x, y) => {return '(' + x + 'm, ' + y + '°)';},
-        detDist: (x, y) => {return '(' + x + 'm, ' + y + 'm)';},
+        Penetration: (x, y) => {return `(${x}m, ${y}mm)`;},
+        Angle: (x, y) => {return `(${x}m, ${y}°)`;},
+        'Impact Velocity': (x, y) => {return `(${x}m, ${y}m/s)`;}, 
+        Time: (x, y) => {return `(${x}m, ${y}s)`;},
+        angle: (x, y) => {return `(${x}m, ${y}°)`;},
+        detDist: (x, y) => {return `(${x}m, ${y}m)`;},
     }
     constructor(props){
         super(props);
@@ -282,8 +282,8 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         })
         //Angle
         const angleData = graphData.angle; const configAngle = this.chartConfigs.angle;
-        const targetedArmor = 'Armor Thickness: ' + graphData.targets[0].armor + 'mm';
-        const targetInclination = 'Vertical Inclination: ' + graphData.targets[0].inclination + '°'; 
+        const targetedArmor = `Armor Thickness: ${graphData.targets[0].armor}mm`;
+        const targetInclination = `Vertical Inclination: ${graphData.targets[0].inclination}°`; 
         const ra0L = "Start Ricochet "; const ra1L = "Always Ricochet ";
 
         const setupAngle = (row) => {
