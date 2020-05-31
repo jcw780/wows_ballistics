@@ -2,7 +2,7 @@
 - Page Link: https://jcw780.github.io/wows_ballistics/
 ## Code Information
 ### Languages and Major Libraries
-- HTML, CSS, Javascript, Typescript, React
+- HTML, CSS, JavaScript, TypeScript, React
 - Wasm backend: [jcw780/ShellCPP](https://github.com/jcw780/ShellCPP)
 ## Legal
 - All copyrighted material provided by Wargaming.net are owned by Wargaming.net.
