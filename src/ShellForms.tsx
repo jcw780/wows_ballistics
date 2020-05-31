@@ -5,13 +5,18 @@ import * as T from 'commonTypes';
 import {ParameterForm} from 'ParameterForm';
 import DefaultShips from './DefaultForms'
 
+enum valuesComponentIndex {name, unit, ref}
+type valuesComponent = [string, string, React.RefObject<ParameterForm>];
+type parametersType = 'caliber' | 'muzzleVelocity' | 'dragCoefficient' | 'mass' 
+| 'krupp' | 'fusetime' | 'threshold' | 'normalization' | 'ra0' | 'ra1' | 'HESAP';
+type formValuesT = Record<parametersType, valuesComponent>
+
 interface shellParametersProps {handleValueChange: any, formLabels : formValuesT, formValues: formDataT}
 class ShellParameters extends React.Component<shellParametersProps>{
 	nameForm = React.createRef<ParameterForm>()
 	handleValueChange = (value, k) => {this.props.handleValueChange(value, k);}
 	updateShells() {
 		Object.entries(this.props.formLabels).forEach(([key, value] : any): void => {
-			//const key : string = kv[0]; const value = kv[1];
 			value[valuesComponentIndex.ref].current.updateValue(this.props.formValues[key]);
 		});
 	}
@@ -28,11 +33,7 @@ class ShellParameters extends React.Component<shellParametersProps>{
 		);
 	}
 }
-enum valuesComponentIndex {name, unit, ref}
-type valuesComponent = [string, string, React.RefObject<ParameterForm>];
-type parametersType = 'caliber' | 'muzzleVelocity' | 'dragCoefficient' | 'mass' 
-| 'krupp' | 'fusetime' | 'threshold' | 'normalization' | 'ra0' | 'ra1' | 'HESAP';
-type formValuesT = Record<parametersType, valuesComponent>
+
 interface shellFormsProps{
 	index: number, colors: Array<string>, keyProp: number, deleteShip : Function, 
 	reset: Function, settings : Record<string, any>, size: number

@@ -76,9 +76,9 @@ class TargetFormsContainer extends React.Component
     render(){
         let angleElements : Array<Array<JSX.Element>> = [];
         const elementColumn = 1;
-        Array.from(this.state.angleKeys).forEach((value, i) => {
+        Array.from(this.state.angleKeys).forEach((key, i) => {
             const common = 
-                <AngleForm key={value} keyProp={value} controlId={i.toString()} 
+                <AngleForm key={key} keyProp={key} controlId={i.toString()} 
                 newValue={String(this.targetData.angles[i])} deleteElement={this.deleteAngle}
                 handleValueChange={this.handleAngleChange}
                 label={`Angle ${i + 1}`}/> //start at 0 for display
@@ -106,11 +106,11 @@ class TargetFormsContainer extends React.Component
             <h3>Target Angles</h3>
             <Container style={{marginBottom: "1rem"}}>
                 <Row>
-            {angleElements.map((values, i) => {
+            {angleElements.map((column, i) => {
                 return (
                     <Col key={"R" + i} sm="3" style={{margin: 0, padding: 0}}>
-                        {values.map((value) => {
-                            return value;
+                        {column.map((angleElement) => {
+                            return angleElement;
                         })}
                     </Col>
                 );
