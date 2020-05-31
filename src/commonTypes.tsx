@@ -1,10 +1,10 @@
 import React from 'react';
 
-import {ChartGroup, SingleChart} from 'Charts';
+import {SingleChart} from 'Charts';
 import ShellFormsContainer from 'ShellForms';
 import TargetFormsContainer from 'TargetForms';
 import SettingsBar from 'SettingsBar';
-
+//ParameterForm
 export interface styleT{
 	formGroup?: React.CSSProperties, formLabel?: React.CSSProperties, inputGroup?: React.CSSProperties, 
 	formControl?: React.CSSProperties, inputGroupAppend?: React.CSSProperties
@@ -12,6 +12,7 @@ export interface styleT{
 
 export type handleValueChangeT = (value: string, id: string) => void | string;
 
+//Target Data
 export interface targetDataNoAngleT {
     armor: number, inclination: number, width: number
 }
@@ -20,6 +21,7 @@ export interface targetAngleT {
 }
 export type targetDataT = targetDataNoAngleT & targetAngleT
 
+//Site settings
 export interface distanceSettingsT {
     min: number | undefined, max: number | undefined, stepSize: number | undefined
 }
@@ -36,6 +38,7 @@ export interface settingsT{
     format: formatSettingsT
 }
 
+//Generated Data
 export interface scatterPoint {x: number, y: number}
 export interface impactData {
     ePenHN : Array<Array<scatterPoint>>, impactAHD : Array<Array<scatterPoint>>,
@@ -56,9 +59,12 @@ export interface calculatedData {
     angles: Array<number>
 }
 
+//Chart Types
 export type chartT = 'impact' | 'angle' | 'post';
 export type chartRefT = React.RefObject<SingleChart>;
 
+//Navbar Links
+export enum singleLinkIndex {name, ref}
 export type singleLinkT = [string, chartRefT | parameterRefT];
 export type parameterRefT = React.RefObject<ShellFormsContainer 
 | TargetFormsContainer | SettingsBar>;

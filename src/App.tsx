@@ -18,9 +18,7 @@ class App extends React.Component<{},{}> {
 	instance : any;
 	links : T.linkT = {parameters : [], impact : [], angle : [], post : [],}
 	arrayIndices : Record<string, Record<string, number>> = {
-		impactDataIndex: {}, 
-		angleDataIndex: {}, 
-		postPenDataIndex: {} 
+		impactDataIndex: {}, angleDataIndex: {}, postPenDataIndex: {} 
 	}
 	settings : T.settingsT = { //*implement component
 		distance: {min: 0, max: undefined, stepSize: 1000, },
@@ -37,14 +35,12 @@ class App extends React.Component<{},{}> {
 	compile = () => {
 		return ShellWasm().then((M) => {
 			this.instance = new M.shell(2);
-			Object.entries(this.arrayIndices).forEach((kv: any) => {
-				const k = kv[0]; const v = kv[1];
-				Object.entries(M[k]).forEach((kv1: any) => {
-					const k1 = kv1[0]; const v1 = kv1[1];
+			Object.entries(this.arrayIndices).forEach(([k, v]: any) => {
+				Object.entries(M[k]).forEach(([k1, v1]: any) => {
 					if(k1 !== "values"){v[k1] = v1.value;}
 				});
 			});
-			return "done";
+			//return "done";
 		});
 	}
 	constructor(props){
@@ -91,12 +87,8 @@ class App extends React.Component<{},{}> {
 			2: _=> this.instance.calcImpactRungeKutta2(),
 			3: _=> this.instance.calcImpactRungeKutta4()
 		};
-		if (method in calcImpactFunc){
-			calcImpactFunc[method]();
-		}else{
-			console.log('Error', method);
-			throw new Error('Invalid parameter');
-		}
+		if (method in calcImpactFunc){calcImpactFunc[method]();}
+		else{console.log('Error', method); throw new Error('Invalid parameter');}
 	}
 
 	resizeArray = <K extends {}>(array : Array<any>, newLength : number, 
@@ -155,13 +147,11 @@ class App extends React.Component<{},{}> {
 				for(let i=0; i<impactSize; i++){
 					const dist : number = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex.distance, j);
 					maxDistS = dist > maxDistS ? dist : maxDistS;
-					Object.entries(this.calculatedData.impact).forEach((kv : any) => {
-						const k = kv[0]; const v = kv[1];
+					Object.entries(this.calculatedData.impact).forEach(([k, v] : any) => {
 						const y = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex[k], j);
 						v[j][i] = {x: dist, y: y};
 					});
-					Object.entries(this.calculatedData.angle).forEach((kv : any) => {
-						const k = kv[0]; const v = kv[1];
+					Object.entries(this.calculatedData.angle).forEach(([k, v] : any) => {
 						v[j][i] = {x: dist, y: this.instance.getAnglePoint(i, this.arrayIndices.angleDataIndex[k], j)};
 					});
 					for(let k=0; k<numAngles; k++){

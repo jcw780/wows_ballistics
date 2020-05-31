@@ -27,9 +27,7 @@ interface singleChartProps{
     config: Record<string, any>, title?: string,
     dimensions: Record<string, number>
 }
-interface singleChartState{
-    open: boolean
-}
+interface singleChartState{open: boolean}
 export class SingleChart extends React.Component<singleChartProps, singleChartState> {
     public static defaultProps = {
         config : {data: {datasets : [],}, options: {}},
@@ -48,11 +46,8 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
         this.setState(this.state); //trigger rerender
     }
     toggleCollapse = () => {
-        if(this.state.open){
-            this.valueIndex = 1;
-        }else{
-            this.valueIndex = 0;
-        }
+        if(this.state.open){this.valueIndex = 1;}
+        else{this.valueIndex = 0;}
         this.setState((current) => {return {open: !current.open}});
     }
     updateDownloadGraph = () => {
@@ -101,6 +96,7 @@ interface configsT{title: string, axes: axisT[]}
 
 // chartConfigs type
 interface chartDataOption{data: Record<string, any>, options: Record<string, any>}
+enum singleChartIndex {config, ref, name}
 type singleChartType = [chartDataOption, React.RefObject<SingleChart>, string]
 
 interface chartGroupProps{
@@ -145,12 +141,12 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         ]
     }
     private callbackFunctions = {
-        Penetration: (x, y) => {return '(' + x + 'm, ' + y + 'mm)';},
-        Angle: (x, y) => {return '(' + x + 'm, ' + y + '°)';},
-        'Impact Velocity': (x, y) => {return '(' + x + 'm, ' + y + 'm/s)';}, 
-        Time: (x, y) => {return '(' + x + 'm, ' + y + 's)';},
-        angle: (x, y) => {return '(' + x + 'm, ' + y + '°)';},
-        detDist: (x, y) => {return '(' + x + 'm, ' + y + 'm)';},
+        Penetration: (x, y) => {return `(${x}m, ${y}mm)`;},
+        Angle: (x, y) => {return `(${x}m, ${y}°)`;},
+        'Impact Velocity': (x, y) => {return `(${x}m, ${y}m/s)`;}, 
+        Time: (x, y) => {return `(${x}m, ${y}s)`;},
+        angle: (x, y) => {return `(${x}m, ${y}°)`;},
+        detDist: (x, y) => {return `(${x}m, ${y}m)`;},
     }
     constructor(props){
         super(props);
@@ -175,8 +171,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             scaleLabel: {display: true, labelString: "Range (m)",},
             type: 'linear', ticks:{callback: addCommas}
         }];
-        Object.entries(this.props.settings.distance).forEach((kv) => {
-            const key: string = kv[0]; const value: any = kv[1];
+        Object.entries(this.props.settings.distance).forEach(([key, value]) => {
             if(value !== null || true ){xAxesDistance[0].ticks[key] = value;}
         });
         //defaults.scatter.scales.xAxes[0] = xAxesDistance;
@@ -254,21 +249,21 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             }
         }
         const impactConfigs : configsT[] = [
-            {title: configImpact[0][2], axes: [
+            {title: configImpact[0][singleChartIndex.name], axes: [
                     {id: 'Penetration', axLabel: 'Belt Penetration (mm)', 
                     lines: [{lineLabel: 'Effective Penetration ', data: 'ePenHN'}]},
                     {id: 'Angle', axLabel: 'Belt Impact Angle (°)', 
                     lines: [{lineLabel: 'Impact Angle ', data: 'impactAHD'}]}
                 ],
             },
-            {title: configImpact[1][2], axes : [
+            {title: configImpact[1][singleChartIndex.name], axes : [
                     {id: 'Penetration', axLabel: 'Deck Penetration (mm)', 
                     lines: [{lineLabel: 'Effective Deck Penetration ', data: 'ePenDN'}]},
                     {id: 'Angle', axLabel: 'Deck Impact Angle (°)', 
                     lines: [{lineLabel: 'Deck Impact Angle ', data: 'impactADD'}]} 
                 ],
             },
-            {title: configImpact[2][2], axes : [ 
+            {title: configImpact[2][singleChartIndex.name], axes : [ 
                     {id: 'Impact Velocity', axLabel: 'Impact Velocity (m/s)', 
                     lines: [{lineLabel: 'Impact Velocity ', data: 'impactV'}]},
                     {id: 'Time', axLabel: 'Flight Time (s)', 
@@ -276,13 +271,14 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 ],
             },
         ]
-        configImpact.forEach((value, i) => {
-            const row = impactConfigs[i]; value[0].options = {}; value[0].options = setupImpact(row); value[0].data.datasets = [];
+        configImpact.forEach((chart, i) => {
+            const chartLabels = impactConfigs[i]; const configs = chart[singleChartIndex.config];
+            configs.options = {}; configs.options = setupImpact(chartLabels); configs.data.datasets = [];
         })
         //Angle
         const angleData = graphData.angle; const configAngle = this.chartConfigs.angle;
-        const targetedArmor = 'Armor Thickness: ' + graphData.targets[0].armor + 'mm';
-        const targetInclination = 'Vertical Inclination: ' + graphData.targets[0].inclination + '°'; 
+        const targetedArmor = `Armor Thickness: ${graphData.targets[0].armor}mm`;
+        const targetInclination = `Vertical Inclination: ${graphData.targets[0].inclination}°`; 
         const ra0L = "Start Ricochet "; const ra1L = "Always Ricochet ";
 
         const setupAngle = (row) => {
@@ -298,14 +294,14 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             }
         }
         const angleConfigs : configsT[] = [
-            {title: configAngle[0][2] + ' | ' + targetedArmor + ' | ' + targetInclination, axes: [
+            {title: `${configAngle[0][singleChartIndex.name]} | ${targetedArmor} | ${targetInclination}`, axes: [
                 {id: 'angle',
                 lines: [
                     {lineLabel: 'Maximum Perforation Angle ', data: 'armorD'}, 
                     {lineLabel: ra0L, data: 'ra0D'}, {lineLabel: ra1L, data: 'ra1D'}, 
                 ]},
             ]}, 
-            {title: configAngle[1][2] + ' | ' + targetedArmor + ' | ' + targetInclination, axes: [
+            {title: `${configAngle[1][singleChartIndex.name]} | ${targetedArmor} | ${targetInclination}`, axes: [
                 {id: 'angle',
                 lines: [
                     {lineLabel: 'Minimum Fusing Angle ', data: 'fuseD'}, 
@@ -313,8 +309,9 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 ]},
             ]}
         ]
-        configAngle.forEach((value, i) => {
-            const row = angleConfigs[i]; value[0].options = {}; value[0].options = setupAngle(row); value[0].data.datasets = [];
+        configAngle.forEach((chart, i) => {
+            const chartLabels = angleConfigs[i]; const config = chart[singleChartIndex.config];
+            config.options = {}; config.options = setupAngle(chartLabels); config.data.datasets = [];
         });
         //Post-Penetration
         const configPost = this.chartConfigs.post; const postData = graphData.post;
@@ -332,16 +329,16 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         }
 
         const WFL = "Fused ", NFL = "No Fusing ";
-        configPost.forEach((value, i) => {
-            value[0].data.datasets = []; // clear dataset
-            value[0].data.datasets.push( // add ship width line
+        configPost.forEach((chart, i) => {
+            chart[singleChartIndex.config].data.datasets = []; // clear dataset
+            chart[singleChartIndex.config].data.datasets.push( // add ship width line
             {
                 data: postData.shipWidth[0], showLine: true, borderDash: [5, 5], label: "Ship Width", 
                 yAxisID: 'detDist', borderColor: "#505050", fill: false, 
                 pointRadius: commonPointRadius, pointHitRadius: 5 
             });
-            value[0].options = {};
-            value[0].options = {
+            chart[singleChartIndex.config].options = {};
+            chart[singleChartIndex.config].options = {
                 title: {
                     display: true,
                     text: 
@@ -359,7 +356,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 },
                 tooltips: {callbacks: {label: callbackFunction, labelColor: callbackColor}}
             }
-            value[2] = `Horizontal Impact Angle ${i + 1}: ${graphData.angles[i]}°`
+            chart[singleChartIndex.name] = `Horizontal Impact Angle ${i + 1}: ${graphData.angles[i]}°`
         });
         //Add Lines
         const impactAngleLine = (data : Array<Record<string, number>>, 
@@ -386,10 +383,10 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         const defaultColorFunction = (axisIndex: number, lineIndex: number) => {return axisIndex + lineIndex;}
         const assignPredefined = (shellIndex: number, name: string, target, configs : configsT[], 
             graphData, colors : string[], colorFunction=defaultColorFunction) => {
-            target.forEach((value, rowIndex) => {
+            target.forEach((chart : singleChartType, rowIndex) => {
                 configs[rowIndex].axes.forEach((axis, axisIndex) => {
                     axis.lines.forEach((line, lineIndex) => {
-                        value[0].data.datasets.push(impactAngleLine(
+                        chart[singleChartIndex.config].data.datasets.push(impactAngleLine(
                             graphData[line.data][shellIndex], 
                             line.lineLabel + name, 
                             axis.id, 
@@ -402,7 +399,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             const name = graphData.names[i]; const colors = graphData.colors[i];
             assignPredefined(i, name, configImpact, impactConfigs, impactData, colors); //Impact
             assignPredefined(i, name, configAngle, angleConfigs, angleData, colors); //Angle
-            configPost.forEach((value, index) => { //Post
+            configPost.forEach((chart, index) => { //Post
                 let pL : Array<any> = [
                     postData.fused[index + graphData.angles.length*i],
                     postData.notFused[index + graphData.angles.length*i]
@@ -411,7 +408,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 for(let j=0; j<2; j++){ //react-chartjs-2 doesn't like undefined data
                     if(pL[j].length === 0){pL[j] = [{x: 0, y: 0}]; pLShow[j] = false;}
                 }
-                value[0].data.datasets.push(
+                chart[singleChartIndex.config].data.datasets.push(
                     postLine(pL[0], WFL + name, colors[0], pLShow[0]),
                     postLine(pL[1], NFL + name, colors[1], pLShow[1]),
                 )
@@ -420,15 +417,16 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         this.setState(this.state); //graph updates completed, trigger re-render
     }
     updateCharts = () => {
-        const trigger = (value, i) => {
-            const ref = value[1]; if(ref.current !== undefined){ref.current!.update();}
+        const trigger = (value : singleChartType, i) => {
+            const ref = value[singleChartIndex.ref]; if(ref.current !== undefined){ref.current!.update();}
         }
-        Object.entries(this.chartConfigs).forEach((kv) => {kv[1].forEach(trigger)});
+        Object.entries(this.chartConfigs).forEach(([key, value]) => {value.forEach(trigger)});
     }
     render(){
         const addChart = (target : T.chartT) => {
             return this.chartConfigs[target].map((value, i) => {
-                return (<SingleChart config={value[0]} dimensions={this.dimensions} ref={value[1]} key={i} title={value[2]}/>);
+                return (<SingleChart config={value[singleChartIndex.config]} dimensions={this.dimensions} 
+                    ref={value[singleChartIndex.ref]} key={i} title={value[singleChartIndex.name]}/>);
             });
         }
         return(
@@ -446,12 +444,12 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         //Initialize Links Names
         const setupNavbarCharts = (target : T.chartT) => {
             const link = this.props.links[target];
-            this.chartConfigs[target].forEach((value, i) => {
+            this.chartConfigs[target].forEach((chart, i) => {
                 if(link.length === i){ link.push(['', React.createRef<SingleChart>()]);}
-                link[i][0] = value[2]; link[i][1] = value[1];
+                link[i][T.singleLinkIndex.name] = chart[singleChartIndex.name]; link[i][T.singleLinkIndex.ref] = chart[singleChartIndex.ref];
             });
         }
-        Object.keys(this.chartConfigs).forEach((value : T.chartT) => {setupNavbarCharts(value)});
+        Object.keys(this.chartConfigs).forEach((chartType : T.chartT) => {setupNavbarCharts(chartType)});
         //Preinitialize chart after mounting - to mitigate user confusion
         //Also due to the fact that getting wasm to run on startup is apparently impossible
         const initialJson = require('./initialData.json');
@@ -459,8 +457,9 @@ export class ChartGroup extends React.Component<chartGroupProps>{
     }
     componentDidUpdate(){
         //console.log(this.chartConfigs);
-        this.chartConfigs.post.forEach((value, i) => {
-            this.props.links.post[i][0] = value[2]; this.props.links.post[i][1] = value[1];
+        this.chartConfigs.post.forEach((chart, i) => {
+            this.props.links.post[i][T.singleLinkIndex.name] = chart[singleChartIndex.name]; 
+            this.props.links.post[i][T.singleLinkIndex.ref] = chart[singleChartIndex.ref];
         });
         this.props.onUpdate();
     }

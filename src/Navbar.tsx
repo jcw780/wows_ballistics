@@ -6,16 +6,14 @@ import * as T from 'commonTypes';
 class NavbarCustom extends React.Component<{links: T.linkT}>{
     state = {update: true};
     update = () => {this.setState(this.state);}
-
+    private scrollToRef = (ref : T.chartRefT | T.parameterRefT) => {
+        window.scrollTo(0, ref.current!.scrollRef.current!.offsetTop);
+    }
     render(){
-        //Parameters
-        const scrollToRef = (ref : T.chartRefT | T.parameterRefT) => {
-            window.scrollTo(0, ref.current!.scrollRef.current!.offsetTop);
-        }
-        //Charts
         const makeDropdowns = (target : T.linkKeyT) => {
-            return this.props.links[target].map((value, i) => {
-                return <NavDropdown.Item onSelect={() => {scrollToRef(value[1])}} key={i}>{value[0]}</NavDropdown.Item>
+            return this.props.links[target].map((link, i) => {
+                return <NavDropdown.Item onSelect={() => {this.scrollToRef(link[T.singleLinkIndex.ref])}} key={i}>
+                    {link[T.singleLinkIndex.name]}</NavDropdown.Item>
             });
         };
 

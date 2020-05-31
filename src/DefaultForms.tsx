@@ -4,24 +4,14 @@ import {Form, Container} from 'react-bootstrap';
 
 class DefaultForm extends React.Component
 <{handleValueChange: Function, controlId: string, label : string, }> {
-	form = React.createRef<HTMLSelectElement>()
+	form = React.createRef<HTMLSelectElement>();
 	state = {options: []};
-	constructor(props){
-		super(props);
-		this.state = {options: []};
-		this.form = React.createRef();
-	}
-
 	handleChange = (event) => {
 		event.stopPropagation();
 		this.props.handleValueChange(event.target.value, this.props.controlId);
 	}
 
-	updateOptions = (newOptions) => {
-		this.setState((state) => {
-			return {options: newOptions};
-		});
-	}
+	updateOptions = (newOptions) => {this.setState((state) => {return {options: newOptions};});}
 
 	render(){
 		return (
@@ -39,7 +29,7 @@ class DefaultForm extends React.Component
 
 const dataURL = "https://jcw780.github.io/LiveGameData/"
 
-function fetchJson(target, onSucess){
+const fetchJson = (target, onSucess) => {
     fetch(target)
         .then((response) => {
             if (!response.ok) {
@@ -54,7 +44,7 @@ function fetchJson(target, onSucess){
     );
 }
 
-async function fetchJsonData(target){
+const fetchJsonData = async (target) => {
     return fetch(target)
         .then((response) => {
             if (!response.ok) {
@@ -71,6 +61,7 @@ async function fetchJsonData(target){
 
 export{DefaultForm};
 
+enum singleFormIndex {name, value, ref, queryIndex}
 type singleFormT = [string, string, React.RefObject<DefaultForm>, number]
 interface defaultFormType{
 	version: singleFormT, nation: singleFormT, shipType: singleFormT, 
@@ -89,108 +80,76 @@ class DefaultShips extends React.Component
 	})
 	queriedData = {}
 	changeForm = (value, id) => {
-		this.defaultForms[id][1] = value;
-		const queryIndex = this.defaultForms[id][3];
-		switch(queryIndex){
-			case 0:
-				this.queryNation();
-				break;
-			case 1:
-				this.queryType();
-				break;
-			case 2:
-				this.queryShip();
-				break;
-			case 3:
-				this.queryArtillery();
-				break;
-			case 4:
-				this.queryShellType();
-				break;
-			case 5:
-				this.sendData();
-				break;
-			default:
-				break;
+		this.defaultForms[id][singleFormIndex.value] = value;
+		const queryIndex = this.defaultForms[id][singleFormIndex.queryIndex];
+		const queries = {
+			0: this.queryNation, 1: this.queryType, 2: this.queryShip,
+			3: this.queryArtillery, 4: this.queryShellType, 5: this.sendData
 		}
+		if(queryIndex in queries){queries[queryIndex]();}
 	}
 	updateForm = (target, options) => {
-		if(this.defaultForms[target][2].current){ 
+		const refCurrent = this.defaultForms[target][singleFormIndex.ref].current;
+		if(refCurrent){ 
 			//apparently prevents async calls from updating deleted refs I guess...
 			//fixes delete ship crash bug
-			this.defaultForms[target][2].current.updateOptions(options);
+			refCurrent.updateOptions(options);
 		}
 	}
 	queryVersion = () => {
-		this.counter = 0;
-		const updateForm = this.updateForm;
-		fetchJson(dataURL + "versions.json", function(data){
+		fetchJson(dataURL + "versions.json", (data) => {
 			var dataSorted = data.reverse();
-			updateForm('version', dataSorted);
+			this.updateForm('version', dataSorted);
 		});
 	}
 	queryNation = () => {
-		const updateForm = this.updateForm;
-		const previousValue = this.defaultForms.version[1];
-		fetchJson(dataURL + previousValue
-			+ "/nations.json", function (data) {
-			updateForm('nation', data);
-		});
+		fetchJson(dataURL + this.defaultForms.version[singleFormIndex.value] + "/nations.json", 
+			(data) => {this.updateForm('nation', data);}
+		);
 	}
 	queryType = () => {
-		const updateForm = this.updateForm;
-		const previousValues = [this.defaultForms.version[1], this.defaultForms.nation[1]];
-		fetchJson(dataURL + previousValues[0] + "/" + previousValues[1] + "/shiptypes.json",
-		function (data) {
-			updateForm('shipType', data);
-		});
+		fetchJson(dataURL + this.defaultForms.version[singleFormIndex.value] + "/" + 
+			this.defaultForms.nation[singleFormIndex.value] + "/shiptypes.json",
+			(data) => {this.updateForm('shipType', data);}
+		);
 	}
-	queryShip = async function() {
-		const previousValues = [this.defaultForms.version[1], this.defaultForms.nation[1], this.defaultForms.shipType[1]];
+	queryShip = async () => {
 		const data = await fetchJsonData(
-			dataURL + previousValues[0] + "/" + previousValues[1] + "/" + previousValues[1] + "_" + previousValues[2] + ".json");
-		this.queriedData = data;
-		var sorted = Object.keys(data);
-		sorted.sort(function(a, b){return data[a]['Tier'] - data[b]['Tier']});
-		this.updateForm('ship', sorted);
+			dataURL + this.defaultForms.version[singleFormIndex.value] + "/" + this.defaultForms.nation[singleFormIndex.value] + 
+			"/" + this.defaultForms.nation[singleFormIndex.value] + "_" + this.defaultForms.shipType[singleFormIndex.value] + ".json");
+		this.queriedData = data; var sorted = Object.keys(data);
+		sorted.sort((a, b) => {return data[a]['Tier'] - data[b]['Tier']}); this.updateForm('ship', sorted);
 	}
 	queryArtillery = () => {
-		const shipName : string = this.defaultForms.ship[1];
-		const shipInfo = this.queriedData[shipName];
-		var options: string[] = [];
+		const shipName : string = this.defaultForms.ship[singleFormIndex.value];
+		const shipInfo = this.queriedData[shipName]; var options: string[] = [];
 		Object.keys(shipInfo).forEach((key : string) : void => {
-			if(key.includes('Artillery')){
-				options.push(key);
-			}
+			if(key.includes('Artillery')){options.push(key);}
 		});
 		this.updateForm('artillery', options);
 	}
 	queryShellType = () => {
-		const input = this.queriedData[this.defaultForms.ship[1]][this.defaultForms.artillery[1]];
+		const input = this.queriedData[this.defaultForms.ship[singleFormIndex.value]][this.defaultForms.artillery[singleFormIndex.value]];
 		this.updateForm('shellType', Object.keys(input));
 	}
 	sendData = () => {
 		this.props.sendDefault(
-			this.queriedData[this.defaultForms.ship[1]][this.defaultForms.artillery[1]][this.defaultForms.shellType[1]],
-			this.defaultForms.ship[1]
+			this.queriedData[this.defaultForms.ship[singleFormIndex.value]][this.defaultForms.artillery[singleFormIndex.value]]
+			[this.defaultForms.shellType[singleFormIndex.value]], this.defaultForms.ship[singleFormIndex.value]
 		);
 	}
 	render(){
 		return(
 			<Container style={{paddingLeft: 0, paddingRight: 0}}>
 				{Object.entries(this.defaultForms).map( ([k, v], i) => {
-					this.defaultForms[k][3] = i;
+					v[singleFormIndex.queryIndex] = i;
 					return (<DefaultForm label={v[0]} key={i} controlId={k}
 					handleValueChange={this.changeForm} ref={v[2]}> </DefaultForm>);
 				})}
 			</Container>
 		);
 	}
-	counter: number = 0;
-	componentDidUpdate(){
-		//this.props.reset();
-		//console.log('done', this.counter, this.props.index);
-	}
+	//componentDidUpdate(){}
 }
 
 export default DefaultShips;
