@@ -2,7 +2,7 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {Form, Container} from 'react-bootstrap';
 
-class DefaultForm extends React.Component
+export class DefaultForm extends React.Component
 <{handleValueChange: Function, controlId: string, label : string, }> {
 	form = React.createRef<HTMLSelectElement>();
 	state = {options: []};
@@ -58,8 +58,6 @@ const fetchJsonData = async (target) => {
         }
     );
 }
-
-export{DefaultForm};
 
 enum singleFormIndex {name, value, ref, queryIndex}
 type singleFormT = [string, string, React.RefObject<DefaultForm>, number]
