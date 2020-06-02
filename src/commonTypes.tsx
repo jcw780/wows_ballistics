@@ -12,6 +12,16 @@ export interface styleT{
 
 export type handleValueChangeT = (value: string, id: string) => void | string;
 
+//DefaultForms
+export interface defaultFormGeneric<T>{
+    version: T, nation: T, shipType: T, 
+	ship: T, artillery: T, shellType: T,
+}
+export enum singleDefaultDataIndex {value, options}
+export type singleDefaultDataT = [string, string[]]
+interface queriedDataT {queriedData: Record<string, Record<string, any>>}
+export type defaultDataT = defaultFormGeneric<singleDefaultDataT> & queriedDataT
+
 //Target Data
 export interface targetDataNoAngleT {
     armor: number, inclination: number, width: number
