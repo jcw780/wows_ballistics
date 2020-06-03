@@ -60,6 +60,10 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
         const url = URL.createObjectURL(new Blob([JSON.stringify(selectedData)], {type: 'text/json;charset=utf-8'}));
         this.DownloadRef[1].current!.update(url, this.chartRef.current!.chartInstance.options.title.text + '.json');
     }
+    datasetKeyProvider = (dataset) => {
+        // Fix bug where datasets with the same labels and different colors have the same colors
+        return `${dataset.label}${dataset.borderColor}`;
+    }
     render(){
         return(
             <>
@@ -73,7 +77,7 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
                     <div id="collapseChart">
                     <Scatter data={this.props.config.data} options={this.props.config.options}
                     width={this.props.dimensions.width} height={this.props.dimensions.height}
-                    ref={this.chartRef}/>
+                    ref={this.chartRef} datasetKeyProvider={this.datasetKeyProvider}/>
                     <Row style={{margin: 0}}>
                         <Col sm="4" style={{padding: 0}}/>
                         <Col sm="2" style={{padding: 0}}><DownloadButton ref={this.DownloadRef[0]} updateData={this.updateDownloadGraph} 
@@ -456,7 +460,6 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         this.updateData(initialJson);
     }
     componentDidUpdate(){
-        //console.log(this.chartConfigs);
         this.chartConfigs.post.forEach((chart, i) => {
             this.props.links.post[i][T.singleLinkIndex.name] = chart[singleChartIndex.name]; 
             this.props.links.post[i][T.singleLinkIndex.ref] = chart[singleChartIndex.ref];

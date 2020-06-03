@@ -69,3 +69,8 @@ body{
   padding-left: .3rem! important;
   padding-right: .3rem! important;
 }
+
+.no-lr-padding{
+  padding-left: 0! important;
+  padding-right: 0! important;
+}

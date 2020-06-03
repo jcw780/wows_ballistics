@@ -35,8 +35,8 @@ class ShellParameters extends React.Component<shellParametersProps>{
 }
 
 interface shellFormsProps{
-	index: number, colors: Array<string>, keyProp: number, deleteShip : Function, 
-	reset: Function, settings : Record<string, any>, size: number
+	index: number, colors: Array<string>, keyProp: number, deleteShip : Function, copyShip : Function,
+	reset: Function, settings : Record<string, any>, size: number, formData?: formDataT, defaultData?: T.defaultDataT, copied: boolean
 }
 interface formDataT{
 	caliber: number, muzzleVelocity: number, dragCoefficient: number, mass: number, 
@@ -44,9 +44,33 @@ interface formDataT{
 	ra0: number, ra1: number, HESAP: number, name: string, colors: string[]
 }
 class ShellForms extends React.Component<shellFormsProps> {
+	public static defaultProps = {
+		copied : false
+	}
+	defaultData : T.defaultDataT = Object.seal({
+		version: ['', ['']], nation: ['', ['']], shipType: ['', ['']], 
+		ship: ['', ['']], artillery: ['', ['']], shellType: ['', ['']],
+		queriedData: {}
+	});
+	formData : formDataT = Object.seal({
+		caliber: 0, muzzleVelocity: 0, dragCoefficient: 0,
+		mass: 0, krupp: 0, fusetime: 0, threshold: 0, 
+		normalization: 0, ra0: 0, ra1: 0, HESAP: 0,
+		name : '', colors : [],
+	})
+	constructor(props){
+		super(props);
+		if('defaultData' in this.props){
+			this.defaultData = this.props.defaultData!;
+		}
+		if('formData' in this.props){
+			this.formData = this.props.formData!;
+		}
+	}
 	parameters : React.RefObject<ShellParameters> = React.createRef<ShellParameters>()
 	defaults : React.RefObject<DefaultShips> = React.createRef<DefaultShips>()
 	nameForm : React.RefObject<ParameterForm> = React.createRef<ParameterForm>()
+	canvasRef = React.createRef<HTMLCanvasElement>();
 	formLabels : formValuesT = Object.seal({
 		caliber: ['Caliber', 'm', React.createRef()], 
 		muzzleVelocity: ['Muzzle Velocity', 'm/s', React.createRef()], 
@@ -59,12 +83,6 @@ class ShellForms extends React.Component<shellFormsProps> {
 		ra0: ['Start Ricochet', '°', React.createRef()], 
 		ra1: ['Always Ricochet', '°', React.createRef()], 
 		HESAP: ['HE/SAP penetration', 'mm', React.createRef()],
-	})
-	formData : formDataT = Object.seal({
-		caliber: 0, muzzleVelocity: 0, dragCoefficient: 0,
-		mass: 0, krupp: 0, fusetime: 0, threshold: 0, 
-		normalization: 0, ra0: 0, ra1: 0, HESAP: 0,
-		name : '', colors : this.props.colors,
 	})
 	returnData = () => {return this.formData;}
 	handleNameChange = (value, id) => {this.formData.name = value;}
@@ -90,7 +108,6 @@ class ShellForms extends React.Component<shellFormsProps> {
 		this.formData.name = name; this.nameForm.current!.updateValue(name);
 		if(data.alphaPiercingCS > this.formData.HESAP){this.formData.HESAP = data.alphaPiercingCS;}
 		if(this.parameters.current){this.parameters.current!.updateShells();}
-		//console.log(this.props.size, this.props.index);
 		if(this.props.index + 1 === this.props.size){
 			//only resets add / delete when last item has finished mounting
 			//otherwise potential for crashes when adding ships
@@ -98,6 +115,42 @@ class ShellForms extends React.Component<shellFormsProps> {
 		}
 	}
 	deleteShip = () => {this.props.deleteShip(this.props.keyProp, this.props.index);}
+	copyShip = () => {
+		const outDefault = Object.assign({}, this.defaultData);
+		const outForm = Object.assign({}, this.formData);
+		this.props.copyShip(outDefault, outForm);
+	}
+	updateCanvas = () => {
+		
+		this.formData.colors = this.props.colors.slice(this.props.index * 3, this.props.index * 3 + 3);
+		const ctx = this.canvasRef.current!.getContext('2d');
+		const height : number = this.canvasRef.current!.height;
+		const width : number = this.canvasRef.current!.width;
+
+		const arrayLength = this.formData.colors.length;
+		const interval : number = width / arrayLength;
+		const shift : number = 10;
+		this.formData.colors.forEach((color, i) => {
+			const region = new Path2D();
+			if(i === 0){
+				region.moveTo(0, 0);
+				region.lineTo(0, height);
+			}else{
+				region.lineTo(i * interval - shift, 0);
+				region.lineTo(i * interval + shift, height);
+			}
+
+			const i2 : number = i + 1;
+			if(i === arrayLength - 1){
+				region.lineTo(i2 * interval, height);
+				region.lineTo(i2 * interval, 0);
+			}else{
+				region.lineTo(i2 * interval + shift, height);
+				region.lineTo(i2 * interval - shift, 0);
+			}
+			ctx!.fillStyle = color; ctx!.fill(region);
+		});
+	}
 	render() {
 		return(
 			<Modal.Dialog>
@@ -108,44 +161,80 @@ class ShellForms extends React.Component<shellFormsProps> {
 					<Container style={{padding: 0}}>
 					<Col sm='12' style={{padding: 0}}>
 						<ParameterForm label="Shell Label" controlId='shipName'
-								handleValueChange={this.handleNameChange}
-								type="text" newValue="" labelWidth={3}
-								ref={this.nameForm} style={{formControl: {width: '70%'}}}/>
+						handleValueChange={this.handleNameChange}
+						type="text" newValue={this.formData.name} labelWidth={3}
+						ref={this.nameForm} style={{formControl: {width: '70%'}}}/>
+
+						<Row style={{marginBottom: ".5rem"}}>
+							<Col sm="3" className="no-lr-padding">
+								<text>Colors</text>
+							</Col>
+							<Col sm="8" className="no-lr-padding">
+								<canvas style={{height: "2rem", width: "100%"}} width="600" height="150" ref={this.canvasRef}/>
+							</Col>
+						</Row>
 						<hr style={{marginTop: 0}}/>
-						<DefaultShips sendDefault={this.getDefaultData} ref={this.defaults} 
-						reset={this.props.reset} index={this.props.index}/>
+						<DefaultShips sendDefault={this.getDefaultData} ref={this.defaults} keyProp={this.props.keyProp}
+						reset={this.props.reset} index={this.props.index} defaultData={this.defaultData}/>
 					</Col>
 					</Container>
 				</Modal.Body>
-				<Modal.Footer style={{padding: "0.5rem"}}>
-					<Container>
-					<OverlayTrigger trigger="click" placement="bottom" overlay={
-							<Popover id='popover'>
-								<Popover.Content>
-								<Container style={{padding: 0}}>
-									<Col sm="12" style={{padding: 0}}>
-									<ShellParameters handleValueChange={this.handleValueChange}
-										formLabels={this.formLabels} ref={this.parameters} formValues={this.formData}/>
-									</Col>
-								</Container>
-								</Popover.Content>
-							</Popover>
-						}>
-						<Button variant="dark">Detailed Parameters</Button>
-					</OverlayTrigger>
-					</Container>
+				<Modal.Footer style={{padding: "0.5rem"}}>				
+					<Col className="no-lr-padding">
+						<OverlayTrigger trigger="click" placement="bottom-start" overlay={
+								<Popover id='popover'>
+									<Popover.Content>
+									<Container style={{padding: 0}}>
+										<Col sm="12" style={{padding: 0}}>
+										<ShellParameters handleValueChange={this.handleValueChange}
+											formLabels={this.formLabels} ref={this.parameters} formValues={this.formData}/>
+										</Col>
+									</Container>
+									</Popover.Content>
+								</Popover>
+							}>
+							<Button style={{width: "100%"}} variant="dark">Detailed Parameters</Button>
+						</OverlayTrigger>
+					</Col>
+					<Col className="no-lr-padding">
+						<Button style={{width: "100%"}} onClick={this.copyShip} variant="dark" >Clone</Button>
+					</Col>
 				</Modal.Footer>
 			</Modal.Dialog>
 		);
 	}
-	componentDidMount(){this.defaults.current!.queryVersion();}
+	componentDidMount(){
+		this.updateCanvas();
+		// Resets if it is a copied component
+		// Copied components do not change internal components 
+		// and would not properly reset - through this.getDefaultData
+		if(!this.props.copied){
+			this.defaults.current!.queryVersion();
+		}else{
+			this.props.reset();
+		}
+	}
+	componentDidUpdate(){
+		this.updateCanvas();
+		// Allow additions when final component updates after deletion
+		// Update to final index will only occur on deletion
+		if(this.props.index == this.props.size - 1){
+			this.props.reset();
+		}
+	}
 }
 export {ShellForms};
 
+interface copyTempT {
+	default: T.defaultDataT, data: formDataT
+}
 class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {keys: Set<number>, disabled: boolean}>{
 	state = {keys: new Set([0, 1]), disabled: false}; deletedKeys: number[] = [];
 	shellRefs = [React.createRef<ShellForms>(), React.createRef<ShellForms>()];
 	scrollRef : React.RefObject<HTMLHeadingElement> = React.createRef<HTMLHeadingElement>();
+	copyTemp : copyTempT;
+	copied : boolean = false;
+	colors : string[] = [];
 	addShip = () => {
 		if(this.state.disabled && (this.state.keys.size > 0)){return;}
 		else{
@@ -175,9 +264,13 @@ class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {key
 			}
 		}
 	}
-
+	copyShip = (defaultData : T.defaultDataT, shellData : formDataT) => {
+		const data: copyTempT = {default: defaultData, data: shellData}
+		this.copyTemp = data; this.copied = true;
+		this.addShip();
+	}
 	returnShellData = () => {
-		let data = Array<any>(this.shellRefs.length);
+		let data = Array<formDataT>(this.shellRefs.length);
 		this.shellRefs.forEach((reference, i) => {
 			data[i] = reference.current!.returnData();
 		});
@@ -208,17 +301,57 @@ class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {key
 	}
 	shouldComponentUpdate(nextProps, nextState){return nextState.disabled;}
 	render(){
+		const updateColors = () => {
+			this.colors = [];
+			for(let i=0; i<this.state.keys.size * 3; i++){
+				this.colors[i] = this.selectColor(i, this.state.keys.size);
+			}
+		}
+		updateColors();
+		const generateShellForms = () => {
+			if(this.copied){
+				const stateKeys = Array.from(this.state.keys);
+				let returnValue : JSX.Element[] = [];
+				for(let i=0; i< stateKeys.length - 1; i++){
+					const value = stateKeys[i];
+					returnValue.push(
+						<Col key={value} style={{margin: 0, padding: "0.5rem"}} sm="4">
+							<ShellForms colors={this.colors} index={i} 
+							deleteShip={this.deleteShip} copyShip={this.copyShip}
+							keyProp={value} ref={this.shellRefs[i]} reset={this.reset} 
+							settings={this.props.settings} size={this.state.keys.size}/>
+						</Col>
+					)
+				}
+				const i = stateKeys.length - 1
+				const value = stateKeys[i];
+				returnValue.push(
+					<Col key={value} style={{margin: 0, padding: "0.5rem"}} sm="4">
+						<ShellForms colors={this.colors} index={i} 
+						deleteShip={this.deleteShip} copyShip={this.copyShip}
+						keyProp={value} ref={this.shellRefs[i]} reset={this.reset} 
+						settings={this.props.settings} size={this.state.keys.size}
+						defaultData={this.copyTemp.default} formData={this.copyTemp.data} copied={true}/>
+					</Col>
+				)
+				return returnValue;
+			}else{
+				return Array.from(this.state.keys).map((value, i) => {
+					return <Col key={value} style={{margin: 0, padding: "0.5rem"}} sm="4">
+						<ShellForms colors={this.colors} index={i} 
+						deleteShip={this.deleteShip} copyShip={this.copyShip}
+						keyProp={value} ref={this.shellRefs[i]} reset={this.reset} 
+						settings={this.props.settings} size={this.state.keys.size}/>
+					</Col>;
+				})
+			}
+		}
 		return(
 <>
 	<h2 ref={this.scrollRef}>Shell Parameters</h2>
 	<Container style={{marginBottom : "0rem", paddingRight: 0, paddingLeft: 0, maxWidth: '90%'}}>
 		<Row>
-		{Array.from(this.state.keys).map((value, i) => {
-			return <Col key={value} style={{margin: 0, padding: "0.5rem"}} sm="4">
-				<ShellForms colors={this.generateColors(i, this.state.keys.size)} index={i} deleteShip={this.deleteShip} 
-				keyProp={value} ref={this.shellRefs[i]} reset={this.reset} settings={this.props.settings} size={this.state.keys.size}/>
-			</Col>;
-		})}
+		{generateShellForms()}
 		</Row>
 	</Container>
 	<Row style={{marginBottom : "1rem"}}>
@@ -230,7 +363,9 @@ class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {key
 </>
 		);
 	}
-	//componentDidUpdate(){}
+	componentDidUpdate(){
+		this.copied = false;
+	}
 }
 
 export default ShellFormsContainer;

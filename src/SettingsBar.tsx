@@ -65,7 +65,6 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
             var numValue : number | undefined;
             if(value === ''){numValue = undefined;} 
             else{numValue = parseFloat(value);}
-            //console.log(id, numValue);
             this.props.settings.distance[id] = numValue; 
         }
         const generateGraphForm = () => {
