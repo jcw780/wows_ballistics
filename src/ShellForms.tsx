@@ -60,7 +60,7 @@ class ShellForms extends React.Component<shellFormsProps> {
 	}
 	constructor(props){
 		super(props);
-		this.props.formData.colors = this.props.colors;
+		//this.props.formData.colors = this.props.colors;
 	}
 	parameters : React.RefObject<ShellParameters> = React.createRef<ShellParameters>()
 	defaults : React.RefObject<DefaultShips> = React.createRef<DefaultShips>()
@@ -117,7 +117,7 @@ class ShellForms extends React.Component<shellFormsProps> {
 		this.props.copyShip(outDefault, outForm);
 	}
 	updateCanvas = () => {
-		console.log('started', this.canvasRef.current);
+		this.props.formData.colors = this.props.colors.slice(this.props.index * 3, this.props.index * 3 + 3);
 		const ctx = this.canvasRef.current!.getContext('2d');
 		const height : number = this.canvasRef.current!.height;
 		const width : number = this.canvasRef.current!.width;
@@ -147,6 +147,7 @@ class ShellForms extends React.Component<shellFormsProps> {
 		});
 	}
 	render() {
+		console.log(this.props.keyProp, this.props.index, this.props.formData.colors);
 		return(
 			<Modal.Dialog>
 				<Modal.Header closeButton onHide={this.deleteShip} style={{padding: "0.5rem"}}>
@@ -198,7 +199,6 @@ class ShellForms extends React.Component<shellFormsProps> {
 	}
 	componentDidMount(){
 		this.updateCanvas();
-
 		// Resets if it is a copied component
 		// Copied components do not change internal components 
 		// and would not properly reset - through this.getDefaultData
@@ -227,6 +227,7 @@ class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {key
 	scrollRef : React.RefObject<HTMLHeadingElement> = React.createRef<HTMLHeadingElement>();
 	copyTemp : copyTempT;
 	copied : boolean = false;
+	colors : string[] = [];
 	addShip = () => {
 		if(this.state.disabled && (this.state.keys.size > 0)){return;}
 		else{
@@ -294,6 +295,14 @@ class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {key
 	}
 	shouldComponentUpdate(nextProps, nextState){return nextState.disabled;}
 	render(){
+		const updateColors = () => {
+			this.colors = [];
+			for(let i=0; i<this.state.keys.size * 3; i++){
+				this.colors[i] = this.selectColor(i, this.state.keys.size);
+			}
+			console.log(this.colors);
+		}
+		updateColors();
 		const generateShellForms = () => {
 			if(this.copied){
 				const stateKeys = Array.from(this.state.keys);
@@ -302,7 +311,7 @@ class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {key
 					const value = stateKeys[i];
 					returnValue.push(
 						<Col key={value} style={{margin: 0, padding: "0.5rem"}} sm="4">
-							<ShellForms colors={this.generateColors(i, this.state.keys.size)} index={i} 
+							<ShellForms colors={this.colors} index={i} 
 							deleteShip={this.deleteShip} copyShip={this.copyShip}
 							keyProp={value} ref={this.shellRefs[i]} reset={this.reset} 
 							settings={this.props.settings} size={this.state.keys.size}/>
@@ -313,7 +322,7 @@ class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {key
 				const value = stateKeys[i];
 				returnValue.push(
 					<Col key={value} style={{margin: 0, padding: "0.5rem"}} sm="4">
-						<ShellForms colors={this.generateColors(i, this.state.keys.size)} index={i} 
+						<ShellForms colors={this.colors} index={i} 
 						deleteShip={this.deleteShip} copyShip={this.copyShip}
 						keyProp={value} ref={this.shellRefs[i]} reset={this.reset} 
 						settings={this.props.settings} size={this.state.keys.size}
@@ -324,7 +333,7 @@ class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {key
 			}else{
 				return Array.from(this.state.keys).map((value, i) => {
 					return <Col key={value} style={{margin: 0, padding: "0.5rem"}} sm="4">
-						<ShellForms colors={this.generateColors(i, this.state.keys.size)} index={i} 
+						<ShellForms colors={this.colors} index={i} 
 						deleteShip={this.deleteShip} copyShip={this.copyShip}
 						keyProp={value} ref={this.shellRefs[i]} reset={this.reset} 
 						settings={this.props.settings} size={this.state.keys.size}/>
