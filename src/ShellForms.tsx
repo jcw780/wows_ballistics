@@ -217,7 +217,7 @@ class ShellForms extends React.Component<shellFormsProps> {
 		this.updateCanvas();
 		// Allow additions when final component updates after deletion
 		// Update to final index will only occur on deletion
-		if(this.props.index == this.props.size - 1){
+		if(this.props.index === this.props.size - 1){
 			this.props.reset();
 		}
 	}

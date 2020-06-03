@@ -1,7 +1,7 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {Form, Container} from 'react-bootstrap';
-import TargetFormsContainer from 'TargetForms';
+//import TargetFormsContainer from 'TargetForms';
 import * as T from 'commonTypes';
 
 export class DefaultForm extends React.Component
