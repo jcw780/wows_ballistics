@@ -109,7 +109,7 @@ class DefaultShips extends React.Component
 	}
 	queryVersion = () => {
 		fetchJson(dataURL + "versions.json", (data) => {
-			var dataSorted = data.reverse();
+			let dataSorted = data.reverse();
 			this.updateForm('version', dataSorted);
 		});
 	}
@@ -130,12 +130,15 @@ class DefaultShips extends React.Component
 			this.props.defaultData.nation[T.singleDefaultDataIndex.value] + 
 			"/" + this.props.defaultData.nation[T.singleDefaultDataIndex.value] + "_" + 
 			this.props.defaultData.shipType[T.singleDefaultDataIndex.value] + ".json");
-		this.props.defaultData.queriedData = data; var sorted = Object.keys(data);
-		sorted.sort((a, b) => {return data[a]['Tier'] - data[b]['Tier']}); this.updateForm('ship', sorted);
+		this.props.defaultData.queriedData = data; 
+		let sorted = Object.keys(data);
+		sorted.sort((a, b) => {return data[a]['Tier'] - data[b]['Tier']}); 
+		this.updateForm('ship', sorted);
 	}
 	queryArtillery = () => {
 		const shipName : string = this.props.defaultData.ship[T.singleDefaultDataIndex.value];
-		const shipInfo = this.props.defaultData.queriedData[shipName]; var options: string[] = [];
+		const shipInfo = this.props.defaultData.queriedData[shipName]; 
+		let options: string[] = [];
 		Object.keys(shipInfo!).forEach((key : string) : void => {
 			if(key.includes('Artillery')){options.push(key);}
 		});

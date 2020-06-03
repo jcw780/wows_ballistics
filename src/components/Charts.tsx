@@ -157,14 +157,14 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         defaults.global.animation = false;
         Chart.plugins.register({ //Allows viewing of downloaded image on bright backgrounds
             beforeDraw: function(chartInstance) {
-                var ctx = chartInstance.chart.ctx;
+                let ctx = chartInstance.chart.ctx;
                 ctx.fillStyle = "white";
                 ctx.fillRect(0, 0, chartInstance.chart.width, chartInstance.chart.height);
             }
         });
         //Preinitialize postpenetration names
         this.chartConfigs.post.forEach((value, i) => {
-            value[2] = 'Horizontal Impact Angle ' + (i + 1);});
+            value[singleChartIndex.name] = 'Horizontal Impact Angle ' + (i + 1);});
     }
     //maybe pass prop so we don't have to GC as hard?
     updateData = (graphData) => {
@@ -190,7 +190,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 if (num.indexOf('.') === -1) {// Nothing to do
                     return num;
                 }
-                var parts = num.split('.'),
+                let parts = num.split('.'),
                     beforePoint = parts[0], afterPoint = parts[1],
                     shouldRoundUp = afterPoint[dp] >= 5,
                     finalNumber;
@@ -204,7 +204,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 } else {
                     // Starting from the last digit, increment digits until we find one
                     // that is not 9, then stop
-                    var i = dp-1;
+                    let i = dp-1;
                     while (true) {
                         if (afterPoint[i] === '9') {
                             afterPoint = afterPoint.substr(0, i) +
@@ -225,7 +225,8 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             }else{return num;}
         }
         const callbackFunction = (tooltipItem, chart) => {
-            var x = tooltipItem.label; var y = tooltipItem.value;
+            let x = parseFloat(tooltipItem.label).toLocaleString(); 
+            let y = parseFloat(tooltipItem.value).toLocaleString();
             x = roundStringNumberWithoutTrailingZeroes(x); y = roundStringNumberWithoutTrailingZeroes(y);
             const namePS = (chart.datasets[tooltipItem.datasetIndex].label).split(' ');
             const name = namePS[namePS.length - 1];
@@ -328,8 +329,8 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 this.props.links.post.push(['', React.createRef<SingleChart>()]); // navbar links
             }
         }else if(angleLengthDiff < 0){
-            configPost.splice(angleLengthDiff, Math.abs(angleLengthDiff));
-            this.props.links.post.splice(angleLengthDiff, Math.abs(angleLengthDiff)); // navbar links
+            configPost.length = graphData.angles.length;
+            this.props.links.post.length = graphData.angles.length; // navbar links
         }
 
         const WFL = "Fused ", NFL = "No Fusing ";
@@ -421,10 +422,10 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         this.setState(this.state); //graph updates completed, trigger re-render
     }
     updateCharts = () => {
-        const trigger = (value : singleChartType, i) => {
+        const triggerChartUpdate = (value : singleChartType, i) => {
             const ref = value[singleChartIndex.ref]; if(ref.current !== undefined){ref.current!.update();}
         }
-        Object.entries(this.chartConfigs).forEach(([key, value]) => {value.forEach(trigger)});
+        Object.entries(this.chartConfigs).forEach(([key, value]) => {value.forEach(triggerChartUpdate)});
     }
     render(){
         const addChart = (target : T.chartT) => {
@@ -454,8 +455,8 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             });
         }
         Object.keys(this.chartConfigs).forEach((chartType : T.chartT) => {setupNavbarCharts(chartType)});
-        //Preinitialize chart after mounting - to mitigate user confusion
-        //Also due to the fact that getting wasm to run on startup is apparently impossible
+        // Preinitialize chart after mounting - to mitigate user confusion
+        // Also due to the fact that getting wasm to run on startup is apparently impossible
         const initialJson = require('../static/initialData.json');
         this.updateData(initialJson);
     }
@@ -464,7 +465,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             this.props.links.post[i][T.singleLinkIndex.name] = chart[singleChartIndex.name]; 
             this.props.links.post[i][T.singleLinkIndex.ref] = chart[singleChartIndex.ref];
         });
-        this.props.onUpdate();
+        this.props.onUpdate(); // Update navbar links on update
     }
 }
 

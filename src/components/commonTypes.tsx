@@ -50,18 +50,19 @@ export interface settingsT{
 
 //Generated Data
 export interface scatterPoint {x: number, y: number}
+export type pointArrays = Array<Array<scatterPoint>>;
 export interface impactData {
-    ePenHN : Array<Array<scatterPoint>>, impactAHD : Array<Array<scatterPoint>>,
-    ePenDN : Array<Array<scatterPoint>>, impactADD : Array<Array<scatterPoint>>,
-    impactV : Array<Array<scatterPoint>>, tToTargetA : Array<Array<scatterPoint>>,
+    ePenHN : pointArrays, impactAHD : pointArrays,
+    ePenDN : pointArrays, impactADD : pointArrays,
+    impactV : pointArrays, tToTargetA : pointArrays,
 }
 export interface angleData {
-    armorD : Array<Array<scatterPoint>>, fuseD : Array<Array<scatterPoint>>,
-    ra0D : Array<Array<scatterPoint>>, ra1D : Array<Array<scatterPoint>>,
+    armorD : pointArrays, fuseD : pointArrays,
+    ra0D : pointArrays, ra1D : pointArrays,
 }
 export interface postData {
-    shipWidth : Array<Array<scatterPoint>>, notFused : Array<Array<scatterPoint>>,
-    fused : Array<Array<scatterPoint>>,
+    shipWidth : pointArrays, notFused : pointArrays,
+    fused : pointArrays,
 }
 export interface calculatedData {
     impact: impactData, angle: angleData, post: postData, numShells: number, 
