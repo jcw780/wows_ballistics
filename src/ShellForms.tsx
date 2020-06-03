@@ -65,6 +65,7 @@ class ShellForms extends React.Component<shellFormsProps> {
 	parameters : React.RefObject<ShellParameters> = React.createRef<ShellParameters>()
 	defaults : React.RefObject<DefaultShips> = React.createRef<DefaultShips>()
 	nameForm : React.RefObject<ParameterForm> = React.createRef<ParameterForm>()
+	canvasRef = React.createRef<HTMLCanvasElement>();
 	formLabels : formValuesT = Object.seal({
 		caliber: ['Caliber', 'm', React.createRef()], 
 		muzzleVelocity: ['Muzzle Velocity', 'm/s', React.createRef()], 
@@ -115,12 +116,51 @@ class ShellForms extends React.Component<shellFormsProps> {
 		const outForm = Object.assign({}, this.props.formData);
 		this.props.copyShip(outDefault, outForm);
 	}
+	updateCanvas = () => {
+		console.log('started', this.canvasRef.current);
+		const ctx = this.canvasRef.current!.getContext('2d');
+		const height : number = this.canvasRef.current!.height;
+		const width : number = this.canvasRef.current!.width;
+
+		const arrayLength = this.props.formData.colors.length;
+		const interval : number = width / arrayLength;
+		const shift : number = 50;
+		this.props.formData.colors.forEach((color, i) => {
+			const region = new Path2D();
+			if(i === 0){
+				region.moveTo(0, 0);
+				region.lineTo(0, height);
+			}else{
+				region.lineTo(i * interval - shift, 0);
+				region.lineTo(i * interval + shift, height);
+			}
+
+			const i2 : number = i + 1;
+			if(i === arrayLength - 1){
+				region.lineTo(i2 * interval, height);
+				region.lineTo(i2 * interval, 0);
+			}else{
+				region.lineTo(i2 * interval + shift, height);
+				region.lineTo(i2 * interval - shift, 0);
+			}
+			ctx!.fillStyle = color; ctx!.fill(region);
+		});
+	}
 	render() {
 		return(
 			<Modal.Dialog>
 				<Modal.Header closeButton onHide={this.deleteShip} style={{padding: "0.5rem"}}>
-					<Modal.Title style={{marginLeft: "40%", marginRight: "auto", }}>Shell {this.props.index + 1}</Modal.Title>
-					<Button onClick={this.copyShip}>Copy</Button>
+					<Row>
+					<Col sm="4" className="no-lr-padding">
+						<canvas style={{height: "100%", width: "100%"}} width="600" height="200" ref={this.canvasRef}/>
+					</Col>
+					<Col sm="4" className="no-lr-padding">
+						<Modal.Title >Shell {this.props.index + 1}</Modal.Title>
+					</Col>
+					<Col className="no-lr-padding">
+						<Button onClick={this.copyShip}>Copy</Button>
+					</Col>
+					</Row>
 				</Modal.Header>
 				<Modal.Body style={{padding: "0.5rem"}}>
 					<Container style={{padding: 0}}>
@@ -157,6 +197,8 @@ class ShellForms extends React.Component<shellFormsProps> {
 		);
 	}
 	componentDidMount(){
+		this.updateCanvas();
+
 		// Resets if it is a copied component
 		// Copied components do not change internal components 
 		// and would not properly reset - through this.getDefaultData
