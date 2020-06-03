@@ -129,7 +129,6 @@ class TargetFormsContainer extends React.Component
     }
 
     /*componentDidUpdate(){
-        console.log(this.targetData);
     }*/
 }
 

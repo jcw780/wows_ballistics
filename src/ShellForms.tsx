@@ -108,7 +108,6 @@ class ShellForms extends React.Component<shellFormsProps> {
 		this.formData.name = name; this.nameForm.current!.updateValue(name);
 		if(data.alphaPiercingCS > this.formData.HESAP){this.formData.HESAP = data.alphaPiercingCS;}
 		if(this.parameters.current){this.parameters.current!.updateShells();}
-		//console.log(this.props.size, this.props.index);
 		if(this.props.index + 1 === this.props.size){
 			//only resets add / delete when last item has finished mounting
 			//otherwise potential for crashes when adding ships
@@ -266,7 +265,6 @@ class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {key
 		}
 	}
 	copyShip = (defaultData : T.defaultDataT, shellData : formDataT) => {
-		console.log('Copy Triggered');
 		const data: copyTempT = {default: defaultData, data: shellData}
 		this.copyTemp = data; this.copied = true;
 		this.addShip();

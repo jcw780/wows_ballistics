@@ -460,7 +460,6 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         this.updateData(initialJson);
     }
     componentDidUpdate(){
-        console.log(this.chartConfigs);
         this.chartConfigs.post.forEach((chart, i) => {
             this.props.links.post[i][T.singleLinkIndex.name] = chart[singleChartIndex.name]; 
             this.props.links.post[i][T.singleLinkIndex.ref] = chart[singleChartIndex.ref];
