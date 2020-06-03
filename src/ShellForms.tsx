@@ -36,7 +36,7 @@ class ShellParameters extends React.Component<shellParametersProps>{
 
 interface shellFormsProps{
 	index: number, colors: Array<string>, keyProp: number, deleteShip : Function, copyShip : Function,
-	reset: Function, settings : Record<string, any>, size: number, formData: formDataT, defaultData: T.defaultDataT, copied: boolean
+	reset: Function, settings : Record<string, any>, size: number, formData?: formDataT, defaultData?: T.defaultDataT, copied: boolean
 }
 interface formDataT{
 	caliber: number, muzzleVelocity: number, dragCoefficient: number, mass: number, 
@@ -45,21 +45,27 @@ interface formDataT{
 }
 class ShellForms extends React.Component<shellFormsProps> {
 	public static defaultProps = {
-		defaultData : Object.seal({
-			version: ['', ['']], nation: ['', ['']], shipType: ['', ['']], 
-			ship: ['', ['']], artillery: ['', ['']], shellType: ['', ['']],
-			queriedData: {}
-		}),
-		formData :  Object.seal({
-			caliber: 0, muzzleVelocity: 0, dragCoefficient: 0,
-			mass: 0, krupp: 0, fusetime: 0, threshold: 0, 
-			normalization: 0, ra0: 0, ra1: 0, HESAP: 0,
-			name : '', colors : [],
-		}),
 		copied : false
 	}
+	defaultData : T.defaultDataT = Object.seal({
+		version: ['', ['']], nation: ['', ['']], shipType: ['', ['']], 
+		ship: ['', ['']], artillery: ['', ['']], shellType: ['', ['']],
+		queriedData: {}
+	});
+	formData : formDataT = Object.seal({
+		caliber: 0, muzzleVelocity: 0, dragCoefficient: 0,
+		mass: 0, krupp: 0, fusetime: 0, threshold: 0, 
+		normalization: 0, ra0: 0, ra1: 0, HESAP: 0,
+		name : '', colors : [],
+	})
 	constructor(props){
 		super(props);
+		if('defaultData' in this.props && !((this.props.defaultData === undefined ) || (this.props.defaultData === null))){
+			this.defaultData = this.props.defaultData!;
+		}
+		if('formData' in this.props  && !((this.props.formData === undefined ) || (this.props.formData === null))){
+			this.formData = this.props.formData!;
+		}
 		//this.props.formData.colors = this.props.colors;
 	}
 	parameters : React.RefObject<ShellParameters> = React.createRef<ShellParameters>()
@@ -79,29 +85,29 @@ class ShellForms extends React.Component<shellFormsProps> {
 		ra1: ['Always Ricochet', '°', React.createRef()], 
 		HESAP: ['HE/SAP penetration', 'mm', React.createRef()],
 	})
-	returnData = () => {return this.props.formData;}
-	handleNameChange = (value, id) => {this.props.formData.name = value;}
+	returnData = () => {console.log(this.props.index, this.formData); return this.formData;}
+	handleNameChange = (value, id) => {this.formData.name = value;}
 	handleValueChange = (value : string, k : string) => {
-		this.props.formData[k] = parseFloat(value);
+		this.formData[k] = parseFloat(value);
 	}
 	getDefaultData = (data, nameUnprocessed : string) => { //Query Version End
 		let name = nameUnprocessed;
 		if(this.props.settings.format.shortNames){
 			name = name.split("_").slice(1).join(" ");
 		}
-		this.props.formData.caliber = data.bulletDiametr;
-		this.props.formData.muzzleVelocity = data.bulletSpeed;
-		this.props.formData.dragCoefficient = data.bulletAirDrag;
-		this.props.formData.mass = data.bulletMass;
-		this.props.formData.krupp = data.bulletKrupp;
-		this.props.formData.fusetime = data.bulletDetonator;
-		this.props.formData.threshold = data.bulletDetonatorThreshold;
-		this.props.formData.normalization = data.bulletCapNormalizeMaxAngle;
-		this.props.formData.ra0 = data.bulletRicochetAt;
-		this.props.formData.ra1 = data.bulletAlwaysRicochetAt;
-		this.props.formData.HESAP = data.alphaPiercingHE;
-		this.props.formData.name = name; this.nameForm.current!.updateValue(name);
-		if(data.alphaPiercingCS > this.props.formData.HESAP){this.props.formData.HESAP = data.alphaPiercingCS;}
+		this.formData.caliber = data.bulletDiametr;
+		this.formData.muzzleVelocity = data.bulletSpeed;
+		this.formData.dragCoefficient = data.bulletAirDrag;
+		this.formData.mass = data.bulletMass;
+		this.formData.krupp = data.bulletKrupp;
+		this.formData.fusetime = data.bulletDetonator;
+		this.formData.threshold = data.bulletDetonatorThreshold;
+		this.formData.normalization = data.bulletCapNormalizeMaxAngle;
+		this.formData.ra0 = data.bulletRicochetAt;
+		this.formData.ra1 = data.bulletAlwaysRicochetAt;
+		this.formData.HESAP = data.alphaPiercingHE;
+		this.formData.name = name; this.nameForm.current!.updateValue(name);
+		if(data.alphaPiercingCS > this.formData.HESAP){this.formData.HESAP = data.alphaPiercingCS;}
 		if(this.parameters.current){this.parameters.current!.updateShells();}
 		//console.log(this.props.size, this.props.index);
 		if(this.props.index + 1 === this.props.size){
@@ -117,15 +123,16 @@ class ShellForms extends React.Component<shellFormsProps> {
 		this.props.copyShip(outDefault, outForm);
 	}
 	updateCanvas = () => {
-		this.props.formData.colors = this.props.colors.slice(this.props.index * 3, this.props.index * 3 + 3);
+		
+		this.formData.colors = this.props.colors.slice(this.props.index * 3, this.props.index * 3 + 3);
 		const ctx = this.canvasRef.current!.getContext('2d');
 		const height : number = this.canvasRef.current!.height;
 		const width : number = this.canvasRef.current!.width;
 
-		const arrayLength = this.props.formData.colors.length;
+		const arrayLength = this.formData.colors.length;
 		const interval : number = width / arrayLength;
-		const shift : number = 50;
-		this.props.formData.colors.forEach((color, i) => {
+		const shift : number = 10;
+		this.formData.colors.forEach((color, i) => {
 			const region = new Path2D();
 			if(i === 0){
 				region.moveTo(0, 0);
@@ -145,54 +152,56 @@ class ShellForms extends React.Component<shellFormsProps> {
 			}
 			ctx!.fillStyle = color; ctx!.fill(region);
 		});
+		console.log(this.formData.colors);
 	}
 	render() {
-		console.log(this.props.keyProp, this.props.index, this.props.formData.colors);
 		return(
 			<Modal.Dialog>
 				<Modal.Header closeButton onHide={this.deleteShip} style={{padding: "0.5rem"}}>
-					<Row>
-					<Col sm="4" className="no-lr-padding">
-						<canvas style={{height: "100%", width: "100%"}} width="600" height="200" ref={this.canvasRef}/>
-					</Col>
-					<Col sm="4" className="no-lr-padding">
-						<Modal.Title >Shell {this.props.index + 1}</Modal.Title>
-					</Col>
-					<Col className="no-lr-padding">
-						<Button onClick={this.copyShip}>Copy</Button>
-					</Col>
-					</Row>
+					<Modal.Title style={{marginLeft: "40%", marginRight: "auto", }}>Shell {this.props.index + 1}</Modal.Title>
 				</Modal.Header>
 				<Modal.Body style={{padding: "0.5rem"}}>
 					<Container style={{padding: 0}}>
 					<Col sm='12' style={{padding: 0}}>
 						<ParameterForm label="Shell Label" controlId='shipName'
-								handleValueChange={this.handleNameChange}
-								type="text" newValue={this.props.formData.name} labelWidth={3}
-								ref={this.nameForm} style={{formControl: {width: '70%'}}}/>
+						handleValueChange={this.handleNameChange}
+						type="text" newValue={this.formData.name} labelWidth={3}
+						ref={this.nameForm} style={{formControl: {width: '70%'}}}/>
+
+						<Row style={{marginBottom: ".5rem"}}>
+							<Col sm="3" className="no-lr-padding">
+								<text>Colors</text>
+							</Col>
+							<Col sm="8" className="no-lr-padding">
+								<canvas style={{height: "2rem", width: "100%"}} width="600" height="150" ref={this.canvasRef}/>
+							</Col>
+						</Row>
 						<hr style={{marginTop: 0}}/>
 						<DefaultShips sendDefault={this.getDefaultData} ref={this.defaults} keyProp={this.props.keyProp}
-						reset={this.props.reset} index={this.props.index} defaultData={this.props.defaultData}/>
+						reset={this.props.reset} index={this.props.index} defaultData={this.defaultData}/>
 					</Col>
 					</Container>
 				</Modal.Body>
-				<Modal.Footer style={{padding: "0.5rem"}}>
-					<Container>
-					<OverlayTrigger trigger="click" placement="bottom" overlay={
-							<Popover id='popover'>
-								<Popover.Content>
-								<Container style={{padding: 0}}>
-									<Col sm="12" style={{padding: 0}}>
-									<ShellParameters handleValueChange={this.handleValueChange}
-										formLabels={this.formLabels} ref={this.parameters} formValues={this.props.formData}/>
-									</Col>
-								</Container>
-								</Popover.Content>
-							</Popover>
-						}>
-						<Button variant="dark">Detailed Parameters</Button>
-					</OverlayTrigger>
-					</Container>
+				<Modal.Footer style={{padding: "0.5rem"}}>				
+					<Col className="no-lr-padding">
+						<OverlayTrigger trigger="click" placement="bottom-start" overlay={
+								<Popover id='popover'>
+									<Popover.Content>
+									<Container style={{padding: 0}}>
+										<Col sm="12" style={{padding: 0}}>
+										<ShellParameters handleValueChange={this.handleValueChange}
+											formLabels={this.formLabels} ref={this.parameters} formValues={this.formData}/>
+										</Col>
+									</Container>
+									</Popover.Content>
+								</Popover>
+							}>
+							<Button style={{width: "100%"}} variant="dark">Detailed Parameters</Button>
+						</OverlayTrigger>
+					</Col>
+					<Col className="no-lr-padding">
+						<Button style={{width: "100%"}} onClick={this.copyShip} variant="dark" >Clone</Button>
+					</Col>
 				</Modal.Footer>
 			</Modal.Dialog>
 		);
@@ -209,6 +218,7 @@ class ShellForms extends React.Component<shellFormsProps> {
 		}
 	}
 	componentDidUpdate(){
+		this.updateCanvas();
 		// Allow additions when final component updates after deletion
 		// Update to final index will only occur on deletion
 		if(this.props.index == this.props.size - 1){
@@ -264,7 +274,7 @@ class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {key
 		this.addShip();
 	}
 	returnShellData = () => {
-		let data = Array<any>(this.shellRefs.length);
+		let data = Array<formDataT>(this.shellRefs.length);
 		this.shellRefs.forEach((reference, i) => {
 			data[i] = reference.current!.returnData();
 		});
@@ -300,7 +310,6 @@ class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {key
 			for(let i=0; i<this.state.keys.size * 3; i++){
 				this.colors[i] = this.selectColor(i, this.state.keys.size);
 			}
-			console.log(this.colors);
 		}
 		updateColors();
 		const generateShellForms = () => {
