@@ -60,13 +60,12 @@ class ShellForms extends React.Component<shellFormsProps> {
 	})
 	constructor(props){
 		super(props);
-		if('defaultData' in this.props && !((this.props.defaultData === undefined ) || (this.props.defaultData === null))){
+		if('defaultData' in this.props){
 			this.defaultData = this.props.defaultData!;
 		}
-		if('formData' in this.props  && !((this.props.formData === undefined ) || (this.props.formData === null))){
+		if('formData' in this.props){
 			this.formData = this.props.formData!;
 		}
-		//this.props.formData.colors = this.props.colors;
 	}
 	parameters : React.RefObject<ShellParameters> = React.createRef<ShellParameters>()
 	defaults : React.RefObject<DefaultShips> = React.createRef<DefaultShips>()
@@ -85,7 +84,7 @@ class ShellForms extends React.Component<shellFormsProps> {
 		ra1: ['Always Ricochet', '°', React.createRef()], 
 		HESAP: ['HE/SAP penetration', 'mm', React.createRef()],
 	})
-	returnData = () => {console.log(this.props.index, this.formData); return this.formData;}
+	returnData = () => {return this.formData;}
 	handleNameChange = (value, id) => {this.formData.name = value;}
 	handleValueChange = (value : string, k : string) => {
 		this.formData[k] = parseFloat(value);
@@ -118,8 +117,8 @@ class ShellForms extends React.Component<shellFormsProps> {
 	}
 	deleteShip = () => {this.props.deleteShip(this.props.keyProp, this.props.index);}
 	copyShip = () => {
-		const outDefault = Object.assign({}, this.props.defaultData);
-		const outForm = Object.assign({}, this.props.formData);
+		const outDefault = Object.assign({}, this.defaultData);
+		const outForm = Object.assign({}, this.formData);
 		this.props.copyShip(outDefault, outForm);
 	}
 	updateCanvas = () => {
@@ -152,7 +151,6 @@ class ShellForms extends React.Component<shellFormsProps> {
 			}
 			ctx!.fillStyle = color; ctx!.fill(region);
 		});
-		console.log(this.formData.colors);
 	}
 	render() {
 		return(
