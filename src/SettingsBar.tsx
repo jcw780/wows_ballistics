@@ -38,7 +38,7 @@ class CalculationRadio extends React.Component<{settings: T.settingsT}, {value: 
 
 interface settingsBarState{open: boolean}
 interface settingsBarProps{
-    settings: T.settingsT,
+    settings: T.settingsT, updateColors: Function
 }
 export class SettingsBar extends React.Component<settingsBarProps, settingsBarState>{
     state = {open : false}; scrollRef = React.createRef<Button & HTMLButtonElement>();
@@ -120,6 +120,7 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
             const numValues = parseFloat(value) / 100;
             if(numValues > 1 || numValues < 0){return 'error';}
             this.props.settings.format.colors[id] = numValues;
+            this.props.updateColors();
         }
 
         return(<>

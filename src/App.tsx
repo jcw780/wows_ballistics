@@ -175,7 +175,12 @@ class App extends React.Component<{},{}> {
 			if(this.graphsRef.current){this.graphsRef.current.updateData(this.calculatedData);}
 		}
 	}
-	onUpdate = () =>{this.navRef.current!.update();}	
+	onUpdate = () =>{this.navRef.current!.update();}
+	updateColors = () => {
+		if(this.SFCref.current){
+			this.SFCref.current.updateAllCanvas();
+		}
+	}	
 	render () {
 		return (
 			<div className="App">
@@ -186,7 +191,7 @@ class App extends React.Component<{},{}> {
 				<hr/>
 				<TargetFormsContainer ref={this.TFCref}/>
 				<hr/>
-				<SettingsBar settings={this.settings} ref={this.Settingsref}/>
+				<SettingsBar settings={this.settings} ref={this.Settingsref} updateColors={this.updateColors}/>
 				<hr/>
 				<Row>
 					<Col/>

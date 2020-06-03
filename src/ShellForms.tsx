@@ -121,7 +121,6 @@ class ShellForms extends React.Component<shellFormsProps> {
 		this.props.copyShip(outDefault, outForm);
 	}
 	updateCanvas = () => {
-		
 		this.formData.colors = this.props.colors.slice(this.props.index * 3, this.props.index * 3 + 3);
 		const ctx = this.canvasRef.current!.getContext('2d');
 		const height : number = this.canvasRef.current!.height;
@@ -291,6 +290,18 @@ class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {key
 		}
 		return colors;
 	}
+	updateColors = () => {
+		this.colors.length = 0;
+		for(let i=0; i<this.state.keys.size * 3; i++){
+			this.colors[i] = this.selectColor(i, this.state.keys.size * 3);
+		}
+	}
+	updateAllCanvas = () => {
+		this.updateColors();
+		this.shellRefs.forEach((ref) => {
+			ref.current!.updateCanvas();
+		})
+	}
 
 	reset = () => {
 		if(this.state.disabled){
@@ -301,13 +312,7 @@ class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {key
 	}
 	shouldComponentUpdate(nextProps, nextState){return nextState.disabled;}
 	render(){
-		const updateColors = () => {
-			this.colors = [];
-			for(let i=0; i<this.state.keys.size * 3; i++){
-				this.colors[i] = this.selectColor(i, this.state.keys.size);
-			}
-		}
-		updateColors();
+		this.updateColors();
 		const generateShellForms = () => {
 			if(this.copied){
 				const stateKeys = Array.from(this.state.keys);
