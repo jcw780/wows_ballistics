@@ -2,7 +2,7 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {Form, Container} from 'react-bootstrap';
 //import TargetFormsContainer from 'TargetForms';
-import * as T from 'commonTypes';
+import * as T from './commonTypes';
 
 export class DefaultForm extends React.Component
 <{handleValueChange: Function, controlId: string, label : string, defaultValue: string, defaultOptions: string[], keyProp: number}> {

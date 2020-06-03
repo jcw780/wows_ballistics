@@ -1,9 +1,9 @@
 import React from 'react';
 
-import {SingleChart} from 'Charts';
-import ShellFormsContainer from 'ShellForms';
-import TargetFormsContainer from 'TargetForms';
-import SettingsBar from 'SettingsBar';
+import {SingleChart} from './Charts';
+import ShellFormsContainer from './ShellForms';
+import TargetFormsContainer from './TargetForms';
+import SettingsBar from './SettingsBar';
 //ParameterForm
 export interface styleT{
 	formGroup?: React.CSSProperties, formLabel?: React.CSSProperties, inputGroup?: React.CSSProperties, 

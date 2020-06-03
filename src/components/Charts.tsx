@@ -3,7 +3,7 @@ import Chart from 'chart.js';
 import {Scatter, defaults} from 'react-chartjs-2';
 import {Button, Collapse, Row, Col} from 'react-bootstrap';
 
-import * as T from 'commonTypes';
+import * as T from './commonTypes';
 
 //For downloading graphs as images
 class DownloadButton extends React.Component<{updateData: Function, label: string}>{
@@ -456,7 +456,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         Object.keys(this.chartConfigs).forEach((chartType : T.chartT) => {setupNavbarCharts(chartType)});
         //Preinitialize chart after mounting - to mitigate user confusion
         //Also due to the fact that getting wasm to run on startup is apparently impossible
-        const initialJson = require('./initialData.json');
+        const initialJson = require('../static/initialData.json');
         this.updateData(initialJson);
     }
     componentDidUpdate(){

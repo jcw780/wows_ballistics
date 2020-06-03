@@ -1,8 +1,8 @@
 import React from 'react';
 import {Row, Col, Button, Modal, Container} from 'react-bootstrap';
 
-import * as T from 'commonTypes';
-import {ParameterForm} from 'ParameterForm';
+import * as T from './commonTypes';
+import {ParameterForm} from './ParameterForm';
 interface angleFormProps {
     newValue: any, controlId: string, 
     label: string, placeholder: string, keyProp : number, 

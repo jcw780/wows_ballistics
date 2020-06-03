@@ -1,8 +1,8 @@
 import React from 'react';
 import {Button, ToggleButtonGroup, ToggleButton, Collapse, Container, Col, Row} from 'react-bootstrap';
 
-import * as T from 'commonTypes';
-import {ParameterForm} from 'ParameterForm';
+import * as T from './commonTypes';
+import {ParameterForm} from './ParameterForm';
 
 class CalculationRadio extends React.Component<{settings: T.settingsT}, {value: number}>{
     constructor(props){

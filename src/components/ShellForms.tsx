@@ -1,8 +1,8 @@
 import React from 'react';
 import {Form, Col, Row, Modal, Container, Button, Popover, OverlayTrigger} from 'react-bootstrap';
 
-import * as T from 'commonTypes';
-import {ParameterForm} from 'ParameterForm';
+import * as T from './commonTypes';
+import {ParameterForm} from './ParameterForm';
 import DefaultShips from './DefaultForms'
 
 enum valuesComponentIndex {name, unit, ref}

@@ -1,14 +1,14 @@
 import React from 'react'; import './App.css';
 import {Button, Col, Row} from 'react-bootstrap';
 
-import * as T from 'commonTypes';
+import * as T from './commonTypes';
 import ShellFormsContainer from './ShellForms';
 import TargetFormsContainer from './TargetForms';
 import ChartGroup from './Charts';
 import NavbarCustom from './Navbar';
-import SettingsBar from 'SettingsBar';
+import SettingsBar from './SettingsBar';
 
-import ShellWasm from './shellWasm.wasm';
+import ShellWasm from '../wasm/shellWasm.wasm';
 class App extends React.Component<{},{}> {
 	SFCref = React.createRef<ShellFormsContainer>();
 	TFCref = React.createRef<TargetFormsContainer>();
