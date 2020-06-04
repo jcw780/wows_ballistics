@@ -108,7 +108,6 @@ interface chartGroupProps{
 }
 export class ChartGroup extends React.Component<chartGroupProps>{
     state={updateTrigger: true}; //State needs value otherwise render won't trigger
-    commonStyle = {};
     dimensions = {height: 300, width: 1200};
     chartConfigs : Record<T.chartT, singleChartType[]> = {
         impact: [ //impact charts
@@ -152,6 +151,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         angle: (x, y) => {return `(${x}m, ${y}°)`;},
         detDist: (x, y) => {return `(${x}m, ${y}m)`;},
     }
+
     constructor(props){
         super(props);
         defaults.global.animation = false;
@@ -166,7 +166,68 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         this.chartConfigs.post.forEach((value, i) => {
             value[singleChartIndex.name] = 'Horizontal Impact Angle ' + (i + 1);});
     }
-    //maybe pass prop so we don't have to GC as hard?
+
+    //Utility Functions for Graphs
+    private roundStringNumberWithoutTrailingZeroes = (num) => {
+        const dp = this.props.settings.format.rounding ; num = String(num);
+        if (dp > 0){
+            if (num.indexOf('e+') !== -1) {
+                // Can't round numbers this large because their string representation
+                // contains an exponent, like 9.99e+37
+                throw new Error("num too large");
+            }
+            if (num.indexOf('.') === -1) {// Nothing to do
+                return num;
+            }
+            let parts = num.split('.'),
+                beforePoint = parts[0], afterPoint = parts[1],
+                shouldRoundUp = afterPoint[dp] >= 5,
+                finalNumber;
+            afterPoint = afterPoint.slice(0, dp);
+            if (!shouldRoundUp) {
+                finalNumber = beforePoint + '.' + afterPoint;
+            } else if (/^9+$/.test(afterPoint)) {
+                // If we need to round up a number like 1.9999, increment the integer
+                // before the decimal point and discard the fractional part.
+                finalNumber = String(Number(beforePoint)+1);
+            } else {
+                // Starting from the last digit, increment digits until we find one
+                // that is not 9, then stop
+                let i = dp-1;
+                while (true) {
+                    if (afterPoint[i] === '9') {
+                        afterPoint = afterPoint.substr(0, i) +
+                                    '0' +
+                                    afterPoint.substr(i+1);
+                        i--;
+                    } else {
+                        afterPoint = afterPoint.substr(0, i) +
+                                    (Number(afterPoint[i]) + 1) +
+                                    afterPoint.substr(i+1);
+                        break;
+                    }
+                }
+                finalNumber = beforePoint + '.' + afterPoint;
+            }
+            // Remove trailing zeroes from fractional part before returning
+            return finalNumber.replace(/0+$/, '')
+        }else{return num;}
+    }
+    //Chart tooltip callbacks
+    private callbackFunction = (tooltipItem, chart) => {
+        let x = parseFloat(tooltipItem.label).toLocaleString(); 
+        let y = parseFloat(tooltipItem.value).toLocaleString();
+        x = this.roundStringNumberWithoutTrailingZeroes(x); y = this.roundStringNumberWithoutTrailingZeroes(y);
+        const namePS = (chart.datasets[tooltipItem.datasetIndex].label).split(' ');
+        const name = namePS[namePS.length - 1];
+        const callbackFunctions = this.callbackFunctions;
+        return name + ' ' + callbackFunctions[chart.datasets[tooltipItem.datasetIndex].yAxisID](x, y);
+    }
+    private callbackColor = (tooltipItem, chart) => {
+        const color = chart.config.data.datasets[tooltipItem.datasetIndex].borderColor;
+        return {borderColor: color,backgroundColor: color}
+    }
+
     updateData = (graphData) => {
         //Common Utility Functions / Values
         const addCommas = (value, index, values) => {return value.toLocaleString();}
@@ -178,65 +239,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         Object.entries(this.props.settings.distance).forEach(([key, value]) => {
             if(value !== null || true ){xAxesDistance[0].ticks[key] = value;}
         });
-        //defaults.scatter.scales.xAxes[0] = xAxesDistance;
-        const roundStringNumberWithoutTrailingZeroes = (num) => {
-            const dp = this.props.settings.format.rounding ; num = String(num);
-            if (dp > 0){
-                if (num.indexOf('e+') !== -1) {
-                    // Can't round numbers this large because their string representation
-                    // contains an exponent, like 9.99e+37
-                    throw new Error("num too large");
-                }
-                if (num.indexOf('.') === -1) {// Nothing to do
-                    return num;
-                }
-                let parts = num.split('.'),
-                    beforePoint = parts[0], afterPoint = parts[1],
-                    shouldRoundUp = afterPoint[dp] >= 5,
-                    finalNumber;
-                afterPoint = afterPoint.slice(0, dp);
-                if (!shouldRoundUp) {
-                    finalNumber = beforePoint + '.' + afterPoint;
-                } else if (/^9+$/.test(afterPoint)) {
-                    // If we need to round up a number like 1.9999, increment the integer
-                    // before the decimal point and discard the fractional part.
-                    finalNumber = String(Number(beforePoint)+1);
-                } else {
-                    // Starting from the last digit, increment digits until we find one
-                    // that is not 9, then stop
-                    let i = dp-1;
-                    while (true) {
-                        if (afterPoint[i] === '9') {
-                            afterPoint = afterPoint.substr(0, i) +
-                                        '0' +
-                                        afterPoint.substr(i+1);
-                            i--;
-                        } else {
-                            afterPoint = afterPoint.substr(0, i) +
-                                        (Number(afterPoint[i]) + 1) +
-                                        afterPoint.substr(i+1);
-                            break;
-                        }
-                    }
-                    finalNumber = beforePoint + '.' + afterPoint;
-                }
-                // Remove trailing zeroes from fractional part before returning
-                return finalNumber.replace(/0+$/, '')
-            }else{return num;}
-        }
-        const callbackFunction = (tooltipItem, chart) => {
-            let x = parseFloat(tooltipItem.label).toLocaleString(); 
-            let y = parseFloat(tooltipItem.value).toLocaleString();
-            x = roundStringNumberWithoutTrailingZeroes(x); y = roundStringNumberWithoutTrailingZeroes(y);
-            const namePS = (chart.datasets[tooltipItem.datasetIndex].label).split(' ');
-            const name = namePS[namePS.length - 1];
-            const callbackFunctions = this.callbackFunctions;
-            return name + ' ' + callbackFunctions[chart.datasets[tooltipItem.datasetIndex].yAxisID](x, y);
-        }
-        const callbackColor = (tooltipItem, chart) => {
-            const color = chart.config.data.datasets[tooltipItem.datasetIndex].borderColor;
-            return {borderColor: color,backgroundColor: color}
-        }
+        
         //Impact Charts
         const impactData = graphData.impact; const configImpact = this.chartConfigs.impact;
         const setupImpact = (row) => {
@@ -250,7 +253,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                         scaleLabel: {display: true, labelString: row.axes[1].axLabel}
                     },
                 ]},
-                tooltips: {callbacks: {label: callbackFunction, labelColor: callbackColor}}
+                tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}}
             }
         }
         const impactConfigs : configsT[] = [
@@ -280,7 +283,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             const chartLabels = impactConfigs[i]; const configs = chart[singleChartIndex.config];
             configs.options = {}; configs.options = setupImpact(chartLabels); configs.data.datasets = [];
         })
-        //Angle
+        //Angle Charts
         const angleData = graphData.angle; const configAngle = this.chartConfigs.angle;
         const targetedArmor = `Armor Thickness: ${graphData.targets[0].armor}mm`;
         const targetInclination = `Vertical Inclination: ${graphData.targets[0].inclination}°`; 
@@ -295,7 +298,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                         ticks:{min: 0}
                     }]
                 },
-                tooltips: {callbacks: {label: callbackFunction, labelColor: callbackColor}}
+                tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}}
             }
         }
         const angleConfigs : configsT[] = [
@@ -318,7 +321,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             const chartLabels = angleConfigs[i]; const config = chart[singleChartIndex.config];
             config.options = {}; config.options = setupAngle(chartLabels); config.data.datasets = [];
         });
-        //Post-Penetration
+        //Post-Penetration Charts
         const configPost = this.chartConfigs.post; const postData = graphData.post;
 
         //Resizing chartConfigs.post and props.links upon addition or deletion of angles
@@ -359,7 +362,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                         },
                     }],
                 },
-                tooltips: {callbacks: {label: callbackFunction, labelColor: callbackColor}}
+                tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}}
             }
             chart[singleChartIndex.name] = `Horizontal Impact Angle ${i + 1}: ${graphData.angles[i]}°`
         });
