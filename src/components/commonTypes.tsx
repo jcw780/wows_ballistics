@@ -4,6 +4,9 @@ import {SingleChart} from './Charts';
 import ShellFormsContainer from './ShellForms';
 import TargetFormsContainer from './TargetForms';
 import SettingsBar from './SettingsBar';
+//Collapsible Titles - General
+export type collapseTitlesT = [string, string]
+
 //ParameterForm
 export interface styleT{
 	formGroup?: React.CSSProperties, formLabel?: React.CSSProperties, inputGroup?: React.CSSProperties, 

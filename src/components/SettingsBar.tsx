@@ -42,7 +42,7 @@ interface settingsBarProps{
 }
 export class SettingsBar extends React.Component<settingsBarProps, settingsBarState>{
     state = {open : false}; scrollRef = React.createRef<Button & HTMLButtonElement>();
-    values : Readonly<Array<string>> = ["Hide: ", "Show: "]; // 0: Hide 1: Show
+    titles : T.collapseTitlesT = ["Hide: ", "Show: "]; // 0: Hide 1: Show
     private toggleCollapse = () => {
         this.setState((current) => {return {open: !current.open}});
     }
@@ -124,7 +124,7 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
                     aria-controls="collapseSettings"
                     aria-expanded={this.state.open} variant="dark"
                     className={this.state.open === true ? 'active' : ''}
-                >{this.values[Number(!this.state.open)] + 'Settings'}</Button>
+                >{this.titles[Number(!this.state.open)] + 'Settings'}</Button>
             <Collapse in={this.state.open}><div id="collapseSettings">
                 <Container style={{maxWidth: '100%'}}><Row>
                     <Col sm="6" style={{padding: 0}}>

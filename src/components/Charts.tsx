@@ -6,9 +6,10 @@ import {Button, Collapse, Row, Col} from 'react-bootstrap';
 import * as T from './commonTypes';
 import DownloadButton from './DownloadButton';
 
+interface dimensionsT {height: number, width: number}
 interface singleChartProps{
-    config: Record<string, any>, title?: string,
-    dimensions: Record<string, number>
+    config: chartDataOption, title?: string,
+    dimensions: dimensionsT
 }
 interface singleChartState{open: boolean}
 export class SingleChart extends React.Component<singleChartProps, singleChartState> {
@@ -17,7 +18,7 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
         title : ""
     }
     state = {open : true}; //apparently you need a value in state or else set state doesn't trigger rerender
-    values : Readonly<Array<string>> = ["Hide: ", "Show: "]; // 0: Hide 1: Show
+    titles : T.collapseTitlesT = ["Hide: ", "Show: "]; // 0: Hide 1: Show
 
     chartRef : React.RefObject<Scatter> = React.createRef<Scatter>();
     scrollRef : React.RefObject<Button & HTMLButtonElement> = React.createRef<Button & HTMLButtonElement>();
@@ -52,7 +53,7 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
                     aria-controls="collapseChart" 
                     aria-expanded={this.state.open}
                     className={this.state.open === true ? 'active' : ''}
-                >{this.values[Number(!this.state.open)] + this.props.title}</Button>
+                >{this.titles[Number(!this.state.open)] + this.props.title}</Button>
                 <Collapse in={this.state.open}>
                     <div id="collapseChart">
                     <Scatter data={this.props.config.data} options={this.props.config.options}
