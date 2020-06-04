@@ -3,29 +3,13 @@ import Chart from 'chart.js';
 import {Scatter, defaults} from 'react-chartjs-2';
 import {Button, Collapse, Row, Col} from 'react-bootstrap';
 
-import * as T from 'commonTypes';
+import * as T from './commonTypes';
+import DownloadButton from './DownloadButton';
 
-//For downloading graphs as images
-class DownloadButton extends React.Component<{updateData: Function, label: string}>{
-    state = {href: '', download: ''} 
-    update = (href, download) => {
-        this.setState({href: href, download: download});
-    }
-    private click = () => {this.props.updateData()}
-    render(){
-        return (
-            <a download={this.state.download} href={this.state.href}>
-                <Button variant="outline-secondary" onClick={this.click}>
-                    {this.props.label}
-                </Button>
-            </a>
-        );
-    }
-}
-
+interface dimensionsT {height: number, width: number}
 interface singleChartProps{
-    config: Record<string, any>, title?: string,
-    dimensions: Record<string, number>
+    config: chartDataOption, title?: string,
+    dimensions: dimensionsT
 }
 interface singleChartState{open: boolean}
 export class SingleChart extends React.Component<singleChartProps, singleChartState> {
@@ -33,9 +17,8 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
         config : {data: {datasets : [],}, options: {}},
         title : ""
     }
-    state = {open : true}; 
-    //apparently you need a value in state or else set state doesn't trigger rerender
-    valueIndex : number = 0; values : Readonly<Array<string>> = ["Hide: ", "Show: "]; // 0: Hide 1: Show
+    state = {open : true}; //apparently you need a value in state or else set state doesn't trigger rerender
+    titles : T.collapseTitlesT = ["Hide: ", "Show: "]; // 0: Hide 1: Show
 
     chartRef : React.RefObject<Scatter> = React.createRef<Scatter>();
     scrollRef : React.RefObject<Button & HTMLButtonElement> = React.createRef<Button & HTMLButtonElement>();
@@ -46,8 +29,6 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
         this.setState(this.state); //trigger rerender
     }
     toggleCollapse = () => {
-        if(this.state.open){this.valueIndex = 1;}
-        else{this.valueIndex = 0;}
         this.setState((current) => {return {open: !current.open}});
     }
     updateDownloadGraph = () => {
@@ -72,7 +53,7 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
                     aria-controls="collapseChart" 
                     aria-expanded={this.state.open}
                     className={this.state.open === true ? 'active' : ''}
-                >{this.values[this.valueIndex] + this.props.title}</Button>
+                >{this.titles[Number(!this.state.open)] + this.props.title}</Button>
                 <Collapse in={this.state.open}>
                     <div id="collapseChart">
                     <Scatter data={this.props.config.data} options={this.props.config.options}
@@ -108,7 +89,6 @@ interface chartGroupProps{
 }
 export class ChartGroup extends React.Component<chartGroupProps>{
     state={updateTrigger: true}; //State needs value otherwise render won't trigger
-    commonStyle = {};
     dimensions = {height: 300, width: 1200};
     chartConfigs : Record<T.chartT, singleChartType[]> = {
         impact: [ //impact charts
@@ -152,21 +132,83 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         angle: (x, y) => {return `(${x}m, ${y}°)`;},
         detDist: (x, y) => {return `(${x}m, ${y}m)`;},
     }
+
     constructor(props){
         super(props);
         defaults.global.animation = false;
         Chart.plugins.register({ //Allows viewing of downloaded image on bright backgrounds
             beforeDraw: function(chartInstance) {
-                var ctx = chartInstance.chart.ctx;
+                let ctx = chartInstance.chart.ctx;
                 ctx.fillStyle = "white";
                 ctx.fillRect(0, 0, chartInstance.chart.width, chartInstance.chart.height);
             }
         });
         //Preinitialize postpenetration names
         this.chartConfigs.post.forEach((value, i) => {
-            value[2] = 'Horizontal Impact Angle ' + (i + 1);});
+            value[singleChartIndex.name] = 'Horizontal Impact Angle ' + (i + 1);});
     }
-    //maybe pass prop so we don't have to GC as hard?
+
+    //Utility Functions for Graphs
+    private roundStringNumberWithoutTrailingZeroes = (num) => {
+        const dp = this.props.settings.format.rounding ; num = String(num);
+        if (dp > 0){
+            if (num.indexOf('e+') !== -1) {
+                // Can't round numbers this large because their string representation
+                // contains an exponent, like 9.99e+37
+                throw new Error("num too large");
+            }
+            if (num.indexOf('.') === -1) {// Nothing to do
+                return num;
+            }
+            let parts = num.split('.'),
+                beforePoint = parts[0], afterPoint = parts[1],
+                shouldRoundUp = afterPoint[dp] >= 5,
+                finalNumber;
+            afterPoint = afterPoint.slice(0, dp);
+            if (!shouldRoundUp) {
+                finalNumber = beforePoint + '.' + afterPoint;
+            } else if (/^9+$/.test(afterPoint)) {
+                // If we need to round up a number like 1.9999, increment the integer
+                // before the decimal point and discard the fractional part.
+                finalNumber = String(Number(beforePoint)+1);
+            } else {
+                // Starting from the last digit, increment digits until we find one
+                // that is not 9, then stop
+                let i = dp-1;
+                while (true) {
+                    if (afterPoint[i] === '9') {
+                        afterPoint = afterPoint.substr(0, i) +
+                                    '0' +
+                                    afterPoint.substr(i+1);
+                        i--;
+                    } else {
+                        afterPoint = afterPoint.substr(0, i) +
+                                    (Number(afterPoint[i]) + 1) +
+                                    afterPoint.substr(i+1);
+                        break;
+                    }
+                }
+                finalNumber = beforePoint + '.' + afterPoint;
+            }
+            // Remove trailing zeroes from fractional part before returning
+            return finalNumber.replace(/0+$/, '')
+        }else{return num;}
+    }
+    //Chart tooltip callbacks
+    private callbackFunction = (tooltipItem, chart) => {
+        let x = parseFloat(tooltipItem.label).toLocaleString(); 
+        let y = parseFloat(tooltipItem.value).toLocaleString();
+        x = this.roundStringNumberWithoutTrailingZeroes(x); y = this.roundStringNumberWithoutTrailingZeroes(y);
+        const namePS = (chart.datasets[tooltipItem.datasetIndex].label).split(' ');
+        const name = namePS[namePS.length - 1];
+        const callbackFunctions = this.callbackFunctions;
+        return name + ' ' + callbackFunctions[chart.datasets[tooltipItem.datasetIndex].yAxisID](x, y);
+    }
+    private callbackColor = (tooltipItem, chart) => {
+        const color = chart.config.data.datasets[tooltipItem.datasetIndex].borderColor;
+        return {borderColor: color,backgroundColor: color}
+    }
+
     updateData = (graphData) => {
         //Common Utility Functions / Values
         const addCommas = (value, index, values) => {return value.toLocaleString();}
@@ -178,64 +220,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         Object.entries(this.props.settings.distance).forEach(([key, value]) => {
             if(value !== null || true ){xAxesDistance[0].ticks[key] = value;}
         });
-        //defaults.scatter.scales.xAxes[0] = xAxesDistance;
-        const roundStringNumberWithoutTrailingZeroes = (num) => {
-            const dp = this.props.settings.format.rounding ; num = String(num);
-            if (dp > 0){
-                if (num.indexOf('e+') !== -1) {
-                    // Can't round numbers this large because their string representation
-                    // contains an exponent, like 9.99e+37
-                    throw new Error("num too large");
-                }
-                if (num.indexOf('.') === -1) {// Nothing to do
-                    return num;
-                }
-                var parts = num.split('.'),
-                    beforePoint = parts[0], afterPoint = parts[1],
-                    shouldRoundUp = afterPoint[dp] >= 5,
-                    finalNumber;
-                afterPoint = afterPoint.slice(0, dp);
-                if (!shouldRoundUp) {
-                    finalNumber = beforePoint + '.' + afterPoint;
-                } else if (/^9+$/.test(afterPoint)) {
-                    // If we need to round up a number like 1.9999, increment the integer
-                    // before the decimal point and discard the fractional part.
-                    finalNumber = String(Number(beforePoint)+1);
-                } else {
-                    // Starting from the last digit, increment digits until we find one
-                    // that is not 9, then stop
-                    var i = dp-1;
-                    while (true) {
-                        if (afterPoint[i] === '9') {
-                            afterPoint = afterPoint.substr(0, i) +
-                                        '0' +
-                                        afterPoint.substr(i+1);
-                            i--;
-                        } else {
-                            afterPoint = afterPoint.substr(0, i) +
-                                        (Number(afterPoint[i]) + 1) +
-                                        afterPoint.substr(i+1);
-                            break;
-                        }
-                    }
-                    finalNumber = beforePoint + '.' + afterPoint;
-                }
-                // Remove trailing zeroes from fractional part before returning
-                return finalNumber.replace(/0+$/, '')
-            }else{return num;}
-        }
-        const callbackFunction = (tooltipItem, chart) => {
-            var x = tooltipItem.label; var y = tooltipItem.value;
-            x = roundStringNumberWithoutTrailingZeroes(x); y = roundStringNumberWithoutTrailingZeroes(y);
-            const namePS = (chart.datasets[tooltipItem.datasetIndex].label).split(' ');
-            const name = namePS[namePS.length - 1];
-            const callbackFunctions = this.callbackFunctions;
-            return name + ' ' + callbackFunctions[chart.datasets[tooltipItem.datasetIndex].yAxisID](x, y);
-        }
-        const callbackColor = (tooltipItem, chart) => {
-            const color = chart.config.data.datasets[tooltipItem.datasetIndex].borderColor;
-            return {borderColor: color,backgroundColor: color}
-        }
+        
         //Impact Charts
         const impactData = graphData.impact; const configImpact = this.chartConfigs.impact;
         const setupImpact = (row) => {
@@ -249,7 +234,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                         scaleLabel: {display: true, labelString: row.axes[1].axLabel}
                     },
                 ]},
-                tooltips: {callbacks: {label: callbackFunction, labelColor: callbackColor}}
+                tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}}
             }
         }
         const impactConfigs : configsT[] = [
@@ -279,7 +264,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             const chartLabels = impactConfigs[i]; const configs = chart[singleChartIndex.config];
             configs.options = {}; configs.options = setupImpact(chartLabels); configs.data.datasets = [];
         })
-        //Angle
+        //Angle Charts
         const angleData = graphData.angle; const configAngle = this.chartConfigs.angle;
         const targetedArmor = `Armor Thickness: ${graphData.targets[0].armor}mm`;
         const targetInclination = `Vertical Inclination: ${graphData.targets[0].inclination}°`; 
@@ -294,7 +279,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                         ticks:{min: 0}
                     }]
                 },
-                tooltips: {callbacks: {label: callbackFunction, labelColor: callbackColor}}
+                tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}}
             }
         }
         const angleConfigs : configsT[] = [
@@ -317,7 +302,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             const chartLabels = angleConfigs[i]; const config = chart[singleChartIndex.config];
             config.options = {}; config.options = setupAngle(chartLabels); config.data.datasets = [];
         });
-        //Post-Penetration
+        //Post-Penetration Charts
         const configPost = this.chartConfigs.post; const postData = graphData.post;
 
         //Resizing chartConfigs.post and props.links upon addition or deletion of angles
@@ -328,8 +313,8 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 this.props.links.post.push(['', React.createRef<SingleChart>()]); // navbar links
             }
         }else if(angleLengthDiff < 0){
-            configPost.splice(angleLengthDiff, Math.abs(angleLengthDiff));
-            this.props.links.post.splice(angleLengthDiff, Math.abs(angleLengthDiff)); // navbar links
+            configPost.length = graphData.angles.length;
+            this.props.links.post.length = graphData.angles.length; // navbar links
         }
 
         const WFL = "Fused ", NFL = "No Fusing ";
@@ -358,7 +343,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                         },
                     }],
                 },
-                tooltips: {callbacks: {label: callbackFunction, labelColor: callbackColor}}
+                tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}}
             }
             chart[singleChartIndex.name] = `Horizontal Impact Angle ${i + 1}: ${graphData.angles[i]}°`
         });
@@ -421,10 +406,10 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         this.setState(this.state); //graph updates completed, trigger re-render
     }
     updateCharts = () => {
-        const trigger = (value : singleChartType, i) => {
+        const triggerChartUpdate = (value : singleChartType, i) => {
             const ref = value[singleChartIndex.ref]; if(ref.current !== undefined){ref.current!.update();}
         }
-        Object.entries(this.chartConfigs).forEach(([key, value]) => {value.forEach(trigger)});
+        Object.entries(this.chartConfigs).forEach(([key, value]) => {value.forEach(triggerChartUpdate)});
     }
     render(){
         const addChart = (target : T.chartT) => {
@@ -454,9 +439,9 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             });
         }
         Object.keys(this.chartConfigs).forEach((chartType : T.chartT) => {setupNavbarCharts(chartType)});
-        //Preinitialize chart after mounting - to mitigate user confusion
-        //Also due to the fact that getting wasm to run on startup is apparently impossible
-        const initialJson = require('./initialData.json');
+        // Preinitialize chart after mounting - to mitigate user confusion
+        // Also due to the fact that getting wasm to run on startup is apparently impossible
+        const initialJson = require('../static/initialData.json');
         this.updateData(initialJson);
     }
     componentDidUpdate(){
@@ -464,7 +449,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             this.props.links.post[i][T.singleLinkIndex.name] = chart[singleChartIndex.name]; 
             this.props.links.post[i][T.singleLinkIndex.ref] = chart[singleChartIndex.ref];
         });
-        this.props.onUpdate();
+        this.props.onUpdate(); // Update navbar links on update
     }
 }
 

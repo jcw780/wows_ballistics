@@ -1,7 +1,7 @@
 import React from 'react';
 import {Nav, Navbar, NavDropdown} from 'react-bootstrap';
 
-import * as T from 'commonTypes';
+import * as T from './commonTypes';
 
 class NavbarCustom extends React.Component<{links: T.linkT}>{
     state = {update: true};

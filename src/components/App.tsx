@@ -1,25 +1,32 @@
 import React from 'react'; import './App.css';
 import {Button, Col, Row} from 'react-bootstrap';
 
-import * as T from 'commonTypes';
+import * as T from './commonTypes';
 import ShellFormsContainer from './ShellForms';
 import TargetFormsContainer from './TargetForms';
 import ChartGroup from './Charts';
 import NavbarCustom from './Navbar';
-import SettingsBar from 'SettingsBar';
+import SettingsBar from './SettingsBar';
 
-import ShellWasm from './shellWasm.wasm';
+import ShellWasm from '../wasm/shellWasm.wasm';
 class App extends React.Component<{},{}> {
+	//Refs
 	SFCref = React.createRef<ShellFormsContainer>();
 	TFCref = React.createRef<TargetFormsContainer>();
 	Settingsref = React.createRef<SettingsBar>();
 	graphsRef : React.RefObject<ChartGroup> = React.createRef<ChartGroup>();
 	navRef : React.RefObject<NavbarCustom> = React.createRef<NavbarCustom>();
-	instance : any;
+
+	//Navbar Links
 	links : T.linkT = {parameters : [], impact : [], angle : [], post : [],}
+
+	// Wasm
+	instance : any; // Wasm Instance
 	arrayIndices : Record<string, Record<string, number>> = {
 		impactDataIndex: {}, angleDataIndex: {}, postPenDataIndex: {} 
-	}
+	} //Condensed wasm enums
+
+	// Settings Data
 	settings : T.settingsT = { //*implement component
 		distance: {min: 0, max: undefined, stepSize: 1000, },
 		calculationSettings: {
@@ -31,8 +38,11 @@ class App extends React.Component<{},{}> {
 			colors : {saturation: .5, light: .6, batch: false}
 		},
 	}
+	// Calculated Data
 	calculatedData: T.calculatedData
-	compile = () => {
+
+	//Compile Wasm 
+	compile = () : void => {
 		return ShellWasm().then((M) => {
 			this.instance = new M.shell(2);
 			Object.entries(this.arrayIndices).forEach(([k, v]: any) => {
@@ -72,15 +82,19 @@ class App extends React.Component<{},{}> {
 			targets : Array<T.targetDataNoAngleT>(1), angles : []
 		}
 	}
-	applyCalculationSettings = () => {
+	// Setup calculations
+	applyCalculationSettings = () : void => {
 		const instance = this.instance; 
 		const calcSettings = this.settings.calculationSettings;
 		const launchAngle = calcSettings.launchAngle;
-		instance.setMax(launchAngle.max); instance.setMin(launchAngle.min);
+		instance.setMax(launchAngle.max); 
+		instance.setMin(launchAngle.min);
 		instance.setPrecision(launchAngle.precision);
 		instance.setDtMin(calcSettings.timeStep);
 	}
-	calcImpact = (method) => {
+
+	// Select calculation type
+	calcImpact = (method) : void => {
 		const calcImpactFunc = {
 			0: _=> this.instance.calcImpactAdamsBashforth5(),
 			1: _=> this.instance.calcImpactForwardEuler(),
@@ -91,25 +105,28 @@ class App extends React.Component<{},{}> {
 		else{console.log('Error', method); throw new Error('Invalid parameter');}
 	}
 
+	// Resize point arrays before use
 	resizeArray = <K extends {}>(array : Array<any>, newLength : number, 
 		fill : (new() => K) | undefined =undefined ) : void => {
 		const diff = newLength - array.length;
 		if(diff > 0){
 			if(fill !== undefined){
-				for(let i=0; i<diff; i++){const nObj : K = new fill(); array.push(nObj);}
+				for(let i=0; i<diff; i++){
+					const nObj : K = new fill(); array.push(nObj);
+				}
 			}else{for(let i=0; i<diff; i++){array.push();}}
 		}else if(diff < 0){array.length = newLength;}
 	}
-	resizePointArray = (array: Array<Array<any>>, newLength: [number, number]) => {
+	resizePointArray = (array: Array<Array<any>>, newLength: [number, number]) : void => {
 		this.resizeArray(array, newLength[0], Array);
 		array.forEach((subArray) => {this.resizeArray(subArray, newLength[1]);});
 	}
-	resizeCalculatedData = (numShells, impactSize, numAngles) => {
+	resizeCalculatedData = (numShells, impactSize, numAngles) : void => {
 		this.calculatedData.numShells = numShells;
 		const chartIndicesNonPost : Array<'impact' | 'angle'> = ['impact', 'angle'];
 		chartIndicesNonPost.forEach((index) => {
-			Object.entries(this.calculatedData[index]).forEach((kv) => {
-				const value = kv[1]; this.resizePointArray(value, [numShells, impactSize]);
+			Object.entries(this.calculatedData[index]).forEach(([key, value]) => {
+				this.resizePointArray(value, [numShells, impactSize]);
 			})
 		})
 		const angleShells = numAngles * numShells;
@@ -117,7 +134,9 @@ class App extends React.Component<{},{}> {
 		this.resizePointArray(this.calculatedData.post.notFused, [angleShells, 0]);
 		this.resizePointArray(this.calculatedData.post.fused, [angleShells, 0]);
 	}
-	generate = () => {
+	
+	// Calculate and generate data for charts
+	generate = () : void => {
 		const shellData = this.SFCref.current!.returnShellData();
 		const tgtData = this.TFCref.current!.returnData();
 		const numShells: number = shellData.length;
@@ -142,17 +161,17 @@ class App extends React.Component<{},{}> {
 			this.calculatedData.targets[0] = {armor: tgtData.armor, inclination: tgtData.inclination, width: tgtData.width}
 			shellData.forEach((value, i) => {this.calculatedData.names[i] = value.name; this.calculatedData.colors[i] = value.colors;});
 			let maxDist = 0; let maxShell = 0;
-			for(let j=0; j<numShells; j++){
+			for(let j=0; j<numShells; j++){ // iterate through shells
 				let maxDistS = 0;
-				for(let i=0; i<impactSize; i++){
+				for(let i=0; i<impactSize; i++){ // iterate through points at each range
 					const dist : number = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex.distance, j);
 					maxDistS = dist > maxDistS ? dist : maxDistS;
-					Object.entries(this.calculatedData.impact).forEach(([k, v] : any) => {
-						const y = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex[k], j);
-						v[j][i] = {x: dist, y: y};
+					Object.entries(this.calculatedData.impact).forEach(([dataType, output] : [string, T.pointArrays]) => {
+						const y = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex[dataType], j);
+						output[j][i] = {x: dist, y: y};
 					});
-					Object.entries(this.calculatedData.angle).forEach(([k, v] : any) => {
-						v[j][i] = {x: dist, y: this.instance.getAnglePoint(i, this.arrayIndices.angleDataIndex[k], j)};
+					Object.entries(this.calculatedData.angle).forEach(([dataType, output] : [string, T.pointArrays]) => {
+						output[j][i] = {x: dist, y: this.instance.getAnglePoint(i, this.arrayIndices.angleDataIndex[dataType], j)};
 					});
 					for(let k=0; k<numAngles; k++){
 						const detDist : number
@@ -171,12 +190,12 @@ class App extends React.Component<{},{}> {
 				const dist = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex.distance, maxShell);
 				this.calculatedData.post.shipWidth[0][i] = {x: dist, y: tgtData.width}
 			}
-			//console.log(JSON.stringify(output));
+			//console.log(JSON.stringify(output)); - for replacing initialData when first ships change
 			if(this.graphsRef.current){this.graphsRef.current.updateData(this.calculatedData);}
 		}
 	}
-	onUpdate = () =>{this.navRef.current!.update();}
-	updateColors = () => {
+	onUpdate = () =>{this.navRef.current!.update();} // Update Navbar when charts are updated
+	updateColors = () => { // For updating when color settings change
 		if(this.SFCref.current){
 			this.SFCref.current.updateAllCanvas();
 		}
@@ -207,7 +226,11 @@ class App extends React.Component<{},{}> {
 		);
 	}
 	componentDidMount(){
-		this.links.parameters.push(['Shell Parameters', this.SFCref], ['Target Parameters', this.TFCref], ['Settings', this.Settingsref]);
+		this.links.parameters.push(
+			['Shell Parameters', this.SFCref], 
+			['Target Parameters', this.TFCref], 
+			['Settings', this.Settingsref]
+		);
 	}
 }
 

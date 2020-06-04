@@ -1,7 +1,7 @@
 import React from 'react';
 import {InputGroup, Form} from 'react-bootstrap';
 
-import * as T from 'commonTypes';
+import * as T from './commonTypes';
 
 interface parameterFormState {value: string, invalid: boolean}
 interface parameterFormProps {

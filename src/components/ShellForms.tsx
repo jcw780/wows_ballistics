@@ -1,8 +1,8 @@
 import React from 'react';
 import {Form, Col, Row, Modal, Container, Button, Popover, OverlayTrigger} from 'react-bootstrap';
 
-import * as T from 'commonTypes';
-import {ParameterForm} from 'ParameterForm';
+import * as T from './commonTypes';
+import {ParameterForm} from './ParameterForm';
 import DefaultShips from './DefaultForms'
 
 enum valuesComponentIndex {name, unit, ref}
@@ -36,7 +36,8 @@ class ShellParameters extends React.Component<shellParametersProps>{
 
 interface shellFormsProps{
 	index: number, colors: Array<string>, keyProp: number, deleteShip : Function, copyShip : Function,
-	reset: Function, settings : Record<string, any>, size: number, formData?: formDataT, defaultData?: T.defaultDataT, copied: boolean
+	reset: () => void, settings : Record<string, any>, size: number, 
+	formData?: formDataT, defaultData?: T.defaultDataT, copied: boolean
 }
 interface formDataT{
 	caliber: number, muzzleVelocity: number, dragCoefficient: number, mass: number, 
@@ -303,7 +304,7 @@ class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {key
 		})
 	}
 
-	reset = () => {
+	reset = () : void => {
 		if(this.state.disabled){
 			this.setState((current) => {
 				return {keys: current.keys, disabled: false}
