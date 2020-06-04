@@ -28,8 +28,6 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
         this.setState(this.state); //trigger rerender
     }
     toggleCollapse = () => {
-        if(this.state.open){this.valueIndex = 1;}
-        else{this.valueIndex = 0;}
         this.setState((current) => {return {open: !current.open}});
     }
     updateDownloadGraph = () => {
