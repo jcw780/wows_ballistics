@@ -42,13 +42,8 @@ interface settingsBarProps{
 }
 export class SettingsBar extends React.Component<settingsBarProps, settingsBarState>{
     state = {open : false}; scrollRef = React.createRef<Button & HTMLButtonElement>();
-    private valueIndex : number = 1; values : Readonly<Array<string>> = ["Hide: ", "Show: "]; // 0: Hide 1: Show
+    values : Readonly<Array<string>> = ["Hide: ", "Show: "]; // 0: Hide 1: Show
     private toggleCollapse = () => {
-        if(this.state.open){
-            this.valueIndex = 1;
-        }else{
-            this.valueIndex = 0;
-        }
         this.setState((current) => {return {open: !current.open}});
     }
     private forms = {
@@ -129,7 +124,7 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
                     aria-controls="collapseSettings"
                     aria-expanded={this.state.open} variant="dark"
                     className={this.state.open === true ? 'active' : ''}
-                >{this.values[this.valueIndex] + 'Settings'}</Button>
+                >{this.values[Number(!this.state.open)] + 'Settings'}</Button>
             <Collapse in={this.state.open}><div id="collapseSettings">
                 <Container style={{maxWidth: '100%'}}><Row>
                     <Col sm="6" style={{padding: 0}}>

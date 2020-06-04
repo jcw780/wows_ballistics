@@ -4,24 +4,7 @@ import {Scatter, defaults} from 'react-chartjs-2';
 import {Button, Collapse, Row, Col} from 'react-bootstrap';
 
 import * as T from './commonTypes';
-
-//For downloading graphs as images
-class DownloadButton extends React.Component<{updateData: Function, label: string}>{
-    state = {href: '', download: ''} 
-    update = (href, download) => {
-        this.setState({href: href, download: download});
-    }
-    private click = () => {this.props.updateData()}
-    render(){
-        return (
-            <a download={this.state.download} href={this.state.href}>
-                <Button variant="outline-secondary" onClick={this.click}>
-                    {this.props.label}
-                </Button>
-            </a>
-        );
-    }
-}
+import DownloadButton from './DownloadButton';
 
 interface singleChartProps{
     config: Record<string, any>, title?: string,
@@ -33,9 +16,8 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
         config : {data: {datasets : [],}, options: {}},
         title : ""
     }
-    state = {open : true}; 
-    //apparently you need a value in state or else set state doesn't trigger rerender
-    valueIndex : number = 0; values : Readonly<Array<string>> = ["Hide: ", "Show: "]; // 0: Hide 1: Show
+    state = {open : true}; //apparently you need a value in state or else set state doesn't trigger rerender
+    values : Readonly<Array<string>> = ["Hide: ", "Show: "]; // 0: Hide 1: Show
 
     chartRef : React.RefObject<Scatter> = React.createRef<Scatter>();
     scrollRef : React.RefObject<Button & HTMLButtonElement> = React.createRef<Button & HTMLButtonElement>();
@@ -72,7 +54,7 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
                     aria-controls="collapseChart" 
                     aria-expanded={this.state.open}
                     className={this.state.open === true ? 'active' : ''}
-                >{this.values[this.valueIndex] + this.props.title}</Button>
+                >{this.values[Number(!this.state.open)] + this.props.title}</Button>
                 <Collapse in={this.state.open}>
                     <div id="collapseChart">
                     <Scatter data={this.props.config.data} options={this.props.config.options}
