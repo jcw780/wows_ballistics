@@ -193,7 +193,7 @@ class ShellForms extends React.Component<shellFormsProps> {
 									</Popover.Content>
 								</Popover>
 							}>
-							<Button style={{width: "100%"}} variant="dark">Detailed Parameters</Button>
+							<Button style={{width: "100%"}} variant="dark">Raw Parameters</Button>
 						</OverlayTrigger>
 					</Col>
 					<Col className="no-lr-padding">
