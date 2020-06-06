@@ -191,10 +191,7 @@ export class ShellForms extends React.Component<shellFormsProps> {
 						<ParameterForm label="Shell Label" controlId='shipName'
 						handleValueChange={this.handleNameChange}
 						type="text" newValue={this.formData.name} labelWidth={3}
-						ref={this.nameForm} style={{formControl: {width: '70%'}}}/>
-						<ToggleButtonGroup type="checkbox" vertical defaultValue={[true]}>
-							<ToggleButton onChange={this.toggleGraph} value={true} variant="secondary">Graph Shell</ToggleButton>
-						</ToggleButtonGroup>
+						ref={this.nameForm} style={{formControl: {width: '70%'}, formGroup: {marginBottom: ".5rem"}}}/>
 						<Row style={{marginBottom: ".5rem"}}>
 							<Col sm="3" className="no-lr-padding">
 								<text>Colors</text>
@@ -203,6 +200,9 @@ export class ShellForms extends React.Component<shellFormsProps> {
 								<canvas style={{height: "2rem", width: "100%"}} width="600" height="150" ref={this.canvasRef}/>
 							</Col>
 						</Row>
+						<ToggleButtonGroup type="checkbox" vertical defaultValue={[true]} style={{marginBottom: ".5rem"}}>
+							<ToggleButton onChange={this.toggleGraph} value={true} variant="secondary">Graph Shell</ToggleButton>
+						</ToggleButtonGroup>
 						<hr style={{marginTop: 0}}/>
 						<DefaultShips sendDefault={this.getDefaultData} ref={this.defaults} keyProp={this.props.keyProp}
 						reset={this.props.reset} index={this.props.index} defaultData={this.defaultData}/>
