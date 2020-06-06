@@ -1,9 +1,10 @@
 import React from 'react';
-import {Form, Col, Row, Modal, Container, Button, Popover, OverlayTrigger} from 'react-bootstrap';
+import {Form, Col, Row, Modal, Container, Button, ToggleButtonGroup, ToggleButton, Popover, OverlayTrigger} from 'react-bootstrap';
 
 import * as T from './commonTypes';
 import {ParameterForm} from './ParameterForm';
 import DefaultShips from './DefaultForms'
+import DownloadButton from './DownloadButton';
 
 enum valuesComponentIndex {name, unit, ref}
 type valuesComponent = [string, string, React.RefObject<ParameterForm>];
@@ -13,30 +14,46 @@ type formValuesT = Record<parametersType, valuesComponent>
 
 interface shellParametersProps {handleValueChange: any, formLabels : formValuesT, formValues: formDataT}
 class ShellParameters extends React.Component<shellParametersProps>{
-	nameForm = React.createRef<ParameterForm>()
+	nameForm = React.createRef<ParameterForm>();
+	downloadRef = React.createRef<DownloadButton>();
 	handleValueChange = (value, k) => {this.props.handleValueChange(value, k);}
 	updateShells() {
 		Object.entries(this.props.formLabels).forEach(([key, value] : any): void => {
 			value[valuesComponentIndex.ref].current.updateValue(this.props.formValues[key]);
 		});
 	}
+	updateDownloadJSON = () => {
+		const selectedData = Object.assign({}, this.props.formValues);
+		delete selectedData.colors;
+        const url = URL.createObjectURL(new Blob([JSON.stringify(selectedData)], {type: 'text/json;charset=utf-8'}));
+        this.downloadRef.current!.update(url, this.props.formValues.name + '.json');
+    }
 	render() {
 		return(
-			<Form>
-				{Object.entries(this.props.formLabels).map(([key, value] : any, i) => {
-					return (<ParameterForm label={value[valuesComponentIndex.name]} key={i} controlId={key}
-					handleValueChange={this.handleValueChange}
-					type="number" newValue={String(this.props.formValues[key])} append={value[valuesComponentIndex.unit]}
-					ref={this.props.formLabels[key][valuesComponentIndex.ref]} style={{inputGroup:{width: "50%"}}}/>);
-				})}	
-			</Form>
+			<>
+				<Form>
+					{Object.entries(this.props.formLabels).map(([key, value] : any, i) => {
+						return (<ParameterForm label={value[valuesComponentIndex.name]} key={i} controlId={key}
+						handleValueChange={this.handleValueChange}
+						type="number" newValue={String(this.props.formValues[key])} append={value[valuesComponentIndex.unit]}
+						ref={this.props.formLabels[key][valuesComponentIndex.ref]} style={{inputGroup:{width: "50%"}}}/>);
+					})}	
+				</Form>
+				<Row>
+					<Col sm="3"/>
+					<Col sm="6">
+					<DownloadButton label="Download Raw" updateData={this.updateDownloadJSON} ref={this.downloadRef} style={{width: "100%"}}/>
+					</Col>
+					<Col sm="3"/>
+				</Row>
+			</>
 		);
 	}
 }
 
 interface shellFormsProps{
 	index: number, colors: Array<string>, keyProp: number, deleteShip : Function, copyShip : Function,
-	reset: () => void, settings : Record<string, any>, size: number, 
+	reset: () => void, settings : Record<string, any>, size: number
 	formData?: formDataT, defaultData?: T.defaultDataT, copied: boolean
 }
 interface formDataT{
@@ -44,10 +61,11 @@ interface formDataT{
 	krupp: number, fusetime: number, threshold: number, normalization: number, 
 	ra0: number, ra1: number, HESAP: number, name: string, colors: string[]
 }
-class ShellForms extends React.Component<shellFormsProps> {
+export class ShellForms extends React.Component<shellFormsProps> {
 	public static defaultProps = {
 		copied : false
 	}
+	graph = true;
 	defaultData : T.defaultDataT = Object.seal({
 		version: ['', ['']], nation: ['', ['']], shipType: ['', ['']], 
 		ship: ['', ['']], artillery: ['', ['']], shellType: ['', ['']],
@@ -85,7 +103,13 @@ class ShellForms extends React.Component<shellFormsProps> {
 		ra1: ['Always Ricochet', '°', React.createRef()], 
 		HESAP: ['HE/SAP penetration', 'mm', React.createRef()],
 	})
-	returnData = () => {return this.formData;}
+	returnData = () => {
+		if(this.graph){
+			return this.formData;
+		}else{
+			return false;
+		}
+	}
 	handleNameChange = (value, id) => {this.formData.name = value;}
 	handleValueChange = (value : string, k : string) => {
 		this.formData[k] = parseFloat(value);
@@ -151,6 +175,10 @@ class ShellForms extends React.Component<shellFormsProps> {
 			ctx!.fillStyle = color; ctx!.fill(region);
 		});
 	}
+	toggleGraph = (event) => {
+		console.log(event.target.checked);
+		this.graph = event.target.checked;
+	}
 	render() {
 		return(
 			<Modal.Dialog>
@@ -164,7 +192,9 @@ class ShellForms extends React.Component<shellFormsProps> {
 						handleValueChange={this.handleNameChange}
 						type="text" newValue={this.formData.name} labelWidth={3}
 						ref={this.nameForm} style={{formControl: {width: '70%'}}}/>
-
+						<ToggleButtonGroup type="checkbox" vertical defaultValue={[true]}>
+							<ToggleButton onChange={this.toggleGraph} value={true} variant="secondary">Graph Shell</ToggleButton>
+						</ToggleButtonGroup>
 						<Row style={{marginBottom: ".5rem"}}>
 							<Col sm="3" className="no-lr-padding">
 								<text>Colors</text>
@@ -223,18 +253,21 @@ class ShellForms extends React.Component<shellFormsProps> {
 		}
 	}
 }
-export {ShellForms};
 
 interface copyTempT {
 	default: T.defaultDataT, data: formDataT
 }
-class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {keys: Set<number>, disabled: boolean}>{
+export class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {keys: Set<number>, disabled: boolean}>{
 	state = {keys: new Set([0, 1]), disabled: false}; deletedKeys: number[] = [];
+	//Refs
 	shellRefs = [React.createRef<ShellForms>(), React.createRef<ShellForms>()];
-	scrollRef : React.RefObject<HTMLHeadingElement> = React.createRef<HTMLHeadingElement>();
+	scrollRef : React.RefObject<HTMLHeadingElement> = React.createRef<HTMLHeadingElement>();	
+	//Clone function
 	copyTemp : copyTempT;
 	copied : boolean = false;
+
 	colors : string[] = [];
+
 	addShip = () => {
 		if(this.state.disabled && (this.state.keys.size > 0)){return;}
 		else{
@@ -270,9 +303,12 @@ class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {key
 		this.addShip();
 	}
 	returnShellData = () => {
-		let data = Array<formDataT>(this.shellRefs.length);
+		let data = Array<formDataT>();
 		this.shellRefs.forEach((reference, i) => {
-			data[i] = reference.current!.returnData();
+			const returnedData : formDataT | false = reference.current!.returnData();
+			if(returnedData !== false){
+				data.push(returnedData);
+			}
 		});
 		return data;
 	}
@@ -322,7 +358,7 @@ class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {key
 					const value = stateKeys[i];
 					returnValue.push(
 						<Col key={value} style={{margin: 0, padding: "0.5rem"}} sm="4">
-							<ShellForms colors={this.colors} index={i} 
+							<ShellForms colors={this.colors} index={i}
 							deleteShip={this.deleteShip} copyShip={this.copyShip}
 							keyProp={value} ref={this.shellRefs[i]} reset={this.reset} 
 							settings={this.props.settings} size={this.state.keys.size}/>
@@ -333,7 +369,7 @@ class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {key
 				const value = stateKeys[i];
 				returnValue.push(
 					<Col key={value} style={{margin: 0, padding: "0.5rem"}} sm="4">
-						<ShellForms colors={this.colors} index={i} 
+						<ShellForms colors={this.colors} index={i}
 						deleteShip={this.deleteShip} copyShip={this.copyShip}
 						keyProp={value} ref={this.shellRefs[i]} reset={this.reset} 
 						settings={this.props.settings} size={this.state.keys.size}
@@ -344,7 +380,7 @@ class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {key
 			}else{
 				return Array.from(this.state.keys).map((value, i) => {
 					return <Col key={value} style={{margin: 0, padding: "0.5rem"}} sm="4">
-						<ShellForms colors={this.colors} index={i} 
+						<ShellForms colors={this.colors} index={i}
 						deleteShip={this.deleteShip} copyShip={this.copyShip}
 						keyProp={value} ref={this.shellRefs[i]} reset={this.reset} 
 						settings={this.props.settings} size={this.state.keys.size}/>
