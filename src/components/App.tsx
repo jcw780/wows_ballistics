@@ -74,7 +74,7 @@ class App extends React.Component<{},{}> {
 				ra0D : createNewPointArray(numShells, impactSize),
 				ra1D : createNewPointArray(numShells, impactSize),
 			}, post: {
-				shipWidth : createNewPointArray(1, impactSize),
+				shipWidth : createNewPointArray(1, 251),
 				notFused: createNewPointArray(numShells * numAngles, 0),
 				fused: createNewPointArray(numShells * numAngles, 0),
 			},
@@ -130,7 +130,7 @@ class App extends React.Component<{},{}> {
 			})
 		})
 		const angleShells = numAngles * numShells;
-		this.resizePointArray(this.calculatedData.post.shipWidth, [1, impactSize]);
+		//this.resizePointArray(this.calculatedData.post.shipWidth, [1, impactSize]);
 		this.resizePointArray(this.calculatedData.post.notFused, [angleShells, 0]);
 		this.resizePointArray(this.calculatedData.post.fused, [angleShells, 0]);
 	}
@@ -160,12 +160,11 @@ class App extends React.Component<{},{}> {
 			this.calculatedData.angles = tgtData.angles;
 			this.calculatedData.targets[0] = {armor: tgtData.armor, inclination: tgtData.inclination, width: tgtData.width}
 			shellData.forEach((value, i) => {this.calculatedData.names[i] = value.name; this.calculatedData.colors[i] = value.colors;});
-			let maxDist = 0; let maxShell = 0;
+			let maxDist = 0;
 			for(let j=0; j<numShells; j++){ // iterate through shells
-				let maxDistS = 0;
 				for(let i=0; i<impactSize; i++){ // iterate through points at each range
 					const dist : number = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex.distance, j);
-					maxDistS = dist > maxDistS ? dist : maxDistS;
+					maxDist = Math.max(maxDist, dist);
 					Object.entries(this.calculatedData.impact).forEach(([dataType, output] : [string, T.pointArrays]) => {
 						const y = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex[dataType], j);
 						output[j][i] = {x: dist, y: y};
@@ -183,14 +182,15 @@ class App extends React.Component<{},{}> {
 						}else{this.calculatedData.post.fused[k+j*numAngles].push(point);}
 					}
 				}
-				const greater = maxDistS > maxDist;
-				maxDist = greater ? maxDistS : maxDist; maxShell = greater ? j : maxShell;
 			}
-			for(let i=0; i<impactSize; i++){
-				const dist = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex.distance, maxShell);
-				this.calculatedData.post.shipWidth[0][i] = {x: dist, y: tgtData.width}
+			const stepSize = this.settings.distance.stepSize !== undefined ? this.settings.distance.stepSize: 2000;
+			const maxAdj = Math.ceil(maxDist / stepSize) * stepSize;
+			const length = this.calculatedData.post.shipWidth[0].length - 1;
+			for(let i=0; i < this.calculatedData.post.shipWidth[0].length; i++){
+				const xV : number = i / length * maxAdj;
+				this.calculatedData.post.shipWidth[0][i] = {x: xV, y: tgtData.width};
 			}
-			//console.log(JSON.stringify(output)); - for replacing initialData when first ships change
+			console.log(JSON.stringify(this.calculatedData)); //- for replacing initialData when first ships change
 			if(this.graphsRef.current){this.graphsRef.current.updateData(this.calculatedData);}
 		}
 	}

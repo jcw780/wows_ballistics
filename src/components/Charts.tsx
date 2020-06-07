@@ -1,6 +1,7 @@
 import React from 'react';
 import Chart from 'chart.js';
 import {Scatter, defaults} from 'react-chartjs-2';
+import 'chartjs-plugin-annotation';
 import {Button, Collapse, Row, Col} from 'react-bootstrap';
 
 import * as T from './commonTypes';
@@ -72,6 +73,9 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
             </> 
         );
     }
+    componentDidUpdate(){
+        this.chartRef.current!.chartInstance.generateLegend();
+    }
 }
 
 // Config Type for Chart Labels / Data
@@ -141,7 +145,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 let ctx = chartInstance.chart.ctx;
                 ctx.fillStyle = "white";
                 ctx.fillRect(0, 0, chartInstance.chart.width, chartInstance.chart.height);
-            }
+            },
         });
         //Preinitialize postpenetration names
         this.chartConfigs.post.forEach((value, i) => {
@@ -208,6 +212,9 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         const color = chart.config.data.datasets[tooltipItem.datasetIndex].borderColor;
         return {borderColor: color,backgroundColor: color}
     }
+    private legendCallback = (chart) => {
+        console.log(chart.data.datasets);
+    }
 
     updateData = (graphData) => {
         //Common Utility Functions / Values
@@ -234,29 +241,30 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                         scaleLabel: {display: true, labelString: row.axes[1].axLabel}
                     },
                 ]},
-                tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}}
+                tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}},
+                legendCallback: this.legendCallback
             }
         }
         const impactConfigs : configsT[] = [
             {title: configImpact[0][singleChartIndex.name], axes: [
                     {id: 'Penetration', axLabel: 'Belt Penetration (mm)', 
-                    lines: [{lineLabel: 'Effective Penetration ', data: 'ePenHN'}]},
+                    lines: [{lineLabel: 'Effective Penetration: ', data: 'ePenHN'}]},
                     {id: 'Angle', axLabel: 'Belt Impact Angle (°)', 
-                    lines: [{lineLabel: 'Impact Angle ', data: 'impactAHD'}]}
+                    lines: [{lineLabel: 'Impact Angle: ', data: 'impactAHD'}]}
                 ],
             },
             {title: configImpact[1][singleChartIndex.name], axes : [
                     {id: 'Penetration', axLabel: 'Deck Penetration (mm)', 
-                    lines: [{lineLabel: 'Effective Deck Penetration ', data: 'ePenDN'}]},
+                    lines: [{lineLabel: 'Effective Deck Penetration: ', data: 'ePenDN'}]},
                     {id: 'Angle', axLabel: 'Deck Impact Angle (°)', 
-                    lines: [{lineLabel: 'Deck Impact Angle ', data: 'impactADD'}]} 
+                    lines: [{lineLabel: 'Deck Impact Angle: ', data: 'impactADD'}]} 
                 ],
             },
             {title: configImpact[2][singleChartIndex.name], axes : [ 
                     {id: 'Impact Velocity', axLabel: 'Impact Velocity (m/s)', 
-                    lines: [{lineLabel: 'Impact Velocity ', data: 'impactV'}]},
+                    lines: [{lineLabel: 'Impact Velocity: ', data: 'impactV'}]},
                     {id: 'Time', axLabel: 'Flight Time (s)', 
-                    lines: [{lineLabel: 'Flight Time ', data: 'tToTargetA'}]}
+                    lines: [{lineLabel: 'Flight Time: ', data: 'tToTargetA'}]}
                 ],
             },
         ]
@@ -279,7 +287,8 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                         ticks:{min: 0}
                     }]
                 },
-                tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}}
+                tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}},
+                legendCallback: this.legendCallback
             }
         }
         const angleConfigs : configsT[] = [
@@ -324,7 +333,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             {
                 data: postData.shipWidth[0], showLine: true, borderDash: [5, 5], label: "Ship Width", 
                 yAxisID: 'detDist', borderColor: "#505050", fill: false, 
-                pointRadius: commonPointRadius, pointHitRadius: 5 
+                pointRadius: commonPointRadius, pointHitRadius: 5 ,
             });
             chart[singleChartIndex.config].options = {};
             chart[singleChartIndex.config].options = {
@@ -343,7 +352,8 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                         },
                     }],
                 },
-                tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}}
+                tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}},
+                legendCallback: this.legendCallback,            
             }
             chart[singleChartIndex.name] = `Horizontal Impact Angle ${i + 1}: ${graphData.angles[i]}°`
         });

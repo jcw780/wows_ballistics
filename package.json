@@ -5,6 +5,7 @@
   "homepage": "http://jcw780.github.io/wows_ballistics",
   "dependencies": {
     "chart.js": "^2.9.3",
+    "chartjs-plugin-annotation": "^0.5.7",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
