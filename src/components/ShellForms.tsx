@@ -53,7 +53,7 @@ class ShellParameters extends React.Component<shellParametersProps>{
 
 interface shellFormsProps{
 	index: number, colors: Array<string>, keyProp: number, deleteShip : Function, copyShip : Function,
-	reset: () => void, settings : Record<string, any>, size: number
+	reset: () => void, settings : T.settingsT, size: number
 	formData?: formDataT, defaultData?: T.defaultDataT, copied: boolean
 }
 interface formDataT{
@@ -79,6 +79,7 @@ export class ShellForms extends React.Component<shellFormsProps> {
 	})
 	constructor(props){
 		super(props);
+		// Use this instead of defaultProps to prevent weird shallow copy things from happening
 		if('defaultData' in this.props){
 			this.defaultData = this.props.defaultData!;
 		}
@@ -146,6 +147,7 @@ export class ShellForms extends React.Component<shellFormsProps> {
 		this.props.copyShip(outDefault, outForm);
 	}
 	updateCanvas = () => {
+		//Draws colors 
 		this.formData.colors = this.props.colors.slice(this.props.index * 3, this.props.index * 3 + 3);
 		const ctx = this.canvasRef.current!.getContext('2d');
 		const height : number = this.canvasRef.current!.height;

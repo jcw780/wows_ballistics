@@ -32,12 +32,14 @@
     "commitLimit": false
   },
   "eslintConfig": {
-    "extends": "react-app",
+    "extends": "airbnb",
     "rules": {
       "no-unused-expressions": "off",
       "no-restricted-globals": "off",
       "no-undef": "off",
-      "import/no-amd": "off"
+      "import/no-amd": "off",
+      "prefer-const": 1,
+      "no-var": 1
     },
     "overrides": [
       {

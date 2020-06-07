@@ -56,7 +56,7 @@ class App extends React.Component<{},{}> {
 	constructor(props){
 		super(props); this.compile();
 		//initialize calculatedData
-		const numShells = 2; const impactSize = 251; const numAngles = 8;
+		const numShells = 2, impactSize = 251, numAngles = 8;
 		const createNewPointArray = (lines, points) => {
 			return Array.from({length: lines}, _ => new Array<T.scatterPoint>(points))
 		}
@@ -82,7 +82,8 @@ class App extends React.Component<{},{}> {
 			targets : Array<T.targetDataNoAngleT>(1), angles : []
 		}
 	}
-	// Setup calculations
+
+	// Setup calculations - update with new general settings
 	applyCalculationSettings = () : void => {
 		const instance = this.instance; 
 		const calcSettings = this.settings.calculationSettings;
@@ -93,7 +94,7 @@ class App extends React.Component<{},{}> {
 		instance.setDtMin(calcSettings.timeStep);
 	}
 
-	// Select calculation type
+	// Select calculation [numerical analysis algorithm] type
 	calcImpact = (method) : void => {
 		const calcImpactFunc = {
 			0: _=> this.instance.calcImpactAdamsBashforth5(),
@@ -117,6 +118,8 @@ class App extends React.Component<{},{}> {
 			}else{for(let i=0; i<diff; i++){array.push();}}
 		}else if(diff < 0){array.length = newLength;}
 	}
+
+	// Resize specific multidimensional array
 	resizePointArray = (array: Array<Array<any>>, newLength: [number, number]) : void => {
 		this.resizeArray(array, newLength[0], Array);
 		array.forEach((subArray) => {this.resizeArray(subArray, newLength[1]);});
@@ -144,6 +147,7 @@ class App extends React.Component<{},{}> {
 		}else{
 			this.instance.resize(numShells);
 			this.applyCalculationSettings();
+			//Update Shell Data
 			shellData.forEach((value, i) => {
 				this.instance.setValues(value.caliber, 
 					value.muzzleVelocity, value.dragCoefficient,
@@ -151,16 +155,19 @@ class App extends React.Component<{},{}> {
 					value.fusetime, value.threshold, value.ra0,
 					value.ra1, value.HESAP, i);
 			})
+			//Run Computations
 			this.calcImpact(this.settings.calculationSettings.calculationMethod);
 			this.instance.calcAngles(tgtData.armor, tgtData.inclination);
 			this.instance.calcPostPen(tgtData.armor, tgtData.inclination,
 				tgtData.angles, true, true);
-			const impactSize: number = this.instance.getImpactSize(); const numAngles: number = tgtData.angles.length;
+			//Post-Processing
+			const impactSize: number = this.instance.getImpactSize(), numAngles: number = tgtData.angles.length;
 			this.resizeCalculatedData(numShells, impactSize, numAngles);
 			this.calculatedData.angles = tgtData.angles;
 			this.calculatedData.targets[0] = {armor: tgtData.armor, inclination: tgtData.inclination, width: tgtData.width}
 			shellData.forEach((value, i) => {this.calculatedData.names[i] = value.name; this.calculatedData.colors[i] = value.colors;});
-			let maxDist = 0;
+			let maxDist = 0; //Maximum Distance for shipWidth
+			// Converts flat array data format to {x, y} format for chart.js
 			for(let j=0; j<numShells; j++){ // iterate through shells
 				for(let i=0; i<impactSize; i++){ // iterate through points at each range
 					const dist : number = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex.distance, j);
@@ -175,22 +182,27 @@ class App extends React.Component<{},{}> {
 					for(let k=0; k<numAngles; k++){
 						const detDist : number
 							= this.instance.getPostPenPoint(i, this.arrayIndices.postPenDataIndex.x, k, j);
-						const fused : number
+						const fused : number // = detDist when fused, otherwise = -1
 							= this.instance.getPostPenPoint(i, this.arrayIndices.postPenDataIndex.xwf, k, j);
 						const point : T.scatterPoint = {x: dist, y: detDist};
+						// Only draw fused line if fused (fused >= 0); reverse for notFused
 						if(fused < 0){this.calculatedData.post.notFused[k+j*numAngles].push(point);
 						}else{this.calculatedData.post.fused[k+j*numAngles].push(point);}
 					}
 				}
 			}
+
+			//Generate Ship Width Line 
 			const stepSize = this.settings.distance.stepSize !== undefined ? this.settings.distance.stepSize: 2000;
 			const maxAdj = Math.ceil(maxDist / stepSize) * stepSize;
-			const length = this.calculatedData.post.shipWidth[0].length - 1;
-			for(let i=0; i < this.calculatedData.post.shipWidth[0].length; i++){
-				const xV : number = i / length * maxAdj;
-				this.calculatedData.post.shipWidth[0][i] = {x: xV, y: tgtData.width};
-			}
-			console.log(JSON.stringify(this.calculatedData)); //- for replacing initialData when first ships change
+			this.calculatedData.post.shipWidth.forEach((singleShipWidth) => {
+				const length = singleShipWidth.length - 1;
+				for(let i=0; i < singleShipWidth.length; i++){
+					const xV : number = i / length * maxAdj;
+					singleShipWidth[i] = {x: xV, y: tgtData.width};
+				}
+			});
+			//console.log(JSON.stringify(this.calculatedData)); //- for replacing initialData when first ships change
 			if(this.graphsRef.current){this.graphsRef.current.updateData(this.calculatedData);}
 		}
 	}
