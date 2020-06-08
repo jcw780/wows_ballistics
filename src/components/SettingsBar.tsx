@@ -16,7 +16,9 @@ class CalculationRadio extends React.Component<{settings: T.settingsT}, {value: 
     }
     render(){
         return(
-            <Container style={{paddingLeft: '1rem', paddingRight: '1rem'}}>
+            <Row style={{paddingLeft: '1rem', paddingRight: '1rem'}}>
+                <Col sm="1"/>
+                <Col>
             <ToggleButtonGroup toggle vertical type="radio" name="radio" value={this.state.value}>
                 <ToggleButton onChange={this.setCalcMethod} type="radio" value={0} variant="secondary">
                 Adams-Bashforth 5
@@ -31,7 +33,9 @@ class CalculationRadio extends React.Component<{settings: T.settingsT}, {value: 
                 Runge-Kutta 4
                 </ToggleButton>
             </ToggleButtonGroup>
-            </Container>
+            </Col>
+            <Col sm="1"/>
+            </Row>
         );
     }
 }
@@ -63,10 +67,12 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
             this.props.settings.distance[id] = numValue; 
         }
         const generateGraphForm = () => {
+            const rangeAxisFormStyle = {formLabel: {paddingTop: 0, paddingBottom: 0}, formGroup: {marginBottom: ".5rem"}};
             return this.forms.graphs.distance.map((value, i) => {
                 return(
                     <ParameterForm newValue={String(this.props.settings.distance[value[0]])} controlId={value[0]} key={i}
-                    label={value[1]} type="number" handleValueChange={handleGraphChange} labelWidth={3} append="m"/>
+                    label={value[1]} type="number" handleValueChange={handleGraphChange} labelWidth={3} append="m"
+                    style={rangeAxisFormStyle}/>
                 );
             });
         }
@@ -109,6 +115,10 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
         const handleShortNameChange = (event) => {this.props.settings.format.shortNames = event.target.checked;}
         let shortNamesDefault : string[] | undefined = undefined;
         if(this.props.settings.format.shortNames){shortNamesDefault=["0"];}
+
+        const handleShowLineChange = (event) => {this.props.settings.format.showLine = event.target.checked;}
+        let showLineDefault : string[] | undefined = undefined;
+        if(this.props.settings.format.showLine){showLineDefault=["0"];}
         
         const handleColorChange = (value: string, id: string) : void | string => {
             if(value === ''){return 'error';}
@@ -117,7 +127,6 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
             this.props.settings.format.colors[id] = numValues;
             this.props.updateColors();
         }
-
         return(<>
             <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
                     onClick={this.toggleCollapse} ref={this.scrollRef}
@@ -131,21 +140,37 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
                         <h3>Graphs</h3>
                         <Row>
                             <Col style={{paddingRight: 0}}>
-                            <h4>Range Axis</h4>
-                            {generateGraphForm()}
+                                <h4>Line</h4>
+                                <Row>
+                                    <Col sm="1"/>
+                                    <Col>
+                                <ToggleButtonGroup type="checkbox" vertical defaultValue={showLineDefault}>
+                                    <ToggleButton value="0" onChange={handleShowLineChange} variant="secondary">Show Line</ToggleButton>
+                                </ToggleButtonGroup>
+                                    </Col>
+                                    <Col sm="1"/>  
+                                </Row>
+                                <h4>Range Axis</h4>
+                                {generateGraphForm()}
                             </Col>
-                        <Col style={{padding: 0}}>
-                            <h4>Labeling</h4>
-                            <ToggleButtonGroup type="checkbox" vertical defaultValue={shortNamesDefault}>
-                                <ToggleButton value="0" onChange={handleShortNameChange} variant="secondary">Short Names</ToggleButton>
-                            </ToggleButtonGroup>
-                            <ParameterForm newValue={String(this.props.settings.format.rounding)} controlId="rounding" label="Tooltip Rounding"
-                            type="number" handleValueChange={handleRoundingChange} labelWidth={3} append="dp"/>
-                            <h4>Color Generation</h4>
-                            <ParameterForm newValue={String(this.props.settings.format.colors.saturation * 100)} controlId="saturation" label="Saturation"
-                            type="number" handleValueChange={handleColorChange} labelWidth={3} append="%"/>
-                            <ParameterForm newValue={String(this.props.settings.format.colors.light * 100)} controlId="light" label="Light"
-                            type="number" handleValueChange={handleColorChange} labelWidth={3} append="%"/>
+                            <Col style={{padding: 0}}>
+                                <h4>Labeling</h4>
+                                <Row>
+                                <Col sm="1"/>
+                                    <Col>
+                                        <ToggleButtonGroup type="checkbox" vertical defaultValue={shortNamesDefault}>
+                                            <ToggleButton value="0" onChange={handleShortNameChange} variant="secondary">Short Names</ToggleButton>
+                                        </ToggleButtonGroup>
+                                    </Col>
+                                <Col sm="1"/>
+                                </Row>
+                                <ParameterForm newValue={String(this.props.settings.format.rounding)} controlId="rounding" label="Tooltip Rounding"
+                                type="number" handleValueChange={handleRoundingChange} labelWidth={3} append="dp"/>
+                                <h4>Color Generation</h4>
+                                <ParameterForm newValue={String(this.props.settings.format.colors.saturation * 100)} controlId="saturation" label="Saturation"
+                                type="number" handleValueChange={handleColorChange} labelWidth={3} append="%"/>
+                                <ParameterForm newValue={String(this.props.settings.format.colors.light * 100)} controlId="light" label="Light"
+                                type="number" handleValueChange={handleColorChange} labelWidth={3} append="%"/>
                             </Col>
                         </Row>
                     </Col>

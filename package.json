@@ -4,7 +4,8 @@
   "private": true,
   "homepage": "http://jcw780.github.io/wows_ballistics",
   "dependencies": {
-    "@forevolve/bootstrap-dark": "^1.0.0-alpha.981",
+    "chart.js": "^2.9.3",
+    "chartjs-plugin-annotation": "^0.5.7",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
@@ -31,12 +32,14 @@
     "commitLimit": false
   },
   "eslintConfig": {
-    "extends": "react-app",
+    "extends": "airbnb",
     "rules": {
       "no-unused-expressions": "off",
       "no-restricted-globals": "off",
       "no-undef": "off",
-      "import/no-amd": "off"
+      "import/no-amd": "off",
+      "prefer-const": 1,
+      "no-var": 1
     },
     "overrides": [
       {
@@ -80,14 +83,13 @@
     "file-loader": "^6.0.0",
     "gh-pages": "^2.2.0",
     "html-webpack-plugin": "^4.3.0",
-    "mdbreact": "^4.26.0",
     "path": "^0.12.7",
     "react-bootstrap": "^1.0.1",
     "react-chartjs-2": "^2.9.0",
     "react-scripts-ts": "^4.0.8",
     "style-loader": "^1.2.1",
     "ts-loader": "^7.0.2",
-    "typescript": "^3.8.3",
+    "typescript": "^3.9.5",
     "wasm-feature-detect": "^1.2.3",
     "webpack": "^4.42.0",
     "webpack-cli": "^3.3.11",

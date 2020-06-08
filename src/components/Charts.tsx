@@ -1,6 +1,7 @@
 import React from 'react';
 import Chart from 'chart.js';
 import {Scatter, defaults} from 'react-chartjs-2';
+import 'chartjs-plugin-annotation';
 import {Button, Collapse, Row, Col} from 'react-bootstrap';
 
 import * as T from './commonTypes';
@@ -72,6 +73,9 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
             </> 
         );
     }
+    componentDidUpdate(){
+        this.chartRef.current!.chartInstance.generateLegend();
+    }
 }
 
 // Config Type for Chart Labels / Data
@@ -141,6 +145,11 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 let ctx = chartInstance.chart.ctx;
                 ctx.fillStyle = "white";
                 ctx.fillRect(0, 0, chartInstance.chart.width, chartInstance.chart.height);
+            },
+            afterLayout: function(chartInstance) {
+                chartInstance.legend.legendItems.forEach((value) => {
+                    value.text = value.text.replace(':', '');
+                })
             }
         });
         //Preinitialize postpenetration names
@@ -199,8 +208,8 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         let x = parseFloat(tooltipItem.label).toLocaleString(); 
         let y = parseFloat(tooltipItem.value).toLocaleString();
         x = this.roundStringNumberWithoutTrailingZeroes(x); y = this.roundStringNumberWithoutTrailingZeroes(y);
-        const namePS = (chart.datasets[tooltipItem.datasetIndex].label).split(' ');
-        const name = namePS[namePS.length - 1];
+        const namePS = (chart.datasets[tooltipItem.datasetIndex].label).split(':');
+        const name = namePS.slice(1).join(':');
         const callbackFunctions = this.callbackFunctions;
         return name + ' ' + callbackFunctions[chart.datasets[tooltipItem.datasetIndex].yAxisID](x, y);
     }
@@ -208,11 +217,10 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         const color = chart.config.data.datasets[tooltipItem.datasetIndex].borderColor;
         return {borderColor: color,backgroundColor: color}
     }
-
     updateData = (graphData) => {
         //Common Utility Functions / Values
         const addCommas = (value, index, values) => {return value.toLocaleString();}
-        const commonPointRadius = 0;
+        const showLineValue = this.props.settings.format.showLine, commonPointRadius = showLineValue ? 0 : 2;
         const xAxesDistance = [{
             scaleLabel: {display: true, labelString: "Range (m)",},
             type: 'linear', ticks:{callback: addCommas}
@@ -220,10 +228,15 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         Object.entries(this.props.settings.distance).forEach(([key, value]) => {
             if(value !== null || true ){xAxesDistance[0].ticks[key] = value;}
         });
-        
+
+        const targetedArmor = `Armor Thickness: ${graphData.targets[0].armor}mm`;
+        const targetInclination = `Vertical Inclination: ${graphData.targets[0].inclination}°`; 
+
+        //Static Charts [Never changes in number]
+        const staticChartTypes = Object.freeze(['impact', 'angle']);
         //Impact Charts
-        const impactData = graphData.impact; const configImpact = this.chartConfigs.impact;
-        const setupImpact = (row) => {
+        const configImpact = this.chartConfigs.impact;
+        const setupImpact = (row : configsT) => {
             return {
                 title: {display: true, text: row.title},
                 scales: {xAxes: xAxesDistance, yAxes: [
@@ -234,43 +247,14 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                         scaleLabel: {display: true, labelString: row.axes[1].axLabel}
                     },
                 ]},
-                tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}}
+                tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}},
             }
         }
-        const impactConfigs : configsT[] = [
-            {title: configImpact[0][singleChartIndex.name], axes: [
-                    {id: 'Penetration', axLabel: 'Belt Penetration (mm)', 
-                    lines: [{lineLabel: 'Effective Penetration ', data: 'ePenHN'}]},
-                    {id: 'Angle', axLabel: 'Belt Impact Angle (°)', 
-                    lines: [{lineLabel: 'Impact Angle ', data: 'impactAHD'}]}
-                ],
-            },
-            {title: configImpact[1][singleChartIndex.name], axes : [
-                    {id: 'Penetration', axLabel: 'Deck Penetration (mm)', 
-                    lines: [{lineLabel: 'Effective Deck Penetration ', data: 'ePenDN'}]},
-                    {id: 'Angle', axLabel: 'Deck Impact Angle (°)', 
-                    lines: [{lineLabel: 'Deck Impact Angle ', data: 'impactADD'}]} 
-                ],
-            },
-            {title: configImpact[2][singleChartIndex.name], axes : [ 
-                    {id: 'Impact Velocity', axLabel: 'Impact Velocity (m/s)', 
-                    lines: [{lineLabel: 'Impact Velocity ', data: 'impactV'}]},
-                    {id: 'Time', axLabel: 'Flight Time (s)', 
-                    lines: [{lineLabel: 'Flight Time ', data: 'tToTargetA'}]}
-                ],
-            },
-        ]
-        configImpact.forEach((chart, i) => {
-            const chartLabels = impactConfigs[i]; const configs = chart[singleChartIndex.config];
-            configs.options = {}; configs.options = setupImpact(chartLabels); configs.data.datasets = [];
-        })
         //Angle Charts
-        const angleData = graphData.angle; const configAngle = this.chartConfigs.angle;
-        const targetedArmor = `Armor Thickness: ${graphData.targets[0].armor}mm`;
-        const targetInclination = `Vertical Inclination: ${graphData.targets[0].inclination}°`; 
-        const ra0L = "Start Ricochet "; const ra1L = "Always Ricochet ";
+        const configAngle = this.chartConfigs.angle;
+        const ra0L = "Start Ricochet: ", ra1L = "Always Ricochet: ";
 
-        const setupAngle = (row) => {
+        const setupAngle = (row : configsT) => {
             return {
                 title: {display: true, text: row.title},
                 scales: {xAxes: xAxesDistance,
@@ -279,31 +263,71 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                         ticks:{min: 0}
                     }]
                 },
-                tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}}
+                tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}},
             }
         }
-        const angleConfigs : configsT[] = [
-            {title: `${configAngle[0][singleChartIndex.name]} | ${targetedArmor} | ${targetInclination}`, axes: [
-                {id: 'angle',
-                lines: [
-                    {lineLabel: 'Maximum Perforation Angle ', data: 'armorD'}, 
-                    {lineLabel: ra0L, data: 'ra0D'}, {lineLabel: ra1L, data: 'ra1D'}, 
-                ]},
-            ]}, 
-            {title: `${configAngle[1][singleChartIndex.name]} | ${targetedArmor} | ${targetInclination}`, axes: [
-                {id: 'angle',
-                lines: [
-                    {lineLabel: 'Minimum Fusing Angle ', data: 'fuseD'}, 
-                    {lineLabel: ra0L, data: 'ra0D'}, {lineLabel: ra1L, data: 'ra1D'}, 
-                ]},
-            ]}
-        ]
-        configAngle.forEach((chart, i) => {
-            const chartLabels = angleConfigs[i]; const config = chart[singleChartIndex.config];
-            config.options = {}; config.options = setupAngle(chartLabels); config.data.datasets = [];
+
+        const angleNameTemplate = (name: string) : string => {
+            return `${name} | ${targetedArmor} | ${targetInclination}`;
+        }
+
+        //Colons are used to denote split between label and name
+        const staticOptionSetup : Record<'impact' | 'angle', [(configsT) => any, configsT[]]> = {
+            impact: [setupImpact, 
+                [
+                    {title: configImpact[0][singleChartIndex.name], axes: [
+                            {id: 'Penetration', axLabel: 'Belt Penetration (mm)', 
+                            lines: [{lineLabel: 'Effective Penetration: ', data: 'ePenHN'}]},
+                            {id: 'Angle', axLabel: 'Belt Impact Angle (°)', 
+                            lines: [{lineLabel: 'Impact Angle: ', data: 'impactAHD'}]}
+                        ],
+                    },
+                    {title: configImpact[1][singleChartIndex.name], axes : [
+                            {id: 'Penetration', axLabel: 'Deck Penetration (mm)', 
+                            lines: [{lineLabel: 'Effective Deck Penetration: ', data: 'ePenDN'}]},
+                            {id: 'Angle', axLabel: 'Deck Impact Angle (°)', 
+                            lines: [{lineLabel: 'Deck Impact Angle: ', data: 'impactADD'}]} 
+                        ],
+                    },
+                    {title: configImpact[2][singleChartIndex.name], axes : [ 
+                            {id: 'Impact Velocity', axLabel: 'Impact Velocity (m/s)', 
+                            lines: [{lineLabel: 'Impact Velocity: ', data: 'impactV'}]},
+                            {id: 'Time', axLabel: 'Flight Time (s)', 
+                            lines: [{lineLabel: 'Flight Time: ', data: 'tToTargetA'}]}
+                        ],
+                    },
+                ]
+            ],
+            angle: [setupAngle, 
+                [
+                    {title: angleNameTemplate(configAngle[0][singleChartIndex.name]), axes: [
+                        {id: 'angle',
+                        lines: [
+                            {lineLabel: 'Maximum Perforation Angle: ', data: 'armorD'}, 
+                            {lineLabel: ra0L, data: 'ra0D'}, {lineLabel: ra1L, data: 'ra1D'}, 
+                        ]},
+                    ]}, 
+                    {title: angleNameTemplate(configAngle[1][singleChartIndex.name]), axes: [
+                        {id: 'angle',
+                        lines: [
+                            {lineLabel: 'Minimum Fusing Angle: ', data: 'fuseD'}, 
+                            {lineLabel: ra0L, data: 'ra0D'}, {lineLabel: ra1L, data: 'ra1D'}, 
+                        ]},
+                    ]}
+                ]
+            ],
+        }
+        
+        staticChartTypes.forEach((key) => {
+            const chartConfig = this.chartConfigs[key], staticOption = staticOptionSetup[key], setup = staticOption[0];
+            chartConfig.forEach((chart, i) => {
+                const config = chart[singleChartIndex.config];
+                config.options = {}; config.data.datasets = []; //empty options and datasets
+                config.options = setup(staticOption[1][i]); //set options
+            });
         });
         //Post-Penetration Charts
-        const configPost = this.chartConfigs.post; const postData = graphData.post;
+        const configPost = this.chartConfigs.post, postData = graphData.post;
 
         //Resizing chartConfigs.post and props.links upon addition or deletion of angles
         const angleLengthDiff = graphData.angles.length - configPost.length;
@@ -317,14 +341,15 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             this.props.links.post.length = graphData.angles.length; // navbar links
         }
 
-        const WFL = "Fused ", NFL = "No Fusing ";
+        //Colons are used to denote split between label and name
+        const WFL = "Fused: ", NFL = "No Fusing: ";
         configPost.forEach((chart, i) => {
             chart[singleChartIndex.config].data.datasets = []; // clear dataset
             chart[singleChartIndex.config].data.datasets.push( // add ship width line
             {
-                data: postData.shipWidth[0], showLine: true, borderDash: [5, 5], label: "Ship Width", 
+                data: postData.shipWidth[0], showLine: true, borderDash: [5, 5], label: ":Ship Width", 
                 yAxisID: 'detDist', borderColor: "#505050", fill: false, 
-                pointRadius: commonPointRadius, pointHitRadius: 5 
+                pointRadius: commonPointRadius, pointHitRadius: 5 ,
             });
             chart[singleChartIndex.config].options = {};
             chart[singleChartIndex.config].options = {
@@ -343,7 +368,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                         },
                     }],
                 },
-                tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}}
+                tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}},            
             }
             chart[singleChartIndex.name] = `Horizontal Impact Angle ${i + 1}: ${graphData.angles[i]}°`
         });
@@ -352,15 +377,15 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                             label: string, yAxisID : string, 
                             color : string = "") : Record<string, any> => {
             return {
-                data: data, showLine: true, label: label, yAxisID: yAxisID, 
+                data: data, showLine: showLineValue, label: label, yAxisID: yAxisID, 
                 fill: false, pointRadius: commonPointRadius, pointHitRadius: 5,
-                borderColor: color
+                borderColor: color, backgroundColor: color
             };
         }
         const postLine = (data : Array<Record<string, number>>, 
             label: string, color : string = "", show : boolean = true) : Record<string, any> => {
             if(show){return {
-                    data: data, showLine: true, label: label, yAxisID: 'detDist',
+                    data: data, showLine: showLineValue, label: label, yAxisID: 'detDist',
                     borderColor: color, fill: false, pointRadius: commonPointRadius, pointHitRadius: 5
                 };
             }else{return {
@@ -385,9 +410,10 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             })
         }
         for(let i=0; i<graphData.numShells; i++){
-            const name = graphData.names[i]; const colors = graphData.colors[i];
-            assignPredefined(i, name, configImpact, impactConfigs, impactData, colors); //Impact
-            assignPredefined(i, name, configAngle, angleConfigs, angleData, colors); //Angle
+            const name = graphData.names[i], colors = graphData.colors[i];
+            staticChartTypes.forEach((type) => {
+                assignPredefined(i, name, this.chartConfigs[type], staticOptionSetup[type][1], graphData[type], colors);
+            });
             configPost.forEach((chart, index) => { //Post
                 let pL : Array<any> = [
                     postData.fused[index + graphData.angles.length*i],
