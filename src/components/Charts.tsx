@@ -146,6 +146,11 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 ctx.fillStyle = "white";
                 ctx.fillRect(0, 0, chartInstance.chart.width, chartInstance.chart.height);
             },
+            afterLayout: function(chartInstance) {
+                chartInstance.legend.legendItems.forEach((value) => {
+                    value.text = value.text.replace(':', '');
+                })
+            }
         });
         //Preinitialize postpenetration names
         this.chartConfigs.post.forEach((value, i) => {
@@ -203,8 +208,8 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         let x = parseFloat(tooltipItem.label).toLocaleString(); 
         let y = parseFloat(tooltipItem.value).toLocaleString();
         x = this.roundStringNumberWithoutTrailingZeroes(x); y = this.roundStringNumberWithoutTrailingZeroes(y);
-        const namePS = (chart.datasets[tooltipItem.datasetIndex].label).split(' ');
-        const name = namePS[namePS.length - 1];
+        const namePS = (chart.datasets[tooltipItem.datasetIndex].label).split(':');
+        const name = namePS.slice(1).join(':');
         const callbackFunctions = this.callbackFunctions;
         return name + ' ' + callbackFunctions[chart.datasets[tooltipItem.datasetIndex].yAxisID](x, y);
     }
@@ -247,7 +252,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         }
         //Angle Charts
         const configAngle = this.chartConfigs.angle;
-        const ra0L = "Start Ricochet ", ra1L = "Always Ricochet ";
+        const ra0L = "Start Ricochet: ", ra1L = "Always Ricochet: ";
 
         const setupAngle = (row : configsT) => {
             return {
@@ -266,28 +271,29 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             return `${name} | ${targetedArmor} | ${targetInclination}`;
         }
 
+        //Colons are used to denote split between label and name
         const staticOptionSetup : Record<'impact' | 'angle', [(configsT) => any, configsT[]]> = {
             impact: [setupImpact, 
                 [
                     {title: configImpact[0][singleChartIndex.name], axes: [
                             {id: 'Penetration', axLabel: 'Belt Penetration (mm)', 
-                            lines: [{lineLabel: 'Effective Penetration ', data: 'ePenHN'}]},
+                            lines: [{lineLabel: 'Effective Penetration: ', data: 'ePenHN'}]},
                             {id: 'Angle', axLabel: 'Belt Impact Angle (°)', 
-                            lines: [{lineLabel: 'Impact Angle ', data: 'impactAHD'}]}
+                            lines: [{lineLabel: 'Impact Angle: ', data: 'impactAHD'}]}
                         ],
                     },
                     {title: configImpact[1][singleChartIndex.name], axes : [
                             {id: 'Penetration', axLabel: 'Deck Penetration (mm)', 
-                            lines: [{lineLabel: 'Effective Deck Penetration ', data: 'ePenDN'}]},
+                            lines: [{lineLabel: 'Effective Deck Penetration: ', data: 'ePenDN'}]},
                             {id: 'Angle', axLabel: 'Deck Impact Angle (°)', 
-                            lines: [{lineLabel: 'Deck Impact Angle ', data: 'impactADD'}]} 
+                            lines: [{lineLabel: 'Deck Impact Angle: ', data: 'impactADD'}]} 
                         ],
                     },
                     {title: configImpact[2][singleChartIndex.name], axes : [ 
                             {id: 'Impact Velocity', axLabel: 'Impact Velocity (m/s)', 
-                            lines: [{lineLabel: 'Impact Velocity ', data: 'impactV'}]},
+                            lines: [{lineLabel: 'Impact Velocity: ', data: 'impactV'}]},
                             {id: 'Time', axLabel: 'Flight Time (s)', 
-                            lines: [{lineLabel: 'Flight Time ', data: 'tToTargetA'}]}
+                            lines: [{lineLabel: 'Flight Time: ', data: 'tToTargetA'}]}
                         ],
                     },
                 ]
@@ -297,14 +303,14 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     {title: angleNameTemplate(configAngle[0][singleChartIndex.name]), axes: [
                         {id: 'angle',
                         lines: [
-                            {lineLabel: 'Maximum Perforation Angle ', data: 'armorD'}, 
+                            {lineLabel: 'Maximum Perforation Angle: ', data: 'armorD'}, 
                             {lineLabel: ra0L, data: 'ra0D'}, {lineLabel: ra1L, data: 'ra1D'}, 
                         ]},
                     ]}, 
                     {title: angleNameTemplate(configAngle[1][singleChartIndex.name]), axes: [
                         {id: 'angle',
                         lines: [
-                            {lineLabel: 'Minimum Fusing Angle ', data: 'fuseD'}, 
+                            {lineLabel: 'Minimum Fusing Angle: ', data: 'fuseD'}, 
                             {lineLabel: ra0L, data: 'ra0D'}, {lineLabel: ra1L, data: 'ra1D'}, 
                         ]},
                     ]}
@@ -335,12 +341,13 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             this.props.links.post.length = graphData.angles.length; // navbar links
         }
 
-        const WFL = "Fused ", NFL = "No Fusing ";
+        //Colons are used to denote split between label and name
+        const WFL = "Fused: ", NFL = "No Fusing: ";
         configPost.forEach((chart, i) => {
             chart[singleChartIndex.config].data.datasets = []; // clear dataset
             chart[singleChartIndex.config].data.datasets.push( // add ship width line
             {
-                data: postData.shipWidth[0], showLine: true, borderDash: [5, 5], label: "Ship Width", 
+                data: postData.shipWidth[0], showLine: true, borderDash: [5, 5], label: ":Ship Width", 
                 yAxisID: 'detDist', borderColor: "#505050", fill: false, 
                 pointRadius: commonPointRadius, pointHitRadius: 5 ,
             });
