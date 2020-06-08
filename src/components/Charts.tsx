@@ -220,7 +220,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
     updateData = (graphData) => {
         //Common Utility Functions / Values
         const addCommas = (value, index, values) => {return value.toLocaleString();}
-        const showLineValue = true, commonPointRadius = showLineValue ? 0 : 2;
+        const showLineValue = this.props.settings.format.showLine, commonPointRadius = showLineValue ? 0 : 2;
         const xAxesDistance = [{
             scaleLabel: {display: true, labelString: "Range (m)",},
             type: 'linear', ticks:{callback: addCommas}

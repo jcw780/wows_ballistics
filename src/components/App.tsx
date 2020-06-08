@@ -34,7 +34,7 @@ class App extends React.Component<{},{}> {
 			launchAngle : {min: 0, max: 25, precision: 0.1},
 		},
 		format: {
-			rounding: 3, shortNames: true,
+			rounding: 3, shortNames: true, showLine: true,
 			colors : {saturation: .5, light: .6, batch: false}
 		},
 	}

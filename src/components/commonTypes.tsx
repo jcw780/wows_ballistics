@@ -43,7 +43,7 @@ export interface calculationSettingsT {
     launchAngle: {min: number, max: number, precision: number}
 }
 export interface formatSettingsT {
-    rounding: number | null, shortNames: boolean, 
+    rounding: number | null, shortNames: boolean, showLine: boolean,
     colors: {saturation: number, light: number, batch: boolean}
 }
 export interface settingsT{
