@@ -1,4 +1,5 @@
 # World of Warships Ballistics Calculator
+[![License](https://img.shields.io/github/license/jcw780/wows_ballistics)](./LICENSE)
 - Page Link: https://jcw780.github.io/wows_ballistics/
 ## Code Information
 ### Languages and Major Libraries
