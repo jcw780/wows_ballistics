@@ -9,6 +9,7 @@
 - Shell Data: [jcw780/LiveGameData](https://github.com/jcw780/LiveGameData)
 ## Legal
 - All copyrighted material provided by Wargaming.net are owned by Wargaming.net.
+- All other material is available under the MIT License.
 ## Functionality
 ### Calculate shell performance at impact and in flight
 - Belt/Deck Penetration </br> 
