@@ -31,6 +31,6 @@
 - Calculations may be refined if contradicting data is provided
 ### Future Features
 - More tooltips
-- Copy ships
-- Donwload shell data
+
+
 
