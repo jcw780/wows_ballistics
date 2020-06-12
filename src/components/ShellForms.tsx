@@ -195,9 +195,7 @@ export class ShellForms extends React.Component<shellFormsProps> {
 						type="text" newValue={this.formData.name} labelWidth={3}
 						ref={this.nameForm} style={{formControl: {width: '70%'}, formGroup: {marginBottom: ".5rem"}}}/>
 						<Row style={{marginBottom: ".5rem"}}>
-							<Col sm="3" className="no-lr-padding">
-								<text>Colors</text>
-							</Col>
+							<Col sm="3" className="no-lr-padding">Colors</Col>
 							<Col sm="8" className="no-lr-padding">
 								<canvas style={{height: "2rem", width: "100%"}} width="600" height="150" ref={this.canvasRef}/>
 							</Col>
@@ -321,13 +319,6 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 		const saturation = String(colorSettings.saturation * 100) + '%';
 		const light = String(colorSettings.light * 100) + '%';
 		return `hsl(${hue},${saturation},${light})`;
-	}
-	generateColors = (index : number, total : number) => {
-		const colors = Array<string>(3);
-		for(let i=0; i<3; i++){
-			colors[i] = this.selectColor(index * 3 + i, total * 3);
-		}
-		return colors;
 	}
 	updateColors = () => {
 		this.colors.length = 0;
