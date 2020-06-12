@@ -13,7 +13,7 @@ export interface styleT{
 	formControl?: React.CSSProperties, inputGroupAppend?: React.CSSProperties
 }
 
-export type handleValueChangeT = (value: string, id: string) => void | string;
+export type handleValueChangeT = (value: string, id: string | number) => void | string;
 
 //DefaultForms
 export interface defaultFormGeneric<T>{
@@ -27,10 +27,10 @@ export type defaultDataT = defaultFormGeneric<singleDefaultDataT> & queriedDataT
 
 //Target Data
 export interface targetDataNoAngleT {
-    armor: number, inclination: number, width: number
+    armor: number, inclination: number, width: number, 
 }
 export interface targetAngleT {
-    angles: Array<number>
+    angles: Array<number>, refAngles: number[], refLabels: string[]
 }
 export type targetDataT = targetDataNoAngleT & targetAngleT
 

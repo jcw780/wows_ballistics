@@ -5,7 +5,7 @@ import * as T from './commonTypes';
 
 interface parameterFormState {value: string, invalid: boolean}
 interface parameterFormProps {
-	newValue: string, controlId: string, handleValueChange: T.handleValueChangeT,
+	newValue: string, controlId: string | number, handleValueChange: T.handleValueChangeT,
 	type: string, label: string, style: T.styleT
 	labelWidth: number, placeholder: string, append: string//counter?: number[]
 }
