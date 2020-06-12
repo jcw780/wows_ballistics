@@ -320,13 +320,6 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 		const light = String(colorSettings.light * 100) + '%';
 		return `hsl(${hue},${saturation},${light})`;
 	}
-	generateColors = (index : number, total : number) => {
-		const colors = Array<string>(3);
-		for(let i=0; i<3; i++){
-			colors[i] = this.selectColor(index * 3 + i, total * 3);
-		}
-		return colors;
-	}
 	updateColors = () => {
 		this.colors.length = 0;
 		for(let i=0; i<this.state.keys.size * 3; i++){

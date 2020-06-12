@@ -203,18 +203,6 @@ class TargetFormsContainer extends React.Component
             }) }
                 <Col sm={1}/>
             </Row>
-            <h3>Angle Labels</h3>
-            <Container style={{marginBottom: "1rem"}}>
-                <Row>
-            {renderAngleElements(refAngleElements)}
-                </Row>
-            </Container>
-            <Row style={{marginBottom: "1rem"}}>
-                <Col/>
-                <Col sm="6"><Button className="form-control" variant="outline-secondary" onClick={this.addRefAngle}>
-                    Add Angle</Button></Col>
-                <Col/>
-            </Row>
             <h3>Target Angles</h3>
             <Container style={{marginBottom: "1rem"}}>
                 <Row>
@@ -225,6 +213,18 @@ class TargetFormsContainer extends React.Component
             <Row style={{marginBottom: "1rem"}}>
                 <Col/>
                 <Col sm="6"><Button className="form-control" variant="outline-secondary" onClick={this.addAngle}>
+                    Add Angle</Button></Col>
+                <Col/>
+            </Row>
+            <h3>Angle Labels</h3>
+            <Container style={{marginBottom: "1rem"}}>
+                <Row>
+            {renderAngleElements(refAngleElements)}
+                </Row>
+            </Container>
+            <Row style={{marginBottom: "1rem"}}>
+                <Col/>
+                <Col sm="6"><Button className="form-control" variant="outline-secondary" onClick={this.addRefAngle}>
                     Add Angle</Button></Col>
                 <Col/>
             </Row>
