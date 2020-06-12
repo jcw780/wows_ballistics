@@ -195,9 +195,7 @@ export class ShellForms extends React.Component<shellFormsProps> {
 						type="text" newValue={this.formData.name} labelWidth={3}
 						ref={this.nameForm} style={{formControl: {width: '70%'}, formGroup: {marginBottom: ".5rem"}}}/>
 						<Row style={{marginBottom: ".5rem"}}>
-							<Col sm="3" className="no-lr-padding">
-								<text>Colors</text>
-							</Col>
+							<Col sm="3" className="no-lr-padding">Colors</Col>
 							<Col sm="8" className="no-lr-padding">
 								<canvas style={{height: "2rem", width: "100%"}} width="600" height="150" ref={this.canvasRef}/>
 							</Col>

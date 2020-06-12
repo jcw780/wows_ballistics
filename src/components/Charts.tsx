@@ -217,7 +217,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         const color = chart.config.data.datasets[tooltipItem.datasetIndex].borderColor;
         return {borderColor: color,backgroundColor: color}
     }
-    updateData = (graphData) => {
+    updateData = (graphData : T.calculatedData) => {
         //Common Utility Functions / Values
         const addCommas = (value, index, values) => {return value.toLocaleString();}
         const showLineValue = this.props.settings.format.showLine, commonPointRadius = showLineValue ? 0 : 2;
@@ -347,7 +347,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             chart[singleChartIndex.config].data.datasets = []; // clear dataset
             chart[singleChartIndex.config].data.datasets.push( // add ship width line
             {
-                data: postData.shipWidth[0], showLine: true, borderDash: [5, 5], label: ":Ship Width", 
+                data: postData.shipWidth[0], showLine: showLineValue, borderDash: [5, 5], label: ":Ship Width", 
                 yAxisID: 'detDist', borderColor: "#505050", fill: false, 
                 pointRadius: commonPointRadius, pointHitRadius: 5 ,
             });
@@ -373,7 +373,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             chart[singleChartIndex.name] = `Horizontal Impact Angle ${i + 1}: ${graphData.angles[i]}°`
         });
         //Add Lines
-        const impactAngleLine = (data : Array<Record<string, number>>, 
+        const impactAngleLine = (data : T.scatterPoint[], 
                             label: string, yAxisID : string, 
                             color : string = "") : Record<string, any> => {
             return {
@@ -382,7 +382,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 borderColor: color, backgroundColor: color
             };
         }
-        const postLine = (data : Array<Record<string, number>>, 
+        const postLine = (data : T.scatterPoint[], 
             label: string, color : string = "", show : boolean = true) : Record<string, any> => {
             if(show){return {
                     data: data, showLine: showLineValue, label: label, yAxisID: 'detDist',
@@ -409,6 +409,19 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 })
             })
         }
+
+        //Add angle labels
+        graphData.refAngles.forEach((data, i) => {
+            configAngle.forEach((chart) => {
+                chart[singleChartIndex.config].data.datasets.push({
+                    data: data, showLine: showLineValue, borderDash: [5, 5], label: `:${graphData.refLabels[i]}`, 
+                    yAxisID: 'angle', borderColor: "#505050", fill: false, 
+                    pointRadius: commonPointRadius, pointHitRadius: 5 ,
+                });
+            });
+        })
+
+        //Add data
         for(let i=0; i<graphData.numShells; i++){
             const name = graphData.names[i], colors = graphData.colors[i];
             staticChartTypes.forEach((type) => {
@@ -429,6 +442,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 )
             });
         }
+
         this.setState(this.state); //graph updates completed, trigger re-render
     }
     updateCharts = () => {

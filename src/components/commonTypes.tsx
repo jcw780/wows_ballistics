@@ -51,7 +51,7 @@ export interface settingsT{
     format: formatSettingsT
 }
 
-//Generated Data
+//Generated / Calculated Data
 export interface scatterPoint {x: number, y: number}
 export type pointArrays = Array<Array<scatterPoint>>;
 export interface impactData {
@@ -70,7 +70,7 @@ export interface postData {
 export interface calculatedData {
     impact: impactData, angle: angleData, post: postData, numShells: number, 
     names: Array<string>, colors: Array<Array<string>>, targets: Array<targetDataNoAngleT>, 
-    angles: Array<number>
+    angles: Array<number>, refAngles : pointArrays, refLabels : string[]
 }
 
 //Chart Types

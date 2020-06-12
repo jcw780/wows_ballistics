@@ -1,5 +1,6 @@
 import React from 'react'; import './App.css';
 import {Button, Col, Row} from 'react-bootstrap';
+import { saveAs } from 'file-saver';
 
 import * as T from './commonTypes';
 import ShellFormsContainer from './ShellForms';
@@ -40,6 +41,7 @@ class App extends React.Component<{},{}> {
 	}
 	// Calculated Data
 	calculatedData: T.calculatedData
+	referenceLineSize = 251;
 
 	//Compile Wasm 
 	compile = () : void => {
@@ -60,6 +62,7 @@ class App extends React.Component<{},{}> {
 		const createNewPointArray = (lines, points) => {
 			return Array.from({length: lines}, _ => new Array<T.scatterPoint>(points))
 		}
+
 		this.calculatedData = {
 			impact: {
 				ePenHN : createNewPointArray(numShells, impactSize),
@@ -74,12 +77,13 @@ class App extends React.Component<{},{}> {
 				ra0D : createNewPointArray(numShells, impactSize),
 				ra1D : createNewPointArray(numShells, impactSize),
 			}, post: {
-				shipWidth : createNewPointArray(1, 251),
+				shipWidth : createNewPointArray(1, this.referenceLineSize),
 				notFused: createNewPointArray(numShells * numAngles, 0),
 				fused: createNewPointArray(numShells * numAngles, 0),
 			},
 			numShells : numShells, names : Array<string>(numShells), colors : Array<Array<string>>(numShells),
-			targets : Array<T.targetDataNoAngleT>(1), angles : []
+			targets : Array<T.targetDataNoAngleT>(1), angles : [], 
+			refAngles : createNewPointArray(0, this.referenceLineSize), refLabels : [],
 		}
 	}
 
@@ -115,7 +119,7 @@ class App extends React.Component<{},{}> {
 				for(let i=0; i<diff; i++){
 					const nObj : K = new fill(); array.push(nObj);
 				}
-			}else{for(let i=0; i<diff; i++){array.push();}}
+			}else{for(let i=0; i<diff; i++){array.push(undefined);}}
 		}else if(diff < 0){array.length = newLength;}
 	}
 
@@ -145,11 +149,12 @@ class App extends React.Component<{},{}> {
 		const numShells: number = shellData.length;
 		if(numShells <= 0){return
 		}else{
-			this.instance.resize(numShells);
+			const instance = this.instance, arrayIndices = this.arrayIndices, calculatedData = this.calculatedData;
+			instance.resize(numShells);
 			this.applyCalculationSettings();
 			//Update Shell Data
 			shellData.forEach((value, i) => {
-				this.instance.setValues(value.caliber, 
+				instance.setValues(value.caliber, 
 					value.muzzleVelocity, value.dragCoefficient,
 					value.mass, value.krupp, value.normalization,
 					value.fusetime, value.threshold, value.ra0,
@@ -157,54 +162,72 @@ class App extends React.Component<{},{}> {
 			})
 			//Run Computations
 			this.calcImpact(this.settings.calculationSettings.calculationMethod);
-			this.instance.calcAngles(tgtData.armor, tgtData.inclination);
-			this.instance.calcPostPen(tgtData.armor, tgtData.inclination,
+			instance.calcAngles(tgtData.armor, tgtData.inclination);
+			instance.calcPostPen(tgtData.armor, tgtData.inclination,
 				tgtData.angles, true, true);
 			//Post-Processing
-			const impactSize: number = this.instance.getImpactSize(), numAngles: number = tgtData.angles.length;
+			const impactSize: number = instance.getImpactSize(), numAngles: number = tgtData.angles.length;
 			this.resizeCalculatedData(numShells, impactSize, numAngles);
-			this.calculatedData.angles = tgtData.angles;
-			this.calculatedData.targets[0] = {armor: tgtData.armor, inclination: tgtData.inclination, width: tgtData.width}
-			shellData.forEach((value, i) => {this.calculatedData.names[i] = value.name; this.calculatedData.colors[i] = value.colors;});
+			calculatedData.angles = tgtData.angles;
+			console.log(tgtData);
+			calculatedData.targets[0] = {armor: tgtData.armor, inclination: tgtData.inclination, width: tgtData.width}
+			shellData.forEach((value, i) => {calculatedData.names[i] = value.name; calculatedData.colors[i] = value.colors;});
 			let maxDist = 0; //Maximum Distance for shipWidth
 			// Converts flat array data format to {x, y} format for chart.js
 			for(let j=0; j<numShells; j++){ // iterate through shells
 				for(let i=0; i<impactSize; i++){ // iterate through points at each range
-					const dist : number = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex.distance, j);
+					const dist : number = instance.getImpactPoint(i, arrayIndices.impactDataIndex.distance, j);
 					maxDist = Math.max(maxDist, dist);
-					Object.entries(this.calculatedData.impact).forEach(([dataType, output] : [string, T.pointArrays]) => {
-						const y = this.instance.getImpactPoint(i, this.arrayIndices.impactDataIndex[dataType], j);
+					Object.entries(calculatedData.impact).forEach(([dataType, output] : [string, T.pointArrays]) => {
+						const y = instance.getImpactPoint(i, arrayIndices.impactDataIndex[dataType], j);
 						output[j][i] = {x: dist, y: y};
 					});
-					Object.entries(this.calculatedData.angle).forEach(([dataType, output] : [string, T.pointArrays]) => {
-						output[j][i] = {x: dist, y: this.instance.getAnglePoint(i, this.arrayIndices.angleDataIndex[dataType], j)};
+					Object.entries(calculatedData.angle).forEach(([dataType, output] : [string, T.pointArrays]) => {
+						output[j][i] = {x: dist, y: instance.getAnglePoint(i, arrayIndices.angleDataIndex[dataType], j)};
 					});
 					for(let k=0; k<numAngles; k++){
 						const detDist : number
-							= this.instance.getPostPenPoint(i, this.arrayIndices.postPenDataIndex.x, k, j);
+							= instance.getPostPenPoint(i, arrayIndices.postPenDataIndex.x, k, j);
 						const fused : number // = detDist when fused, otherwise = -1
-							= this.instance.getPostPenPoint(i, this.arrayIndices.postPenDataIndex.xwf, k, j);
+							= instance.getPostPenPoint(i, arrayIndices.postPenDataIndex.xwf, k, j);
 						const point : T.scatterPoint = {x: dist, y: detDist};
 						// Only draw fused line if fused (fused >= 0); reverse for notFused
-						if(fused < 0){this.calculatedData.post.notFused[k+j*numAngles].push(point);
-						}else{this.calculatedData.post.fused[k+j*numAngles].push(point);}
+						if(fused < 0){
+							calculatedData.post.notFused[k+j*numAngles].push(point);
+						}else{
+							calculatedData.post.fused[k+j*numAngles].push(point);
+						}
 					}
 				}
 			}
-
 			//Generate Ship Width Line 
 			const stepSize = this.settings.distance.stepSize !== undefined ? this.settings.distance.stepSize: 2000;
 			const maxAdj = Math.ceil(maxDist / stepSize) * stepSize;
-			this.calculatedData.post.shipWidth.forEach((singleShipWidth) => {
+			calculatedData.post.shipWidth.forEach((singleShipWidth) => {
 				const length = singleShipWidth.length - 1;
 				for(let i=0; i < singleShipWidth.length; i++){
 					const xV : number = i / length * maxAdj;
 					singleShipWidth[i] = {x: xV, y: tgtData.width};
 				}
 			});
-			//console.log(JSON.stringify(this.calculatedData)); //- for replacing initialData when first ships change
-			if(this.graphsRef.current){this.graphsRef.current.updateData(this.calculatedData);}
+			//Angle Chart Annotations / Labels
+			this.resizePointArray(calculatedData.refAngles, [tgtData.refAngles.length, this.referenceLineSize]);
+			calculatedData.refLabels = tgtData.refLabels;
+
+			calculatedData.refAngles.forEach((array, index) => {
+				const length = array.length - 1;
+				for(let i=0; i < array.length; i++){
+					const xV : number = i / length * maxAdj;
+					array[i] = {x: xV, y: tgtData.refAngles[index]};
+				}
+			});
+			//this.updateInitialData(calculatedData);
+			if(this.graphsRef.current){this.graphsRef.current.updateData(calculatedData);}
 		}
+	}
+	updateInitialData = (data) => { //Only used to for replacing initialData = not useful in release
+		const fileToSave = new Blob([JSON.stringify(data)], {type: 'application/json',});
+		saveAs(fileToSave, 'initialData.json');
 	}
 	onUpdate = () =>{this.navRef.current!.update();} // Update Navbar when charts are updated
 	updateColors = () => { // For updating when color settings change
