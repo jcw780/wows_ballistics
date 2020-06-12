@@ -3,6 +3,7 @@ import {Row, Col, Button, Modal, Container} from 'react-bootstrap';
 
 import * as T from './commonTypes';
 import {ParameterForm} from './ParameterForm';
+import GeneralTooltip from './Tooltips';
 
 interface refAngleFormProps {
     newValue: string[], index: number, keyProp : number, 
@@ -116,7 +117,6 @@ class TargetFormsContainer extends React.Component
 		this.setState((current) => {return {...current, keys : {...current.keys, [id]: set} }});
     }
 
-
     //Target Angles
     addAngle = () => {
         this.targetData.angles.push(this.targetData.angles.length * 5);
@@ -203,7 +203,27 @@ class TargetFormsContainer extends React.Component
             }) }
                 <Col sm={1}/>
             </Row>
-            <h3>Target Angles</h3>
+            <GeneralTooltip title="Target Angles" content={
+            <>
+                Angle that target is presenting, adding or changing <br/> values affects post-penetration charts. <br/>
+                Example: <br/>
+                <table>
+                    <tr>
+                        <td>0</td><td>°</td><td>-</td><td>Full Broadside</td>
+                    </tr>
+                    <tr>
+                        <td>45</td><td>°</td><td>-</td><td>Standard Start Ricochet*</td>
+                    </tr>
+                    <tr>
+                        <td>60</td><td>°</td><td>-</td><td>Standard Always Ricochet*</td>
+                    </tr>
+                    <tr>
+                        <td>90</td><td>°</td><td>-</td><td>Perfectly Angled</td>
+                    </tr>
+                </table>
+                *At 0° angle of fall and 0° armor inclination.
+            </>}
+            ><h3 style={{display:"inline-block"}}>Target Angles</h3></GeneralTooltip>
             <Container style={{marginBottom: "1rem"}}>
                 <Row>
             {renderAngleElements(angleElements)}
@@ -216,7 +236,10 @@ class TargetFormsContainer extends React.Component
                     Add Angle</Button></Col>
                 <Col/>
             </Row>
-            <h3>Angle Labels</h3>
+            <GeneralTooltip title="Angle Label" content={
+                <>User generated labels for angle charts. 
+                <br/>These do not affect calculation values.</>
+            }><h3 style={{display:"inline-block"}}>Angle Labels</h3></GeneralTooltip>
             <Container style={{marginBottom: "1rem"}}>
                 <Row>
             {renderAngleElements(refAngleElements)}
