@@ -41,7 +41,7 @@ class App extends React.Component<{},{}> {
 	}
 	// Calculated Data
 	calculatedData: T.calculatedData
-	referenceLineSize = 251;
+	referenceLineSize: Readonly<number> = 251;
 
 	//Compile Wasm 
 	compile = () : void => {
