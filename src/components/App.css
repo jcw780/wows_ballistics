@@ -75,6 +75,8 @@ body{
   padding-right: 0! important;
 }
 
+/* Tooltip Styles */
+
 #tooltip-table td, #tooltip-table th {
   border: 1px solid #ddd;
   padding: 8px;
@@ -85,8 +87,8 @@ body{
 #tooltip-table tr:hover {background-color: #ddd;}
 
 #tooltip-table th {
-  padding-top: 12px;
-  padding-bottom: 12px;
+  padding-top: 8px;
+  padding-bottom: 8px;
   text-align: left;
   background-color: #000000;
   color: white;
