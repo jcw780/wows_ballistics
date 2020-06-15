@@ -30,7 +30,8 @@
 ### Current Status
 - Calculations may be refined if contradicting data is provided
 ### Future Features
-- More tooltips
+- Multiple Targets
+- Dispersion?
 
 
 
