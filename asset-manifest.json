@@ -1,25 +1,25 @@
 {
   "files": {
     "main.css": "/wows_ballistics/static/css/main.5e69c8bc.chunk.css",
-    "main.js": "/wows_ballistics/static/js/main.c9e15922.chunk.js",
-    "main.js.map": "/wows_ballistics/static/js/main.c9e15922.chunk.js.map",
+    "main.js": "/wows_ballistics/static/js/main.9b80379b.chunk.js",
+    "main.js.map": "/wows_ballistics/static/js/main.9b80379b.chunk.js.map",
     "runtime-main.js": "/wows_ballistics/static/js/runtime-main.5e5691db.js",
     "runtime-main.js.map": "/wows_ballistics/static/js/runtime-main.5e5691db.js.map",
     "static/css/2.69121389.chunk.css": "/wows_ballistics/static/css/2.69121389.chunk.css",
-    "static/js/2.8f943e19.chunk.js": "/wows_ballistics/static/js/2.8f943e19.chunk.js",
-    "static/js/2.8f943e19.chunk.js.map": "/wows_ballistics/static/js/2.8f943e19.chunk.js.map",
+    "static/js/2.314aa03b.chunk.js": "/wows_ballistics/static/js/2.314aa03b.chunk.js",
+    "static/js/2.314aa03b.chunk.js.map": "/wows_ballistics/static/js/2.314aa03b.chunk.js.map",
     "index.html": "/wows_ballistics/index.html",
-    "precache-manifest.369bf92cd041d22d3cf16830fe8e34b4.js": "/wows_ballistics/precache-manifest.369bf92cd041d22d3cf16830fe8e34b4.js",
+    "precache-manifest.64fd8fc2bfb14c6ddb7928cb7c403e59.js": "/wows_ballistics/precache-manifest.64fd8fc2bfb14c6ddb7928cb7c403e59.js",
     "service-worker.js": "/wows_ballistics/service-worker.js",
     "static/css/2.69121389.chunk.css.map": "/wows_ballistics/static/css/2.69121389.chunk.css.map",
     "static/css/main.5e69c8bc.chunk.css.map": "/wows_ballistics/static/css/main.5e69c8bc.chunk.css.map",
-    "static/js/2.8f943e19.chunk.js.LICENSE.txt": "/wows_ballistics/static/js/2.8f943e19.chunk.js.LICENSE.txt"
+    "static/js/2.314aa03b.chunk.js.LICENSE.txt": "/wows_ballistics/static/js/2.314aa03b.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.5e5691db.js",
     "static/css/2.69121389.chunk.css",
-    "static/js/2.8f943e19.chunk.js",
+    "static/js/2.314aa03b.chunk.js",
     "static/css/main.5e69c8bc.chunk.css",
-    "static/js/main.c9e15922.chunk.js"
+    "static/js/main.9b80379b.chunk.js"
   ]
 }
