@@ -71,7 +71,7 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
             return this.forms.graphs.distance.map((value, i) => {
                 return(
                     <ParameterForm newValue={String(this.props.settings.distance[value[0]])} controlId={value[0]} key={i}
-                    type="number" handleValueChange={handleGraphChange} labelWidth={3} append="m"
+                    type="number" handleValueChange={handleGraphChange} labelWidth={3} append="m" ariaLabel={value[1]}
                     style={rangeAxisFormStyle}>
                         {value[1]}
                     </ParameterForm>
@@ -95,7 +95,7 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
             return this.forms.calculations.launchAngle.map((value, i) => {
                 const initialValue = this.props.settings.calculationSettings.launchAngle[value[0]];
                 return(
-                    <ParameterForm newValue={String(initialValue)} controlId={value[0]} key={i}
+                    <ParameterForm newValue={String(initialValue)} controlId={value[0]} key={i} ariaLabel={value[1]}
                     type="number" handleValueChange={handleCalculationChange} labelWidth={3} append={value[2]}>
                         {value[1]}
                     </ParameterForm>
@@ -106,7 +106,7 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
             return this.forms.calculations.numericalMethod.map((value, i) => {
                 const initialValue = this.props.settings.calculationSettings[value[0]];
                 return(
-                    <ParameterForm newValue={String(initialValue)} controlId={value[0]} key={i}
+                    <ParameterForm newValue={String(initialValue)} controlId={value[0]} key={i} ariaLabel={value[1]}
                     type="number" handleValueChange={handleNumericalMethodChange} labelWidth={3} append={value[2]}>
                         {value[1]}
                     </ParameterForm>
@@ -170,16 +170,19 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
                                     </Col>
                                 <Col sm="1"/>
                                 </Row>
-                                <ParameterForm newValue={String(this.props.settings.format.rounding)} controlId="rounding"
+                                <ParameterForm newValue={String(this.props.settings.format.rounding)} controlId="rounding" 
+                                ariaLabel="Tooltip Rounding"
                                 type="number" handleValueChange={handleRoundingChange} labelWidth={3} append="dp">
                                     Tooltip Rounding
                                 </ParameterForm>
                                 <h4>Color Generation</h4>
                                 <ParameterForm newValue={String(this.props.settings.format.colors.saturation * 100)} controlId="saturation"
+                                ariaLabel="Saturation"
                                 type="number" handleValueChange={handleColorChange} labelWidth={3} append="%">
                                     Saturation
                                 </ParameterForm>
                                 <ParameterForm newValue={String(this.props.settings.format.colors.light * 100)} controlId="light"
+                                ariaLabel="Light"
                                 type="number" handleValueChange={handleColorChange} labelWidth={3} append="%">
                                     Light
                                 </ParameterForm>

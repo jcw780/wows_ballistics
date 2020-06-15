@@ -25,14 +25,14 @@ class RefAngleForm extends React.Component<refAngleFormProps>{
             <ParameterForm controlId={this.props.index} 
             newValue={this.props.newValue[1]}
             handleValueChange={this.props.handleValueChange[1]} 
-            type="text"
+            type="text" ariaLabel="Text"
             labelWidth={4} style={{formControl: {width: '60%'}, formGroup: {flexFlow: 'unset'}}}>
                 Text
             </ParameterForm>
             <ParameterForm controlId={this.props.index} 
             newValue={this.props.newValue[0]}
             handleValueChange={this.props.handleValueChange[0]} 
-            type="number" 
+            type="number" ariaLabel="Angle"
             labelWidth={4} style={{formControl: {width: '60%'}, formGroup: {flexFlow: 'unset'}}} append="°">
                 Angle
             </ParameterForm>
@@ -61,7 +61,7 @@ class AngleForm extends React.Component<angleFormProps>{
             <ParameterForm controlId={this.props.index} 
             newValue={this.props.newValue}
             handleValueChange={this.props.handleValueChange} 
-            type="number"
+            type="number" ariaLabel={this.props.label}
             labelWidth={4} style={{formControl: {width: '60%'}, formGroup: {flexFlow: 'unset'}}} append="°">
                 {this.props.label}
             </ParameterForm>
@@ -241,7 +241,7 @@ class TargetFormsContainer extends React.Component
                         <ParameterForm controlId={key}
                         newValue={String(this.targetData[key])} 
                         handleValueChange={this.handleChange} type="number"
-                        labelWidth={3} append={value[1]}>
+                        labelWidth={3} append={value[1]} ariaLabel={value[0]}>
                             <GeneralTooltip title={value[0]} content={value[singleTargetI.description]}>
                                 <div>
                                     {value[0]}

@@ -37,7 +37,7 @@ class ShellParameters extends React.Component<shellParametersProps>{
 				<Form>
 					{Object.entries(this.props.formLabels).map(([key, value] : [string, valuesComponent], i) => {
 						return (<ParameterForm key={i} controlId={key}
-						handleValueChange={this.handleValueChange}
+						handleValueChange={this.handleValueChange} ariaLabel={value[valuesComponentIndex.name]}
 						type="number" newValue={String(this.props.formValues[key])} append={value[valuesComponentIndex.unit]}
 						ref={value[valuesComponentIndex.ref]} style={{inputGroup:{width: "50%"}}}>
 							<GeneralTooltip title={value[valuesComponentIndex.name]} content={value[valuesComponentIndex.description]}>
@@ -332,7 +332,7 @@ export class ShellForms extends React.Component<shellFormsProps> {
 				<Modal.Body style={{padding: "0.5rem"}}>
 					<Container style={{padding: 0}}>
 					<Col sm='12' style={{padding: 0}}>
-						<ParameterForm controlId='shipName'
+						<ParameterForm controlId='shipName' ariaLabel="Shell Label"
 						handleValueChange={this.handleNameChange}
 						type="text" newValue={this.formData.name} labelWidth={3}
 						ref={this.nameForm} style={{formControl: {width: '70%'}, formGroup: {marginBottom: ".5rem"}}}>

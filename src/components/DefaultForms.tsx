@@ -26,7 +26,7 @@ export class DefaultForm extends React.Component
 		return (
 			<Form.Group className="form-inline" style={{marginBottom: ".25rem"}}>
 				<Form.Label column sm="3">{this.props.label}</Form.Label>
-				<Form.Control as="select" placeholder="" defaultValue={this.props.defaultValue}
+				<Form.Control as="select" placeholder="" defaultValue={this.props.defaultValue} aria-label={this.props.label}
 				onChange={this.handleChange} ref={this.form} style={{width: "70%"}}>
 					{this.state.options.map((value,i) => {return (<option aria-label={value} key={i}>{value}</option>);})}
 				</Form.Control>
