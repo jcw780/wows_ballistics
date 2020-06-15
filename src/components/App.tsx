@@ -65,6 +65,7 @@ class App extends React.Component<{},{}> {
 
 		this.calculatedData = {
 			impact: {
+				rawPen : createNewPointArray(numShells, impactSize),
 				ePenHN : createNewPointArray(numShells, impactSize),
 				impactAHD : createNewPointArray(numShells, impactSize),
 				ePenDN : createNewPointArray(numShells, impactSize),
@@ -169,7 +170,6 @@ class App extends React.Component<{},{}> {
 			const impactSize: number = instance.getImpactSize(), numAngles: number = tgtData.angles.length;
 			this.resizeCalculatedData(numShells, impactSize, numAngles);
 			calculatedData.angles = tgtData.angles;
-			console.log(tgtData);
 			calculatedData.targets[0] = {armor: tgtData.armor, inclination: tgtData.inclination, width: tgtData.width}
 			shellData.forEach((value, i) => {calculatedData.names[i] = value.name; calculatedData.colors[i] = value.colors;});
 			let maxDist = 0; //Maximum Distance for shipWidth

@@ -55,6 +55,7 @@ export interface settingsT{
 export interface scatterPoint {x: number, y: number}
 export type pointArrays = Array<Array<scatterPoint>>;
 export interface impactData {
+    rawPen : pointArrays,
     ePenHN : pointArrays, impactAHD : pointArrays,
     ePenDN : pointArrays, impactADD : pointArrays,
     impactV : pointArrays, tToTargetA : pointArrays,
