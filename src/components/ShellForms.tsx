@@ -5,9 +5,12 @@ import * as T from './commonTypes';
 import {ParameterForm} from './ParameterForm';
 import DefaultShips from './DefaultForms'
 import DownloadButton from './DownloadButton';
+import GeneralTooltip from './Tooltips';
 
-enum valuesComponentIndex {name, unit, ref}
-type valuesComponent = [string, string, React.RefObject<ParameterForm>];
+const lodash = require('lodash');
+
+enum valuesComponentIndex {name, unit, ref, description}
+type valuesComponent = [string, string,React.RefObject<ParameterForm>, string | JSX.Element];
 type parametersType = 'caliber' | 'muzzleVelocity' | 'dragCoefficient' | 'mass' 
 | 'krupp' | 'fusetime' | 'threshold' | 'normalization' | 'ra0' | 'ra1' | 'HESAP';
 type formValuesT = Record<parametersType, valuesComponent>
@@ -32,11 +35,13 @@ class ShellParameters extends React.Component<shellParametersProps>{
 		return(
 			<>
 				<Form>
-					{Object.entries(this.props.formLabels).map(([key, value] : any, i) => {
-						return (<ParameterForm label={value[valuesComponentIndex.name]} key={i} controlId={key}
+					{Object.entries(this.props.formLabels).map(([key, value] : [string, valuesComponent], i) => {
+						return (<ParameterForm key={i} controlId={key}
 						handleValueChange={this.handleValueChange}
 						type="number" newValue={String(this.props.formValues[key])} append={value[valuesComponentIndex.unit]}
-						ref={this.props.formLabels[key][valuesComponentIndex.ref]} style={{inputGroup:{width: "50%"}}}/>);
+						ref={value[valuesComponentIndex.ref]} style={{inputGroup:{width: "50%"}}}>
+							{value[valuesComponentIndex.name]}
+						</ParameterForm>);
 					})}	
 				</Form>
 				<Row>
@@ -92,17 +97,138 @@ export class ShellForms extends React.Component<shellFormsProps> {
 	nameForm : React.RefObject<ParameterForm> = React.createRef<ParameterForm>()
 	canvasRef = React.createRef<HTMLCanvasElement>();
 	formLabels : formValuesT = Object.seal({
-		caliber: ['Caliber', 'm', React.createRef()], 
-		muzzleVelocity: ['Muzzle Velocity', 'm/s', React.createRef()], 
-		dragCoefficient: ['Drag Coefficient', '(1)', React.createRef()],
-		mass: ['Mass', 'kg', React.createRef()], 
-		krupp: ['Krupp', '(1)', React.createRef()], 
-		fusetime: ['Fusetime', 's', React.createRef()], 
-		threshold: ['Fusing Threshold', 'mm', React.createRef()], 
-		normalization: ['Normalization', '°', React.createRef()], 
-		ra0: ['Start Ricochet', '°', React.createRef()], 
-		ra1: ['Always Ricochet', '°', React.createRef()], 
-		HESAP: ['HE/SAP penetration', 'mm', React.createRef()],
+		caliber: ['Caliber', 'm', React.createRef(), 
+		<>
+			Caliber of shell. <br/>
+			All else equal: 
+			<table>
+				<tr><td>Effect on:</td><td>Increase</td><td>Decrease</td></tr>
+				<tr><td>Penetration</td><td>↓</td><td>↑</td></tr>
+				<tr><td>Flight Time</td><td>↑</td><td>↓</td></tr>
+				<tr><td>Fall Angle</td><td>↑</td><td>↓</td></tr>
+				<tr><td>Likelihood to Overpen</td><td>↓</td><td>↑</td></tr>
+			</table>
+		</>], 
+		muzzleVelocity: ['Muzzle Velocity', 'm/s', React.createRef(), 
+		<>
+			Caliber of shell. <br/>
+			All else equal: 
+			<table>
+				<tr><td>Effect on:</td><td>Increase</td><td>Decrease</td></tr>
+				<tr><td>Penetration</td><td>↓</td><td>↑</td></tr>
+				<tr><td>Flight Time</td><td>↑</td><td>↓</td></tr>
+				<tr><td>Fall Angle</td><td>↑</td><td>↓</td></tr>
+				<tr><td>Likelihood to Overpen</td><td>↓</td><td>↑</td></tr>
+			</table>
+		</>], 
+		dragCoefficient: ['Drag Coefficient', '(1)', React.createRef(), 
+		<>
+			Caliber of shell. <br/>
+			All else equal: 
+			<table>
+				<tr><td>Effect on:</td><td>Increase</td><td>Decrease</td></tr>
+				<tr><td>Penetration</td><td>↓</td><td>↑</td></tr>
+				<tr><td>Flight Time</td><td>↑</td><td>↓</td></tr>
+				<tr><td>Fall Angle</td><td>↑</td><td>↓</td></tr>
+				<tr><td>Likelihood to Overpen</td><td>↓</td><td>↑</td></tr>
+			</table>
+		</>],
+		mass: ['Mass', 'kg', React.createRef(), 
+		<>
+			Caliber of shell. <br/>
+			All else equal: 
+			<table>
+				<tr><td>Effect on:</td><td>Increase</td><td>Decrease</td></tr>
+				<tr><td>Penetration</td><td>↓</td><td>↑</td></tr>
+				<tr><td>Flight Time</td><td>↑</td><td>↓</td></tr>
+				<tr><td>Fall Angle</td><td>↑</td><td>↓</td></tr>
+				<tr><td>Likelihood to Overpen</td><td>↓</td><td>↑</td></tr>
+			</table>
+		</>], 
+		krupp: ['Krupp', '(1)', React.createRef(), 
+		<>
+			Caliber of shell. <br/>
+			All else equal: 
+			<table>
+				<tr><td>Effect on:</td><td>Increase</td><td>Decrease</td></tr>
+				<tr><td>Penetration</td><td>↓</td><td>↑</td></tr>
+				<tr><td>Flight Time</td><td>↑</td><td>↓</td></tr>
+				<tr><td>Fall Angle</td><td>↑</td><td>↓</td></tr>
+				<tr><td>Likelihood to Overpen</td><td>↓</td><td>↑</td></tr>
+			</table>
+		</>], 
+		fusetime: ['Fusetime', 's', React.createRef(), 
+		<>
+			Caliber of shell. <br/>
+			All else equal: 
+			<table>
+				<tr><td>Effect on:</td><td>Increase</td><td>Decrease</td></tr>
+				<tr><td>Penetration</td><td>↓</td><td>↑</td></tr>
+				<tr><td>Flight Time</td><td>↑</td><td>↓</td></tr>
+				<tr><td>Fall Angle</td><td>↑</td><td>↓</td></tr>
+				<tr><td>Likelihood to Overpen</td><td>↓</td><td>↑</td></tr>
+			</table>
+		</>], 
+		threshold: ['Fusing Threshold', 'mm', React.createRef(), 
+		<>
+			Caliber of shell. <br/>
+			All else equal: 
+			<table>
+				<tr><td>Effect on:</td><td>Increase</td><td>Decrease</td></tr>
+				<tr><td>Penetration</td><td>↓</td><td>↑</td></tr>
+				<tr><td>Flight Time</td><td>↑</td><td>↓</td></tr>
+				<tr><td>Fall Angle</td><td>↑</td><td>↓</td></tr>
+				<tr><td>Likelihood to Overpen</td><td>↓</td><td>↑</td></tr>
+			</table>
+		</>], 
+		normalization: ['Normalization', '°', React.createRef(), 
+		<>
+			Caliber of shell. <br/>
+			All else equal: 
+			<table>
+				<tr><td>Effect on:</td><td>Increase</td><td>Decrease</td></tr>
+				<tr><td>Penetration</td><td>↓</td><td>↑</td></tr>
+				<tr><td>Flight Time</td><td>↑</td><td>↓</td></tr>
+				<tr><td>Fall Angle</td><td>↑</td><td>↓</td></tr>
+				<tr><td>Likelihood to Overpen</td><td>↓</td><td>↑</td></tr>
+			</table>
+		</>], 
+		ra0: ['Start Ricochet', '°', React.createRef(), 
+		<>
+			Caliber of shell. <br/>
+			All else equal: 
+			<table>
+				<tr><td>Effect on:</td><td>Increase</td><td>Decrease</td></tr>
+				<tr><td>Penetration</td><td>↓</td><td>↑</td></tr>
+				<tr><td>Flight Time</td><td>↑</td><td>↓</td></tr>
+				<tr><td>Fall Angle</td><td>↑</td><td>↓</td></tr>
+				<tr><td>Likelihood to Overpen</td><td>↓</td><td>↑</td></tr>
+			</table>
+		</>], 
+		ra1: ['Always Ricochet', '°', React.createRef(), 
+		<>
+			Caliber of shell. <br/>
+			All else equal: 
+			<table>
+				<tr><td>Effect on:</td><td>Increase</td><td>Decrease</td></tr>
+				<tr><td>Penetration</td><td>↓</td><td>↑</td></tr>
+				<tr><td>Flight Time</td><td>↑</td><td>↓</td></tr>
+				<tr><td>Fall Angle</td><td>↑</td><td>↓</td></tr>
+				<tr><td>Likelihood to Overpen</td><td>↓</td><td>↑</td></tr>
+			</table>
+		</>], 
+		HESAP: ['HE/SAP penetration', 'mm', React.createRef(), 
+		<>
+			Caliber of shell. <br/>
+			All else equal: 
+			<table>
+				<tr><td>Effect on:</td><td>Increase</td><td>Decrease</td></tr>
+				<tr><td>Penetration</td><td>↓</td><td>↑</td></tr>
+				<tr><td>Flight Time</td><td>↑</td><td>↓</td></tr>
+				<tr><td>Fall Angle</td><td>↑</td><td>↓</td></tr>
+				<tr><td>Likelihood to Overpen</td><td>↓</td><td>↑</td></tr>
+			</table>
+		</>],
 	})
 	returnData = () => {
 		if(this.graph){
@@ -142,9 +268,7 @@ export class ShellForms extends React.Component<shellFormsProps> {
 	}
 	deleteShip = () => {this.props.deleteShip(this.props.keyProp, this.props.index);}
 	copyShip = () => {
-		const outDefault = Object.assign({}, this.defaultData);
-		const outForm = Object.assign({}, this.formData);
-		this.props.copyShip(outDefault, outForm);
+		this.props.copyShip(this.defaultData, this.formData);
 	}
 	updateCanvas = () => {
 		//Draws colors 
@@ -190,10 +314,12 @@ export class ShellForms extends React.Component<shellFormsProps> {
 				<Modal.Body style={{padding: "0.5rem"}}>
 					<Container style={{padding: 0}}>
 					<Col sm='12' style={{padding: 0}}>
-						<ParameterForm label="Shell Label" controlId='shipName'
+						<ParameterForm controlId='shipName'
 						handleValueChange={this.handleNameChange}
 						type="text" newValue={this.formData.name} labelWidth={3}
-						ref={this.nameForm} style={{formControl: {width: '70%'}, formGroup: {marginBottom: ".5rem"}}}/>
+						ref={this.nameForm} style={{formControl: {width: '70%'}, formGroup: {marginBottom: ".5rem"}}}>
+							Shell Label
+						</ParameterForm>
 						<Row style={{marginBottom: ".5rem"}}>
 							<Col sm="3" className="no-lr-padding">Colors</Col>
 							<Col sm="8" className="no-lr-padding">
@@ -298,7 +424,11 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 		}
 	}
 	copyShip = (defaultData : T.defaultDataT, shellData : formDataT) => {
-		const data: copyTempT = {default: defaultData, data: shellData}
+		const data: copyTempT = {
+			default: defaultData, 
+			data: shellData
+		}
+		console.log(data);
 		this.copyTemp = data; this.copied = true;
 		this.addShip();
 	}
@@ -366,7 +496,7 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 						deleteShip={this.deleteShip} copyShip={this.copyShip}
 						keyProp={value} ref={this.shellRefs[i]} reset={this.reset} 
 						settings={this.props.settings} size={this.state.keys.size}
-						defaultData={this.copyTemp.default} formData={this.copyTemp.data} copied={true}/>
+						defaultData={lodash.cloneDeep(this.copyTemp.default)} formData={lodash.cloneDeep(this.copyTemp.data)} copied={true}/>
 					</Col>
 				)
 				return returnValue;

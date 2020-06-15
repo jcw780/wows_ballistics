@@ -52,7 +52,7 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
     }
     private forms = {
         graphs : {
-            distance : [['min', 'Minimum Distance'], ['max', 'Maximum Distance'], ['stepSize', 'Step Size']]
+            distance : [['min', 'Minimum'], ['max', 'Maximum'], ['stepSize', 'Step Size']]
         },
         calculations : {
             launchAngle : [['min', 'Minimum', '°'], ['max', 'Maximum', '°'], ['precision', 'Increment', '°']],
@@ -71,8 +71,10 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
             return this.forms.graphs.distance.map((value, i) => {
                 return(
                     <ParameterForm newValue={String(this.props.settings.distance[value[0]])} controlId={value[0]} key={i}
-                    label={value[1]} type="number" handleValueChange={handleGraphChange} labelWidth={3} append="m"
-                    style={rangeAxisFormStyle}/>
+                    type="number" handleValueChange={handleGraphChange} labelWidth={3} append="m"
+                    style={rangeAxisFormStyle}>
+                        {value[1]}
+                    </ParameterForm>
                 );
             });
         }
@@ -94,7 +96,9 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
                 const initialValue = this.props.settings.calculationSettings.launchAngle[value[0]];
                 return(
                     <ParameterForm newValue={String(initialValue)} controlId={value[0]} key={i}
-                    label={value[1]} type="number" handleValueChange={handleCalculationChange} labelWidth={3} append={value[2]}/>
+                    type="number" handleValueChange={handleCalculationChange} labelWidth={3} append={value[2]}>
+                        {value[1]}
+                    </ParameterForm>
                 );
             });
         }
@@ -103,7 +107,9 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
                 const initialValue = this.props.settings.calculationSettings[value[0]];
                 return(
                     <ParameterForm newValue={String(initialValue)} controlId={value[0]} key={i}
-                    label={value[1]} type="number" handleValueChange={handleNumericalMethodChange} labelWidth={3} append={value[2]}/>
+                    type="number" handleValueChange={handleNumericalMethodChange} labelWidth={3} append={value[2]}>
+                        {value[1]}
+                    </ParameterForm>
                 );
             });
         }
@@ -164,13 +170,19 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
                                     </Col>
                                 <Col sm="1"/>
                                 </Row>
-                                <ParameterForm newValue={String(this.props.settings.format.rounding)} controlId="rounding" label="Tooltip Rounding"
-                                type="number" handleValueChange={handleRoundingChange} labelWidth={3} append="dp"/>
+                                <ParameterForm newValue={String(this.props.settings.format.rounding)} controlId="rounding"
+                                type="number" handleValueChange={handleRoundingChange} labelWidth={3} append="dp">
+                                    Tooltip Rounding
+                                </ParameterForm>
                                 <h4>Color Generation</h4>
-                                <ParameterForm newValue={String(this.props.settings.format.colors.saturation * 100)} controlId="saturation" label="Saturation"
-                                type="number" handleValueChange={handleColorChange} labelWidth={3} append="%"/>
-                                <ParameterForm newValue={String(this.props.settings.format.colors.light * 100)} controlId="light" label="Light"
-                                type="number" handleValueChange={handleColorChange} labelWidth={3} append="%"/>
+                                <ParameterForm newValue={String(this.props.settings.format.colors.saturation * 100)} controlId="saturation"
+                                type="number" handleValueChange={handleColorChange} labelWidth={3} append="%">
+                                    Saturation
+                                </ParameterForm>
+                                <ParameterForm newValue={String(this.props.settings.format.colors.light * 100)} controlId="light"
+                                type="number" handleValueChange={handleColorChange} labelWidth={3} append="%">
+                                    Light
+                                </ParameterForm>
                             </Col>
                         </Row>
                     </Col>
