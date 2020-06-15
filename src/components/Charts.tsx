@@ -468,9 +468,11 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 <GeneralTooltip title="Impact Charts" content={
                     <>
                     <table id="tooltip-table">
+                        <tbody>
                         <tr><td>Effective Penetration*</td><td>Belt Impact Angle</td></tr>
                         <tr><td>Effective Deck Penetration*</td><td>Deck Impact Angle</td></tr>
                         <tr><td>Impact Velocity</td><td>Time to Target**</td></tr>
+                        </tbody>
                     </table>
                     * Adjusts for fall angle and normalization <br/> - does not adjust for armor inclination <br/>
                     ** Scaled by x(1/3.1) ≈ game / real world  <br/>

@@ -104,12 +104,14 @@ export class ShellForms extends React.Component<shellFormsProps> {
 			Diameter of the shell. <br/> 
 			Effects - All else equal:
 			<table id='tooltip-table'>
-				<tr><th>Caliber              </th><th>↑</th><th>↓</th></tr>
-				<tr><td>Raw Penetration      </td><td>↓</td><td>↑</td></tr>
-				<tr><td>Belt Penetration     </td><td>↓</td><td>↑</td></tr>
-				<tr><td>Flight Time          </td><td>↑</td><td>↓</td></tr>
-				<tr><td>Fall Angle           </td><td>↑</td><td>↓</td></tr>
-				<tr><td>Likelihood to Overpen</td><td>↓</td><td>↑</td></tr>
+				<tbody>
+					<tr><th>Caliber              </th><th>↑</th><th>↓</th></tr>
+					<tr><td>Raw Penetration      </td><td>↓</td><td>↑</td></tr>
+					<tr><td>Belt Penetration     </td><td>↓</td><td>↑</td></tr>
+					<tr><td>Flight Time          </td><td>↑</td><td>↓</td></tr>
+					<tr><td>Fall Angle           </td><td>↑</td><td>↓</td></tr>
+					<tr><td>Likelihood to Overpen</td><td>↓</td><td>↑</td></tr>
+				</tbody>
 			</table>
 		</>], 
 		muzzleVelocity: ['Muzzle Velocity', 'm/s', React.createRef(), 
@@ -117,12 +119,14 @@ export class ShellForms extends React.Component<shellFormsProps> {
 			Shell velocity as it leaves the <br/> 
 			barrel. Effects - All else equal: 
 			<table id='tooltip-table'>
-				<tr><th>Muzzle Velocity      </th><th>↑</th><th>↓</th></tr>
-				<tr><td>Raw Penetration      </td><td>↑</td><td>↓</td></tr>
-				<tr><td>Belt Penetration     </td><td>↑</td><td>↓</td></tr>
-				<tr><td>Flight Time          </td><td>↓</td><td>↑</td></tr>
-				<tr><td>Fall Angle           </td><td>↓</td><td>↑</td></tr>
-				<tr><td>Likelihood to Overpen</td><td>↑</td><td>↓</td></tr>
+				<tbody>
+					<tr><th>Muzzle Velocity      </th><th>↑</th><th>↓</th></tr>
+					<tr><td>Raw Penetration      </td><td>↑</td><td>↓</td></tr>
+					<tr><td>Belt Penetration     </td><td>↑</td><td>↓</td></tr>
+					<tr><td>Flight Time          </td><td>↓</td><td>↑</td></tr>
+					<tr><td>Fall Angle           </td><td>↓</td><td>↑</td></tr>
+					<tr><td>Likelihood to Overpen</td><td>↑</td><td>↓</td></tr>
+				</tbody>
 			</table>
 		</>], 
 		dragCoefficient: ['Drag Coefficient', '(1)', React.createRef(), 
@@ -130,12 +134,14 @@ export class ShellForms extends React.Component<shellFormsProps> {
 			Representation of shell's air drag <br/>
 			characteristics. Effects - All else equal: 
 			<table id='tooltip-table'>
-				<tr><th>Drag Coefficient     </th><th>↑</th><th>↓</th></tr>
-				<tr><td>Raw Penetration      </td><td>↓</td><td>↑</td></tr>
-				<tr><td>Belt Penetration     </td><td>↓</td><td>↑</td></tr>
-				<tr><td>Flight Time          </td><td>↑</td><td>↓</td></tr>
-				<tr><td>Fall Angle           </td><td>↑</td><td>↓</td></tr>
-				<tr><td>Likelihood to Overpen</td><td>↓</td><td>↑</td></tr>
+				<tbody>
+					<tr><th>Drag Coefficient     </th><th>↑</th><th>↓</th></tr>
+					<tr><td>Raw Penetration      </td><td>↓</td><td>↑</td></tr>
+					<tr><td>Belt Penetration     </td><td>↓</td><td>↑</td></tr>
+					<tr><td>Flight Time          </td><td>↑</td><td>↓</td></tr>
+					<tr><td>Fall Angle           </td><td>↑</td><td>↓</td></tr>
+					<tr><td>Likelihood to Overpen</td><td>↓</td><td>↑</td></tr>
+				</tbody>
 			</table>
 		</>],
 		mass: ['Mass', 'kg', React.createRef(), 
@@ -143,12 +149,14 @@ export class ShellForms extends React.Component<shellFormsProps> {
 			Mass of the shell. <br/>
 			Effects - All else equal:
 			<table id='tooltip-table'>
-				<tr><th>Mass                 </th><th>↑</th><th>↓</th></tr>
-				<tr><td>Raw Penetration      </td><td>↑</td><td>↓</td></tr>
-				<tr><td>Belt Penetration     </td><td>↑</td><td>↓</td></tr>
-				<tr><td>Flight Time          </td><td>↓</td><td>↑</td></tr>
-				<tr><td>Fall Angle           </td><td>↓</td><td>↑</td></tr>
-				<tr><td>Likelihood to Overpen</td><td>↑</td><td>↓</td></tr>
+				<tbody>
+					<tr><th>Mass                 </th><th>↑</th><th>↓</th></tr>
+					<tr><td>Raw Penetration      </td><td>↑</td><td>↓</td></tr>
+					<tr><td>Belt Penetration     </td><td>↑</td><td>↓</td></tr>
+					<tr><td>Flight Time          </td><td>↓</td><td>↑</td></tr>
+					<tr><td>Fall Angle           </td><td>↓</td><td>↑</td></tr>
+					<tr><td>Likelihood to Overpen</td><td>↑</td><td>↓</td></tr>
+				</tbody>
 			</table>
 		</>], 
 		krupp: ['Krupp', '(1)', React.createRef(), 
@@ -156,12 +164,14 @@ export class ShellForms extends React.Component<shellFormsProps> {
 			Constant used to directly scale <br/>
 			penetration. Effects - All else equal:
 			<table id='tooltip-table'>
-				<tr><th>Krupp                </th><th>↑</th><th>↓</th></tr>
-				<tr><td>Raw Penetration      </td><td>↑</td><td>↓</td></tr>
-				<tr><td>Belt Penetration     </td><td>↑</td><td>↓</td></tr>
-				<tr><td>Flight Time          </td><td>-</td><td>-</td></tr>
-				<tr><td>Fall Angle           </td><td>-</td><td>-</td></tr>
-				<tr><td>Likelihood to Overpen</td><td>↑</td><td>↓</td></tr>
+				<tbody>
+					<tr><th>Krupp                </th><th>↑</th><th>↓</th></tr>
+					<tr><td>Raw Penetration      </td><td>↑</td><td>↓</td></tr>
+					<tr><td>Belt Penetration     </td><td>↑</td><td>↓</td></tr>
+					<tr><td>Flight Time          </td><td>-</td><td>-</td></tr>
+					<tr><td>Fall Angle           </td><td>-</td><td>-</td></tr>
+					<tr><td>Likelihood to Overpen</td><td>↑</td><td>↓</td></tr>
+				</tbody>
 			</table>
 		</>], 
 		fusetime: ['Fusetime', 's', React.createRef(), 
@@ -170,8 +180,10 @@ export class ShellForms extends React.Component<shellFormsProps> {
 			explode after fusing. <br/>
 			Effects - All else equal:
 			<table id='tooltip-table'>
-				<tr><th>Fusetime             </th><th>↑</th><th>↓</th></tr>
-				<tr><td>Likelihood to Overpen</td><td>↑</td><td>↓</td></tr>
+				<tbody>
+					<tr><th>Fusetime             </th><th>↑</th><th>↓</th></tr>
+					<tr><td>Likelihood to Overpen</td><td>↑</td><td>↓</td></tr>
+				</tbody>
 			</table>
 		</>], 
 		threshold: ['Fusing Threshold', 'mm', React.createRef(), 
@@ -180,8 +192,10 @@ export class ShellForms extends React.Component<shellFormsProps> {
 			fusing to occur. <br/>
 			Effects - All else equal:
 			<table id='tooltip-table'>
-				<tr><th>Fusing Threshold     </th><th>↑</th><th>↓</th></tr>
-				<tr><td>Likelihood to Overpen</td><td>↑</td><td>↓</td></tr>
+				<tbody>
+					<tr><th>Fusing Threshold     </th><th>↑</th><th>↓</th></tr>
+					<tr><td>Likelihood to Overpen</td><td>↑</td><td>↓</td></tr>
+				</tbody>
 			</table>
 		</>], 
 		normalization: ['Normalization', '°', React.createRef(), 
@@ -190,12 +204,14 @@ export class ShellForms extends React.Component<shellFormsProps> {
 			impact angle relative to the <br/>
 			target. Effects - All else equal:
 			<table id='tooltip-table'>
-				<tr><th>Normalization        </th><th>↑</th><th>↓</th></tr>
-				<tr><td>Raw Penetration      </td><td>-</td><td>-</td></tr>
-				<tr><td>Belt Penetration     </td><td>↑</td><td>↓</td></tr>
-				<tr><td>Flight Time          </td><td>-</td><td>-</td></tr>
-				<tr><td>Fall Angle           </td><td>-</td><td>-</td></tr>
-				<tr><td>Likelihood to Overpen</td><td>↑</td><td>↓</td></tr>
+				<tbody>
+					<tr><th>Normalization        </th><th>↑</th><th>↓</th></tr>
+					<tr><td>Raw Penetration      </td><td>-</td><td>-</td></tr>
+					<tr><td>Belt Penetration     </td><td>↑</td><td>↓</td></tr>
+					<tr><td>Flight Time          </td><td>-</td><td>-</td></tr>
+					<tr><td>Fall Angle           </td><td>-</td><td>-</td></tr>
+					<tr><td>Likelihood to Overpen</td><td>↑</td><td>↓</td></tr>
+				</tbody>
 			</table>
 		</>], 
 		ra0: ['Start Ricochet', '°', React.createRef(), 
@@ -204,8 +220,10 @@ export class ShellForms extends React.Component<shellFormsProps> {
 			which shells start to have a chance <br/> 
 			to ricochet. Effects - All else equal:
 			<table id='tooltip-table'>
-				<tr><th>Start Ricochet Angle</th><th>↑</th><th>↓</th></tr>
-				<tr><td>Likelihood to Ricochet</td><td>↓</td><td>↑</td></tr>
+				<tbody>
+					<tr><th>Start Ricochet Angle</th><th>↑</th><th>↓</th></tr>
+					<tr><td>Likelihood to Ricochet</td><td>↓</td><td>↑</td></tr>
+				</tbody>
 			</table>
 		</>], 
 		ra1: ['Always Ricochet', '°', React.createRef(), 
@@ -214,16 +232,20 @@ export class ShellForms extends React.Component<shellFormsProps> {
 			at which shells are guaranteed <br/> 
 			to ricochet. Effects - All else equal:
 			<table id='tooltip-table'>
-				<tr><th>Always Ricochet Angle</th><th>↑</th><th>↓</th></tr>
-				<tr><td>Likelihood to Ricochet</td><td>↓</td><td>↑</td></tr>
+				<tbody>
+					<tr><th>Always Ricochet Angle</th><th>↑</th><th>↓</th></tr>
+					<tr><td>Likelihood to Ricochet</td><td>↓</td><td>↑</td></tr>
+				</tbody>
 			</table>
 		</>], 
 		HESAP: ['HE/SAP penetration', 'mm', React.createRef(), 
 		<>
 			Angle independent penetration <br/> of HE or SAP shells.
 			<table id='tooltip-table'>
-				<tr><th>HE/SAP penetration</th><th>↑</th><th>↓</th></tr>
-				<tr><td>Penetration</td><td>↑</td><td>↓</td></tr>
+				<tbody>
+					<tr><th>HE/SAP penetration</th><th>↑</th><th>↓</th></tr>
+					<tr><td>Penetration</td><td>↑</td><td>↓</td></tr>
+				</tbody>
 			</table>
 		</>],
 	})

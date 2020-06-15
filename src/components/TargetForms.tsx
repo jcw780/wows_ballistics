@@ -101,9 +101,11 @@ class TargetFormsContainer extends React.Component
             <>
                 Thickness of targeted armor
                 <table id="tooltip-table">
-                    <tr><th colSpan={2}>Examples</th></tr>
-                    <tr><td>Yamato - Belt</td><td>410mm</td></tr>
-                    <tr><td>Iowa - Belt</td><td>307mm</td></tr>
+                    <tbody>
+                        <tr><th colSpan={2}>Examples</th></tr>
+                        <tr><td>Yamato - Belt</td><td>410mm</td></tr>
+                        <tr><td>Iowa - Belt</td><td>307mm</td></tr>
+                    </tbody>
                 </table>
             </>
         ],
@@ -111,9 +113,11 @@ class TargetFormsContainer extends React.Component
             <>
                 Inclination of target armor
                 <table id="tooltip-table">
-                    <tr><th colSpan={2}>Examples</th></tr>
-                    <tr><td>Turtleback</td><td>Inclination {'>'} 0</td></tr>
-                    <tr><td>Standard</td><td>Inclination {'≈'} 0</td></tr>
+                    <tbody>
+                        <tr><th colSpan={2}>Examples</th></tr>
+                        <tr><td>Turtleback</td><td>Inclination {'>'} 0</td></tr>
+                        <tr><td>Standard</td><td>Inclination {'≈'} 0</td></tr>
+                    </tbody>
                 </table>
             </>
         ],
@@ -122,9 +126,11 @@ class TargetFormsContainer extends React.Component
                 Width (Beam) of the targeted ship <br/>
                 *Labeling purposes only
                 <table id="tooltip-table">
-                    <tr><th colSpan={2}>Examples</th></tr>
-                    <tr><td>Yamato - Beam</td><td>38.9m</td></tr>
-                    <tr><td>Iowa - Beam</td><td>33.0m</td></tr>
+                    <tbody>   
+                        <tr><th colSpan={2}>Examples</th></tr>
+                        <tr><td>Yamato - Beam</td><td>38.9m</td></tr>
+                        <tr><td>Iowa - Beam</td><td>33.0m</td></tr>
+                    </tbody> 
                 </table>
             </>    
         ],
