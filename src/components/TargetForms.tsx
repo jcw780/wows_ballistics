@@ -70,6 +70,12 @@ class AngleForm extends React.Component<angleFormProps>{
         );
     }
 }
+enum singleTargetI {name, unit, description};
+type singleTargetT = [string, string, JSX.Element];
+interface targetIntrinsicsT{
+    armor: singleTargetT, inclination: singleTargetT, width: singleTargetT
+}
+
 type multiFormT = 'angles' | 'refAngles';
 interface targetFormsContainerState {
     keys: Record<multiFormT, Set<number>>
@@ -90,10 +96,38 @@ class TargetFormsContainer extends React.Component
         width: 18., angles: Array<number>(8).fill(0),
         refAngles: Array<number>(), refLabels: Array<string>()
     };
-    fixedTargetLabels = {
-        armor: ['Armor Thickness', 'mm'],
-        inclination: ['Armor Inclination', '°'],
-        width: ['Target Width', 'm'],
+    fixedTargetLabels : targetIntrinsicsT = {
+        armor: ['Armor Thickness', 'mm', 
+            <>
+                Thickness of targeted armor
+                <table id="tooltip-table">
+                    <tr><th colSpan={2}>Examples</th></tr>
+                    <tr><td>Yamato - Belt</td><td>410mm</td></tr>
+                    <tr><td>Iowa - Belt</td><td>307mm</td></tr>
+                </table>
+            </>
+        ],
+        inclination: ['Armor Inclination', '°', 
+            <>
+                Inclination of target armor
+                <table id="tooltip-table">
+                    <tr><th colSpan={2}>Examples</th></tr>
+                    <tr><td>Turtleback</td><td>Inclination {'>'} 0</td></tr>
+                    <tr><td>Standard</td><td>Inclination {'≈'} 0</td></tr>
+                </table>
+            </>
+        ],
+        width: ['Target Width', 'm', 
+            <>
+                Width (Beam) of the targeted ship <br/>
+                *Labeling purposes only
+                <table id="tooltip-table">
+                    <tr><th colSpan={2}>Examples</th></tr>
+                    <tr><td>Yamato - Beam</td><td>38.9m</td></tr>
+                    <tr><td>Iowa - Beam</td><td>33.0m</td></tr>
+                </table>
+            </>    
+        ],
     }
     scrollRef : React.RefObject<HTMLHeadingElement> = React.createRef<HTMLHeadingElement>();
     constructor(props){
@@ -204,7 +238,11 @@ class TargetFormsContainer extends React.Component
                         newValue={String(this.targetData[key])} 
                         handleValueChange={this.handleChange} type="number"
                         labelWidth={3} append={value[1]}>
-                            {value[0]}
+                            <GeneralTooltip title={value[0]} content={value[singleTargetI.description]}>
+                                <div>
+                                    {value[0]}
+                                </div>
+                            </GeneralTooltip>
                         </ParameterForm>
                     </Col>
                 );
@@ -214,19 +252,19 @@ class TargetFormsContainer extends React.Component
             <GeneralTooltip title="Target Angles" content={
             <>
                 Angle that target is presenting, adding or changing <br/> values affects post-penetration charts. <br/>
-                Example: <br/>
-                <table>
+                <table id="tooltip-table">
+                    <tr><th colSpan={2}>Examples</th></tr>
                     <tr>
-                        <td>0</td><td>°</td><td>-</td><td>Full Broadside</td>
+                        <td>0°</td><td>Full Broadside</td>
                     </tr>
                     <tr>
-                        <td>45</td><td>°</td><td>-</td><td>Standard Start Ricochet*</td>
+                        <td>45°</td><td>Standard Start Ricochet*</td>
                     </tr>
                     <tr>
-                        <td>60</td><td>°</td><td>-</td><td>Standard Always Ricochet*</td>
+                        <td>60°</td><td>Standard Always Ricochet*</td>
                     </tr>
                     <tr>
-                        <td>90</td><td>°</td><td>-</td><td>Perfectly Angled</td>
+                        <td>90°</td><td>Perfectly Angled</td>
                     </tr>
                 </table>
                 *At 0° angle of fall and 0° armor inclination.

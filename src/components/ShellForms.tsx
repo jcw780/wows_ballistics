@@ -40,7 +40,9 @@ class ShellParameters extends React.Component<shellParametersProps>{
 						handleValueChange={this.handleValueChange}
 						type="number" newValue={String(this.props.formValues[key])} append={value[valuesComponentIndex.unit]}
 						ref={value[valuesComponentIndex.ref]} style={{inputGroup:{width: "50%"}}}>
-							{value[valuesComponentIndex.name]}
+							<GeneralTooltip title={value[valuesComponentIndex.name]} content={value[valuesComponentIndex.description]}>
+								<text>{value[valuesComponentIndex.name]}</text>
+							</GeneralTooltip>
 						</ParameterForm>);
 					})}	
 				</Form>
@@ -99,134 +101,129 @@ export class ShellForms extends React.Component<shellFormsProps> {
 	formLabels : formValuesT = Object.seal({
 		caliber: ['Caliber', 'm', React.createRef(), 
 		<>
-			Caliber of shell. <br/>
-			All else equal: 
-			<table>
-				<tr><td>Effect on:</td><td>Increase</td><td>Decrease</td></tr>
-				<tr><td>Penetration</td><td>↓</td><td>↑</td></tr>
-				<tr><td>Flight Time</td><td>↑</td><td>↓</td></tr>
-				<tr><td>Fall Angle</td><td>↑</td><td>↓</td></tr>
+			Diameter of the shell. <br/> 
+			Effects - All else equal:
+			<table id='tooltip-table'>
+				<tr><th>Caliber              </th><th>↑</th><th>↓</th></tr>
+				<tr><td>Raw Penetration      </td><td>↓</td><td>↑</td></tr>
+				<tr><td>Belt Penetration     </td><td>↓</td><td>↑</td></tr>
+				<tr><td>Flight Time          </td><td>↑</td><td>↓</td></tr>
+				<tr><td>Fall Angle           </td><td>↑</td><td>↓</td></tr>
 				<tr><td>Likelihood to Overpen</td><td>↓</td><td>↑</td></tr>
 			</table>
 		</>], 
 		muzzleVelocity: ['Muzzle Velocity', 'm/s', React.createRef(), 
 		<>
-			Caliber of shell. <br/>
-			All else equal: 
-			<table>
-				<tr><td>Effect on:</td><td>Increase</td><td>Decrease</td></tr>
-				<tr><td>Penetration</td><td>↓</td><td>↑</td></tr>
-				<tr><td>Flight Time</td><td>↑</td><td>↓</td></tr>
-				<tr><td>Fall Angle</td><td>↑</td><td>↓</td></tr>
-				<tr><td>Likelihood to Overpen</td><td>↓</td><td>↑</td></tr>
+			Shell velocity as it leaves the <br/> 
+			barrel. Effects - All else equal: 
+			<table id='tooltip-table'>
+				<tr><th>Muzzle Velocity      </th><th>↑</th><th>↓</th></tr>
+				<tr><td>Raw Penetration      </td><td>↑</td><td>↓</td></tr>
+				<tr><td>Belt Penetration     </td><td>↑</td><td>↓</td></tr>
+				<tr><td>Flight Time          </td><td>↓</td><td>↑</td></tr>
+				<tr><td>Fall Angle           </td><td>↓</td><td>↑</td></tr>
+				<tr><td>Likelihood to Overpen</td><td>↑</td><td>↓</td></tr>
 			</table>
 		</>], 
 		dragCoefficient: ['Drag Coefficient', '(1)', React.createRef(), 
 		<>
-			Caliber of shell. <br/>
-			All else equal: 
-			<table>
-				<tr><td>Effect on:</td><td>Increase</td><td>Decrease</td></tr>
-				<tr><td>Penetration</td><td>↓</td><td>↑</td></tr>
-				<tr><td>Flight Time</td><td>↑</td><td>↓</td></tr>
-				<tr><td>Fall Angle</td><td>↑</td><td>↓</td></tr>
+			Representation of shell's air drag <br/>
+			characteristics. Effects - All else equal: 
+			<table id='tooltip-table'>
+				<tr><th>Drag Coefficient     </th><th>↑</th><th>↓</th></tr>
+				<tr><td>Raw Penetration      </td><td>↓</td><td>↑</td></tr>
+				<tr><td>Belt Penetration     </td><td>↓</td><td>↑</td></tr>
+				<tr><td>Flight Time          </td><td>↑</td><td>↓</td></tr>
+				<tr><td>Fall Angle           </td><td>↑</td><td>↓</td></tr>
 				<tr><td>Likelihood to Overpen</td><td>↓</td><td>↑</td></tr>
 			</table>
 		</>],
 		mass: ['Mass', 'kg', React.createRef(), 
 		<>
-			Caliber of shell. <br/>
-			All else equal: 
-			<table>
-				<tr><td>Effect on:</td><td>Increase</td><td>Decrease</td></tr>
-				<tr><td>Penetration</td><td>↓</td><td>↑</td></tr>
-				<tr><td>Flight Time</td><td>↑</td><td>↓</td></tr>
-				<tr><td>Fall Angle</td><td>↑</td><td>↓</td></tr>
-				<tr><td>Likelihood to Overpen</td><td>↓</td><td>↑</td></tr>
+			Mass of the shell. <br/>
+			Effects - All else equal:
+			<table id='tooltip-table'>
+				<tr><th>Mass                 </th><th>↑</th><th>↓</th></tr>
+				<tr><td>Raw Penetration      </td><td>↑</td><td>↓</td></tr>
+				<tr><td>Belt Penetration     </td><td>↑</td><td>↓</td></tr>
+				<tr><td>Flight Time          </td><td>↓</td><td>↑</td></tr>
+				<tr><td>Fall Angle           </td><td>↓</td><td>↑</td></tr>
+				<tr><td>Likelihood to Overpen</td><td>↑</td><td>↓</td></tr>
 			</table>
 		</>], 
 		krupp: ['Krupp', '(1)', React.createRef(), 
 		<>
-			Caliber of shell. <br/>
-			All else equal: 
-			<table>
-				<tr><td>Effect on:</td><td>Increase</td><td>Decrease</td></tr>
-				<tr><td>Penetration</td><td>↓</td><td>↑</td></tr>
-				<tr><td>Flight Time</td><td>↑</td><td>↓</td></tr>
-				<tr><td>Fall Angle</td><td>↑</td><td>↓</td></tr>
-				<tr><td>Likelihood to Overpen</td><td>↓</td><td>↑</td></tr>
+			Constant used to directly scale <br/>
+			penetration. Effects - All else equal:
+			<table id='tooltip-table'>
+				<tr><th>Krupp                </th><th>↑</th><th>↓</th></tr>
+				<tr><td>Raw Penetration      </td><td>↑</td><td>↓</td></tr>
+				<tr><td>Belt Penetration     </td><td>↑</td><td>↓</td></tr>
+				<tr><td>Flight Time          </td><td>-</td><td>-</td></tr>
+				<tr><td>Fall Angle           </td><td>-</td><td>-</td></tr>
+				<tr><td>Likelihood to Overpen</td><td>↑</td><td>↓</td></tr>
 			</table>
 		</>], 
 		fusetime: ['Fusetime', 's', React.createRef(), 
 		<>
-			Caliber of shell. <br/>
-			All else equal: 
-			<table>
-				<tr><td>Effect on:</td><td>Increase</td><td>Decrease</td></tr>
-				<tr><td>Penetration</td><td>↓</td><td>↑</td></tr>
-				<tr><td>Flight Time</td><td>↑</td><td>↓</td></tr>
-				<tr><td>Fall Angle</td><td>↑</td><td>↓</td></tr>
-				<tr><td>Likelihood to Overpen</td><td>↓</td><td>↑</td></tr>
+			Time it takes for the shell to <br/> 
+			explode after fusing. <br/>
+			Effects - All else equal:
+			<table id='tooltip-table'>
+				<tr><th>Fusetime             </th><th>↑</th><th>↓</th></tr>
+				<tr><td>Likelihood to Overpen</td><td>↑</td><td>↓</td></tr>
 			</table>
 		</>], 
 		threshold: ['Fusing Threshold', 'mm', React.createRef(), 
 		<>
-			Caliber of shell. <br/>
-			All else equal: 
-			<table>
-				<tr><td>Effect on:</td><td>Increase</td><td>Decrease</td></tr>
-				<tr><td>Penetration</td><td>↓</td><td>↑</td></tr>
-				<tr><td>Flight Time</td><td>↑</td><td>↓</td></tr>
-				<tr><td>Fall Angle</td><td>↑</td><td>↓</td></tr>
-				<tr><td>Likelihood to Overpen</td><td>↓</td><td>↑</td></tr>
+			Thickness of armor needed for <br/>
+			fusing to occur. <br/>
+			Effects - All else equal:
+			<table id='tooltip-table'>
+				<tr><th>Fusing Threshold     </th><th>↑</th><th>↓</th></tr>
+				<tr><td>Likelihood to Overpen</td><td>↑</td><td>↓</td></tr>
 			</table>
 		</>], 
 		normalization: ['Normalization', '°', React.createRef(), 
 		<>
-			Caliber of shell. <br/>
-			All else equal: 
-			<table>
-				<tr><td>Effect on:</td><td>Increase</td><td>Decrease</td></tr>
-				<tr><td>Penetration</td><td>↓</td><td>↑</td></tr>
-				<tr><td>Flight Time</td><td>↑</td><td>↓</td></tr>
-				<tr><td>Fall Angle</td><td>↑</td><td>↓</td></tr>
-				<tr><td>Likelihood to Overpen</td><td>↓</td><td>↑</td></tr>
+			Ability of the shell to reduce <br/> 
+			impact angle relative to the <br/>
+			target. Effects - All else equal:
+			<table id='tooltip-table'>
+				<tr><th>Normalization        </th><th>↑</th><th>↓</th></tr>
+				<tr><td>Raw Penetration      </td><td>-</td><td>-</td></tr>
+				<tr><td>Belt Penetration     </td><td>↑</td><td>↓</td></tr>
+				<tr><td>Flight Time          </td><td>-</td><td>-</td></tr>
+				<tr><td>Fall Angle           </td><td>-</td><td>-</td></tr>
+				<tr><td>Likelihood to Overpen</td><td>↑</td><td>↓</td></tr>
 			</table>
 		</>], 
 		ra0: ['Start Ricochet', '°', React.createRef(), 
 		<>
-			Caliber of shell. <br/>
-			All else equal: 
-			<table>
-				<tr><td>Effect on:</td><td>Increase</td><td>Decrease</td></tr>
-				<tr><td>Penetration</td><td>↓</td><td>↑</td></tr>
-				<tr><td>Flight Time</td><td>↑</td><td>↓</td></tr>
-				<tr><td>Fall Angle</td><td>↑</td><td>↓</td></tr>
-				<tr><td>Likelihood to Overpen</td><td>↓</td><td>↑</td></tr>
+			Impact angle - relative to target - at <br/> 
+			which shells start to have a chance <br/> 
+			to ricochet. Effects - All else equal:
+			<table id='tooltip-table'>
+				<tr><th>Start Ricochet Angle</th><th>↑</th><th>↓</th></tr>
+				<tr><td>Likelihood to Ricochet</td><td>↓</td><td>↑</td></tr>
 			</table>
 		</>], 
 		ra1: ['Always Ricochet', '°', React.createRef(), 
 		<>
-			Caliber of shell. <br/>
-			All else equal: 
-			<table>
-				<tr><td>Effect on:</td><td>Increase</td><td>Decrease</td></tr>
-				<tr><td>Penetration</td><td>↓</td><td>↑</td></tr>
-				<tr><td>Flight Time</td><td>↑</td><td>↓</td></tr>
-				<tr><td>Fall Angle</td><td>↑</td><td>↓</td></tr>
-				<tr><td>Likelihood to Overpen</td><td>↓</td><td>↑</td></tr>
+			Impact angle - relative to target - <br/> 
+			at which shells are guaranteed <br/> 
+			to ricochet. Effects - All else equal:
+			<table id='tooltip-table'>
+				<tr><th>Always Ricochet Angle</th><th>↑</th><th>↓</th></tr>
+				<tr><td>Likelihood to Ricochet</td><td>↓</td><td>↑</td></tr>
 			</table>
 		</>], 
 		HESAP: ['HE/SAP penetration', 'mm', React.createRef(), 
 		<>
-			Caliber of shell. <br/>
-			All else equal: 
-			<table>
-				<tr><td>Effect on:</td><td>Increase</td><td>Decrease</td></tr>
-				<tr><td>Penetration</td><td>↓</td><td>↑</td></tr>
-				<tr><td>Flight Time</td><td>↑</td><td>↓</td></tr>
-				<tr><td>Fall Angle</td><td>↑</td><td>↓</td></tr>
-				<tr><td>Likelihood to Overpen</td><td>↓</td><td>↑</td></tr>
+			Angle independent penetration <br/> of HE or SAP shells.
+			<table id='tooltip-table'>
+				<tr><th>HE/SAP penetration</th><th>↑</th><th>↓</th></tr>
+				<tr><td>Penetration</td><td>↑</td><td>↓</td></tr>
 			</table>
 		</>],
 	})

@@ -278,7 +278,10 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 [
                     {title: configImpact[0][singleChartIndex.name], axes: [
                             {id: 'Penetration', axLabel: 'Belt Penetration (mm)', 
-                            lines: [{lineLabel: 'Effective Penetration: ', data: 'ePenHN'}]},
+                            lines: [
+                                {lineLabel: 'Effective Penetration: ', data: 'ePenHN'},
+                                //{lineLabel: 'Raw Penetration: ', data: 'rawPen'}
+                            ]},
                             {id: 'Angle', axLabel: 'Belt Impact Angle (°)', 
                             lines: [{lineLabel: 'Impact Angle: ', data: 'impactAHD'}]}
                         ],
@@ -395,17 +398,18 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 };
             }
         }
-        const defaultColorFunction = (axisIndex: number, lineIndex: number) => {return axisIndex + lineIndex;}
         const assignPredefined = (shellIndex: number, name: string, target, configs : configsT[], 
-            graphData, colors : string[], colorFunction=defaultColorFunction) => {
+            graphData, colors : string[]) => {
             target.forEach((chart : singleChartType, rowIndex) => {
+                let counter = 0;
                 configs[rowIndex].axes.forEach((axis, axisIndex) => {
                     axis.lines.forEach((line, lineIndex) => {
                         chart[singleChartIndex.config].data.datasets.push(impactAngleLine(
                             graphData[line.data][shellIndex], 
                             line.lineLabel + name, 
                             axis.id, 
-                            colors[defaultColorFunction(axisIndex, lineIndex)]));
+                            colors[counter]));
+                        counter++;
                     })
                 })
             })
@@ -463,7 +467,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             <>
                 <GeneralTooltip title="Impact Charts" content={
                     <>
-                    <table>
+                    <table id="tooltip-table">
                         <tr><td>Effective Penetration*</td><td>Belt Impact Angle</td></tr>
                         <tr><td>Effective Deck Penetration*</td><td>Deck Impact Angle</td></tr>
                         <tr><td>Impact Velocity</td><td>Time to Target**</td></tr>
