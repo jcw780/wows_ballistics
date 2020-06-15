@@ -302,7 +302,6 @@ export class ShellForms extends React.Component<shellFormsProps> {
 		});
 	}
 	toggleGraph = (event) => {
-		console.log(event.target.checked);
 		this.graph = event.target.checked;
 	}
 	render() {
@@ -428,7 +427,6 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 			default: defaultData, 
 			data: shellData
 		}
-		console.log(data);
 		this.copyTemp = data; this.copied = true;
 		this.addShip();
 	}
