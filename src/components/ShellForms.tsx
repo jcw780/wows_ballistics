@@ -7,7 +7,7 @@ import DefaultShips from './DefaultForms'
 import DownloadButton from './DownloadButton';
 import GeneralTooltip from './Tooltips';
 
-const lodash = require('lodash');
+const cloneDeep = require('lodash.clonedeep');
 
 enum valuesComponentIndex {name, unit, ref, description}
 type valuesComponent = [string, string,React.RefObject<ParameterForm>, string | JSX.Element];
@@ -513,7 +513,7 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 						deleteShip={this.deleteShip} copyShip={this.copyShip}
 						keyProp={value} ref={this.shellRefs[i]} reset={this.reset} 
 						settings={this.props.settings} size={this.state.keys.size}
-						defaultData={lodash.cloneDeep(this.copyTemp.default)} formData={lodash.cloneDeep(this.copyTemp.data)} copied={true}/>
+						defaultData={cloneDeep(this.copyTemp.default)} formData={cloneDeep(this.copyTemp.data)} copied={true}/>
 					</Col>
 				)
 				return returnValue;

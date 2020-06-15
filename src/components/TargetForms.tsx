@@ -150,7 +150,6 @@ class TargetFormsContainer extends React.Component
         let index: number = 0;
         if(this.deletedKeys[id].length > 0){index = this.deletedKeys[id].pop()!;}
         else{index = this.state.keys[id].size;}
-        //this.targetData.angles.push(this.targetData.angles.length * 5);
 		this.setState((current) => {
             let set = current.keys[id]; set.add(index);
 			return {...current, keys : {...current.keys, id: set}};
@@ -159,8 +158,7 @@ class TargetFormsContainer extends React.Component
     deleteForm = (key: number, index: number, id : multiFormT) : void => {
         let set = this.state.keys[id];
         set.delete(key); this.deletedKeys[id].push(key);
-        //this.targetData[id].splice(index, 1);
-		this.setState((current) => {return {...current, keys : {...current.keys, [id]: set} }});
+		this.setState((current) => {return {...current, keys : {...current.keys, id: set} }});
     }
 
     //Target Angles
