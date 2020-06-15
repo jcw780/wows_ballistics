@@ -215,18 +215,18 @@ class TargetFormsContainer extends React.Component
             <>
                 Angle that target is presenting, adding or changing <br/> values affects post-penetration charts. <br/>
                 Example: <br/>
-                <table>
+                <table id="tooltip-table">
                     <tr>
-                        <td>0</td><td>°</td><td>-</td><td>Full Broadside</td>
+                        <td>0°</td><td>Full Broadside</td>
                     </tr>
                     <tr>
-                        <td>45</td><td>°</td><td>-</td><td>Standard Start Ricochet*</td>
+                        <td>45°</td><td>Standard Start Ricochet*</td>
                     </tr>
                     <tr>
-                        <td>60</td><td>°</td><td>-</td><td>Standard Always Ricochet*</td>
+                        <td>60°</td><td>Standard Always Ricochet*</td>
                     </tr>
                     <tr>
-                        <td>90</td><td>°</td><td>-</td><td>Perfectly Angled</td>
+                        <td>90°</td><td>Perfectly Angled</td>
                     </tr>
                 </table>
                 *At 0° angle of fall and 0° armor inclination.
