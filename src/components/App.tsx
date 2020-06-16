@@ -237,27 +237,27 @@ class App extends React.Component<{},{}> {
 	}	
 	render () {
 		return (
-			<div className="App">
-				<NavbarCustom links={this.links} ref={this.navRef}/>
-				<h1 style={{textAlign: 'center'}}>World of Warships Ballistics Calculator</h1>
-				<hr/>
-				<ShellFormsContainer ref={this.SFCref} settings={this.settings}/>
-				<hr/>
-				<TargetFormsContainer ref={this.TFCref}/>
-				<hr/>
-				<SettingsBar settings={this.settings} ref={this.Settingsref} updateColors={this.updateColors}/>
-				<hr/>
-				<Row>
-					<Col/>
-					<Col sm="9">
-						<Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem"}}
-					variant="secondary" onClick={this.generate}>Make Graphs!</Button>
-					</Col>
-					<Col/>
-				</Row>
-				<hr/>
-				<ChartGroup ref={this.graphsRef} settings={this.settings} links={this.links} onUpdate={this.onUpdate}/>
-			</div>
+<div className="App">
+	<NavbarCustom links={this.links} ref={this.navRef}/>
+	<h1 style={{textAlign: 'center'}}>World of Warships Ballistics Calculator</h1>
+	<hr/>
+	<ShellFormsContainer ref={this.SFCref} settings={this.settings}/>
+	<hr/>
+	<TargetFormsContainer ref={this.TFCref}/>
+	<hr/>
+	<SettingsBar settings={this.settings} ref={this.Settingsref} updateColors={this.updateColors}/>
+	<hr/>
+	<Row>
+		<Col/>
+		<Col sm="9">
+			<Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem"}}
+		variant="secondary" onClick={this.generate}>Make Graphs!</Button>
+		</Col>
+		<Col/>
+	</Row>
+	<hr/>
+	<ChartGroup ref={this.graphsRef} settings={this.settings} links={this.links} onUpdate={this.onUpdate}/>
+</div>
 		);
 	}
 	componentDidMount(){

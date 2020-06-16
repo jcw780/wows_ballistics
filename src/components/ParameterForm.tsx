@@ -6,7 +6,7 @@ import * as T from './commonTypes';
 interface parameterFormState {value: string, invalid: boolean}
 interface parameterFormProps {
 	newValue: string, controlId: string | number, handleValueChange: T.handleValueChangeT,
-	type: string, children: JSX.Element | string, style: T.styleT
+	type: string, children: JSX.Element | string, style: T.styleT, ariaLabel: string,
 	labelWidth: number, placeholder: string, append: string//counter?: number[]
 }
 export class ParameterForm extends React.Component<parameterFormProps, parameterFormState>{
@@ -35,19 +35,20 @@ export class ParameterForm extends React.Component<parameterFormProps, parameter
 		this.setState((state) => {return {value: newValue, invalid: false};});
     }
 	render(){
+		const props = this.props, state = this.state, style = props.style;
 		return (
-	<Form.Group className="form-inline" style={this.props.style.formGroup}>
-		<Form.Label column sm={this.props.labelWidth} style={this.props.style.formLabel}>{this.props.children}</Form.Label>
-		<InputGroup style={this.props.style.inputGroup}>
-			<Form.Control type={this.props.type} value={this.state.value} 
-			style={this.props.style.formControl} isInvalid={this.state.invalid}
-			placeholder={this.props.placeholder} onChange={this.handleChange}
-			aria-describedby="addon"/>
-			<InputGroup.Append style={this.props.style.inputGroupAppend}>
-				{this.appendText}
-			</InputGroup.Append>
-		</InputGroup>
-	</Form.Group>
+<Form.Group className="form-inline" style={style.formGroup}>
+	<Form.Label column sm={props.labelWidth} style={style.formLabel}>{props.children}</Form.Label>
+	<InputGroup style={props.style.inputGroup}>
+		<Form.Control type={props.type} value={state.value} 
+		style={style.formControl} isInvalid={state.invalid}
+		placeholder={props.placeholder} onChange={this.handleChange}
+		aria-describedby="addon" aria-label={props.ariaLabel}/>
+		<InputGroup.Append style={style.inputGroupAppend}>
+			{this.appendText}
+		</InputGroup.Append>
+	</InputGroup>
+</Form.Group>
 		);
 	}
 }
