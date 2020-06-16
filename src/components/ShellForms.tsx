@@ -38,13 +38,16 @@ class ShellParameters extends React.Component<shellParametersProps>{
 <>
 	<Form>
 		{Object.entries(props.formLabels).map(([key, value] : [string, valuesComponent], i) => {
-			return (<ParameterForm key={i} controlId={key}
-			handleValueChange={this.handleValueChange} ariaLabel={value[valuesComponentIndex.name]}
-			type="number" newValue={String(props.formValues[key])} append={value[valuesComponentIndex.unit]}
-			ref={value[valuesComponentIndex.ref]} style={{inputGroup:{width: "50%"}}}>
-				<GeneralTooltip title={value[valuesComponentIndex.name]} content={value[valuesComponentIndex.description]}>
-					<text>{value[valuesComponentIndex.name]}</text>
-				</GeneralTooltip>
+			const name = value[valuesComponentIndex.name];
+			return (
+			<ParameterForm key={i} controlId={key} ref={value[valuesComponentIndex.ref]}
+				newValue={String(props.formValues[key])}
+				handleValueChange={this.handleValueChange} 
+				type="number" append={value[valuesComponentIndex.unit]}
+				style={{inputGroup:{width: "50%"}}} ariaLabel={name}>
+					<GeneralTooltip title={name} content={value[valuesComponentIndex.description]}>
+						<text>{name}</text>
+					</GeneralTooltip>
 			</ParameterForm>);
 		})}	
 	</Form>
@@ -335,10 +338,11 @@ export class ShellForms extends React.Component<shellFormsProps> {
 	<Modal.Body style={{padding: "0.5rem"}}>
 		<Container style={{padding: 0}}>
 		<Col sm='12' style={{padding: 0}}>
-			<ParameterForm controlId='shipName' ariaLabel="Shell Label"
+			<ParameterForm controlId='shipName' ref={this.nameForm}
+			newValue={this.formData.name}
 			handleValueChange={this.handleNameChange}
-			type="text" newValue={this.formData.name} labelWidth={3}
-			ref={this.nameForm} style={{formControl: {width: '70%'}, formGroup: {marginBottom: ".5rem"}}}>
+			type="text" labelWidth={3} ariaLabel="Shell Label"
+			style={{formControl: {width: '70%'}, formGroup: {marginBottom: ".5rem"}}}>
 				Shell Label
 			</ParameterForm>
 			<Row style={{marginBottom: ".5rem"}}>
@@ -516,7 +520,7 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 						settings={this.props.settings} size={this.state.keys.size}
 						defaultData={cloneDeep(this.copyTemp.default)} formData={cloneDeep(this.copyTemp.data)} copied={true}/>
 					</Col>
-				)
+				) //pass a deep copied version so clones target the correct shell form
 				return returnValue;
 			}else{
 				return stateKeys.map((value, i) => {

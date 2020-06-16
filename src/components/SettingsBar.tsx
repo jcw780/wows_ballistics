@@ -78,8 +78,8 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
                     controlId={value[0]} key={i} type="number" 
                     handleValueChange={handleGraphChange} 
                     newValue={String(settings.distance[value[0]])} 
-                    append="m" ariaLabel={value[1]}
-                    labelWidth={3} style={rangeAxisFormStyle}>
+                    append="m" 
+                    labelWidth={3} style={rangeAxisFormStyle} ariaLabel={value[1]}>
                         {value[1]}
                     </ParameterForm>
                 );
@@ -102,8 +102,11 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
             return forms.calculations.launchAngle.map((value, i) => {
                 const initialValue = calculationSettings.launchAngle[value[0]];
                 return(
-                    <ParameterForm newValue={String(initialValue)} controlId={value[0]} key={i} ariaLabel={value[1]}
-                    type="number" handleValueChange={handleCalculationChange} labelWidth={3} append={value[2]}>
+                    <ParameterForm 
+                    controlId={value[0]} key={i} type="number" 
+                    newValue={String(initialValue)} 
+                    handleValueChange={handleCalculationChange} 
+                    labelWidth={3} append={value[2]} ariaLabel={value[1]}>
                         {value[1]}
                     </ParameterForm>
                 );
@@ -178,20 +181,26 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
                         </Col>
                     <Col sm="1"/>
                     </Row>
-                    <ParameterForm newValue={String(format.rounding)} controlId="rounding" 
-                    ariaLabel="Tooltip Rounding"
-                    type="number" handleValueChange={handleRoundingChange} labelWidth={3} append="dp">
+                    <ParameterForm 
+                        controlId="rounding" ariaLabel="Tooltip Rounding" type="number" 
+                        newValue={String(format.rounding)}
+                        handleValueChange={handleRoundingChange} 
+                        labelWidth={3} append="dp">
                         Tooltip Rounding
                     </ParameterForm>
                     <h4>Color Generation</h4>
-                    <ParameterForm newValue={String(colorSettings.saturation * 100)} controlId="saturation"
-                    ariaLabel="Saturation"
-                    type="number" handleValueChange={handleColorChange} labelWidth={3} append="%">
+                    <ParameterForm
+                        controlId="saturation" ariaLabel="Saturation" type="number" 
+                        newValue={String(colorSettings.saturation * 100)}
+                        handleValueChange={handleColorChange} 
+                        labelWidth={3} append="%">
                         Saturation
                     </ParameterForm>
-                    <ParameterForm newValue={String(colorSettings.light * 100)} controlId="light"
-                    ariaLabel="Light"
-                    type="number" handleValueChange={handleColorChange} labelWidth={3} append="%">
+                    <ParameterForm 
+                        controlId="light" ariaLabel="Light" type="number" 
+                        newValue={String(colorSettings.light * 100)} 
+                        handleValueChange={handleColorChange} 
+                        labelWidth={3} append="%">
                         Light
                     </ParameterForm>
                 </Col>

@@ -189,7 +189,7 @@ class TargetFormsContainer extends React.Component
     onRefLabelChange = (value: string, id : string) : void => {this.targetData.refLabels[id] = value;}
 
     render(){
-        const stateKeys = this.state.keys;
+        const stateKeys = this.state.keys, targetData = this.targetData;
         const generateAngleElements = (elementsPerColumn : number) => {
             let angleElements : Array<Array<JSX.Element>> = [];
             Array.from(stateKeys.angles).forEach((key, i) => {
@@ -197,7 +197,7 @@ class TargetFormsContainer extends React.Component
                 if(i % elementsPerColumn === 0){angleElements.push([]);}
                 angleElements[columnIndex].push(
                     <AngleForm key={key} keyProp={key} index={i} 
-                    newValue={String(this.targetData.angles[i])} deleteElement={this.deleteAngle}
+                    newValue={String(targetData.angles[i])} deleteElement={this.deleteAngle}
                     handleValueChange={this.handleAngleChange}
                     label={`Angle ${i + 1}`}/> //start at 1 for display
                 );
@@ -242,9 +242,9 @@ class TargetFormsContainer extends React.Component
                 return (
                     <Col key={i}>
                         <ParameterForm controlId={key}
-                        newValue={String(this.targetData[key])} 
+                        newValue={String(targetData[key])} 
                         handleValueChange={this.handleChange} type="number"
-                        labelWidth={3} append={value[1]} ariaLabel={value[0]}>
+                        labelWidth={3} append={value[1]} ariaLabel={value[0]} style={{formControl: {width: "50%"}}}>
                             <GeneralTooltip title={value[0]} content={value[singleTargetI.description]}>
                                 <div>{value[0]}</div>
                             </GeneralTooltip>
@@ -261,16 +261,16 @@ class TargetFormsContainer extends React.Component
                 post-penetration charts. <br/>
                 <table id="tooltip-table">
                     <tbody>
-                        <tr><th colSpan={2}>Examples</th></tr>
-                        <tr><td>0°</td><td>Full Broadside</td></tr>
-                        <tr><td>45°</td><td>Standard Start Ricochet*</td></tr>
+                        <tr><td>0° </td><td>Full Broadside           </td></tr>
+                        <tr><td>45°</td><td>Standard Start Ricochet* </td></tr>
                         <tr><td>60°</td><td>Standard Always Ricochet*</td></tr>
-                        <tr><td>90°</td><td>Perfectly Angled</td></tr>
+                        <tr><td>90°</td><td>Perfectly Angled         </td></tr>
                     </tbody>
                 </table>
                 *0° angle of fall and armor inclination.
-            </>}
-            ><h3 style={{display:"inline-block"}}>Target Angles</h3></GeneralTooltip>
+            </>}>
+                <h3 style={{display:"inline-block"}}>Target Angles</h3>
+            </GeneralTooltip>
             <Container style={{marginBottom: "1rem"}}>
                 <Row>{renderAngleElements(angleElements)}</Row>
             </Container>
@@ -282,8 +282,10 @@ class TargetFormsContainer extends React.Component
             </Row>
             <GeneralTooltip title="Angle Label" content={
                 <>User generated labels for angle charts. 
-                <br/>These do not affect calculation values.</>
-            }><h3 style={{display:"inline-block"}}>Angle Labels</h3></GeneralTooltip>
+                <br/>These do not affect calculation values.</>}
+            >
+                <h3 style={{display:"inline-block"}}>Angle Labels</h3>
+            </GeneralTooltip>
             <Container style={{marginBottom: "1rem"}}>
                 <Row>{renderAngleElements(refAngleElements)}</Row>
             </Container>
