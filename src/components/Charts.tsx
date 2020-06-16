@@ -52,8 +52,7 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
 <>
     <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
         onClick={this.toggleCollapse} ref={this.scrollRef} variant="dark"
-        aria-controls="collapseChart" 
-        aria-expanded={this.state.open}
+        aria-controls="collapseChart" aria-expanded={this.state.open}
         className={this.state.open === true ? 'active' : ''}
     >{this.titles[Number(!this.state.open)] + this.props.title}</Button>
     <Collapse in={this.state.open}>
@@ -459,8 +458,11 @@ export class ChartGroup extends React.Component<chartGroupProps>{
     render(){
         const addChart = (target : T.chartT) => {
             return this.chartConfigs[target].map((value, i) => {
-                return (<SingleChart config={value[singleChartIndex.config]} dimensions={this.dimensions} 
-                    ref={value[singleChartIndex.ref]} key={i} title={value[singleChartIndex.name]}/>);
+                return (<SingleChart 
+                    ref={value[singleChartIndex.ref]} key={i} 
+                    config={value[singleChartIndex.config]} 
+                    dimensions={this.dimensions} 
+                    title={value[singleChartIndex.name]}/>);
             });
         }
         return(
