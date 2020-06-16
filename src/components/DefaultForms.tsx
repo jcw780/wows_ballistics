@@ -67,7 +67,6 @@ const fetchJsonData = async (target) => {
             }
             return response.json();
         })
-        .then((data) => {return data;})
         .catch((error) => {
             console.error('There has been a problem with your fetch operation:', error);
         }
@@ -82,15 +81,16 @@ class DefaultShips extends React.Component
 <{sendDefault: Function, reset: Function, index: number, keyProp: number, defaultData: T.defaultDataT}> {
 	defaultForms : defaultFormType = Object.seal({
 		version:   ['Version'   , React.createRef<DefaultForm>(), 0],
-		nation:    ['Nation'    , React.createRef<DefaultForm>(), 0], 
-		shipType:  ['Type'      , React.createRef<DefaultForm>(), 0], 
-		ship:      ['Ship'      , React.createRef<DefaultForm>(), 0], 
-		artillery: ['Artillery' , React.createRef<DefaultForm>(), 0], 
-		shellType: ['Shell Type', React.createRef<DefaultForm>(), 0],
+		nation:    ['Nation'    , React.createRef<DefaultForm>(), 1], 
+		shipType:  ['Type'      , React.createRef<DefaultForm>(), 2], 
+		ship:      ['Ship'      , React.createRef<DefaultForm>(), 3], 
+		artillery: ['Artillery' , React.createRef<DefaultForm>(), 4], 
+		shellType: ['Shell Type', React.createRef<DefaultForm>(), 5],
 	})
 	changeForm = (value, id) => {
 		//this.defaultForms[id][singleFormIndex.value] = value;
-		this.props.defaultData[id][T.singleDefaultDataIndex.value] = value;
+		const defaultData = this.props.defaultData;
+		defaultData[id][T.singleDefaultDataIndex.value] = value;
 		const queryIndex = this.defaultForms[id][singleFormIndex.queryIndex];
 		const queries = {
 			0: this.queryNation, 1: this.queryType, 2: this.queryShip,
@@ -114,30 +114,34 @@ class DefaultShips extends React.Component
 		});
 	}
 	queryNation = () => {
-		fetchJson(dataURL + this.props.defaultData.version[T.singleDefaultDataIndex.value] + "/nations.json", 
+		const defaultData = this.props.defaultData;
+		fetchJson(dataURL + defaultData.version[T.singleDefaultDataIndex.value] + "/nations.json", 
 			(data) => {this.updateForm('nation', data);}
 		);
 	}
 	queryType = () => {
-		fetchJson(dataURL + this.props.defaultData.version[T.singleDefaultDataIndex.value] + "/" + 
-		this.props.defaultData.nation[T.singleDefaultDataIndex.value] + "/shiptypes.json",
+		const defaultData = this.props.defaultData;
+		fetchJson(dataURL + defaultData.version[T.singleDefaultDataIndex.value] + "/" + 
+		defaultData.nation[T.singleDefaultDataIndex.value] + "/shiptypes.json",
 			(data) => {this.updateForm('shipType', data);}
 		);
 	}
 	queryShip = async () => {
+		const defaultData = this.props.defaultData;
 		const data = await fetchJsonData(
-			dataURL + this.props.defaultData.version[T.singleDefaultDataIndex.value] + "/" + 
-			this.props.defaultData.nation[T.singleDefaultDataIndex.value] + 
-			"/" + this.props.defaultData.nation[T.singleDefaultDataIndex.value] + "_" + 
-			this.props.defaultData.shipType[T.singleDefaultDataIndex.value] + ".json");
-		this.props.defaultData.queriedData = data; 
+			dataURL + defaultData.version[T.singleDefaultDataIndex.value] + "/" + 
+			defaultData.nation[T.singleDefaultDataIndex.value] + 
+			"/" + defaultData.nation[T.singleDefaultDataIndex.value] + "_" + 
+			defaultData.shipType[T.singleDefaultDataIndex.value] + ".json");
+		defaultData.queriedData = data; 
 		let sorted = Object.keys(data);
 		sorted.sort((a, b) => {return data[a]['Tier'] - data[b]['Tier']}); 
 		this.updateForm('ship', sorted);
 	}
 	queryArtillery = () => {
-		const shipName : string = this.props.defaultData.ship[T.singleDefaultDataIndex.value];
-		const shipInfo = this.props.defaultData.queriedData[shipName]; 
+		const defaultData = this.props.defaultData;
+		const shipName : string = defaultData.ship[T.singleDefaultDataIndex.value];
+		const shipInfo = defaultData.queriedData[shipName]; 
 		let options: string[] = [];
 		Object.keys(shipInfo!).forEach((key : string) : void => {
 			if(key.includes('Artillery')){options.push(key);}
@@ -145,29 +149,31 @@ class DefaultShips extends React.Component
 		this.updateForm('artillery', options);
 	}
 	queryShellType = () => {
-		const input = this.props.defaultData.queriedData[this.props.defaultData.ship[T.singleDefaultDataIndex.value]]
+		const defaultData = this.props.defaultData;
+		const input = defaultData.queriedData[this.props.defaultData.ship[T.singleDefaultDataIndex.value]]
 		[this.props.defaultData.artillery[T.singleDefaultDataIndex.value]];
 		this.updateForm('shellType', Object.keys(input));
 	}
 	sendData = () => {
+		const defaultData = this.props.defaultData;
 		this.props.sendDefault(
-			this.props.defaultData.queriedData[this.props.defaultData.ship[T.singleDefaultDataIndex.value]]
-			[this.props.defaultData.artillery[T.singleDefaultDataIndex.value]]
-			[this.props.defaultData.shellType[T.singleDefaultDataIndex.value]], 
-			this.props.defaultData.ship[T.singleDefaultDataIndex.value]
+			defaultData.queriedData[defaultData.ship[T.singleDefaultDataIndex.value]]
+			[defaultData.artillery[T.singleDefaultDataIndex.value]]
+			[defaultData.shellType[T.singleDefaultDataIndex.value]], 
+			defaultData.ship[T.singleDefaultDataIndex.value]
 		);
 	}
 	render(){
+		const defaultData = this.props.defaultData;
 		return(
-			<Container style={{paddingLeft: 0, paddingRight: 0}}>
-				{Object.entries(this.defaultForms).map( ([k, v], i) => {
-					v[singleFormIndex.queryIndex] = i;
-					return (<DefaultForm label={v[singleFormIndex.name]} key={i} controlId={k}
-					handleValueChange={this.changeForm} ref={v[singleFormIndex.ref]} keyProp={this.props.keyProp}
-					defaultValue={this.props.defaultData[k][T.singleDefaultDataIndex.value]}
-					defaultOptions={this.props.defaultData[k][T.singleDefaultDataIndex.options]}> </DefaultForm>);
-				})}
-			</Container>
+<Container style={{paddingLeft: 0, paddingRight: 0}}>
+	{Object.entries(this.defaultForms).map( ([name, v], i) => {
+		return (<DefaultForm label={v[singleFormIndex.name]} key={i} controlId={name}
+		handleValueChange={this.changeForm} ref={v[singleFormIndex.ref]} keyProp={this.props.keyProp}
+		defaultValue={defaultData[name][T.singleDefaultDataIndex.value]}
+		defaultOptions={defaultData[name][T.singleDefaultDataIndex.options]}> </DefaultForm>);
+	})}
+</Container>
 		);
 	}
 	//componentDidUpdate(){}

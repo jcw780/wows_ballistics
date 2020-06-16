@@ -21,39 +21,41 @@ class ShellParameters extends React.Component<shellParametersProps>{
 	downloadRef = React.createRef<DownloadButton>();
 	handleValueChange = (value, k) => {this.props.handleValueChange(value, k);}
 	updateShells() {
-		Object.entries(this.props.formLabels).forEach(([key, value] : any): void => {
-			value[valuesComponentIndex.ref].current.updateValue(this.props.formValues[key]);
+		const props = this.props;
+		Object.entries(props.formLabels).forEach(([key, value] : any): void => {
+			value[valuesComponentIndex.ref].current.updateValue(props.formValues[key]);
 		});
 	}
 	updateDownloadJSON = () => {
-		const selectedData = Object.assign({}, this.props.formValues);
+		const formValues = this.props.formValues, selectedData = cloneDeep(formValues);
 		delete selectedData.colors;
         const url = URL.createObjectURL(new Blob([JSON.stringify(selectedData)], {type: 'text/json;charset=utf-8'}));
-        this.downloadRef.current!.update(url, this.props.formValues.name + '.json');
+        this.downloadRef.current!.update(url, formValues.name + '.json');
     }
 	render() {
+		const props = this.props;
 		return(
-			<>
-				<Form>
-					{Object.entries(this.props.formLabels).map(([key, value] : [string, valuesComponent], i) => {
-						return (<ParameterForm key={i} controlId={key}
-						handleValueChange={this.handleValueChange} ariaLabel={value[valuesComponentIndex.name]}
-						type="number" newValue={String(this.props.formValues[key])} append={value[valuesComponentIndex.unit]}
-						ref={value[valuesComponentIndex.ref]} style={{inputGroup:{width: "50%"}}}>
-							<GeneralTooltip title={value[valuesComponentIndex.name]} content={value[valuesComponentIndex.description]}>
-								<text>{value[valuesComponentIndex.name]}</text>
-							</GeneralTooltip>
-						</ParameterForm>);
-					})}	
-				</Form>
-				<Row>
-					<Col sm="3"/>
-					<Col sm="6">
-					<DownloadButton label="Download Raw" updateData={this.updateDownloadJSON} ref={this.downloadRef} style={{width: "100%"}}/>
-					</Col>
-					<Col sm="3"/>
-				</Row>
-			</>
+<>
+	<Form>
+		{Object.entries(props.formLabels).map(([key, value] : [string, valuesComponent], i) => {
+			return (<ParameterForm key={i} controlId={key}
+			handleValueChange={this.handleValueChange} ariaLabel={value[valuesComponentIndex.name]}
+			type="number" newValue={String(props.formValues[key])} append={value[valuesComponentIndex.unit]}
+			ref={value[valuesComponentIndex.ref]} style={{inputGroup:{width: "50%"}}}>
+				<GeneralTooltip title={value[valuesComponentIndex.name]} content={value[valuesComponentIndex.description]}>
+					<text>{value[valuesComponentIndex.name]}</text>
+				</GeneralTooltip>
+			</ParameterForm>);
+		})}	
+	</Form>
+	<Row>
+		<Col sm="3"/>
+		<Col sm="6">
+		<DownloadButton label="Download Raw" updateData={this.updateDownloadJSON} ref={this.downloadRef} style={{width: "100%"}}/>
+		</Col>
+		<Col sm="3"/>
+	</Row>
+</>
 		);
 	}
 }
@@ -324,57 +326,58 @@ export class ShellForms extends React.Component<shellFormsProps> {
 		this.graph = event.target.checked;
 	}
 	render() {
+		const props = this.props;
 		return(
-			<Modal.Dialog>
-				<Modal.Header closeButton onHide={this.deleteShip} style={{padding: "0.5rem"}}>
-					<Modal.Title style={{marginLeft: "40%", marginRight: "auto", }}>Shell {this.props.index + 1}</Modal.Title>
-				</Modal.Header>
-				<Modal.Body style={{padding: "0.5rem"}}>
-					<Container style={{padding: 0}}>
-					<Col sm='12' style={{padding: 0}}>
-						<ParameterForm controlId='shipName' ariaLabel="Shell Label"
-						handleValueChange={this.handleNameChange}
-						type="text" newValue={this.formData.name} labelWidth={3}
-						ref={this.nameForm} style={{formControl: {width: '70%'}, formGroup: {marginBottom: ".5rem"}}}>
-							Shell Label
-						</ParameterForm>
-						<Row style={{marginBottom: ".5rem"}}>
-							<Col sm="3" className="no-lr-padding">Colors</Col>
-							<Col sm="8" className="no-lr-padding">
-								<canvas style={{height: "2rem", width: "100%"}} width="600" height="150" ref={this.canvasRef}/>
+<Modal.Dialog>
+	<Modal.Header closeButton onHide={this.deleteShip} style={{padding: "0.5rem"}}>
+		<Modal.Title style={{marginLeft: "40%", marginRight: "auto", }}>Shell {props.index + 1}</Modal.Title>
+	</Modal.Header>
+	<Modal.Body style={{padding: "0.5rem"}}>
+		<Container style={{padding: 0}}>
+		<Col sm='12' style={{padding: 0}}>
+			<ParameterForm controlId='shipName' ariaLabel="Shell Label"
+			handleValueChange={this.handleNameChange}
+			type="text" newValue={this.formData.name} labelWidth={3}
+			ref={this.nameForm} style={{formControl: {width: '70%'}, formGroup: {marginBottom: ".5rem"}}}>
+				Shell Label
+			</ParameterForm>
+			<Row style={{marginBottom: ".5rem"}}>
+				<Col sm="3" className="no-lr-padding">Colors</Col>
+				<Col sm="8" className="no-lr-padding">
+					<canvas style={{height: "2rem", width: "100%"}} width="600" height="150" ref={this.canvasRef}/>
+				</Col>
+			</Row>
+			<ToggleButtonGroup type="checkbox" vertical defaultValue={[true]} style={{marginBottom: ".5rem"}}>
+				<ToggleButton onChange={this.toggleGraph} value={true} variant="secondary">Graph Shell</ToggleButton>
+			</ToggleButtonGroup>
+			<hr style={{marginTop: 0}}/>
+			<DefaultShips sendDefault={this.getDefaultData} ref={this.defaults} keyProp={props.keyProp}
+			reset={props.reset} index={props.index} defaultData={this.defaultData}/>
+		</Col>
+		</Container>
+	</Modal.Body>
+	<Modal.Footer style={{padding: "0.5rem"}}>				
+		<Col className="no-lr-padding">
+			<OverlayTrigger trigger="click" placement="bottom-start" overlay={
+					<Popover id='popover'>
+						<Popover.Content>
+						<Container style={{padding: 0}}>
+							<Col sm="12" style={{padding: 0}}>
+							<ShellParameters handleValueChange={this.handleValueChange}
+								formLabels={this.formLabels} ref={this.parameters} formValues={this.formData}/>
 							</Col>
-						</Row>
-						<ToggleButtonGroup type="checkbox" vertical defaultValue={[true]} style={{marginBottom: ".5rem"}}>
-							<ToggleButton onChange={this.toggleGraph} value={true} variant="secondary">Graph Shell</ToggleButton>
-						</ToggleButtonGroup>
-						<hr style={{marginTop: 0}}/>
-						<DefaultShips sendDefault={this.getDefaultData} ref={this.defaults} keyProp={this.props.keyProp}
-						reset={this.props.reset} index={this.props.index} defaultData={this.defaultData}/>
-					</Col>
-					</Container>
-				</Modal.Body>
-				<Modal.Footer style={{padding: "0.5rem"}}>				
-					<Col className="no-lr-padding">
-						<OverlayTrigger trigger="click" placement="bottom-start" overlay={
-								<Popover id='popover'>
-									<Popover.Content>
-									<Container style={{padding: 0}}>
-										<Col sm="12" style={{padding: 0}}>
-										<ShellParameters handleValueChange={this.handleValueChange}
-											formLabels={this.formLabels} ref={this.parameters} formValues={this.formData}/>
-										</Col>
-									</Container>
-									</Popover.Content>
-								</Popover>
-							}>
-							<Button style={{width: "100%"}} variant="dark">Raw Parameters</Button>
-						</OverlayTrigger>
-					</Col>
-					<Col className="no-lr-padding">
-						<Button style={{width: "100%"}} onClick={this.copyShip} variant="dark" >Clone</Button>
-					</Col>
-				</Modal.Footer>
-			</Modal.Dialog>
+						</Container>
+						</Popover.Content>
+					</Popover>
+				}>
+				<Button style={{width: "100%"}} variant="dark">Raw Parameters</Button>
+			</OverlayTrigger>
+		</Col>
+		<Col className="no-lr-padding">
+			<Button style={{width: "100%"}} onClick={this.copyShip} variant="dark" >Clone</Button>
+		</Col>
+	</Modal.Footer>
+</Modal.Dialog>
 		);
 	}
 	componentDidMount(){
@@ -413,13 +416,14 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 	colors : string[] = [];
 
 	addShip = () => {
-		if(this.state.disabled && (this.state.keys.size > 0)){return;}
+		const state = this.state;
+		if(state.disabled && (state.keys.size > 0)){return;}
 		else{
 			let index: number = 0;
 			if(this.deletedKeys.length > 0){
 				index = this.deletedKeys.pop()!;
 			}else{
-				index = this.state.keys.size;
+				index = state.keys.size;
 			}
 			
 			this.shellRefs.push(React.createRef<ShellForms>());
@@ -430,10 +434,11 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 		}
 	}
 	deleteShip = (key, index) => {
-		if(this.state.disabled){return;}
+		const state = this.state;
+		if(state.disabled){return;}
 		else{
-			if(this.state.keys.size > 0){
-				let set = this.state.keys; set.delete(key); this.deletedKeys.push(key);
+			if(state.keys.size > 0){
+				let set = state.keys; set.delete(key); this.deletedKeys.push(key);
 				this.shellRefs.splice(index, 1);
 				this.setState((current) => {
 					return {keys: set, disabled: true};
@@ -442,12 +447,8 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 		}
 	}
 	copyShip = (defaultData : T.defaultDataT, shellData : formDataT) => {
-		const data: copyTempT = {
-			default: defaultData, 
-			data: shellData
-		}
-		this.copyTemp = data; this.copied = true;
-		this.addShip();
+		this.copyTemp = {default: defaultData, data: shellData};
+		this.copied = true; this.addShip();
 	}
 	returnShellData = () => {
 		let data = Array<formDataT>();
@@ -491,8 +492,8 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 	render(){
 		this.updateColors();
 		const generateShellForms = () => {
+			const stateKeys = Array.from(this.state.keys);
 			if(this.copied){
-				const stateKeys = Array.from(this.state.keys);
 				let returnValue : JSX.Element[] = [];
 				for(let i=0; i< stateKeys.length - 1; i++){
 					const value = stateKeys[i];
@@ -518,7 +519,7 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 				)
 				return returnValue;
 			}else{
-				return Array.from(this.state.keys).map((value, i) => {
+				return stateKeys.map((value, i) => {
 					return <Col key={value} style={{margin: 0, padding: "0.5rem"}} sm="4">
 						<ShellForms colors={this.colors} index={i}
 						deleteShip={this.deleteShip} copyShip={this.copyShip}

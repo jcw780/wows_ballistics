@@ -14,24 +14,25 @@ class RefAngleForm extends React.Component<refAngleFormProps>{
         this.props.deleteElement(this.props.keyProp, this.props.index);
     }
     render(){
+        const props = this.props;
         return (
             <Modal.Dialog style={{width: '100%', margin: 0}}>
                 <Modal.Header 
                 style={{padding: 0, paddingTop: '0.5rem', paddingRight: '0.5rem', paddingLeft: '0.5rem'}}
                 closeButton onHide={this.deleteElement}>
-                    <Modal.Title style={{marginLeft: "40%", marginRight: "auto", }}>Label {this.props.index + 1}</Modal.Title>
+                    <Modal.Title style={{marginLeft: "40%", marginRight: "auto", }}>Label {props.index + 1}</Modal.Title>
                 </Modal.Header>
             <Modal.Body>
             <ParameterForm controlId={this.props.index} 
-            newValue={this.props.newValue[1]}
-            handleValueChange={this.props.handleValueChange[1]} 
+            newValue={props.newValue[1]}
+            handleValueChange={props.handleValueChange[1]} 
             type="text" ariaLabel="Text"
             labelWidth={4} style={{formControl: {width: '60%'}, formGroup: {flexFlow: 'unset'}}}>
                 Text
             </ParameterForm>
             <ParameterForm controlId={this.props.index} 
-            newValue={this.props.newValue[0]}
-            handleValueChange={this.props.handleValueChange[0]} 
+            newValue={props.newValue[0]}
+            handleValueChange={props.handleValueChange[0]} 
             type="number" ariaLabel="Angle"
             labelWidth={4} style={{formControl: {width: '60%'}, formGroup: {flexFlow: 'unset'}}} append="°">
                 Angle
@@ -53,17 +54,18 @@ class AngleForm extends React.Component<angleFormProps>{
         this.props.deleteElement(this.props.keyProp, this.props.index);
     }
     render(){
+        const props = this.props;
         return (
             <Modal.Dialog style={{width: '100%', margin: 0}}>
                 <Modal.Header 
                 style={{padding: 0, paddingTop: '0.5rem', paddingRight: '0.5rem', paddingLeft: '0.5rem'}}
                 closeButton onHide={this.deleteElement}>
-            <ParameterForm controlId={this.props.index} 
-            newValue={this.props.newValue}
-            handleValueChange={this.props.handleValueChange} 
-            type="number" ariaLabel={this.props.label}
-            labelWidth={4} style={{formControl: {width: '60%'}, formGroup: {flexFlow: 'unset'}}} append="°">
-                {this.props.label}
+            <ParameterForm controlId={props.index} 
+            newValue={props.newValue}
+            handleValueChange={props.handleValueChange} 
+            type="number" ariaLabel={props.label}
+            labelWidth={4} style={{formControl: {width: '50%'}, formGroup: {flexFlow: 'unset'}}} append="°">
+                {props.label}
             </ParameterForm>
                 </Modal.Header>
             </Modal.Dialog>
@@ -123,8 +125,8 @@ class TargetFormsContainer extends React.Component
         ],
         width: ['Target Width', 'm', 
             <>
-                Width (Beam) of the targeted ship <br/>
-                *Labeling purposes only
+                Width (Beam) of the targeted ship. <br/>
+                *These do not affect calculation values.
                 <table id="tooltip-table">
                     <tbody>   
                         <tr><th colSpan={2}>Examples</th></tr>
@@ -180,16 +182,17 @@ class TargetFormsContainer extends React.Component
     }
     deleteRefAngle = (key : number, index : number) => {
         this.targetData.refAngles.splice(index, 1);
-        this.targetData.refLabels.splice(index, 1)
+        this.targetData.refLabels.splice(index, 1);
         this.deleteForm(key, index, 'refAngles');
     }
     onRefAngleChange = (value: string, id : string) : void => {this.targetData.refAngles[id] = parseFloat(value);}
     onRefLabelChange = (value: string, id : string) : void => {this.targetData.refLabels[id] = value;}
 
     render(){
+        const stateKeys = this.state.keys;
         const generateAngleElements = (elementsPerColumn : number) => {
             let angleElements : Array<Array<JSX.Element>> = [];
-            Array.from(this.state.keys.angles).forEach((key, i) => {
+            Array.from(stateKeys.angles).forEach((key, i) => {
                 const columnIndex = Math.floor(i / elementsPerColumn);
                 if(i % elementsPerColumn === 0){angleElements.push([]);}
                 angleElements[columnIndex].push(
@@ -203,7 +206,7 @@ class TargetFormsContainer extends React.Component
         }
         const generateRefAngleElements = (elementsPerColumn : number) => {
             let angleElements : Array<Array<JSX.Element>> = [];
-            Array.from(this.state.keys.refAngles).forEach((key, i) => {
+            Array.from(stateKeys.refAngles).forEach((key, i) => {
                 const columnIndex = Math.floor(i / elementsPerColumn);
                 if(i % elementsPerColumn === 0){angleElements.push([]);}
                 angleElements[columnIndex].push(
@@ -243,9 +246,7 @@ class TargetFormsContainer extends React.Component
                         handleValueChange={this.handleChange} type="number"
                         labelWidth={3} append={value[1]} ariaLabel={value[0]}>
                             <GeneralTooltip title={value[0]} content={value[singleTargetI.description]}>
-                                <div>
-                                    {value[0]}
-                                </div>
+                                <div>{value[0]}</div>
                             </GeneralTooltip>
                         </ParameterForm>
                     </Col>
@@ -255,31 +256,24 @@ class TargetFormsContainer extends React.Component
             </Row>
             <GeneralTooltip title="Target Angles" content={
             <>
-                Angle that target is presenting, adding or changing <br/> values affects post-penetration charts. <br/>
+                Angle that target is presenting, <br/>
+                adding or changing values affects <br/> 
+                post-penetration charts. <br/>
                 <table id="tooltip-table">
-                    <tr><th colSpan={2}>Examples</th></tr>
-                    <tr>
-                        <td>0°</td><td>Full Broadside</td>
-                    </tr>
-                    <tr>
-                        <td>45°</td><td>Standard Start Ricochet*</td>
-                    </tr>
-                    <tr>
-                        <td>60°</td><td>Standard Always Ricochet*</td>
-                    </tr>
-                    <tr>
-                        <td>90°</td><td>Perfectly Angled</td>
-                    </tr>
+                    <tbody>
+                        <tr><th colSpan={2}>Examples</th></tr>
+                        <tr><td>0°</td><td>Full Broadside</td></tr>
+                        <tr><td>45°</td><td>Standard Start Ricochet*</td></tr>
+                        <tr><td>60°</td><td>Standard Always Ricochet*</td></tr>
+                        <tr><td>90°</td><td>Perfectly Angled</td></tr>
+                    </tbody>
                 </table>
-                *At 0° angle of fall and 0° armor inclination.
+                *0° angle of fall and armor inclination.
             </>}
             ><h3 style={{display:"inline-block"}}>Target Angles</h3></GeneralTooltip>
             <Container style={{marginBottom: "1rem"}}>
-                <Row>
-            {renderAngleElements(angleElements)}
-                </Row>
+                <Row>{renderAngleElements(angleElements)}</Row>
             </Container>
-            
             <Row style={{marginBottom: "1rem"}}>
                 <Col/>
                 <Col sm="6"><Button className="form-control" variant="outline-secondary" onClick={this.addAngle}>
@@ -291,9 +285,7 @@ class TargetFormsContainer extends React.Component
                 <br/>These do not affect calculation values.</>
             }><h3 style={{display:"inline-block"}}>Angle Labels</h3></GeneralTooltip>
             <Container style={{marginBottom: "1rem"}}>
-                <Row>
-            {renderAngleElements(refAngleElements)}
-                </Row>
+                <Row>{renderAngleElements(refAngleElements)}</Row>
             </Container>
             <Row style={{marginBottom: "1rem"}}>
                 <Col/>

@@ -134,77 +134,77 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
             this.props.updateColors();
         }
         return(<>
-            <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
-                    onClick={this.toggleCollapse} ref={this.scrollRef}
-                    aria-controls="collapseSettings"
-                    aria-expanded={this.state.open} variant="dark"
-                    className={this.state.open === true ? 'active' : ''}
-                >{this.titles[Number(!this.state.open)] + 'Settings'}</Button>
-            <Collapse in={this.state.open}><div id="collapseSettings">
-                <Container style={{maxWidth: '100%'}}><Row>
-                    <Col sm="6" style={{padding: 0}}>
-                        <h3>Graphs</h3>
-                        <Row>
-                            <Col style={{paddingRight: 0}}>
-                                <h4>Line</h4>
-                                <Row>
-                                    <Col sm="1"/>
-                                    <Col>
-                                <ToggleButtonGroup type="checkbox" vertical defaultValue={showLineDefault}>
-                                    <ToggleButton value="0" onChange={handleShowLineChange} variant="secondary">Show Line</ToggleButton>
-                                </ToggleButtonGroup>
-                                    </Col>
-                                    <Col sm="1"/>  
-                                </Row>
-                                <h4>Range Axis</h4>
-                                {generateGraphForm()}
-                            </Col>
-                            <Col style={{padding: 0}}>
-                                <h4>Labeling</h4>
-                                <Row>
-                                <Col sm="1"/>
-                                    <Col>
-                                        <ToggleButtonGroup type="checkbox" vertical defaultValue={shortNamesDefault}>
-                                            <ToggleButton value="0" onChange={handleShortNameChange} variant="secondary">Short Names</ToggleButton>
-                                        </ToggleButtonGroup>
-                                    </Col>
-                                <Col sm="1"/>
-                                </Row>
-                                <ParameterForm newValue={String(this.props.settings.format.rounding)} controlId="rounding" 
-                                ariaLabel="Tooltip Rounding"
-                                type="number" handleValueChange={handleRoundingChange} labelWidth={3} append="dp">
-                                    Tooltip Rounding
-                                </ParameterForm>
-                                <h4>Color Generation</h4>
-                                <ParameterForm newValue={String(this.props.settings.format.colors.saturation * 100)} controlId="saturation"
-                                ariaLabel="Saturation"
-                                type="number" handleValueChange={handleColorChange} labelWidth={3} append="%">
-                                    Saturation
-                                </ParameterForm>
-                                <ParameterForm newValue={String(this.props.settings.format.colors.light * 100)} controlId="light"
-                                ariaLabel="Light"
-                                type="number" handleValueChange={handleColorChange} labelWidth={3} append="%">
-                                    Light
-                                </ParameterForm>
-                            </Col>
-                        </Row>
-                    </Col>
-                    <Col style={{padding: 0}}>
-                        <h3>Calculations</h3>
-                        <Row>
-                            <Col style={{padding: 0}}>
-                                <h4>Launch Angle</h4>
-                                {generateLaunchAngleForm()}
-                            </Col>
-                            <Col sm="6" style={{paddingRight: 0, paddingLeft: 0}}>
-                                <h4>Numerical Analysis</h4>
-                                <CalculationRadio settings={this.props.settings}/>
-                                {generateNumericalMethodForm()}
-                            </Col>
-                        </Row>
-                    </Col>
-                </Row></Container>
-            </div></Collapse> 
+<Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
+        onClick={this.toggleCollapse} ref={this.scrollRef}
+        aria-controls="collapseSettings"
+        aria-expanded={this.state.open} variant="dark"
+        className={this.state.open === true ? 'active' : ''}
+    >{this.titles[Number(!this.state.open)] + 'Settings'}</Button>
+<Collapse in={this.state.open}><div id="collapseSettings">
+    <Container style={{maxWidth: '100%'}}><Row>
+        <Col sm="6" style={{padding: 0}}>
+            <h3>Graphs</h3>
+            <Row>
+                <Col style={{paddingRight: 0}}>
+                    <h4>Line</h4>
+                    <Row>
+                        <Col sm="1"/>
+                        <Col>
+                    <ToggleButtonGroup type="checkbox" vertical defaultValue={showLineDefault}>
+                        <ToggleButton value="0" onChange={handleShowLineChange} variant="secondary">Show Line</ToggleButton>
+                    </ToggleButtonGroup>
+                        </Col>
+                        <Col sm="1"/>  
+                    </Row>
+                    <h4>Range Axis</h4>
+                    {generateGraphForm()}
+                </Col>
+                <Col style={{padding: 0}}>
+                    <h4>Labeling</h4>
+                    <Row>
+                    <Col sm="1"/>
+                        <Col>
+                            <ToggleButtonGroup type="checkbox" vertical defaultValue={shortNamesDefault}>
+                                <ToggleButton value="0" onChange={handleShortNameChange} variant="secondary">Short Names</ToggleButton>
+                            </ToggleButtonGroup>
+                        </Col>
+                    <Col sm="1"/>
+                    </Row>
+                    <ParameterForm newValue={String(this.props.settings.format.rounding)} controlId="rounding" 
+                    ariaLabel="Tooltip Rounding"
+                    type="number" handleValueChange={handleRoundingChange} labelWidth={3} append="dp">
+                        Tooltip Rounding
+                    </ParameterForm>
+                    <h4>Color Generation</h4>
+                    <ParameterForm newValue={String(this.props.settings.format.colors.saturation * 100)} controlId="saturation"
+                    ariaLabel="Saturation"
+                    type="number" handleValueChange={handleColorChange} labelWidth={3} append="%">
+                        Saturation
+                    </ParameterForm>
+                    <ParameterForm newValue={String(this.props.settings.format.colors.light * 100)} controlId="light"
+                    ariaLabel="Light"
+                    type="number" handleValueChange={handleColorChange} labelWidth={3} append="%">
+                        Light
+                    </ParameterForm>
+                </Col>
+            </Row>
+        </Col>
+        <Col style={{padding: 0}}>
+            <h3>Calculations</h3>
+            <Row>
+                <Col style={{padding: 0}}>
+                    <h4>Launch Angle</h4>
+                    {generateLaunchAngleForm()}
+                </Col>
+                <Col sm="6" style={{paddingRight: 0, paddingLeft: 0}}>
+                    <h4>Numerical Analysis</h4>
+                    <CalculationRadio settings={this.props.settings}/>
+                    {generateNumericalMethodForm()}
+                </Col>
+            </Row>
+        </Col>
+    </Row></Container>
+</div></Collapse> 
         </>);
     }
 }

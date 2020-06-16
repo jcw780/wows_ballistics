@@ -18,29 +18,29 @@ class NavbarCustom extends React.Component<{links: T.linkT}>{
         };
 
         return(
-            <Navbar variant="dark" bg="dark" expand="lg" fixed="top">
-                <Navbar.Brand onClick={() => {window.scrollTo(0, 0);}}>World of Warships Ballistics Calculator</Navbar.Brand>
-                <Nav className="mr-auto">
-                    <NavDropdown title="Parameters" id="basic-nav-dropdown">
-                        {makeDropdowns('parameters')}
-                    </NavDropdown>
-                    <NavDropdown title="Impact Charts" id="basic-nav-dropdown">
-                        {makeDropdowns('impact')}
-                    </NavDropdown>
-                    <NavDropdown title="Angle Charts" id="basic-nav-dropdown">
-                        {makeDropdowns('angle')}
-                    </NavDropdown>
-                    <NavDropdown title="Post-Pentration Charts" id="basic-nav-dropdown">
-                        {makeDropdowns('post')}
-                    </NavDropdown>
-                </Nav>
-                <Nav className="navbar-right">
-                    <NavDropdown title="Support" id="basic-nav-dropdown" alignRight>
-                        <NavDropdown.Item href="https://github.com/jcw780/wows_ballistics">Github</NavDropdown.Item>
-                        <NavDropdown.Item href="https://github.com/jcw780/wows_ballistics/issues">Issues</NavDropdown.Item>
-                    </NavDropdown>
-                </Nav>
-            </Navbar>
+<Navbar variant="dark" bg="dark" expand="lg" fixed="top">
+    <Navbar.Brand onClick={() => {window.scrollTo(0, 0);}}>World of Warships Ballistics Calculator</Navbar.Brand>
+    <Nav className="mr-auto">
+        <NavDropdown title="Parameters" id="basic-nav-dropdown">
+            {makeDropdowns('parameters')}
+        </NavDropdown>
+        <NavDropdown title="Impact Charts" id="basic-nav-dropdown">
+            {makeDropdowns('impact')}
+        </NavDropdown>
+        <NavDropdown title="Angle Charts" id="basic-nav-dropdown">
+            {makeDropdowns('angle')}
+        </NavDropdown>
+        <NavDropdown title="Post-Pentration Charts" id="basic-nav-dropdown">
+            {makeDropdowns('post')}
+        </NavDropdown>
+    </Nav>
+    <Nav className="navbar-right">
+        <NavDropdown title="Support" id="basic-nav-dropdown" alignRight>
+            <NavDropdown.Item href="https://github.com/jcw780/wows_ballistics">Github</NavDropdown.Item>
+            <NavDropdown.Item href="https://github.com/jcw780/wows_ballistics/issues">Issues</NavDropdown.Item>
+        </NavDropdown>
+    </Nav>
+</Navbar>
         );
     }
 }

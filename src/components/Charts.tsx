@@ -49,29 +49,29 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
     }
     render(){
         return(
-            <>
-                <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
-                    onClick={this.toggleCollapse} ref={this.scrollRef} variant="dark"
-                    aria-controls="collapseChart" 
-                    aria-expanded={this.state.open}
-                    className={this.state.open === true ? 'active' : ''}
-                >{this.titles[Number(!this.state.open)] + this.props.title}</Button>
-                <Collapse in={this.state.open}>
-                    <div id="collapseChart">
-                    <Scatter data={this.props.config.data} options={this.props.config.options}
-                    width={this.props.dimensions.width} height={this.props.dimensions.height}
-                    ref={this.chartRef} datasetKeyProvider={this.datasetKeyProvider}/>
-                    <Row style={{margin: 0}}>
-                        <Col sm="4" style={{padding: 0}}/>
-                        <Col sm="2" style={{padding: 0}}><DownloadButton ref={this.DownloadRef[0]} updateData={this.updateDownloadGraph} 
-                        label="Download Graph"/></Col>
-                        <Col sm="2" style={{padding: 0}}><DownloadButton ref={this.DownloadRef[1]} updateData={this.updateDownloadJSON} 
-                        label="Download Data"/></Col>
-                        <Col sm="4" style={{padding: 0}}/>
-                    </Row>
-                    </div>
-                </Collapse> 
-            </> 
+<>
+    <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
+        onClick={this.toggleCollapse} ref={this.scrollRef} variant="dark"
+        aria-controls="collapseChart" 
+        aria-expanded={this.state.open}
+        className={this.state.open === true ? 'active' : ''}
+    >{this.titles[Number(!this.state.open)] + this.props.title}</Button>
+    <Collapse in={this.state.open}>
+        <div id="collapseChart">
+        <Scatter data={this.props.config.data} options={this.props.config.options}
+        width={this.props.dimensions.width} height={this.props.dimensions.height}
+        ref={this.chartRef} datasetKeyProvider={this.datasetKeyProvider}/>
+        <Row style={{margin: 0}}>
+            <Col sm="4" style={{padding: 0}}/>
+            <Col sm="2" style={{padding: 0}}><DownloadButton ref={this.DownloadRef[0]} updateData={this.updateDownloadGraph} 
+            label="Download Graph"/></Col>
+            <Col sm="2" style={{padding: 0}}><DownloadButton ref={this.DownloadRef[1]} updateData={this.updateDownloadJSON} 
+            label="Download Data"/></Col>
+            <Col sm="4" style={{padding: 0}}/>
+        </Row>
+        </div>
+    </Collapse> 
+</> 
         );
     }
     componentDidUpdate(){
@@ -464,49 +464,49 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             });
         }
         return(
-            <>
-                <GeneralTooltip title="Impact Charts" content={
-                    <>
-                    <table id="tooltip-table">
-                        <tbody>
-                        <tr><td>Effective Penetration*</td><td>Belt Impact Angle</td></tr>
-                        <tr><td>Effective Deck Penetration*</td><td>Deck Impact Angle</td></tr>
-                        <tr><td>Impact Velocity</td><td>Time to Target**</td></tr>
-                        </tbody>
-                    </table>
-                    * Adjusts for fall angle and normalization <br/> - does not adjust for armor inclination <br/>
-                    ** Scaled by x(1/3.1) ≈ game / real world  <br/>
-                    </>
-                }>
-                <h3 style={{textAlign: "center", display:"inline-block"}}>Impact Charts</h3>
-                </GeneralTooltip>
-                {addChart('impact')}
-                <GeneralTooltip title="Angle Charts" content={
-                    <>
-                    Shows at what target angles and ranges shells will: <br/>
-                    - Start Ricocheting - Always Ricochet <br/>
-                    - No Longer Perforate Armor <br/>
-                    - Start to Fuse on Armor <br/>
-                    Note: Adjusts for angle of fall and armor inclination
-                    </>
-                }>
-                    <h3 style={{textAlign: "center", display:"inline-block"}}>Angle Charts</h3>
-                </GeneralTooltip>
-                {addChart('angle')}
-                <GeneralTooltip title="Post-Penetration Charts" content={
-                    <>
-                    Show how far shells would travel into a ship after penetrating armor. <br/>
-                    Along with whether and when shells would fuse at the given target angle. <br/>
-                    Note: <br/>
-                    - Shows x axis of distance travelled (distance travelled that is parallel to the ship's beam) <br/>
-                    ***This is not total distance travelled by the shell. ***<br/>
-                    - Adjusts for angle of fall and armor inclination
-                    </>
-                }>
-                <h3 style={{textAlign: "center", display:"inline-block"}}>Post-Penetration Charts</h3>
-                </GeneralTooltip>
-                {addChart('post')}
-            </>
+<>
+    <GeneralTooltip title="Impact Charts" content={
+        <>
+        <table id="tooltip-table">
+            <tbody>
+            <tr><td>Effective Penetration*</td><td>Belt Impact Angle</td></tr>
+            <tr><td>Effective Deck Penetration*</td><td>Deck Impact Angle</td></tr>
+            <tr><td>Impact Velocity</td><td>Time to Target**</td></tr>
+            </tbody>
+        </table>
+        * Adjusts for fall angle and normalization <br/> - does not adjust for armor inclination <br/>
+        ** Scaled by x(1/3.1) ≈ game / real world  <br/>
+        </>
+    }>
+    <h3 style={{textAlign: "center", display:"inline-block"}}>Impact Charts</h3>
+    </GeneralTooltip>
+    {addChart('impact')}
+    <GeneralTooltip title="Angle Charts" content={
+        <>
+        Shows at what target angles and ranges shells will: <br/>
+        - Start Ricocheting - Always Ricochet <br/>
+        - No Longer Perforate Armor <br/>
+        - Start to Fuse on Armor <br/>
+        Note: Adjusts for angle of fall and armor inclination
+        </>
+    }>
+        <h3 style={{textAlign: "center", display:"inline-block"}}>Angle Charts</h3>
+    </GeneralTooltip>
+    {addChart('angle')}
+    <GeneralTooltip title="Post-Penetration Charts" content={
+        <>
+        Show how far shells would travel into a ship after penetrating armor. <br/>
+        Along with whether and when shells would fuse at the given target angle. <br/>
+        Note: <br/>
+        - Shows x axis of distance travelled (distance travelled that is parallel to the ship's beam) <br/>
+        ***This is not total distance travelled by the shell. ***<br/>
+        - Adjusts for angle of fall and armor inclination
+        </>
+    }>
+    <h3 style={{textAlign: "center", display:"inline-block"}}>Post-Penetration Charts</h3>
+    </GeneralTooltip>
+    {addChart('post')}
+</>
         );
     }
     componentDidMount(){
