@@ -6,7 +6,7 @@ import * as T from './commonTypes';
 interface parameterFormState {value: string, invalid: boolean}
 interface parameterFormProps {
 	newValue: string, controlId: string | number, handleValueChange: T.handleValueChangeT,
-	type: string, children: JSX.Element | string, style: T.styleT, ariaLabel: string,
+	type: string, children?: JSX.Element | string, style: T.styleT, ariaLabel: string,
 	labelWidth: number, placeholder: string, append: string//counter?: number[]
 }
 export class ParameterForm extends React.Component<parameterFormProps, parameterFormState>{
@@ -50,5 +50,6 @@ export class ParameterForm extends React.Component<parameterFormProps, parameter
 	</InputGroup>
 </Form.Group>
 		);
+		
 	}
 }

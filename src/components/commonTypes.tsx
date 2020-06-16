@@ -44,7 +44,11 @@ export interface calculationSettingsT {
 }
 export interface formatSettingsT {
     rounding: number | null, shortNames: boolean, showLine: boolean,
-    colors: {saturation: number, light: number, batch: boolean}
+    colors: {
+        hueMin: number, hueMax: number,
+        chromaMin: number, chromaMax: number,
+        lightMin: number, lightMax: number,
+    }
 }
 export interface settingsT{
     distance: distanceSettingsT, calculationSettings: calculationSettingsT,

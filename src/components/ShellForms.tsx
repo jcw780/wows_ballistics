@@ -466,23 +466,14 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 		});
 		return data;
 	}
-
-	selectColor = (number, colors) => {
-		const colorSettings = this.props.settings.format.colors;
-		const hue = number * 137.507764 % 360; // use golden angle approximation
-		const saturation = String(colorSettings.saturation * 100) + '%';
-		const light = String(colorSettings.light * 100) + '%';
-		return `hsl(${hue},${saturation},${light})`;
-	}
 	updateColors = () => {
 		/*this.colors.length = 0;
 		for(let i=0; i<this.state.keys.size * 3; i++){
 			this.colors[i] = this.selectColor(i, this.state.keys.size * 3);
 		}*/
+		const colorSettings = this.props.settings.format.colors;
 		const colors = distinctColors({
-			count: this.state.keys.size * 3,
-			chromaMin: 40, chromaMax: 70,
-			lightMin: 15, lightMax: 85,
+			count: this.state.keys.size * 3, ...colorSettings
 		});
 		this.colors.length = 0;
 		colors.forEach((color) => {
