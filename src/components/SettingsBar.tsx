@@ -17,7 +17,7 @@ class CalculationRadio extends React.Component<{settings: T.settingsT}, {value: 
     render(){
         const setCalcMethod = this.setCalcMethod;
         return(
-            <Row style={{paddingLeft: '1rem', paddingRight: '1rem'}}>
+            <Row style={{paddingLeft: '1rem', paddingRight: '1rem', paddingBottom: '.5rem'}}>
                 <Col sm="1"/>
                 <Col>
             <ToggleButtonGroup toggle vertical type="radio" name="radio" value={this.state.value}>
@@ -147,28 +147,26 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
                 return this.forms.colors.map((rowGroup : any) => {
                     const rowLabel = rowGroup[0], row = rowGroup[1];
                     return (
-                        <Row style={{maxHeight: rowHeight}}>
+                        <Row style={{maxHeight: rowHeight}} key={counter++}>
                             <Col sm={typeWidth} className="no-lr-padding" style={{maxHeight: rowHeight}}>
                                 {rowLabel}</Col>
-                        {
-                            row.map((form) => {
-                                const id = form[0]; const label = form[1];
-                                return(
-                                    <Col className="no-lr-padding" style={{maxHeight: rowHeight}}>
-                                    <ParameterForm key={counter++}
-                                        controlId={id} ariaLabel="Light" type="number" 
-                                        newValue={String(colorSettings[id])} 
-                                        handleValueChange={handleColorChange} 
-                                        labelWidth={0}
-                                        style={{
-                                            formLabel: {display: "inline-block"},
-                                            formControl: {width: '6rem', display: "inline-block"},
-                                            inputGroup: {display: "inline-block"},
-                                            formGroup: {display: "inline-block", },
-                                        }}></ParameterForm></Col>
-                                );
-                            })
-                        }
+                        {row.map((form) => {
+                            const id = form[0], label = form[1];
+                            return(
+                                <Col className="no-lr-padding" style={{maxHeight: rowHeight}} key={counter++}>
+                                <ParameterForm
+                                    controlId={id} ariaLabel={`${label} ${rowLabel}`} type="number" 
+                                    newValue={String(colorSettings[id])} 
+                                    handleValueChange={handleColorChange} 
+                                    labelWidth={0}
+                                    style={{
+                                        formLabel: {display: "inline-block"},
+                                        formControl: {width: '6rem', display: "inline-block"},
+                                        inputGroup: {display: "inline-block"},
+                                        formGroup: {display: "inline-block", },
+                                    }}></ParameterForm></Col>
+                            );
+                        })}
                         </Row>
                     );
                 });
@@ -176,8 +174,8 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
             return (<>
                 <Row style={{maxHeight: rowHeight}}>
                     <Col sm={typeWidth} className="no-lr-padding" style={{maxHeight: rowHeight}}/>
-                    <Col className="no-lr-padding" style={{maxHeight: rowHeight}}>Max</Col>
-                    <Col className="no-lr-padding" style={{maxHeight: rowHeight}}>Min</Col>
+                    <Col className="no-lr-padding" style={{maxHeight: rowHeight}}>Minimum</Col>
+                    <Col className="no-lr-padding" style={{maxHeight: rowHeight}}>Maximum</Col>
                 </Row>
                 {addForm()}
             </>);
@@ -213,7 +211,7 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
                         </Col>
                         <Col sm="1"/>  
                     </Row>
-                    <h4>Range Axis</h4>
+                    <hr/><h4>Range Axis</h4>
                     {generateGraphForm()}
                 </Col>
                 <Col style={{padding: 0}}>
@@ -234,7 +232,7 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
                         labelWidth={3} append="dp">
                         Tooltip Rounding
                     </ParameterForm>
-                    <h4>Color Generation</h4>
+                    <hr/><h4>Color Generation</h4>
                     {generateColors()}
                 </Col>
             </Row>
