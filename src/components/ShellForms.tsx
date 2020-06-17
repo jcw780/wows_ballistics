@@ -1,5 +1,7 @@
 import React from 'react';
 import {Form, Col, Row, Modal, Container, Button, ToggleButtonGroup, ToggleButton, Popover, OverlayTrigger} from 'react-bootstrap';
+import distinctColors from 'distinct-colors';
+
 
 import * as T from './commonTypes';
 import {ParameterForm} from './ParameterForm';
@@ -464,19 +466,20 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 		});
 		return data;
 	}
-
-	selectColor = (number, colors) => {
-		const colorSettings = this.props.settings.format.colors;
-		const hue = number * 137.507764 % 360; // use golden angle approximation
-		const saturation = String(colorSettings.saturation * 100) + '%';
-		const light = String(colorSettings.light * 100) + '%';
-		return `hsl(${hue},${saturation},${light})`;
-	}
 	updateColors = () => {
-		this.colors.length = 0;
+		/*this.colors.length = 0;
 		for(let i=0; i<this.state.keys.size * 3; i++){
 			this.colors[i] = this.selectColor(i, this.state.keys.size * 3);
-		}
+		}*/
+		const colorSettings = this.props.settings.format.colors;
+		const colors = distinctColors({
+			count: this.state.keys.size * 3, ...colorSettings
+		});
+		this.colors.length = 0;
+		colors.forEach((color) => {
+			this.colors.push(color.toString());
+		})
+		//this.colors = distinctColors({count: this.state.keys.size * 3, lightMin: 0});
 	}
 	updateAllCanvas = () => {
 		this.updateColors();

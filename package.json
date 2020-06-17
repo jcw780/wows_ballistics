@@ -6,6 +6,7 @@
   "dependencies": {
     "chart.js": "^2.9.3",
     "chartjs-plugin-annotation": "^0.5.7",
+    "distinct-colors": "^3.0.0",
     "file-saver": "^2.0.2",
     "lodash": "^4.17.15",
     "lodash.clonedeep": "^4.5.0",
@@ -26,7 +27,7 @@
     "dev": "webpack-dev-server --mode=development",
     "prod": "webpack --mode=production",
     "changelog": "auto-changelog -p -u --commit-limit false",
-    "version": "auto-changelog -p"
+    "version": "auto-changelog -p --commit-limit false"
   },
   "auto-changelog": {
     "output": "HISTORY.md",

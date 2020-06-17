@@ -36,7 +36,11 @@ class App extends React.Component<{},{}> {
 		},
 		format: {
 			rounding: 3, shortNames: true, showLine: true,
-			colors : {saturation: .5, light: .6, batch: false}
+			colors : {
+				hueMin: 0, hueMax: 360,
+				chromaMin: 40, chromaMax: 70,
+				lightMin: 15, lightMax: 85,
+			}
 		},
 	}
 	// Calculated Data
