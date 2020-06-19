@@ -148,26 +148,31 @@ class DefaultShips extends React.Component
 		const nation = dData.nation[sDI], type = dData.shipType[sDI];
 		const ships = qDataS[nation][type];
 		let sorted = Object.keys(ships);
-		sorted.sort((a, b) => {return ships[a]['Tier'] - ships[b]['Tier']}); 
+		sorted.sort((a, b) => {return ships[a]['Tier'] - ships[b]['Tier']});
+		sorted.forEach((ship, i) => {
+			sorted[i] = `(${ships[ship]['Tier']}) ${ship}`
+		})
 		this.updateForm('ship', sorted);
 	}
+	adjustShip = (withTier) => {return withTier.split(' ').splice(1).join(' ');}
 	queryArtillery = () => {
 		const dData = this.props.defaultData, qDataS = dData.queriedData.ships;
 		const sDI = T.singleDefaultDataIndex.value;
-		const nation = dData.nation[sDI], type = dData.shipType[sDI], ship = dData.ship[sDI];
+		const nation = dData.nation[sDI], type = dData.shipType[sDI], ship = this.adjustShip(dData.ship[sDI]);
+		console.log(ship, qDataS[nation][type]);
 		this.updateForm('artillery', Object.keys(qDataS[nation][type][ship].artillery));
 	}
 	queryShellType = () => {
 		const dData = this.props.defaultData, qDataS = dData.queriedData.ships;
 		const sDI = T.singleDefaultDataIndex.value;
 		const nation = dData.nation[sDI], type = dData.shipType[sDI];
-		const ship = dData.ship[sDI], artillery = dData.artillery[sDI];
+		const ship = this.adjustShip(dData.ship[sDI]), artillery = dData.artillery[sDI];
 		this.updateForm('shellType', Object.keys(qDataS[nation][type][ship].artillery[artillery]));
 	}
 	sendData = () => {
 		const dData = this.props.defaultData, qDataS = dData.queriedData.ships;
 		const sDI = T.singleDefaultDataIndex.value;
-		const nation = dData.nation[sDI], type = dData.shipType[sDI], ship = dData.ship[sDI];
+		const nation = dData.nation[sDI], type = dData.shipType[sDI], ship = this.adjustShip(dData.ship[sDI]);
 		const artillery = dData.artillery[sDI], shellType = dData.shellType[sDI];
 		const shellName = qDataS[nation][type][ship].artillery[artillery][shellType];
 		this.props.sendDefault(dData.queriedData.shells[shellName], ship);
