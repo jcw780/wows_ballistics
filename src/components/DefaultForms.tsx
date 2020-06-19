@@ -1,4 +1,3 @@
-/* tslint:disable */
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {Form, Container} from 'react-bootstrap';
@@ -105,18 +104,18 @@ class DefaultShips extends React.Component
 		artillery: ['Artillery' , React.createRef<DefaultForm>(), 4], 
 		shellType: ['Shell Type', React.createRef<DefaultForm>(), 5],
 	})
-	changeForm = (value, id) => {
+	changeForm = (value, id : keyof(defaultFormType)) => {
 		//this.defaultForms[id][singleFormIndex.value] = value;
 		const defaultData = this.props.defaultData;
 		defaultData[id][T.singleDefaultDataIndex.value] = value;
 		const queryIndex = this.defaultForms[id][singleFormIndex.queryIndex];
-		const queries = {
-			0: this.queryNation, 1: this.queryType, 2: this.queryShip,
-			3: this.queryArtillery, 4: this.queryShellType, 5: this.sendData
-		}
+		const queries = [
+			this.queryNation, this.queryType, this.queryShip,
+			this.queryArtillery, this.queryShellType, this.sendData
+		]
 		if(queryIndex in queries){queries[queryIndex]();}
 	}
-	updateForm = (target, options, values) => {
+	updateForm = (target : keyof(defaultFormType), options, values) => {
 		const refCurrent = this.defaultForms[target][singleFormIndex.ref].current;
 		if(refCurrent){ 
 			//apparently prevents async calls from updating deleted refs I guess...
@@ -135,7 +134,7 @@ class DefaultShips extends React.Component
 		const defaultData = this.props.defaultData;
 		const data = await fetchJsonData(`${dataURL}${defaultData.version[T.singleDefaultDataIndex.value]}_s.gz`);
 		this.props.defaultData.queriedData = data;
-		const options =  Object.keys(data.ships);
+		const options = Object.keys(data.ships);
 		this.updateForm('nation', options, options);
 	}
 	queryType = () => {
@@ -150,12 +149,9 @@ class DefaultShips extends React.Component
 		const sDI = T.singleDefaultDataIndex.value;
 		const nation = dData.nation[sDI], type = dData.shipType[sDI];
 		const ships = qDataS[nation][type];
-		let values = Object.keys(ships);
+		let values = Object.keys(ships), options : string[] = [];
 		values.sort((a, b) => {return ships[a]['Tier'] - ships[b]['Tier']});
-		let options : string[] = [];
-		values.forEach((ship, i) => {
-			options.push(`(${ships[ship]['Tier']}) ${ship}`);
-		})
+		values.forEach((ship, i) => {options.push(`(${ships[ship]['Tier']}) ${ship}`);});
 		this.updateForm('ship', options, values);
 	}
 	adjustShip = (withTier) => {return withTier.split(' ').splice(1).join(' ');}

@@ -1,7 +1,8 @@
 import React from 'react';
-import {Form, Col, Row, Modal, Container, Button, ToggleButtonGroup, ToggleButton, Popover, OverlayTrigger} from 'react-bootstrap';
+import {Form, Col, Row, Modal, Container, 
+	Button, ToggleButtonGroup, ToggleButton, Popover, OverlayTrigger} from 'react-bootstrap';
 import distinctColors from 'distinct-colors';
-
+import clonedeep from 'lodash.clonedeep';
 
 import * as T from './commonTypes';
 import {ParameterForm} from './ParameterForm';
@@ -9,45 +10,47 @@ import DefaultShips from './DefaultForms'
 import DownloadButton from './DownloadButton';
 import GeneralTooltip from './Tooltips';
 
-const cloneDeep = require('lodash.clonedeep');
 
-enum valuesComponentIndex {name, unit, ref, description}
-type valuesComponent = [string, string,React.RefObject<ParameterForm>, string | JSX.Element];
-type parametersType = 'caliber' | 'muzzleVelocity' | 'dragCoefficient' | 'mass' 
-| 'krupp' | 'fusetime' | 'threshold' | 'normalization' | 'ra0' | 'ra1' | 'HESAP';
-type formValuesT = Record<parametersType, valuesComponent>
+enum labelI {name, unit, ref, description}
+type labelT = [string, string,React.RefObject<ParameterForm>, string | JSX.Element];
+interface formTemplate<K>{
+	caliber: K, muzzleVelocity: K, dragCoefficient: K, mass: K,
+	krupp: K, fusetime: K, threshold: K, normalization: K, 
+	ra0: K, ra1: K, HESAP: K,
+}
+type formLabelsT = formTemplate<labelT>;
+type formsT = keyof(formLabelsT);
 
-interface shellParametersProps {handleValueChange: any, formLabels : formValuesT, formValues: formDataT}
+interface shellParametersProps {handleValueChange: any, formLabels : formLabelsT, formData: formDataT}
 class ShellParameters extends React.Component<shellParametersProps>{
 	nameForm = React.createRef<ParameterForm>();
 	downloadRef = React.createRef<DownloadButton>();
 	handleValueChange = (value, k) => {this.props.handleValueChange(value, k);}
 	updateShells() {
 		const props = this.props;
-		Object.entries(props.formLabels).forEach(([key, value] : any): void => {
-			value[valuesComponentIndex.ref].current.updateValue(props.formValues[key]);
+		Object.entries(props.formLabels).forEach(([key, value] : [formsT, labelT]): void => {
+			value[labelI.ref].current!.updateValue(props.formData[key]);
 		});
 	}
 	updateDownloadJSON = () => {
-		const formValues = this.props.formValues, selectedData = cloneDeep(formValues);
-		delete selectedData.colors;
+		const formData = this.props.formData, selectedData = clonedeep(FormData); delete selectedData.colors;
         const url = URL.createObjectURL(new Blob([JSON.stringify(selectedData)], {type: 'text/json;charset=utf-8'}));
-        this.downloadRef.current!.update(url, formValues.name + '.json');
+        this.downloadRef.current!.update(url, formData.name + '.json');
     }
 	render() {
 		const props = this.props;
 		return(
 <>
 	<Form>
-		{Object.entries(props.formLabels).map(([key, value] : [string, valuesComponent], i) => {
-			const name = value[valuesComponentIndex.name];
+		{Object.entries(props.formLabels).map(([key, value] : [formsT, labelT], i) => {
+			const name = value[labelI.name];
 			return (
-			<ParameterForm key={i} controlId={key} ref={value[valuesComponentIndex.ref]}
-				newValue={String(props.formValues[key])}
+			<ParameterForm key={i} controlId={key} ref={value[labelI.ref]}
+				newValue={String(props.formData[key])}
 				handleValueChange={this.handleValueChange} 
-				type="number" append={value[valuesComponentIndex.unit]}
+				type="number" append={value[labelI.unit]}
 				style={{inputGroup:{width: "50%"}}} ariaLabel={name}>
-					<GeneralTooltip title={name} content={value[valuesComponentIndex.description]}>
+					<GeneralTooltip title={name} content={value[labelI.description]}>
 						<text>{name}</text>
 					</GeneralTooltip>
 			</ParameterForm>);
@@ -70,11 +73,7 @@ interface shellFormsProps{
 	reset: () => void, settings : T.settingsT, size: number
 	formData?: formDataT, defaultData?: T.defaultDataT, copied: boolean
 }
-interface formDataT{
-	caliber: number, muzzleVelocity: number, dragCoefficient: number, mass: number, 
-	krupp: number, fusetime: number, threshold: number, normalization: number, 
-	ra0: number, ra1: number, HESAP: number, name: string, colors: string[]
-}
+interface formDataT extends formTemplate<number>{name: string, colors: string[]}
 export class ShellForms extends React.Component<shellFormsProps> {
 	public static defaultProps = {
 		copied : false
@@ -105,7 +104,7 @@ export class ShellForms extends React.Component<shellFormsProps> {
 	defaults : React.RefObject<DefaultShips> = React.createRef<DefaultShips>()
 	nameForm : React.RefObject<ParameterForm> = React.createRef<ParameterForm>()
 	canvasRef = React.createRef<HTMLCanvasElement>();
-	formLabels : formValuesT = Object.seal({
+	formLabels : formLabelsT = Object.seal({
 		caliber: ['Caliber', 'm', React.createRef(), 
 		<>
 			Diameter of the shell. <br/> 
@@ -263,10 +262,8 @@ export class ShellForms extends React.Component<shellFormsProps> {
 			return false;
 		}
 	}
-	handleNameChange = (value, id) => {this.formData.name = value;}
-	handleValueChange = (value : string, k : string) => {
-		this.formData[k] = parseFloat(value);
-	}
+	handleNameChange = (value : string, id) => {this.formData.name = value;}
+	handleValueChange = (value : string, k : formsT) => {this.formData[k] = parseFloat(value);}
 	getDefaultData = (data, nameUnprocessed : string) => { //Query Version End
 		let name = nameUnprocessed;
 		if(this.props.settings.format.shortNames){
@@ -293,9 +290,7 @@ export class ShellForms extends React.Component<shellFormsProps> {
 		}
 	}
 	deleteShip = () => {this.props.deleteShip(this.props.keyProp, this.props.index);}
-	copyShip = () => {
-		this.props.copyShip(this.defaultData, this.formData);
-	}
+	copyShip = () => {this.props.copyShip(this.defaultData, this.formData);}
 	updateCanvas = () => {
 		//Draws colors 
 		this.formData.colors = this.props.colors.slice(this.props.index * 3, this.props.index * 3 + 3);
@@ -370,7 +365,7 @@ export class ShellForms extends React.Component<shellFormsProps> {
 						<Container style={{padding: 0}}>
 							<Col sm="12" style={{padding: 0}}>
 							<ShellParameters handleValueChange={this.handleValueChange}
-								formLabels={this.formLabels} ref={this.parameters} formValues={this.formData}/>
+								formLabels={this.formLabels} ref={this.parameters} formData={this.formData}/>
 							</Col>
 						</Container>
 						</Popover.Content>
@@ -416,10 +411,7 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 	shellRefs = [React.createRef<ShellForms>(), React.createRef<ShellForms>()];
 	scrollRef : React.RefObject<HTMLHeadingElement> = React.createRef<HTMLHeadingElement>();	
 	//Clone function
-	copyTemp : copyTempT;
-	copied : boolean = false;
-
-	colors : string[] = [];
+	copyTemp : copyTempT; copied : boolean = false; colors : string[] = [];
 
 	addShip = () => {
 		const state = this.state;
@@ -431,7 +423,6 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 			}else{
 				index = state.keys.size;
 			}
-			
 			this.shellRefs.push(React.createRef<ShellForms>());
 			this.setState((current) => {
 				let set = current.keys;
@@ -467,10 +458,6 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 		return data;
 	}
 	updateColors = () => {
-		/*this.colors.length = 0;
-		for(let i=0; i<this.state.keys.size * 3; i++){
-			this.colors[i] = this.selectColor(i, this.state.keys.size * 3);
-		}*/
 		const colorSettings = this.props.settings.format.colors;
 		const colors = distinctColors({
 			count: this.state.keys.size * 3, ...colorSettings
@@ -479,7 +466,6 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 		colors.forEach((color) => {
 			this.colors.push(color.toString());
 		})
-		//this.colors = distinctColors({count: this.state.keys.size * 3, lightMin: 0});
 	}
 	updateAllCanvas = () => {
 		this.updateColors();
@@ -497,6 +483,7 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 	}
 	shouldComponentUpdate(nextProps, nextState){return nextState.disabled;}
 	render(){
+		const props = this.props, state = this.state;
 		this.updateColors();
 		const generateShellForms = () => {
 			const stateKeys = Array.from(this.state.keys);
@@ -509,7 +496,7 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 							<ShellForms colors={this.colors} index={i}
 							deleteShip={this.deleteShip} copyShip={this.copyShip}
 							keyProp={value} ref={this.shellRefs[i]} reset={this.reset} 
-							settings={this.props.settings} size={this.state.keys.size}/>
+							settings={props.settings} size={state.keys.size}/>
 						</Col>
 					)
 				}
@@ -520,8 +507,8 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 						<ShellForms colors={this.colors} index={i}
 						deleteShip={this.deleteShip} copyShip={this.copyShip}
 						keyProp={value} ref={this.shellRefs[i]} reset={this.reset} 
-						settings={this.props.settings} size={this.state.keys.size}
-						defaultData={cloneDeep(this.copyTemp.default)} formData={cloneDeep(this.copyTemp.data)} copied={true}/>
+						settings={props.settings} size={state.keys.size}
+						defaultData={clonedeep(this.copyTemp.default)} formData={clonedeep(this.copyTemp.data)} copied={true}/>
 					</Col>
 				) //pass a deep copied version so clones target the correct shell form
 				return returnValue;
@@ -531,7 +518,7 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 						<ShellForms colors={this.colors} index={i}
 						deleteShip={this.deleteShip} copyShip={this.copyShip}
 						keyProp={value} ref={this.shellRefs[i]} reset={this.reset} 
-						settings={this.props.settings} size={this.state.keys.size}/>
+						settings={props.settings} size={state.keys.size}/>
 					</Col>;
 				})
 			}
