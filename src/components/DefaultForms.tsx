@@ -1,11 +1,18 @@
+/* tslint:disable */
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {Form, Container} from 'react-bootstrap';
+import pako from 'pako';
 //import TargetFormsContainer from 'TargetForms';
 import * as T from './commonTypes';
 
+interface defaultFormProps{
+	controlId: string, keyProp: number, ariaLabel : string, children : string | JSX.Element, 
+	defaultValue: string, defaultOptions: string[], handleValueChange: Function,
+}
+
 export class DefaultForm extends React.Component
-<{handleValueChange: Function, controlId: string, label : string, defaultValue: string, defaultOptions: string[], keyProp: number}> {
+<defaultFormProps> {
 	public static defaultProps = {
 		defaultValue : "", defaultOptions: [],
 	}
@@ -23,10 +30,11 @@ export class DefaultForm extends React.Component
 	}
 
 	render(){
+		const props = this.props;
 		return (
 			<Form.Group className="form-inline" style={{marginBottom: ".25rem"}}>
-				<Form.Label column sm="3">{this.props.label}</Form.Label>
-				<Form.Control as="select" placeholder="" defaultValue={this.props.defaultValue} aria-label={this.props.label}
+				<Form.Label column sm="3">{props.children}</Form.Label>
+				<Form.Control as="select" placeholder="" defaultValue={props.defaultValue} aria-label={props.ariaLabel}
 				onChange={this.handleChange} ref={this.form} style={{width: "70%"}}>
 					{this.state.options.map((value,i) => {return (<option aria-label={value} key={i}>{value}</option>);})}
 				</Form.Control>
@@ -42,14 +50,15 @@ export class DefaultForm extends React.Component
 	}
 }
 
-const dataURL = "https://jcw780.github.io/LiveGameData/"
+const dataURL = "https://jcw780.github.io/LiveGameData2/data/"
 
 const fetchJson = (target, onSucess) => {
     fetch(target)
         .then((response) => {
+			//console.log(response.body);
             if (!response.ok) {
             throw new Error('Network response was not ok');
-            }
+			}
             return response.json();
         })
         .then(onSucess)
@@ -59,14 +68,22 @@ const fetchJson = (target, onSucess) => {
     );
 }
 
+//File is compressed
 const fetchJsonData = async (target) => {
     return fetch(target)
         .then((response) => {
             if (!response.ok) {
             throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
+			}
+            return response;
+		})
+		.then(async (response) => {
+			const Abuffer = await response.arrayBuffer();
+			const enc = new TextDecoder("utf-8");
+			const outputStr = enc.decode(pako.inflate(Abuffer));
+			const output = JSON.parse(outputStr);
+			return output;
+		})
         .catch((error) => {
             console.error('There has been a problem with your fetch operation:', error);
         }
@@ -113,65 +130,64 @@ class DefaultShips extends React.Component
 			this.updateForm('version', dataSorted);
 		});
 	}
-	queryNation = () => {
+	queryNation = async () => {
 		const defaultData = this.props.defaultData;
-		fetchJson(dataURL + defaultData.version[T.singleDefaultDataIndex.value] + "/nations.json", 
-			(data) => {this.updateForm('nation', data);}
-		);
+		const data = await fetchJsonData(`${dataURL}${defaultData.version[T.singleDefaultDataIndex.value]}_s.gz`);
+		this.props.defaultData.queriedData = data;
+		this.updateForm('nation', Object.keys(data.ships));
 	}
 	queryType = () => {
-		const defaultData = this.props.defaultData;
-		fetchJson(dataURL + defaultData.version[T.singleDefaultDataIndex.value] + "/" + 
-		defaultData.nation[T.singleDefaultDataIndex.value] + "/shiptypes.json",
-			(data) => {this.updateForm('shipType', data);}
-		);
+		const dData = this.props.defaultData;
+		const nation = dData.nation[T.singleDefaultDataIndex.value];
+		const qDataS = dData.queriedData.ships;
+		this.updateForm('shipType', Object.keys(qDataS[nation]));
 	}
 	queryShip = async () => {
-		const defaultData = this.props.defaultData;
-		const data = await fetchJsonData(
-			dataURL + defaultData.version[T.singleDefaultDataIndex.value] + "/" + 
-			defaultData.nation[T.singleDefaultDataIndex.value] + 
-			"/" + defaultData.nation[T.singleDefaultDataIndex.value] + "_" + 
-			defaultData.shipType[T.singleDefaultDataIndex.value] + ".json");
-		defaultData.queriedData = data; 
-		let sorted = Object.keys(data);
-		sorted.sort((a, b) => {return data[a]['Tier'] - data[b]['Tier']}); 
+		const dData = this.props.defaultData, qDataS = dData.queriedData.ships;
+		const sDI = T.singleDefaultDataIndex.value;
+		const nation = dData.nation[sDI], type = dData.shipType[sDI];
+		const ships = qDataS[nation][type];
+		let sorted = Object.keys(ships);
+		sorted.sort((a, b) => {return ships[a]['Tier'] - ships[b]['Tier']});
+		sorted.forEach((ship, i) => {
+			sorted[i] = `(${ships[ship]['Tier']}) ${ship}`
+		})
 		this.updateForm('ship', sorted);
 	}
+	adjustShip = (withTier) => {return withTier.split(' ').splice(1).join(' ');}
 	queryArtillery = () => {
-		const defaultData = this.props.defaultData;
-		const shipName : string = defaultData.ship[T.singleDefaultDataIndex.value];
-		const shipInfo = defaultData.queriedData[shipName]; 
-		let options: string[] = [];
-		Object.keys(shipInfo!).forEach((key : string) : void => {
-			if(key.includes('Artillery')){options.push(key);}
-		});
-		this.updateForm('artillery', options);
+		const dData = this.props.defaultData, qDataS = dData.queriedData.ships;
+		const sDI = T.singleDefaultDataIndex.value;
+		const nation = dData.nation[sDI], type = dData.shipType[sDI], ship = this.adjustShip(dData.ship[sDI]);
+		console.log(ship, qDataS[nation][type]);
+		this.updateForm('artillery', Object.keys(qDataS[nation][type][ship].artillery));
 	}
 	queryShellType = () => {
-		const defaultData = this.props.defaultData;
-		const input = defaultData.queriedData[this.props.defaultData.ship[T.singleDefaultDataIndex.value]]
-		[this.props.defaultData.artillery[T.singleDefaultDataIndex.value]];
-		this.updateForm('shellType', Object.keys(input));
+		const dData = this.props.defaultData, qDataS = dData.queriedData.ships;
+		const sDI = T.singleDefaultDataIndex.value;
+		const nation = dData.nation[sDI], type = dData.shipType[sDI];
+		const ship = this.adjustShip(dData.ship[sDI]), artillery = dData.artillery[sDI];
+		this.updateForm('shellType', Object.keys(qDataS[nation][type][ship].artillery[artillery]));
 	}
 	sendData = () => {
-		const defaultData = this.props.defaultData;
-		this.props.sendDefault(
-			defaultData.queriedData[defaultData.ship[T.singleDefaultDataIndex.value]]
-			[defaultData.artillery[T.singleDefaultDataIndex.value]]
-			[defaultData.shellType[T.singleDefaultDataIndex.value]], 
-			defaultData.ship[T.singleDefaultDataIndex.value]
-		);
+		const dData = this.props.defaultData, qDataS = dData.queriedData.ships;
+		const sDI = T.singleDefaultDataIndex.value;
+		const nation = dData.nation[sDI], type = dData.shipType[sDI], ship = this.adjustShip(dData.ship[sDI]);
+		const artillery = dData.artillery[sDI], shellType = dData.shellType[sDI];
+		const shellName = qDataS[nation][type][ship].artillery[artillery][shellType];
+		this.props.sendDefault(dData.queriedData.shells[shellName], ship);
 	}
 	render(){
 		const defaultData = this.props.defaultData;
 		return(
 <Container style={{paddingLeft: 0, paddingRight: 0}}>
 	{Object.entries(this.defaultForms).map( ([name, v], i) => {
-		return (<DefaultForm label={v[singleFormIndex.name]} key={i} controlId={name}
+		return (<DefaultForm key={i} controlId={name}
 		handleValueChange={this.changeForm} ref={v[singleFormIndex.ref]} keyProp={this.props.keyProp}
-		defaultValue={defaultData[name][T.singleDefaultDataIndex.value]}
-		defaultOptions={defaultData[name][T.singleDefaultDataIndex.options]}> </DefaultForm>);
+		defaultValue={defaultData[name][T.singleDefaultDataIndex.value]} ariaLabel={v[singleFormIndex.name]}
+		defaultOptions={defaultData[name][T.singleDefaultDataIndex.options]}>
+			{v[singleFormIndex.name]}
+		</DefaultForm>);
 	})}
 </Container>
 		);
