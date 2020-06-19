@@ -6,9 +6,13 @@ import pako from 'pako';
 //import TargetFormsContainer from 'TargetForms';
 import * as T from './commonTypes';
 
+interface defaultFormProps{
+	controlId: string, keyProp: number, ariaLabel : string, children : string | JSX.Element, 
+	defaultValue: string, defaultOptions: string[], handleValueChange: Function,
+}
 
 export class DefaultForm extends React.Component
-<{handleValueChange: Function, controlId: string, label : string, defaultValue: string, defaultOptions: string[], keyProp: number}> {
+<defaultFormProps> {
 	public static defaultProps = {
 		defaultValue : "", defaultOptions: [],
 	}
@@ -26,10 +30,11 @@ export class DefaultForm extends React.Component
 	}
 
 	render(){
+		const props = this.props;
 		return (
 			<Form.Group className="form-inline" style={{marginBottom: ".25rem"}}>
-				<Form.Label column sm="3">{this.props.label}</Form.Label>
-				<Form.Control as="select" placeholder="" defaultValue={this.props.defaultValue} aria-label={this.props.label}
+				<Form.Label column sm="3">{props.children}</Form.Label>
+				<Form.Control as="select" placeholder="" defaultValue={props.defaultValue} aria-label={props.ariaLabel}
 				onChange={this.handleChange} ref={this.form} style={{width: "70%"}}>
 					{this.state.options.map((value,i) => {return (<option aria-label={value} key={i}>{value}</option>);})}
 				</Form.Control>
@@ -63,6 +68,7 @@ const fetchJson = (target, onSucess) => {
     );
 }
 
+//File is compressed
 const fetchJsonData = async (target) => {
     return fetch(target)
         .then((response) => {
@@ -171,10 +177,12 @@ class DefaultShips extends React.Component
 		return(
 <Container style={{paddingLeft: 0, paddingRight: 0}}>
 	{Object.entries(this.defaultForms).map( ([name, v], i) => {
-		return (<DefaultForm label={v[singleFormIndex.name]} key={i} controlId={name}
+		return (<DefaultForm key={i} controlId={name}
 		handleValueChange={this.changeForm} ref={v[singleFormIndex.ref]} keyProp={this.props.keyProp}
-		defaultValue={defaultData[name][T.singleDefaultDataIndex.value]}
-		defaultOptions={defaultData[name][T.singleDefaultDataIndex.options]}> </DefaultForm>);
+		defaultValue={defaultData[name][T.singleDefaultDataIndex.value]} ariaLabel={v[singleFormIndex.name]}
+		defaultOptions={defaultData[name][T.singleDefaultDataIndex.options]}>
+			{v[singleFormIndex.name]}
+		</DefaultForm>);
 	})}
 </Container>
 		);
