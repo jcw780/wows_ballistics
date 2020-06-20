@@ -22,7 +22,7 @@ type formLabelsT = formTemplate<labelT>;
 type formsT = keyof(formLabelsT);
 
 interface shellParametersProps {handleValueChange: any, formLabels : formLabelsT, formData: formDataT}
-class ShellParameters extends React.Component<shellParametersProps>{
+class ShellParameters extends React.PureComponent<shellParametersProps>{
 	nameForm = React.createRef<ParameterForm>();
 	downloadRef = React.createRef<DownloadButton>();
 	handleValueChange = (value, k) => {this.props.handleValueChange(value, k);}
@@ -74,7 +74,7 @@ interface shellFormsProps{
 	formData?: formDataT, defaultData?: T.defaultDataT, copied: boolean
 }
 interface formDataT extends formTemplate<number>{name: string, colors: string[]}
-export class ShellForms extends React.Component<shellFormsProps> {
+export class ShellForms extends React.PureComponent<shellFormsProps> {
 	public static defaultProps = {
 		copied : false
 	}
@@ -482,53 +482,52 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 		}
 	}
 	shouldComponentUpdate(nextProps, nextState){return nextState.disabled;}
-	render(){
-		const props = this.props, state = this.state;
-		this.updateColors();
-		const generateShellForms = () => {
-			const stateKeys = Array.from(this.state.keys);
-			if(this.copied){
-				let returnValue : JSX.Element[] = [];
-				for(let i=0; i< stateKeys.length - 1; i++){
-					const value = stateKeys[i];
-					returnValue.push(
-						<Col key={value} style={{margin: 0, padding: "0.5rem"}} sm="4">
-							<ShellForms colors={this.colors} index={i}
-							deleteShip={this.deleteShip} copyShip={this.copyShip}
-							keyProp={value} ref={this.shellRefs[i]} reset={this.reset} 
-							settings={props.settings} size={state.keys.size}/>
-						</Col>
-					)
-				}
-				const i = stateKeys.length - 1
+	private generateShellForms = () => {
+		const props = this.props, state = this.state, stateKeys = Array.from(this.state.keys);
+		if(this.copied){
+			let returnValue : JSX.Element[] = [];
+			for(let i=0; i< stateKeys.length - 1; i++){
 				const value = stateKeys[i];
 				returnValue.push(
 					<Col key={value} style={{margin: 0, padding: "0.5rem"}} sm="4">
 						<ShellForms colors={this.colors} index={i}
 						deleteShip={this.deleteShip} copyShip={this.copyShip}
 						keyProp={value} ref={this.shellRefs[i]} reset={this.reset} 
-						settings={props.settings} size={state.keys.size}
-						defaultData={clonedeep(this.copyTemp.default)} formData={clonedeep(this.copyTemp.data)} copied={true}/>
-					</Col>
-				) //pass a deep copied version so clones target the correct shell form
-				return returnValue;
-			}else{
-				return stateKeys.map((value, i) => {
-					return <Col key={value} style={{margin: 0, padding: "0.5rem"}} sm="4">
-						<ShellForms colors={this.colors} index={i}
-						deleteShip={this.deleteShip} copyShip={this.copyShip}
-						keyProp={value} ref={this.shellRefs[i]} reset={this.reset} 
 						settings={props.settings} size={state.keys.size}/>
-					</Col>;
-				})
+					</Col>
+				)
 			}
+			const i = stateKeys.length - 1
+			const value = stateKeys[i];
+			returnValue.push(
+				<Col key={value} style={{margin: 0, padding: "0.5rem"}} sm="4">
+					<ShellForms colors={this.colors} index={i}
+					deleteShip={this.deleteShip} copyShip={this.copyShip}
+					keyProp={value} ref={this.shellRefs[i]} reset={this.reset} 
+					settings={props.settings} size={state.keys.size}
+					defaultData={clonedeep(this.copyTemp.default)} formData={clonedeep(this.copyTemp.data)} copied={true}/>
+				</Col>
+			) //pass a deep copied version so clones target the correct shell form
+			return returnValue;
+		}else{
+			return stateKeys.map((value, i) => {
+				return <Col key={value} style={{margin: 0, padding: "0.5rem"}} sm="4">
+					<ShellForms colors={this.colors} index={i}
+					deleteShip={this.deleteShip} copyShip={this.copyShip}
+					keyProp={value} ref={this.shellRefs[i]} reset={this.reset} 
+					settings={props.settings} size={state.keys.size}/>
+				</Col>;
+			})
 		}
+	}
+	render(){
+		this.updateColors();
 		return(
 <>
 	<h2 ref={this.scrollRef}>Shell Parameters</h2>
 	<Container style={{marginBottom : "0rem", paddingRight: 0, paddingLeft: 0, maxWidth: '90%'}}>
 		<Row>
-		{generateShellForms()}
+		{this.generateShellForms()}
 		</Row>
 	</Container>
 	<Row style={{marginBottom : "1rem"}}>

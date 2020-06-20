@@ -82,8 +82,7 @@ type multiFormT = 'angles' | 'refAngles';
 interface targetFormsContainerState {
     keys: Record<multiFormT, Set<number>>
 }
-class TargetFormsContainer extends React.Component
-<{}, targetFormsContainerState>{
+class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerState>{
     state = {
         keys: {
             angles: new Set(Array<number>()),
@@ -146,7 +145,7 @@ class TargetFormsContainer extends React.Component
         }));
     }
     returnData = () => {return this.targetData;}
-    handleChange = (value : string, id : string) => {this.targetData[id] = parseFloat(value);}
+    private handleChange = (value : string, id : string) => {this.targetData[id] = parseFloat(value);}
     //Add and Delete General Functions
     addForm = (id : multiFormT) : void => {
         let index: number = 0;
@@ -172,8 +171,21 @@ class TargetFormsContainer extends React.Component
         this.targetData.angles.splice(index, 1);
         this.deleteForm(key, index, 'angles');
     }
-    handleAngleChange = (value: string, id : number) : void => {this.targetData.angles[id] = parseFloat(value);}
-
+    private handleAngleChange = (value: string, id : number) : void => {this.targetData.angles[id] = parseFloat(value);}
+    private generateAngleElements = (elementsPerColumn : number) => {
+        const stateKeys = this.state.keys, targetData = this.targetData; let angleElements : Array<Array<JSX.Element>> = [];
+        Array.from(stateKeys.angles).forEach((key, i) => {
+            const columnIndex = Math.floor(i / elementsPerColumn);
+            if(i % elementsPerColumn === 0){angleElements.push([]);}
+            angleElements[columnIndex].push(
+                <AngleForm key={key} keyProp={key} index={i} 
+                newValue={String(targetData.angles[i])} deleteElement={this.deleteAngle}
+                handleValueChange={this.handleAngleChange}
+                label={`Angle ${i + 1}`}/> //start at 1 for display
+            );
+        });
+        return angleElements;
+    }
     //Label Angles
     addRefAngle = () => {
         this.targetData.refAngles.push(0);
@@ -185,54 +197,37 @@ class TargetFormsContainer extends React.Component
         this.targetData.refLabels.splice(index, 1);
         this.deleteForm(key, index, 'refAngles');
     }
-    onRefAngleChange = (value: string, id : string) : void => {this.targetData.refAngles[id] = parseFloat(value);}
-    onRefLabelChange = (value: string, id : string) : void => {this.targetData.refLabels[id] = value;}
-
+    private onRefAngleChange = (value: string, id : string) : void => {this.targetData.refAngles[id] = parseFloat(value);}
+    private generateRefAngleElements = (elementsPerColumn : number) => {
+        const stateKeys = this.state.keys; let angleElements : Array<Array<JSX.Element>> = [];
+        Array.from(stateKeys.refAngles).forEach((key, i) => {
+            const columnIndex = Math.floor(i / elementsPerColumn);
+            if(i % elementsPerColumn === 0){angleElements.push([]);}
+            angleElements[columnIndex].push(
+                <RefAngleForm key={key} keyProp={key} index={i} 
+                newValue={[String(this.targetData.refAngles[i]), String(this.targetData.refLabels[i])]} 
+                deleteElement={this.deleteRefAngle}
+                handleValueChange={[this.onRefAngleChange, this.onRefLabelChange]}/>
+            );
+        });
+        return angleElements;
+    }
+    private onRefLabelChange = (value: string, id : string) : void => {this.targetData.refLabels[id] = value;}
+    private renderAngleElements = (angleElements) => {
+        return angleElements.map((column, i) => {
+            return (
+                <Col key={i} sm="3" style={{margin: 0, padding: 0}}>
+                    {column.map((angleElement) => {
+                        return angleElement;
+                    })}
+                </Col>
+            );
+        });
+    }
     render(){
-        const stateKeys = this.state.keys, targetData = this.targetData;
-        const generateAngleElements = (elementsPerColumn : number) => {
-            let angleElements : Array<Array<JSX.Element>> = [];
-            Array.from(stateKeys.angles).forEach((key, i) => {
-                const columnIndex = Math.floor(i / elementsPerColumn);
-                if(i % elementsPerColumn === 0){angleElements.push([]);}
-                angleElements[columnIndex].push(
-                    <AngleForm key={key} keyProp={key} index={i} 
-                    newValue={String(targetData.angles[i])} deleteElement={this.deleteAngle}
-                    handleValueChange={this.handleAngleChange}
-                    label={`Angle ${i + 1}`}/> //start at 1 for display
-                );
-            });
-            return angleElements;
-        }
-        const generateRefAngleElements = (elementsPerColumn : number) => {
-            let angleElements : Array<Array<JSX.Element>> = [];
-            Array.from(stateKeys.refAngles).forEach((key, i) => {
-                const columnIndex = Math.floor(i / elementsPerColumn);
-                if(i % elementsPerColumn === 0){angleElements.push([]);}
-                angleElements[columnIndex].push(
-                    <RefAngleForm key={key} keyProp={key} index={i} 
-                    newValue={[String(this.targetData.refAngles[i]), String(this.targetData.refLabels[i])]} 
-                    deleteElement={this.deleteRefAngle}
-                    handleValueChange={[this.onRefAngleChange, this.onRefLabelChange]}/>
-                );
-            });
-            return angleElements;
-        }
-        const renderAngleElements = (angleElements) => {
-            return angleElements.map((column, i) => {
-                return (
-                    <Col key={i} sm="3" style={{margin: 0, padding: 0}}>
-                        {column.map((angleElement) => {
-                            return angleElement;
-                        })}
-                    </Col>
-                );
-            });
-        }
-
-        const elementsPerColumn = 1;
-        const angleElements = generateAngleElements(elementsPerColumn);
-        const refAngleElements = generateRefAngleElements(elementsPerColumn);
+        const targetData = this.targetData, elementsPerColumn = 1;
+        const angleElements = this.generateAngleElements(elementsPerColumn);
+        const refAngleElements = this.generateRefAngleElements(elementsPerColumn);
         return(
         <>
             <h2 ref={this.scrollRef}>Target Parameters</h2>
@@ -272,7 +267,7 @@ class TargetFormsContainer extends React.Component
                 <h3 style={{display:"inline-block"}}>Target Angles</h3>
             </GeneralTooltip>
             <Container style={{marginBottom: "1rem"}}>
-                <Row>{renderAngleElements(angleElements)}</Row>
+                <Row>{this.renderAngleElements(angleElements)}</Row>
             </Container>
             <Row style={{marginBottom: "1rem"}}>
                 <Col/>
@@ -287,7 +282,7 @@ class TargetFormsContainer extends React.Component
                 <h3 style={{display:"inline-block"}}>Angle Labels</h3>
             </GeneralTooltip>
             <Container style={{marginBottom: "1rem"}}>
-                <Row>{renderAngleElements(refAngleElements)}</Row>
+                <Row>{this.renderAngleElements(refAngleElements)}</Row>
             </Container>
             <Row style={{marginBottom: "1rem"}}>
                 <Col/>

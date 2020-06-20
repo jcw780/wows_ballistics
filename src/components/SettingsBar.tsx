@@ -65,128 +65,136 @@ export class SettingsBar extends React.PureComponent<settingsBarProps, settingsB
 			['Light', [['lightMin', 'Min'], ['lightMax', 'Max']]],
         ]
     }
-    render(){
-        const settings = this.props.settings, calculationSettings = settings.calculationSettings, 
-            format = settings.format, colorSettings = format.colors;
+    //Graphs
+    private handleGraphChange = (value: string, id: string) => {
+        var numValue : number | undefined;
+        if(value === ''){numValue = undefined;} 
+        else{numValue = parseFloat(value);}
+        this.props.settings.distance[id] = numValue; 
+    }
+    private generateGraphForm = () => {
+        const rangeAxisFormStyle = {formLabel: {paddingTop: 0, paddingBottom: 0}, formGroup: {marginBottom: ".5rem"}};
+        return this.forms.graphs.distance.map((value, i) => {
+            return(
+                <ParameterForm 
+                controlId={value[0]} key={i} type="number" 
+                handleValueChange={this.handleGraphChange} 
+                newValue={String(this.props.settings.distance[value[0]])} 
+                append="m" 
+                labelWidth={3} style={rangeAxisFormStyle} ariaLabel={value[1]}>
+                    {value[1]}
+                </ParameterForm>
+            );
+        });
+    }
+    //Calculations
+    private handleCalculationChange = (value: string, id: string) : void | string => {
+        const calculationSettings = this.props.settings.calculationSettings;
+        if(value === ''){return 'error';}
+        const numValue = parseFloat(value);
+        calculationSettings.launchAngle[id] = numValue;
+    }
+    private generateLaunchAngleForm = () => {
+        const forms = this.forms, calculationSettings = this.props.settings.calculationSettings;
+        return forms.calculations.launchAngle.map((value, i) => {
+            const initialValue = calculationSettings.launchAngle[value[0]];
+            return(
+                <ParameterForm 
+                controlId={value[0]} key={i} type="number" 
+                newValue={String(initialValue)} 
+                handleValueChange={this.handleCalculationChange} 
+                labelWidth={3} append={value[2]} ariaLabel={value[1]}>
+                    {value[1]}
+                </ParameterForm>
+            );
+        });
+    }
+    private handleNumericalMethodChange = (value: string, id: string) : void | string => {
+        const calculationSettings = this.props.settings.calculationSettings;
+        if(value === ''){return 'error';}
+        const numValue = parseFloat(value);
+        if(id === 'timeStep'){
+            if(numValue <= 0){return 'error';}
+            calculationSettings.timeStep = numValue;
+        }
+    }
+    private generateNumericalMethodForm = () => {
         const forms = this.forms;
-        const handleGraphChange = (value: string, id: string) => {
-            var numValue : number | undefined;
-            if(value === ''){numValue = undefined;} 
-            else{numValue = parseFloat(value);}
-            settings.distance[id] = numValue; 
-        }
-        const generateGraphForm = () => {
-            const rangeAxisFormStyle = {formLabel: {paddingTop: 0, paddingBottom: 0}, formGroup: {marginBottom: ".5rem"}};
-            return forms.graphs.distance.map((value, i) => {
-                return(
-                    <ParameterForm 
-                    controlId={value[0]} key={i} type="number" 
-                    handleValueChange={handleGraphChange} 
-                    newValue={String(settings.distance[value[0]])} 
-                    append="m" 
-                    labelWidth={3} style={rangeAxisFormStyle} ariaLabel={value[1]}>
-                        {value[1]}
-                    </ParameterForm>
+        const calculationSettings = this.props.settings.calculationSettings;
+        return forms.calculations.numericalMethod.map((value, i) => {
+            const initialValue = calculationSettings[value[0]];
+            return(
+                <ParameterForm newValue={String(initialValue)} controlId={value[0]} key={i} ariaLabel={value[1]}
+                type="number" handleValueChange={this.handleNumericalMethodChange} labelWidth={3} append={value[2]}>
+                    {value[1]}
+                </ParameterForm>
+            );
+        });
+    }
+    //Format
+    private handleRoundingChange = (value: string, id: string) : void | string => {
+        let numValue : number | null = parseInt(value);
+        if(numValue < 0){return 'error';} if(value === ''){numValue = null;}
+        this.props.settings.format.rounding = numValue; 
+    } 
+    private handleShortNameChange = (event) => {this.props.settings.format.shortNames = event.target.checked;}
+    private handleShowLineChange = (event) => {this.props.settings.format.showLine = event.target.checked;}
+    //----Color
+    private handleColorChange = (value: string, id: string) : void | string => {
+        if(value === ''){return 'error';}
+        const numValues = parseFloat(value);
+        //if(numValues > 1 || numValues < 0){return 'error';}
+        this.props.settings.format.colors[id] = numValues;
+        this.props.updateColors();
+    }
+    private generateColorForms = () : JSX.Element => {
+        const typeWidth = 3, rowHeight = '3rem'; let counter = 0;
+        const addForm = () => {
+            return this.forms.colors.map((rowGroup : any) => {
+                const rowLabel = rowGroup[0], row = rowGroup[1];
+                return (
+                    <Row style={{maxHeight: rowHeight}} key={counter++}>
+                        <Col sm={typeWidth} className="no-lr-padding" style={{maxHeight: rowHeight}}>
+                            {rowLabel}</Col>
+                    {row.map((form) => {
+                        const id = form[0], label = form[1];
+                        return(
+                            <Col className="no-lr-padding" style={{maxHeight: rowHeight}} key={counter++}>
+                            <ParameterForm
+                                controlId={id} ariaLabel={`${label} ${rowLabel}`} type="number" 
+                                newValue={String(this.props.settings.format.colors[id])} 
+                                handleValueChange={this.handleColorChange} 
+                                labelWidth={0}
+                                style={{
+                                    formLabel: {display: "inline-block"},
+                                    formControl: {maxWidth: '6rem', display: "inline-block"},
+                                    inputGroup: {display: "inline-block"},
+                                    formGroup: {display: "inline-block", },
+                                }}></ParameterForm></Col>
+                        );
+                    })}
+                    </Row>
                 );
             });
         }
-        const handleCalculationChange = (value: string, id: string) : void | string => {
-            if(value === ''){return 'error';}
-            const numValue = parseFloat(value);
-            calculationSettings.launchAngle[id] = numValue;
-        }
-        const handleNumericalMethodChange = (value: string, id: string) : void | string => {
-            if(value === ''){return 'error';}
-            const numValue = parseFloat(value);
-            if(id === 'timeStep'){
-                if(numValue <= 0){return 'error';}
-                calculationSettings.timeStep = numValue;
-            }
-        }
-        const generateLaunchAngleForm = () => {
-            return forms.calculations.launchAngle.map((value, i) => {
-                const initialValue = calculationSettings.launchAngle[value[0]];
-                return(
-                    <ParameterForm 
-                    controlId={value[0]} key={i} type="number" 
-                    newValue={String(initialValue)} 
-                    handleValueChange={handleCalculationChange} 
-                    labelWidth={3} append={value[2]} ariaLabel={value[1]}>
-                        {value[1]}
-                    </ParameterForm>
-                );
-            });
-        }
-        const generateNumericalMethodForm = () => {
-            return forms.calculations.numericalMethod.map((value, i) => {
-                const initialValue = settings.calculationSettings[value[0]];
-                return(
-                    <ParameterForm newValue={String(initialValue)} controlId={value[0]} key={i} ariaLabel={value[1]}
-                    type="number" handleValueChange={handleNumericalMethodChange} labelWidth={3} append={value[2]}>
-                        {value[1]}
-                    </ParameterForm>
-                );
-            });
-        }
-        const handleRoundingChange = (value: string, id: string) : void | string => {
-            let numValue : number | null = parseInt(value);
-            if(numValue < 0){return 'error';} if(value === ''){numValue = null;}
-            format.rounding = numValue; 
-        } 
-        const handleShortNameChange = (event) => {format.shortNames = event.target.checked;}
+        return (<>
+            <Row style={{maxHeight: rowHeight}}>
+                <Col sm={typeWidth} className="no-lr-padding" style={{maxHeight: rowHeight}}/>
+                <Col className="no-lr-padding" style={{maxHeight: rowHeight}}>Minimum</Col>
+                <Col className="no-lr-padding" style={{maxHeight: rowHeight}}>Maximum</Col>
+            </Row>
+            {addForm()}
+        </>);
+    }
+    render(){
+        const settings = this.props.settings, format = settings.format, colorSettings = format.colors;
         let shortNamesDefault : string[] | undefined = undefined;
         if(format.shortNames){shortNamesDefault=["0"];}
 
-        const handleShowLineChange = (event) => {format.showLine = event.target.checked;}
+        //const handleShowLineChange = (event) => {format.showLine = event.target.checked;}
         let showLineDefault : string[] | undefined = undefined;
         if(format.showLine){showLineDefault=["0"];}
         
-        const generateColorForms = () : JSX.Element => {
-            const typeWidth = 3, rowHeight = '3rem'; let counter = 0;
-            const addForm = () => {
-                return this.forms.colors.map((rowGroup : any) => {
-                    const rowLabel = rowGroup[0], row = rowGroup[1];
-                    return (
-                        <Row style={{maxHeight: rowHeight}} key={counter++}>
-                            <Col sm={typeWidth} className="no-lr-padding" style={{maxHeight: rowHeight}}>
-                                {rowLabel}</Col>
-                        {row.map((form) => {
-                            const id = form[0], label = form[1];
-                            return(
-                                <Col className="no-lr-padding" style={{maxHeight: rowHeight}} key={counter++}>
-                                <ParameterForm
-                                    controlId={id} ariaLabel={`${label} ${rowLabel}`} type="number" 
-                                    newValue={String(colorSettings[id])} 
-                                    handleValueChange={handleColorChange} 
-                                    labelWidth={0}
-                                    style={{
-                                        formLabel: {display: "inline-block"},
-                                        formControl: {maxWidth: '6rem', display: "inline-block"},
-                                        inputGroup: {display: "inline-block"},
-                                        formGroup: {display: "inline-block", },
-                                    }}></ParameterForm></Col>
-                            );
-                        })}
-                        </Row>
-                    );
-                });
-            }
-            return (<>
-                <Row style={{maxHeight: rowHeight}}>
-                    <Col sm={typeWidth} className="no-lr-padding" style={{maxHeight: rowHeight}}/>
-                    <Col className="no-lr-padding" style={{maxHeight: rowHeight}}>Minimum</Col>
-                    <Col className="no-lr-padding" style={{maxHeight: rowHeight}}>Maximum</Col>
-                </Row>
-                {addForm()}
-            </>);
-        }
-        const handleColorChange = (value: string, id: string) : void | string => {
-            if(value === ''){return 'error';}
-            const numValues = parseFloat(value);
-            //if(numValues > 1 || numValues < 0){return 'error';}
-            colorSettings[id] = numValues;
-            this.props.updateColors();
-        }
         const open = this.state.open;
         return(<>
 <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
@@ -205,13 +213,13 @@ export class SettingsBar extends React.PureComponent<settingsBarProps, settingsB
                         <Col sm="1"/>
                         <Col>
                     <ToggleButtonGroup type="checkbox" vertical defaultValue={showLineDefault}>
-                        <ToggleButton value="0" onChange={handleShowLineChange} variant="secondary">Show Line</ToggleButton>
+                        <ToggleButton value="0" onChange={this.handleShowLineChange} variant="secondary">Show Line</ToggleButton>
                     </ToggleButtonGroup>
                         </Col>
                         <Col sm="1"/>  
                     </Row>
                     <hr/><h4>Range Axis</h4>
-                    {generateGraphForm()}
+                    {this.generateGraphForm()}
                 </Col>
                 <Col style={{padding: 0}}>
                     <h4>Labeling</h4>
@@ -219,7 +227,7 @@ export class SettingsBar extends React.PureComponent<settingsBarProps, settingsB
                     <Col sm="1"/>
                         <Col>
                             <ToggleButtonGroup type="checkbox" vertical defaultValue={shortNamesDefault}>
-                                <ToggleButton value="0" onChange={handleShortNameChange} variant="secondary">Short Names</ToggleButton>
+                                <ToggleButton value="0" onChange={this.handleShortNameChange} variant="secondary">Short Names</ToggleButton>
                             </ToggleButtonGroup>
                         </Col>
                     <Col sm="1"/>
@@ -227,12 +235,12 @@ export class SettingsBar extends React.PureComponent<settingsBarProps, settingsB
                     <ParameterForm 
                         controlId="rounding" ariaLabel="Tooltip Rounding" type="number" 
                         newValue={String(format.rounding)}
-                        handleValueChange={handleRoundingChange} 
+                        handleValueChange={this.handleRoundingChange} 
                         labelWidth={3} append="dp">
                         Tooltip Rounding
                     </ParameterForm>
                     <hr/><h4>Color Generation</h4>
-                    {generateColorForms()}
+                    {this.generateColorForms()}
                 </Col>
             </Row>
         </Col>
@@ -241,12 +249,12 @@ export class SettingsBar extends React.PureComponent<settingsBarProps, settingsB
             <Row>
                 <Col style={{padding: 0}}>
                     <h4>Launch Angle</h4>
-                    {generateLaunchAngleForm()}
+                    {this.generateLaunchAngleForm()}
                 </Col>
                 <Col sm="6" style={{paddingRight: 0, paddingLeft: 0}}>
                     <h4>Numerical Analysis</h4>
                     <CalculationRadio settings={settings}/>
-                    {generateNumericalMethodForm()}
+                    {this.generateNumericalMethodForm()}
                 </Col>
             </Row>
         </Col>
