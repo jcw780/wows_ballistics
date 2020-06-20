@@ -4,7 +4,7 @@ import {Button, ToggleButtonGroup, ToggleButton, Collapse, Container, Col, Row} 
 import * as T from './commonTypes';
 import {ParameterForm} from './ParameterForm';
 
-class CalculationRadio extends React.Component<{settings: T.settingsT}, {value: number}>{
+class CalculationRadio extends React.PureComponent<{settings: T.settingsT}, {value: number}>{
     constructor(props){
         super(props);
         this.state = {value: this.props.settings.calculationSettings.calculationMethod};
@@ -45,7 +45,7 @@ interface settingsBarState{open: boolean}
 interface settingsBarProps{
     settings: T.settingsT, updateColors: Function
 }
-export class SettingsBar extends React.Component<settingsBarProps, settingsBarState>{
+export class SettingsBar extends React.PureComponent<settingsBarProps, settingsBarState>{
     state = {open : false}; scrollRef = React.createRef<Button & HTMLButtonElement>();
     titles : T.collapseTitlesT = ["Hide: ", "Show: "]; // 0: Hide 1: Show
     private toggleCollapse = () => {
@@ -141,7 +141,7 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
         let showLineDefault : string[] | undefined = undefined;
         if(format.showLine){showLineDefault=["0"];}
         
-        const generateColors = () : JSX.Element => {
+        const generateColorForms = () : JSX.Element => {
             const typeWidth = 3, rowHeight = '3rem'; let counter = 0;
             const addForm = () => {
                 return this.forms.colors.map((rowGroup : any) => {
@@ -161,7 +161,7 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
                                     labelWidth={0}
                                     style={{
                                         formLabel: {display: "inline-block"},
-                                        formControl: {width: '6rem', display: "inline-block"},
+                                        formControl: {maxWidth: '6rem', display: "inline-block"},
                                         inputGroup: {display: "inline-block"},
                                         formGroup: {display: "inline-block", },
                                     }}></ParameterForm></Col>
@@ -187,7 +187,6 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
             colorSettings[id] = numValues;
             this.props.updateColors();
         }
-
         const open = this.state.open;
         return(<>
 <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
@@ -233,7 +232,7 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
                         Tooltip Rounding
                     </ParameterForm>
                     <hr/><h4>Color Generation</h4>
-                    {generateColors()}
+                    {generateColorForms()}
                 </Col>
             </Row>
         </Col>

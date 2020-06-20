@@ -7,17 +7,16 @@ import * as T from './commonTypes';
 
 interface defaultFormProps{
 	controlId: string, keyProp: number, ariaLabel : string, children : string | JSX.Element, 
-	defaultValue: string, defaultOptions: string[], handleValueChange: Function,
+	defaultValue: string, defaultOptions: string[], defaultValues: string[], handleValueChange: Function,
 }
 
-export class DefaultForm extends React.Component
-<defaultFormProps> {
+export class DefaultForm extends React.Component<defaultFormProps> {
 	public static defaultProps = {
 		defaultValue : "", defaultOptions: [],
 	}
 	updated = false;
 	form = React.createRef<HTMLSelectElement>();
-	state = {options: this.props.defaultOptions, values: this.props.defaultOptions};
+	state = {options: this.props.defaultOptions, values: this.props.defaultValues};
 	handleChange = (event) => {
 		event.stopPropagation();
 		this.props.handleValueChange(event.target.value, this.props.controlId);
@@ -121,6 +120,7 @@ class DefaultShips extends React.Component
 			//apparently prevents async calls from updating deleted refs I guess...
 			//fixes delete ship crash bug
 			this.props.defaultData[target][T.singleDefaultDataIndex.options] = options;
+			this.props.defaultData[target][T.singleDefaultDataIndex.values] = values;
 			refCurrent.updateOptions(options, values);
 		}
 	}
@@ -186,7 +186,8 @@ class DefaultShips extends React.Component
 		return (<DefaultForm key={i} controlId={name}
 		handleValueChange={this.changeForm} ref={v[singleFormIndex.ref]} keyProp={this.props.keyProp}
 		defaultValue={defaultData[name][T.singleDefaultDataIndex.value]} ariaLabel={v[singleFormIndex.name]}
-		defaultOptions={defaultData[name][T.singleDefaultDataIndex.options]}>
+		defaultOptions={defaultData[name][T.singleDefaultDataIndex.options]}
+		defaultValues={defaultData[name][T.singleDefaultDataIndex.values]}>
 			{v[singleFormIndex.name]}
 		</DefaultForm>);
 	})}

@@ -80,8 +80,8 @@ export class ShellForms extends React.Component<shellFormsProps> {
 	}
 	graph = true;
 	defaultData : T.defaultDataT = Object.seal({
-		version: ['', ['']], nation: ['', ['']], shipType: ['', ['']], 
-		ship: ['', ['']], artillery: ['', ['']], shellType: ['', ['']],
+		version: ['', [''], ['']], nation: ['', [''], ['']], shipType: ['', [''], ['']], 
+		ship: ['', [''], ['']], artillery: ['', [''], ['']], shellType: ['', [''], ['']],
 		queriedData: {}
 	});
 	formData : formDataT = Object.seal({

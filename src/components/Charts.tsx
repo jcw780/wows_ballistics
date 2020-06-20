@@ -325,7 +325,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             const chartConfig = this.chartConfigs[key], staticOption = staticOptionSetup[key], setup = staticOption[0];
             chartConfig.forEach((chart, i) => {
                 const config = chart[singleChartIndex.config];
-                config.options = {}; config.data.datasets = []; //empty options and datasets
+                config.data.datasets.length = 0; //empty options and datasets
                 config.options = setup(staticOption[1][i]); //set options
             });
         });
@@ -347,14 +347,13 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         //Colons are used to denote split between label and name
         const WFL = "Fused: ", NFL = "No Fusing: ";
         configPost.forEach((chart, i) => {
-            chart[singleChartIndex.config].data.datasets = []; // clear dataset
+            chart[singleChartIndex.config].data.datasets.length = 0; // clear dataset
             chart[singleChartIndex.config].data.datasets.push( // add ship width line
             {
                 data: postData.shipWidth[0], showLine: showLineValue, borderDash: [5, 5], label: ":Ship Width", 
                 yAxisID: 'detDist', borderColor: "#505050", fill: false, 
                 pointRadius: commonPointRadius, pointHitRadius: 5 ,
             });
-            chart[singleChartIndex.config].options = {};
             chart[singleChartIndex.config].options = {
                 title: {
                     display: true,
