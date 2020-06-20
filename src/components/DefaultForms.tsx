@@ -10,7 +10,7 @@ interface defaultFormProps{
 	defaultValue: string, defaultOptions: string[], defaultValues: string[], handleValueChange: Function,
 }
 
-export class DefaultForm extends React.Component<defaultFormProps> {
+export class DefaultForm extends React.PureComponent<defaultFormProps> {
 	public static defaultProps = {
 		defaultValue : "", defaultOptions: [],
 	}
@@ -93,7 +93,7 @@ enum singleFormIndex {name, ref, queryIndex}
 type singleFormT = [string, React.RefObject<DefaultForm>, number]
 type defaultFormType = T.defaultFormGeneric<singleFormT>
 
-class DefaultShips extends React.Component
+class DefaultShips extends React.PureComponent
 <{sendDefault: Function, reset: Function, index: number, keyProp: number, defaultData: T.defaultDataT}> {
 	defaultForms : defaultFormType = Object.seal({
 		version:   ['Version'   , React.createRef<DefaultForm>(), 0],
