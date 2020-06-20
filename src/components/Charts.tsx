@@ -89,7 +89,7 @@ enum singleChartIndex {config, ref, name}
 type singleChartType = [chartDataOption, React.RefObject<SingleChart>, string]
 
 interface chartGroupProps{
-    settings: Record<string, any>, links: T.linkT, onUpdate: Function
+    settings: T.settingsT, links: T.linkT, onUpdate: Function
 }
 export class ChartGroup extends React.Component<chartGroupProps>{
     state={updateTrigger: true}; //State needs value otherwise render won't trigger
@@ -158,60 +158,26 @@ export class ChartGroup extends React.Component<chartGroupProps>{
     }
 
     //Utility Functions for Graphs
-    private roundStringNumberWithoutTrailingZeroes = (num) => {
-        const dp = this.props.settings.format.rounding ; num = String(num);
-        if (dp > 0){
-            if (num.indexOf('e+') !== -1) {
-                // Can't round numbers this large because their string representation
-                // contains an exponent, like 9.99e+37
-                throw new Error("num too large");
-            }
-            if (num.indexOf('.') === -1) {// Nothing to do
-                return num;
-            }
-            let parts = num.split('.'),
-                beforePoint = parts[0], afterPoint = parts[1],
-                shouldRoundUp = afterPoint[dp] >= 5,
-                finalNumber;
-            afterPoint = afterPoint.slice(0, dp);
-            if (!shouldRoundUp) {
-                finalNumber = beforePoint + '.' + afterPoint;
-            } else if (/^9+$/.test(afterPoint)) {
-                // If we need to round up a number like 1.9999, increment the integer
-                // before the decimal point and discard the fractional part.
-                finalNumber = String(Number(beforePoint)+1);
-            } else {
-                // Starting from the last digit, increment digits until we find one
-                // that is not 9, then stop
-                let i = dp-1;
-                while (true) {
-                    if (afterPoint[i] === '9') {
-                        afterPoint = afterPoint.substr(0, i) +
-                                    '0' +
-                                    afterPoint.substr(i+1);
-                        i--;
-                    } else {
-                        afterPoint = afterPoint.substr(0, i) +
-                                    (Number(afterPoint[i]) + 1) +
-                                    afterPoint.substr(i+1);
-                        break;
-                    }
-                }
-                finalNumber = beforePoint + '.' + afterPoint;
-            }
-            // Remove trailing zeroes from fractional part before returning
-            return finalNumber.replace(/0+$/, '')
+    private roundStringNumberWithoutTrailingZeroes = (num: number) => {
+        const dp = this.props.settings.format.rounding! ; //num = String(num);
+        if (dp >= 0 && dp !== null){return Number(num.toFixed(dp));
         }else{return num;}
+    }
+    private localeString = (num: number) => {
+        const opt = {maximumFractionDigits: 20}
+        return num.toLocaleString('en-US', opt);
     }
     //Chart tooltip callbacks
     private callbackFunction = (tooltipItem, chart) => {
-        let x = parseFloat(tooltipItem.label).toLocaleString(); 
-        let y = parseFloat(tooltipItem.value).toLocaleString();
+        let x = parseFloat(tooltipItem.label), y = parseFloat(tooltipItem.value);
         x = this.roundStringNumberWithoutTrailingZeroes(x); y = this.roundStringNumberWithoutTrailingZeroes(y);
         const namePS = (chart.datasets[tooltipItem.datasetIndex].label).split(':');
         const name = namePS.slice(1).join(':');
         const callbackFunctions = this.callbackFunctions;
-        return name + ' ' + callbackFunctions[chart.datasets[tooltipItem.datasetIndex].yAxisID](x, y);
+        return `${name} ${callbackFunctions[
+            chart.datasets[tooltipItem.datasetIndex].yAxisID](
+                this.localeString(x), this.localeString(y))
+        }`;
     }
     private callbackColor = (tooltipItem, chart) => {
         const color = chart.config.data.datasets[tooltipItem.datasetIndex].borderColor;

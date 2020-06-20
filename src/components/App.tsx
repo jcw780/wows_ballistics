@@ -161,7 +161,6 @@ class App extends React.Component<{},{}> {
 		return this.makePoint(shell, index, dist, 'angle', pointFunction);
 	}
 	private makePoint = (shell, index, dist, target : 'impact'| 'angle', pointFunction) => {
-		console.log('entered - P');
 		const calculatedData = this.calculatedData;
 		Object.entries(calculatedData[target]).forEach(([dataType, output] : [string, T.pointArrays]) => {
 			output[shell][index] = {x: dist, y: pointFunction(index, dataType, shell)};

@@ -187,11 +187,10 @@ export class SettingsBar extends React.PureComponent<settingsBarProps, settingsB
         </>);
     }
     render(){
-        const settings = this.props.settings, format = settings.format, colorSettings = format.colors;
+        const settings = this.props.settings, format = settings.format;
         let shortNamesDefault : string[] | undefined = undefined;
         if(format.shortNames){shortNamesDefault=["0"];}
 
-        //const handleShowLineChange = (event) => {format.showLine = event.target.checked;}
         let showLineDefault : string[] | undefined = undefined;
         if(format.showLine){showLineDefault=["0"];}
         
