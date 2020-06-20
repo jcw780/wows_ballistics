@@ -154,7 +154,6 @@ class DefaultShips extends React.Component
 		values.forEach((ship, i) => {options.push(`(${ships[ship]['Tier']}) ${ship}`);});
 		this.updateForm('ship', options, values);
 	}
-	adjustShip = (withTier) => {return withTier.split(' ').splice(1).join(' ');}
 	queryArtillery = () => {
 		const dData = this.props.defaultData, qDataS = dData.queriedData.ships;
 		const sDI = T.singleDefaultDataIndex.value;
