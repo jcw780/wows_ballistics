@@ -388,7 +388,8 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             label: string, color : string = "", show : boolean = true) : Record<string, any> => {
             if(show){return {
                     data: data, showLine: showLineValue, label: label, yAxisID: 'detDist',
-                    borderColor: color, fill: false, pointRadius: commonPointRadius, pointHitRadius: 5
+                    fill: false, pointRadius: commonPointRadius, pointHitRadius: 5,
+                    borderColor: color, backgroundColor: color, 
                 };
             }else{return {
                     data: data, showLine: false, label: label, yAxisID: 'detDist',

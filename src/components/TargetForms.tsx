@@ -9,7 +9,7 @@ interface refAngleFormProps {
     newValue: string[], index: number, keyProp : number, 
     handleValueChange: T.handleValueChangeT[], deleteElement : Function,
 }
-class RefAngleForm extends React.Component<refAngleFormProps>{
+class RefAngleForm extends React.PureComponent<refAngleFormProps>{
     deleteElement = () => {
         this.props.deleteElement(this.props.keyProp, this.props.index);
     }
@@ -49,7 +49,7 @@ interface angleFormProps {
     label: string, keyProp : number, 
     handleValueChange: T.handleValueChangeT, deleteElement : Function,
 }
-class AngleForm extends React.Component<angleFormProps>{
+class AngleForm extends React.PureComponent<angleFormProps>{
     deleteElement = () => {
         this.props.deleteElement(this.props.keyProp, this.props.index);
     }

@@ -183,11 +183,12 @@ class DefaultShips extends React.Component
 		return(
 <Container style={{paddingLeft: 0, paddingRight: 0}}>
 	{Object.entries(this.defaultForms).map( ([name, v], i) => {
-		return (<DefaultForm key={i} controlId={name}
-		handleValueChange={this.changeForm} ref={v[singleFormIndex.ref]} keyProp={this.props.keyProp}
-		defaultValue={defaultData[name][T.singleDefaultDataIndex.value]} ariaLabel={v[singleFormIndex.name]}
-		defaultOptions={defaultData[name][T.singleDefaultDataIndex.options]}
-		defaultValues={defaultData[name][T.singleDefaultDataIndex.values]}>
+		const defaultDataN = defaultData[name];
+		return (<DefaultForm key={i} keyProp={this.props.keyProp} controlId={name} ref={v[singleFormIndex.ref]}
+		ariaLabel={v[singleFormIndex.name]} handleValueChange={this.changeForm} 
+		defaultValue={defaultDataN[T.singleDefaultDataIndex.value]} 
+		defaultOptions={defaultDataN[T.singleDefaultDataIndex.options]}
+		defaultValues={defaultDataN[T.singleDefaultDataIndex.values]}>
 			{v[singleFormIndex.name]}
 		</DefaultForm>);
 	})}
