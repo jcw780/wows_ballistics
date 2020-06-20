@@ -1,4 +1,3 @@
-/* tslint:disable */
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {Form, Container} from 'react-bootstrap';
@@ -8,25 +7,24 @@ import * as T from './commonTypes';
 
 interface defaultFormProps{
 	controlId: string, keyProp: number, ariaLabel : string, children : string | JSX.Element, 
-	defaultValue: string, defaultOptions: string[], handleValueChange: Function,
+	defaultValue: string, defaultOptions: string[], defaultValues: string[], handleValueChange: Function,
 }
 
-export class DefaultForm extends React.Component
-<defaultFormProps> {
+export class DefaultForm extends React.PureComponent<defaultFormProps> {
 	public static defaultProps = {
 		defaultValue : "", defaultOptions: [],
 	}
 	updated = false;
 	form = React.createRef<HTMLSelectElement>();
-	state = {options: this.props.defaultOptions};
+	state = {options: this.props.defaultOptions, values: this.props.defaultValues};
 	handleChange = (event) => {
 		event.stopPropagation();
 		this.props.handleValueChange(event.target.value, this.props.controlId);
 	}
 
-	updateOptions = (newOptions) => {
+	updateOptions = (newOptions, newValues) => {
 		this.updated = true;
-		this.setState((state) => {return {options: newOptions};});
+		this.setState((state) => {return {options: newOptions, values: newValues};});
 	}
 
 	render(){
@@ -36,7 +34,9 @@ export class DefaultForm extends React.Component
 				<Form.Label column sm="3">{props.children}</Form.Label>
 				<Form.Control as="select" placeholder="" defaultValue={props.defaultValue} aria-label={props.ariaLabel}
 				onChange={this.handleChange} ref={this.form} style={{width: "70%"}}>
-					{this.state.options.map((value,i) => {return (<option aria-label={value} key={i}>{value}</option>);})}
+					{this.state.options.map((value,i) => {
+						return (<option aria-label={value} value={this.state.values[i]} key={i}>{value}</option>);
+					})}
 				</Form.Control>
 			</Form.Group>
 		);
@@ -55,7 +55,6 @@ const dataURL = "https://jcw780.github.io/LiveGameData2/data/"
 const fetchJson = (target, onSucess) => {
     fetch(target)
         .then((response) => {
-			//console.log(response.body);
             if (!response.ok) {
             throw new Error('Network response was not ok');
 			}
@@ -94,7 +93,7 @@ enum singleFormIndex {name, ref, queryIndex}
 type singleFormT = [string, React.RefObject<DefaultForm>, number]
 type defaultFormType = T.defaultFormGeneric<singleFormT>
 
-class DefaultShips extends React.Component
+class DefaultShips extends React.PureComponent
 <{sendDefault: Function, reset: Function, index: number, keyProp: number, defaultData: T.defaultDataT}> {
 	defaultForms : defaultFormType = Object.seal({
 		version:   ['Version'   , React.createRef<DefaultForm>(), 0],
@@ -104,75 +103,76 @@ class DefaultShips extends React.Component
 		artillery: ['Artillery' , React.createRef<DefaultForm>(), 4], 
 		shellType: ['Shell Type', React.createRef<DefaultForm>(), 5],
 	})
-	changeForm = (value, id) => {
+	changeForm = (value, id : keyof(defaultFormType)) => {
 		//this.defaultForms[id][singleFormIndex.value] = value;
 		const defaultData = this.props.defaultData;
 		defaultData[id][T.singleDefaultDataIndex.value] = value;
 		const queryIndex = this.defaultForms[id][singleFormIndex.queryIndex];
-		const queries = {
-			0: this.queryNation, 1: this.queryType, 2: this.queryShip,
-			3: this.queryArtillery, 4: this.queryShellType, 5: this.sendData
-		}
+		const queries = [
+			this.queryNation, this.queryType, this.queryShip,
+			this.queryArtillery, this.queryShellType, this.sendData
+		]
 		if(queryIndex in queries){queries[queryIndex]();}
 	}
-	updateForm = (target, options) => {
+	updateForm = (target : keyof(defaultFormType), options, values) => {
 		const refCurrent = this.defaultForms[target][singleFormIndex.ref].current;
 		if(refCurrent){ 
 			//apparently prevents async calls from updating deleted refs I guess...
 			//fixes delete ship crash bug
 			this.props.defaultData[target][T.singleDefaultDataIndex.options] = options;
-			refCurrent.updateOptions(options);
+			this.props.defaultData[target][T.singleDefaultDataIndex.values] = values;
+			refCurrent.updateOptions(options, values);
 		}
 	}
 	queryVersion = () => {
 		fetchJson(dataURL + "versions.json", (data) => {
 			let dataSorted = data.reverse();
-			this.updateForm('version', dataSorted);
+			this.updateForm('version', dataSorted, dataSorted);
 		});
 	}
 	queryNation = async () => {
 		const defaultData = this.props.defaultData;
 		const data = await fetchJsonData(`${dataURL}${defaultData.version[T.singleDefaultDataIndex.value]}_s.gz`);
 		this.props.defaultData.queriedData = data;
-		this.updateForm('nation', Object.keys(data.ships));
+		const options = Object.keys(data.ships);
+		this.updateForm('nation', options, options);
 	}
 	queryType = () => {
 		const dData = this.props.defaultData;
 		const nation = dData.nation[T.singleDefaultDataIndex.value];
 		const qDataS = dData.queriedData.ships;
-		this.updateForm('shipType', Object.keys(qDataS[nation]));
+		const options = Object.keys(qDataS[nation]);
+		this.updateForm('shipType', options, options);
 	}
 	queryShip = async () => {
 		const dData = this.props.defaultData, qDataS = dData.queriedData.ships;
 		const sDI = T.singleDefaultDataIndex.value;
 		const nation = dData.nation[sDI], type = dData.shipType[sDI];
 		const ships = qDataS[nation][type];
-		let sorted = Object.keys(ships);
-		sorted.sort((a, b) => {return ships[a]['Tier'] - ships[b]['Tier']});
-		sorted.forEach((ship, i) => {
-			sorted[i] = `(${ships[ship]['Tier']}) ${ship}`
-		})
-		this.updateForm('ship', sorted);
+		let values = Object.keys(ships), options : string[] = [];
+		values.sort((a, b) => {return ships[a]['Tier'] - ships[b]['Tier']});
+		values.forEach((ship, i) => {options.push(`(${ships[ship]['Tier']}) ${ship}`);});
+		this.updateForm('ship', options, values);
 	}
-	adjustShip = (withTier) => {return withTier.split(' ').splice(1).join(' ');}
 	queryArtillery = () => {
 		const dData = this.props.defaultData, qDataS = dData.queriedData.ships;
 		const sDI = T.singleDefaultDataIndex.value;
-		const nation = dData.nation[sDI], type = dData.shipType[sDI], ship = this.adjustShip(dData.ship[sDI]);
-		console.log(ship, qDataS[nation][type]);
-		this.updateForm('artillery', Object.keys(qDataS[nation][type][ship].artillery));
+		const nation = dData.nation[sDI], type = dData.shipType[sDI], ship = dData.ship[sDI];
+		const options = Object.keys(qDataS[nation][type][ship].artillery);
+		this.updateForm('artillery', options, options);
 	}
 	queryShellType = () => {
 		const dData = this.props.defaultData, qDataS = dData.queriedData.ships;
 		const sDI = T.singleDefaultDataIndex.value;
 		const nation = dData.nation[sDI], type = dData.shipType[sDI];
-		const ship = this.adjustShip(dData.ship[sDI]), artillery = dData.artillery[sDI];
-		this.updateForm('shellType', Object.keys(qDataS[nation][type][ship].artillery[artillery]));
+		const ship = dData.ship[sDI], artillery = dData.artillery[sDI];
+		const options = Object.keys(qDataS[nation][type][ship].artillery[artillery]);
+		this.updateForm('shellType', options, options);
 	}
 	sendData = () => {
 		const dData = this.props.defaultData, qDataS = dData.queriedData.ships;
 		const sDI = T.singleDefaultDataIndex.value;
-		const nation = dData.nation[sDI], type = dData.shipType[sDI], ship = this.adjustShip(dData.ship[sDI]);
+		const nation = dData.nation[sDI], type = dData.shipType[sDI], ship = dData.ship[sDI];
 		const artillery = dData.artillery[sDI], shellType = dData.shellType[sDI];
 		const shellName = qDataS[nation][type][ship].artillery[artillery][shellType];
 		this.props.sendDefault(dData.queriedData.shells[shellName], ship);
@@ -182,10 +182,12 @@ class DefaultShips extends React.Component
 		return(
 <Container style={{paddingLeft: 0, paddingRight: 0}}>
 	{Object.entries(this.defaultForms).map( ([name, v], i) => {
-		return (<DefaultForm key={i} controlId={name}
-		handleValueChange={this.changeForm} ref={v[singleFormIndex.ref]} keyProp={this.props.keyProp}
-		defaultValue={defaultData[name][T.singleDefaultDataIndex.value]} ariaLabel={v[singleFormIndex.name]}
-		defaultOptions={defaultData[name][T.singleDefaultDataIndex.options]}>
+		const defaultDataN = defaultData[name];
+		return (<DefaultForm key={i} keyProp={this.props.keyProp} controlId={name} ref={v[singleFormIndex.ref]}
+		ariaLabel={v[singleFormIndex.name]} handleValueChange={this.changeForm} 
+		defaultValue={defaultDataN[T.singleDefaultDataIndex.value]} 
+		defaultOptions={defaultDataN[T.singleDefaultDataIndex.options]}
+		defaultValues={defaultDataN[T.singleDefaultDataIndex.values]}>
 			{v[singleFormIndex.name]}
 		</DefaultForm>);
 	})}

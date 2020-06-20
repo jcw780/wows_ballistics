@@ -153,8 +153,8 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             }
         });
         //Preinitialize postpenetration names
-        this.chartConfigs.post.forEach((value, i) => {
-            value[singleChartIndex.name] = 'Horizontal Impact Angle ' + (i + 1);});
+        this.chartConfigs.post.forEach((chart, i) => {
+            chart[singleChartIndex.name] = 'Horizontal Impact Angle ' + (i + 1);});
     }
 
     //Utility Functions for Graphs
@@ -325,7 +325,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             const chartConfig = this.chartConfigs[key], staticOption = staticOptionSetup[key], setup = staticOption[0];
             chartConfig.forEach((chart, i) => {
                 const config = chart[singleChartIndex.config];
-                config.options = {}; config.data.datasets = []; //empty options and datasets
+                config.data.datasets.length = 0; //empty options and datasets
                 config.options = setup(staticOption[1][i]); //set options
             });
         });
@@ -347,14 +347,13 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         //Colons are used to denote split between label and name
         const WFL = "Fused: ", NFL = "No Fusing: ";
         configPost.forEach((chart, i) => {
-            chart[singleChartIndex.config].data.datasets = []; // clear dataset
+            chart[singleChartIndex.config].data.datasets.length = 0; // clear dataset
             chart[singleChartIndex.config].data.datasets.push( // add ship width line
             {
                 data: postData.shipWidth[0], showLine: showLineValue, borderDash: [5, 5], label: ":Ship Width", 
                 yAxisID: 'detDist', borderColor: "#505050", fill: false, 
                 pointRadius: commonPointRadius, pointHitRadius: 5 ,
             });
-            chart[singleChartIndex.config].options = {};
             chart[singleChartIndex.config].options = {
                 title: {
                     display: true,
@@ -376,7 +375,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             chart[singleChartIndex.name] = `Horizontal Impact Angle ${i + 1}: ${graphData.angles[i]}°`
         });
         //Add Lines
-        const impactAngleLine = (data : T.scatterPoint[], 
+        const addLine = (data : T.scatterPoint[], 
                             label: string, yAxisID : string, 
                             color : string = "") : Record<string, any> => {
             return {
@@ -387,10 +386,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         }
         const postLine = (data : T.scatterPoint[], 
             label: string, color : string = "", show : boolean = true) : Record<string, any> => {
-            if(show){return {
-                    data: data, showLine: showLineValue, label: label, yAxisID: 'detDist',
-                    borderColor: color, fill: false, pointRadius: commonPointRadius, pointHitRadius: 5
-                };
+            if(show){return addLine(data, label, 'detDist', color);
             }else{return {
                     data: data, showLine: false, label: label, yAxisID: 'detDist',
                     borderColor: color, fill: false, pointRadius: 0, pointHitRadius: 0
@@ -403,7 +399,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 let counter = 0;
                 configs[rowIndex].axes.forEach((axis, axisIndex) => {
                     axis.lines.forEach((line, lineIndex) => {
-                        chart[singleChartIndex.config].data.datasets.push(impactAngleLine(
+                        chart[singleChartIndex.config].data.datasets.push(addLine(
                             graphData[line.data][shellIndex], 
                             line.lineLabel + name, 
                             axis.id, 
@@ -419,7 +415,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             configAngle.forEach((chart) => {
                 chart[singleChartIndex.config].data.datasets.push({
                     data: data, showLine: showLineValue, borderDash: [5, 5], label: `:${graphData.refLabels[i]}`, 
-                    yAxisID: 'angle', borderColor: "#505050", fill: false, 
+                    yAxisID: 'angle', borderColor: "#505050", backgroundColor: "#505050", fill: false, 
                     pointRadius: commonPointRadius, pointHitRadius: 5 ,
                 });
             });
