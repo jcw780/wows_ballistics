@@ -148,6 +148,25 @@ class App extends React.Component<{},{}> {
 	}
 	
 	// Calculate and generate data for charts
+	private makeImpactPoints = (shell, index, dist) => {
+		const pointFunction = (index, dataType, shell) => {
+			return this.instance.getImpactPoint(index, this.arrayIndices.impactDataIndex[dataType], shell);
+		}
+		return this.makePoint(shell, index, dist, 'impact', pointFunction);
+	}
+	private makeAnglePoints = (shell, index, dist) => {
+		const pointFunction = (index, dataType, shell) => {
+			return this.instance.getAnglePoint(index, this.arrayIndices.angleDataIndex[dataType], shell);
+		}
+		return this.makePoint(shell, index, dist, 'angle', pointFunction);
+	}
+	private makePoint = (shell, index, dist, target : 'impact'| 'angle', pointFunction) => {
+		console.log('entered - P');
+		const calculatedData = this.calculatedData;
+		Object.entries(calculatedData[target]).forEach(([dataType, output] : [string, T.pointArrays]) => {
+			output[shell][index] = {x: dist, y: pointFunction(index, dataType, shell)};
+		});
+	}
 	generate = () : void => {
 		const shellData = this.SFCref.current!.returnShellData();
 		const tgtData = this.TFCref.current!.returnData();
@@ -182,13 +201,7 @@ class App extends React.Component<{},{}> {
 				for(let i=0; i<impactSize; i++){ // iterate through points at each range
 					const dist : number = instance.getImpactPoint(i, arrayIndices.impactDataIndex.distance, j);
 					maxDist = Math.max(maxDist, dist);
-					Object.entries(calculatedData.impact).forEach(([dataType, output] : [string, T.pointArrays]) => {
-						const y = instance.getImpactPoint(i, arrayIndices.impactDataIndex[dataType], j);
-						output[j][i] = {x: dist, y: y};
-					});
-					Object.entries(calculatedData.angle).forEach(([dataType, output] : [string, T.pointArrays]) => {
-						output[j][i] = {x: dist, y: instance.getAnglePoint(i, arrayIndices.angleDataIndex[dataType], j)};
-					});
+					this.makeImpactPoints(j, i, dist); this.makeAnglePoints(j, i, dist);
 					for(let k=0; k<numAngles; k++){
 						const detDist : number
 							= instance.getPostPenPoint(i, arrayIndices.postPenDataIndex.x, k, j);

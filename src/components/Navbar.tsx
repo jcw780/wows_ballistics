@@ -6,19 +6,25 @@ import * as T from './commonTypes';
 class NavbarCustom extends React.Component<{links: T.linkT}>{
     state = {update: true};
     update = () => {this.setState(this.state);}
-    private scrollToRef = (ref : T.chartRefT | T.parameterRefT) => {
-        window.scrollTo(0, ref.current!.scrollRef.current!.offsetTop);
+    private makeScroller = (ref : T.chartRefT | T.parameterRefT) => {
+        const scrollToRef = (ref : T.chartRefT | T.parameterRefT) => {
+            window.scrollTo(0, ref.current!.scrollRef.current!.offsetTop);
+        }
+        return _ => scrollToRef(ref);
     }
     private makeDropdowns = (target : T.linkKeyT) => {
         return this.props.links[target].map((link, i) => {
-            return <NavDropdown.Item onSelect={() => {this.scrollToRef(link[T.singleLinkIndex.ref])}} key={i}>
-                {link[T.singleLinkIndex.name]}</NavDropdown.Item>
+            /*return <NavDropdown.Item onSelect={() => {this.scrollToRef(link[T.singleLinkIndex.ref])}} key={i}>
+                {link[T.singleLinkIndex.name]}</NavDropdown.Item>*/
+            return <NavDropdown.Item onSelect={this.makeScroller(link[T.singleLinkIndex.ref])} key={i}>
+            {link[T.singleLinkIndex.name]}</NavDropdown.Item>
         });
     };
+    private scrollToTop = _ => window.scrollTo(0, 0);
     render(){
         return(
 <Navbar variant="dark" bg="dark" expand="lg" fixed="top">
-    <Navbar.Brand onClick={() => {window.scrollTo(0, 0);}}>World of Warships Ballistics Calculator</Navbar.Brand>
+    <Navbar.Brand onClick={this.scrollToTop}>World of Warships Ballistics Calculator</Navbar.Brand>
     <Nav className="mr-auto">
         <NavDropdown title="Parameters" id="basic-nav-dropdown">
             {this.makeDropdowns('parameters')}
