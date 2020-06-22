@@ -75,6 +75,14 @@ body{
   padding-right: 0! important;
 }
 
+.common-margin{
+  margin-bottom: .5rem! important;
+}
+
+.switch-toggle{
+  width: 80%! important; 
+}
+
 /* Tooltip Styles */
 
 #tooltip-table td, #tooltip-table th {

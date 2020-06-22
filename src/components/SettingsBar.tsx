@@ -1,5 +1,6 @@
 import React from 'react';
 import {Button, ToggleButtonGroup, ToggleButton, Collapse, Container, Col, Row} from 'react-bootstrap';
+import BootstrapSwitchButton from 'bootstrap-switch-button-react';
 
 import * as T from './commonTypes';
 import {ParameterForm} from './ParameterForm';
@@ -137,8 +138,12 @@ export class SettingsBar extends React.PureComponent<settingsBarProps, settingsB
         if(numValue < 0){return 'error';} if(value === ''){numValue = null;}
         this.props.settings.format.rounding = numValue; 
     } 
-    private handleShortNameChange = (event) => {this.props.settings.format.shortNames = event.target.checked;}
-    private handleShowLineChange = (event) => {this.props.settings.format.showLine = event.target.checked;}
+    private handleShortNameChange = (checked) => {this.props.settings.format.shortNames = checked;}
+    private handleShowLineChange = (checked) => {
+        //this.props.settings.format.showLine = event.target.checked;
+        this.props.settings.format.showLine = checked;
+        //console.log(event);
+    }
     //----Color
     private handleColorChange = (value: string, id: string) : void | string => {
         if(value === ''){return 'error';}
@@ -211,9 +216,10 @@ export class SettingsBar extends React.PureComponent<settingsBarProps, settingsB
                     <Row>
                         <Col sm="1"/>
                         <Col>
-                    <ToggleButtonGroup type="checkbox" vertical defaultValue={showLineDefault}>
-                        <ToggleButton value="0" onChange={this.handleShowLineChange} variant="secondary">Show Line</ToggleButton>
-                    </ToggleButtonGroup>
+                            <BootstrapSwitchButton style='switch-toggle'
+                                onlabel='Show Line' offlabel='Show Point' onstyle='success' offstyle='danger'
+                                onChange={this.handleShowLineChange} checked={format.showLine}
+                            />
                         </Col>
                         <Col sm="1"/>  
                     </Row>
@@ -225,9 +231,10 @@ export class SettingsBar extends React.PureComponent<settingsBarProps, settingsB
                     <Row>
                     <Col sm="1"/>
                         <Col>
-                            <ToggleButtonGroup type="checkbox" vertical defaultValue={shortNamesDefault}>
-                                <ToggleButton value="0" onChange={this.handleShortNameChange} variant="secondary">Short Names</ToggleButton>
-                            </ToggleButtonGroup>
+                            <BootstrapSwitchButton style='switch-toggle'
+                                onlabel='Short Names' offlabel='Long Names' onstyle='success' offstyle='danger'
+                                onChange={this.handleShortNameChange} checked={format.shortNames}
+                            />
                         </Col>
                     <Col sm="1"/>
                     </Row>

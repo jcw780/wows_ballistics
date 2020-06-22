@@ -1,6 +1,7 @@
 import React from 'react';
-import {Form, Col, Row, Modal, Container, 
-	Button, ToggleButtonGroup, ToggleButton, Popover, OverlayTrigger} from 'react-bootstrap';
+import {Form, Col, Row, Modal, Container, Button, ToggleButtonGroup, ToggleButton, 
+	Popover, OverlayTrigger} from 'react-bootstrap';
+import BootstrapSwitchButton from 'bootstrap-switch-button-react';
 import distinctColors from 'distinct-colors';
 import clonedeep from 'lodash.clonedeep';
 
@@ -322,8 +323,9 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 			ctx!.fillStyle = color; ctx!.fill(region);
 		});
 	}
-	toggleGraph = (event) => {
-		this.graph = event.target.checked;
+	toggleGraph = (checked) => {
+		//this.graph = event.target.checked;
+		this.graph = checked;
 	}
 	render() {
 		const props = this.props;
@@ -345,12 +347,13 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 			<Row style={{marginBottom: ".5rem"}}>
 				<Col sm="3" className="no-lr-padding">Colors</Col>
 				<Col sm="8" className="no-lr-padding">
-					<canvas style={{height: "2rem", width: "100%"}} width="600" height="150" ref={this.canvasRef}/>
+					<canvas style={{maxHeight: "1.5rem", width: "100%"}} width="600" height="150" ref={this.canvasRef}/>
 				</Col>
 			</Row>
-			<ToggleButtonGroup type="checkbox" vertical defaultValue={[true]} style={{marginBottom: ".5rem"}}>
-				<ToggleButton onChange={this.toggleGraph} value={true} variant="secondary">Graph Shell</ToggleButton>
-			</ToggleButtonGroup>
+			<BootstrapSwitchButton style='switch-toggle common-margin'
+				onlabel='Graph' offlabel='Do Not Graph' onstyle='success' offstyle='danger'
+				onChange={this.toggleGraph} checked={this.graph}
+			/>
 			<hr style={{marginTop: 0}}/>
 			<DefaultShips sendDefault={this.getDefaultData} ref={this.defaults} keyProp={props.keyProp}
 			reset={props.reset} index={props.index} defaultData={this.defaultData}/>
