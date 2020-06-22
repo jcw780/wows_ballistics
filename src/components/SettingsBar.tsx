@@ -192,14 +192,7 @@ export class SettingsBar extends React.PureComponent<settingsBarProps, settingsB
         </>);
     }
     render(){
-        const settings = this.props.settings, format = settings.format;
-        let shortNamesDefault : string[] | undefined = undefined;
-        if(format.shortNames){shortNamesDefault=["0"];}
-
-        let showLineDefault : string[] | undefined = undefined;
-        if(format.showLine){showLineDefault=["0"];}
-        
-        const open = this.state.open;
+        const settings = this.props.settings, format = settings.format, open = this.state.open;
         return(<>
 <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
         onClick={this.toggleCollapse} ref={this.scrollRef}

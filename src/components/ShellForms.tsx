@@ -1,6 +1,5 @@
 import React from 'react';
-import {Form, Col, Row, Modal, Container, Button, ToggleButtonGroup, ToggleButton, 
-	Popover, OverlayTrigger} from 'react-bootstrap';
+import {Form, Col, Row, Modal, Container, Button, Popover, OverlayTrigger} from 'react-bootstrap';
 import BootstrapSwitchButton from 'bootstrap-switch-button-react';
 import distinctColors from 'distinct-colors';
 import clonedeep from 'lodash.clonedeep';
@@ -39,13 +38,10 @@ class ShellParameters extends React.PureComponent<shellParametersProps>{
 		const formData = this.props.formData, selectedData = clonedeep(FormData); delete selectedData.colors;
         const url = URL.createObjectURL(new Blob([JSON.stringify(selectedData)], {type: 'text/json;charset=utf-8'}));
         this.downloadRef.current!.update(url, formData.name + '.json');
-    }
-	render() {
+	}
+	addForms = () => {
 		const props = this.props;
-		return(
-<>
-	<Form>
-		{Object.entries(props.formLabels).map(([key, value] : [formsT, labelT], i) => {
+		const singleForm = ([key, value] : [formsT, labelT], i) => {
 			const name = value[labelI.name];
 			return (
 			<ParameterForm key={i} controlId={key} ref={value[labelI.ref]}
@@ -57,7 +53,14 @@ class ShellParameters extends React.PureComponent<shellParametersProps>{
 						<text>{name}</text>
 					</GeneralTooltip>
 			</ParameterForm>);
-		})}	
+		}
+		const run = () => Object.entries(props.formLabels).map(singleForm); return run();
+	}
+	render() {
+		return(
+<>
+	<Form>
+		{this.addForms()}	
 	</Form>
 	<Row>
 		<Col sm="3"/>

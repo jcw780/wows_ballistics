@@ -26,7 +26,12 @@ export class DefaultForm extends React.PureComponent<defaultFormProps> {
 		this.updated = true;
 		this.setState((state) => {return {options: newOptions, values: newValues};});
 	}
-
+	addOptions = () => {
+		const singleOption = (value,i) => {
+			return (<option aria-label={value} value={this.state.values[i]} key={i}>{value}</option>);
+		}
+		const run = () => this.state.options.map(singleOption); return run();
+	}
 	render(){
 		const props = this.props;
 		return (
@@ -34,9 +39,7 @@ export class DefaultForm extends React.PureComponent<defaultFormProps> {
 				<Form.Label column sm="3">{props.children}</Form.Label>
 				<Form.Control as="select" placeholder="" defaultValue={props.defaultValue} aria-label={props.ariaLabel}
 				onChange={this.handleChange} ref={this.form} style={{width: "70%"}}>
-					{this.state.options.map((value,i) => {
-						return (<option aria-label={value} value={this.state.values[i]} key={i}>{value}</option>);
-					})}
+					{this.addOptions()}
 				</Form.Control>
 			</Form.Group>
 		);
@@ -177,21 +180,25 @@ class DefaultShips extends React.PureComponent
 		const shellName = qDataS[nation][type][ship].artillery[artillery][shellType];
 		this.props.sendDefault(dData.queriedData.shells[shellName], ship);
 	}
-	render(){
+	addDefaultForms = () => {
 		const defaultData = this.props.defaultData;
+		const singleForm = ([name, v] : [string, singleFormT], i) : JSX.Element => {
+			const defaultDataN = defaultData[name];
+			return (<DefaultForm key={i} keyProp={this.props.keyProp} controlId={name} ref={v[singleFormIndex.ref]}
+			ariaLabel={v[singleFormIndex.name]} handleValueChange={this.changeForm} 
+			defaultValue={defaultDataN[T.singleDefaultDataIndex.value]} 
+			defaultOptions={defaultDataN[T.singleDefaultDataIndex.options]}
+			defaultValues={defaultDataN[T.singleDefaultDataIndex.values]}>
+				{v[singleFormIndex.name]}
+			</DefaultForm>);
+		}
+		const run = () => Object.entries(this.defaultForms).map(singleForm); return run();
+	}
+	render(){
 		return(
-<Container style={{paddingLeft: 0, paddingRight: 0}}>
-	{Object.entries(this.defaultForms).map( ([name, v], i) => {
-		const defaultDataN = defaultData[name];
-		return (<DefaultForm key={i} keyProp={this.props.keyProp} controlId={name} ref={v[singleFormIndex.ref]}
-		ariaLabel={v[singleFormIndex.name]} handleValueChange={this.changeForm} 
-		defaultValue={defaultDataN[T.singleDefaultDataIndex.value]} 
-		defaultOptions={defaultDataN[T.singleDefaultDataIndex.options]}
-		defaultValues={defaultDataN[T.singleDefaultDataIndex.values]}>
-			{v[singleFormIndex.name]}
-		</DefaultForm>);
-	})}
-</Container>
+			<Container style={{paddingLeft: 0, paddingRight: 0}}>
+				{this.addDefaultForms()}
+			</Container>
 		);
 	}
 	//componentDidUpdate(){}

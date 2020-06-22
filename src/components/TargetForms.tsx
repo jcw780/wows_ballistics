@@ -224,8 +224,26 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
             );
         });
     }
+    private renderFixedTargetLabels = () => {
+        const targetData = this.targetData;
+        const singleLabel = ([key, value], i) => {
+            return (
+                <Col key={i}>
+                    <ParameterForm controlId={key}
+                    newValue={String(targetData[key])} 
+                    handleValueChange={this.handleChange} type="number"
+                    labelWidth={3} append={value[1]} ariaLabel={value[0]} style={{formControl: {width: "50%"}}}>
+                        <GeneralTooltip title={value[0]} content={value[singleTargetI.description]}>
+                            <div>{value[0]}</div>
+                        </GeneralTooltip>
+                    </ParameterForm>
+                </Col>
+            );
+        }
+        const run = () => Object.entries(this.fixedTargetLabels).map(singleLabel); return run();
+    }
     render(){
-        const targetData = this.targetData, elementsPerColumn = 1;
+        const elementsPerColumn = 1;
         const angleElements = this.generateAngleElements(elementsPerColumn);
         const refAngleElements = this.generateRefAngleElements(elementsPerColumn);
         return(
@@ -233,20 +251,7 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
             <h2 ref={this.scrollRef}>Target Parameters</h2>
             <Row>
                 <Col sm={1}/>
-            {Object.entries(this.fixedTargetLabels).map(([key, value], i) => {
-                return (
-                    <Col key={i}>
-                        <ParameterForm controlId={key}
-                        newValue={String(targetData[key])} 
-                        handleValueChange={this.handleChange} type="number"
-                        labelWidth={3} append={value[1]} ariaLabel={value[0]} style={{formControl: {width: "50%"}}}>
-                            <GeneralTooltip title={value[0]} content={value[singleTargetI.description]}>
-                                <div>{value[0]}</div>
-                            </GeneralTooltip>
-                        </ParameterForm>
-                    </Col>
-                );
-            })}
+                    {this.renderFixedTargetLabels()}
                 <Col sm={1}/>
             </Row>
             <GeneralTooltip title="Target Angles" content={
