@@ -446,7 +446,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         }
         Object.entries(this.chartConfigs).forEach(([key, value]) => {value.forEach(triggerChartUpdate)});
     }
-    addChart = (target : T.chartT) => {
+    private addChart = (target : T.chartT) => {
         const singleChart = (value, i) : JSX.Element => {
             return (<SingleChart 
                 ref={value[singleChartIndex.ref]} key={i} 

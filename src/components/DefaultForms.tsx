@@ -26,7 +26,7 @@ export class DefaultForm extends React.PureComponent<defaultFormProps> {
 		this.updated = true;
 		this.setState((state) => {return {options: newOptions, values: newValues};});
 	}
-	addOptions = () => {
+	private addOptions = () => {
 		const singleOption = (value,i) => {
 			return (<option aria-label={value} value={this.state.values[i]} key={i}>{value}</option>);
 		}
@@ -180,7 +180,7 @@ class DefaultShips extends React.PureComponent
 		const shellName = qDataS[nation][type][ship].artillery[artillery][shellType];
 		this.props.sendDefault(dData.queriedData.shells[shellName], ship);
 	}
-	addDefaultForms = () => {
+	private addDefaultForms = () => {
 		const defaultData = this.props.defaultData;
 		const singleForm = ([name, v] : [string, singleFormT], i) : JSX.Element => {
 			const defaultDataN = defaultData[name];
