@@ -446,16 +446,18 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         }
         Object.entries(this.chartConfigs).forEach(([key, value]) => {value.forEach(triggerChartUpdate)});
     }
-    render(){
-        const addChart = (target : T.chartT) => {
-            return this.chartConfigs[target].map((value, i) => {
-                return (<SingleChart 
-                    ref={value[singleChartIndex.ref]} key={i} 
-                    config={value[singleChartIndex.config]} 
-                    dimensions={this.dimensions} 
-                    title={value[singleChartIndex.name]}/>);
-            });
+    addChart = (target : T.chartT) => {
+        const singleChart = (value, i) : JSX.Element => {
+            return (<SingleChart 
+                ref={value[singleChartIndex.ref]} key={i} 
+                config={value[singleChartIndex.config]} 
+                dimensions={this.dimensions} 
+                title={value[singleChartIndex.name]}/>);
         }
+        const chartTarget = this.chartConfigs[target];
+        const run = () => chartTarget.map(singleChart); return run();
+    }
+    render(){
         return(
 <>
     <GeneralTooltip title="Impact Charts" content={
@@ -473,7 +475,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
     }>
     <h3 style={{textAlign: "center", display:"inline-block"}}>Impact Charts</h3>
     </GeneralTooltip>
-    {addChart('impact')}
+    {this.addChart('impact')}
     <GeneralTooltip title="Angle Charts" content={
         <>
         Shows at what target angles and ranges shells will: <br/>
@@ -485,7 +487,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
     }>
         <h3 style={{textAlign: "center", display:"inline-block"}}>Angle Charts</h3>
     </GeneralTooltip>
-    {addChart('angle')}
+    {this.addChart('angle')}
     <GeneralTooltip title="Post-Penetration Charts" content={
         <>
         Show how far shells would travel into a ship after penetrating armor. <br/>
@@ -498,7 +500,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
     }>
     <h3 style={{textAlign: "center", display:"inline-block"}}>Post-Penetration Charts</h3>
     </GeneralTooltip>
-    {addChart('post')}
+    {this.addChart('post')}
 </>
         );
     }
