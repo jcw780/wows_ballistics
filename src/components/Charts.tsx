@@ -351,7 +351,6 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             } 
             const run = () => configPost.forEach(singleChart); return run();
         }
-        //initializePostCharts();
         //Add Lines
         const addLine = (data : T.scatterPoint[], 
                             label: string, yAxisID : string, 
@@ -404,8 +403,6 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             }
             const run = () => graphData.refAngles.forEach(singleRef); return run();
         }
-        //addRefAngles();
-
         const generateStatic = (i : number, name : string, colors : string[]) => {
             const singleItem = (type) => {
                 assignPredefined(i, name, this.chartConfigs[type], staticOptionSetup[type][1], graphData[type], colors);
@@ -430,10 +427,8 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             const run = () => configPost.forEach(singleItem); return run();
         }
         const run = () => {
-            setXAxes();
-            intializeStaticCharts();
-            resizeAngleDependents();
-            initializePostCharts();
+            setXAxes(); intializeStaticCharts();
+            resizeAngleDependents(); initializePostCharts();
             addRefAngles();
             //Add data
             for(let i=0; i<graphData.numShells; i++){
