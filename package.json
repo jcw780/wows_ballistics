@@ -1,6 +1,6 @@
 {
   "name": "wows_ballistics",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "private": true,
   "homepage": "http://jcw780.github.io/wows_ballistics",
   "dependencies": {
