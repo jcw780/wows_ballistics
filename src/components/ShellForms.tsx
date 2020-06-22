@@ -1,6 +1,6 @@
 import React from 'react';
-import {Form, Col, Row, Modal, Container, 
-	Button, ToggleButtonGroup, ToggleButton, Popover, OverlayTrigger} from 'react-bootstrap';
+import {Form, Col, Row, Modal, Container, Button, Popover, OverlayTrigger} from 'react-bootstrap';
+import BootstrapSwitchButton from 'bootstrap-switch-button-react';
 import distinctColors from 'distinct-colors';
 import clonedeep from 'lodash.clonedeep';
 
@@ -28,21 +28,20 @@ class ShellParameters extends React.PureComponent<shellParametersProps>{
 	handleValueChange = (value, k) => {this.props.handleValueChange(value, k);}
 	updateShells() {
 		const props = this.props;
-		Object.entries(props.formLabels).forEach(([key, value] : [formsT, labelT]): void => {
+		const updateItem = ([key, value] : [formsT, labelT]): void => {
 			value[labelI.ref].current!.updateValue(props.formData[key]);
-		});
+		}
+		const run = () => Object.entries(props.formLabels).forEach(updateItem);
+		return run();
 	}
 	updateDownloadJSON = () => {
 		const formData = this.props.formData, selectedData = clonedeep(FormData); delete selectedData.colors;
         const url = URL.createObjectURL(new Blob([JSON.stringify(selectedData)], {type: 'text/json;charset=utf-8'}));
         this.downloadRef.current!.update(url, formData.name + '.json');
-    }
-	render() {
+	}
+	addForms = () => {
 		const props = this.props;
-		return(
-<>
-	<Form>
-		{Object.entries(props.formLabels).map(([key, value] : [formsT, labelT], i) => {
+		const singleForm = ([key, value] : [formsT, labelT], i) => {
 			const name = value[labelI.name];
 			return (
 			<ParameterForm key={i} controlId={key} ref={value[labelI.ref]}
@@ -54,7 +53,14 @@ class ShellParameters extends React.PureComponent<shellParametersProps>{
 						<text>{name}</text>
 					</GeneralTooltip>
 			</ParameterForm>);
-		})}	
+		}
+		const run = () => Object.entries(props.formLabels).map(singleForm); return run();
+	}
+	render() {
+		return(
+<>
+	<Form>
+		{this.addForms()}	
 	</Form>
 	<Row>
 		<Col sm="3"/>
@@ -69,16 +75,17 @@ class ShellParameters extends React.PureComponent<shellParametersProps>{
 }
 
 interface shellFormsProps{
-	index: number, colors: Array<string>, keyProp: number, deleteShip : Function, copyShip : Function,
+	index: number, colors: Array<string>, keyProp: number, graph: boolean,
+	deleteShip : Function, copyShip : Function,
 	reset: () => void, settings : T.settingsT, size: number
 	formData?: formDataT, defaultData?: T.defaultDataT, copied: boolean
 }
 interface formDataT extends formTemplate<number>{name: string, colors: string[]}
 export class ShellForms extends React.PureComponent<shellFormsProps> {
 	public static defaultProps = {
-		copied : false
+		copied : false, graph : true
 	}
-	graph = true;
+	graph = this.props.graph;
 	defaultData : T.defaultDataT = Object.seal({
 		version: ['', [''], ['']], nation: ['', [''], ['']], shipType: ['', [''], ['']], 
 		ship: ['', [''], ['']], artillery: ['', [''], ['']], shellType: ['', [''], ['']],
@@ -90,16 +97,6 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		normalization: 0, ra0: 0, ra1: 0, HESAP: 0,
 		name : '', colors : [],
 	})
-	constructor(props){
-		super(props);
-		// Use this instead of defaultProps to prevent weird shallow copy things from happening
-		if('defaultData' in this.props){
-			this.defaultData = this.props.defaultData!;
-		}
-		if('formData' in this.props){
-			this.formData = this.props.formData!;
-		}
-	}
 	parameters : React.RefObject<ShellParameters> = React.createRef<ShellParameters>()
 	defaults : React.RefObject<DefaultShips> = React.createRef<DefaultShips>()
 	nameForm : React.RefObject<ParameterForm> = React.createRef<ParameterForm>()
@@ -255,53 +252,52 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 			</table>
 		</>],
 	})
+	constructor(props){
+		super(props);
+		// Use this instead of defaultProps to prevent weird shallow copy things from happening
+		if('defaultData' in props) this.defaultData = props.defaultData!;
+		if('formData' in props) this.formData = props.formData!;	
+	}
 	returnData = () => {
-		if(this.graph){
-			return this.formData;
-		}else{
-			return false;
-		}
+		if(this.graph) return this.formData;
+		else return false;	
 	}
-	handleNameChange = (value : string, id) => {this.formData.name = value;}
-	handleValueChange = (value : string, k : formsT) => {this.formData[k] = parseFloat(value);}
+	handleNameChange = (value : string, id) => this.formData.name = value;
+	handleValueChange = (value : string, k : formsT) => this.formData[k] = parseFloat(value);
 	getDefaultData = (data, nameUnprocessed : string) => { //Query Version End
-		let name = nameUnprocessed;
-		if(this.props.settings.format.shortNames){
-			name = name.split("_").slice(1).join(" ");
-		}
-		this.formData.caliber = data.bulletDiametr;
-		this.formData.muzzleVelocity = data.bulletSpeed;
-		this.formData.dragCoefficient = data.bulletAirDrag;
-		this.formData.mass = data.bulletMass;
-		this.formData.krupp = data.bulletKrupp;
-		this.formData.fusetime = data.bulletDetonator;
-		this.formData.threshold = data.bulletDetonatorThreshold;
-		this.formData.normalization = data.bulletCapNormalizeMaxAngle;
-		this.formData.ra0 = data.bulletRicochetAt;
-		this.formData.ra1 = data.bulletAlwaysRicochetAt;
-		this.formData.HESAP = data.alphaPiercingHE;
-		this.formData.name = name; this.nameForm.current!.updateValue(name);
-		if(data.alphaPiercingCS > this.formData.HESAP){this.formData.HESAP = data.alphaPiercingCS;}
-		if(this.parameters.current){this.parameters.current!.updateShells();}
-		if(this.props.index + 1 === this.props.size){
-			//only resets add / delete when last item has finished mounting
-			//otherwise potential for crashes when adding ships
-			this.props.reset();
-		}
+		let name = nameUnprocessed; const formData = this.formData, props = this.props;
+		if(this.props.settings.format.shortNames) name = name.split("_").slice(1).join(" ");
+		formData.name = name; this.nameForm.current!.updateValue(name);
+		formData.caliber = data.bulletDiametr;
+		formData.muzzleVelocity = data.bulletSpeed;
+		formData.dragCoefficient = data.bulletAirDrag;
+		formData.mass = data.bulletMass;
+		formData.krupp = data.bulletKrupp;
+		formData.fusetime = data.bulletDetonator;
+		formData.threshold = data.bulletDetonatorThreshold;
+		formData.normalization = data.bulletCapNormalizeMaxAngle;
+		formData.ra0 = data.bulletRicochetAt;
+		formData.ra1 = data.bulletAlwaysRicochetAt;
+		formData.HESAP = data.alphaPiercingHE > data.alphaPiercingCS ? data.alphaPiercingHE : data.alphaPiercingCS;
+		if(this.parameters.current) this.parameters.current!.updateShells();
+		//only resets add / delete when last item has finished mounting
+		//otherwise potential for crashes when adding ships
+		if(props.index + 1 === props.size) props.reset();
 	}
-	deleteShip = () => {this.props.deleteShip(this.props.keyProp, this.props.index);}
-	copyShip = () => {this.props.copyShip(this.defaultData, this.formData);}
+	deleteShip = () => this.props.deleteShip(this.props.keyProp, this.props.index);
+	copyShip = () => this.props.copyShip(this.defaultData, this.formData, this.graph);
 	updateCanvas = () => {
 		//Draws colors 
-		this.formData.colors = this.props.colors.slice(this.props.index * 3, this.props.index * 3 + 3);
+		const formData = this.formData;
+		formData.colors = this.props.colors.slice(this.props.index * 3, this.props.index * 3 + 3);
 		const ctx = this.canvasRef.current!.getContext('2d');
 		const height : number = this.canvasRef.current!.height;
 		const width : number = this.canvasRef.current!.width;
 
-		const arrayLength = this.formData.colors.length;
+		const arrayLength = formData.colors.length;
 		const interval : number = width / arrayLength;
 		const shift : number = 10;
-		this.formData.colors.forEach((color, i) => {
+		formData.colors.forEach((color, i) => {
 			const region = new Path2D();
 			if(i === 0){
 				region.moveTo(0, 0);
@@ -322,9 +318,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 			ctx!.fillStyle = color; ctx!.fill(region);
 		});
 	}
-	toggleGraph = (event) => {
-		this.graph = event.target.checked;
-	}
+	toggleGraph = checked => this.graph = checked;
 	render() {
 		const props = this.props;
 		return(
@@ -345,12 +339,13 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 			<Row style={{marginBottom: ".5rem"}}>
 				<Col sm="3" className="no-lr-padding">Colors</Col>
 				<Col sm="8" className="no-lr-padding">
-					<canvas style={{height: "2rem", width: "100%"}} width="600" height="150" ref={this.canvasRef}/>
+					<canvas style={{maxHeight: "1.5rem", width: "100%"}} width="600" height="150" ref={this.canvasRef}/>
 				</Col>
 			</Row>
-			<ToggleButtonGroup type="checkbox" vertical defaultValue={[true]} style={{marginBottom: ".5rem"}}>
-				<ToggleButton onChange={this.toggleGraph} value={true} variant="secondary">Graph Shell</ToggleButton>
-			</ToggleButtonGroup>
+			<BootstrapSwitchButton style='switch-toggle common-margin'
+				onlabel='Graph' offlabel='Do Not Graph' onstyle='success' offstyle='danger'
+				onChange={this.toggleGraph} checked={this.graph}
+			/>
 			<hr style={{marginTop: 0}}/>
 			<DefaultShips sendDefault={this.getDefaultData} ref={this.defaults} keyProp={props.keyProp}
 			reset={props.reset} index={props.index} defaultData={this.defaultData}/>
@@ -386,24 +381,19 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		// Resets if it is a copied component
 		// Copied components do not change internal components 
 		// and would not properly reset - through this.getDefaultData
-		if(!this.props.copied){
-			this.defaults.current!.queryVersion();
-		}else{
-			this.props.reset();
-		}
+		if(!this.props.copied) this.defaults.current!.queryVersion();
+		else this.props.reset();
 	}
 	componentDidUpdate(){
 		this.updateCanvas();
 		// Allow additions when final component updates after deletion
 		// Update to final index will only occur on deletion
-		if(this.props.index === this.props.size - 1){
-			this.props.reset();
-		}
+		if(this.props.index === this.props.size - 1) this.props.reset();
 	}
 }
 
 interface copyTempT {
-	default: T.defaultDataT, data: formDataT
+	default: T.defaultDataT, data: formDataT, graph: boolean
 }
 export class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {keys: Set<number>, disabled: boolean}>{
 	state = {keys: new Set([0, 1]), disabled: false}; deletedKeys: number[] = [];
@@ -443,8 +433,8 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 			}
 		}
 	}
-	copyShip = (defaultData : T.defaultDataT, shellData : formDataT) => {
-		this.copyTemp = {default: defaultData, data: shellData};
+	copyShip = (defaultData : T.defaultDataT, shellData : formDataT, graph : boolean) => {
+		this.copyTemp = {default: defaultData, data: shellData, graph: graph};
 		this.copied = true; this.addShip();
 	}
 	returnShellData = () => {
@@ -505,7 +495,8 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 					deleteShip={this.deleteShip} copyShip={this.copyShip}
 					keyProp={value} ref={this.shellRefs[i]} reset={this.reset} 
 					settings={props.settings} size={state.keys.size}
-					defaultData={clonedeep(this.copyTemp.default)} formData={clonedeep(this.copyTemp.data)} copied={true}/>
+					defaultData={clonedeep(this.copyTemp.default)} formData={clonedeep(this.copyTemp.data)} 
+					graph={this.copyTemp.graph} copied={true}/>
 				</Col>
 			) //pass a deep copied version so clones target the correct shell form
 			return returnValue;
@@ -515,7 +506,7 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 					<ShellForms colors={this.colors} index={i}
 					deleteShip={this.deleteShip} copyShip={this.copyShip}
 					keyProp={value} ref={this.shellRefs[i]} reset={this.reset} 
-					settings={props.settings} size={state.keys.size}/>
+					settings={props.settings} size={state.keys.size} copy/>
 				</Col>;
 			})
 		}

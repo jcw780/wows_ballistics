@@ -267,7 +267,7 @@ class App extends React.Component<{},{}> {
 		<Col/>
 		<Col sm="9">
 			<Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem"}}
-		variant="secondary" onClick={this.generate}>Make Graphs!</Button>
+		variant="success" onClick={this.generate}>Make Graphs!</Button>
 		</Col>
 		<Col/>
 	</Row>

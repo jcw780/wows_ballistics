@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "http://jcw780.github.io/wows_ballistics",
   "dependencies": {
+    "bootstrap-switch-button-react": "^1.2.0",
     "chart.js": "^2.9.3",
     "chartjs-plugin-annotation": "^0.5.7",
     "distinct-colors": "^3.0.0",
