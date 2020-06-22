@@ -506,7 +506,7 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 					<ShellForms colors={this.colors} index={i}
 					deleteShip={this.deleteShip} copyShip={this.copyShip}
 					keyProp={value} ref={this.shellRefs[i]} reset={this.reset} 
-					settings={props.settings} size={state.keys.size} copy/>
+					settings={props.settings} size={state.keys.size}/>
 				</Col>;
 			})
 		}
