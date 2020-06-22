@@ -4,8 +4,7 @@
 - Page Link: https://jcw780.github.io/wows_ballistics/
 ## Code Information
 ### Languages and Major Libraries
-- CSS, JavaScript, TypeScript (TSX)
-- React.js
+- CSS, JavaScript, (React) TypeScript
 - Wasm backend: [jcw780/ShellCPP](https://github.com/jcw780/ShellCPP)
 - Shell Data: [jcw780/LiveGameData2](https://github.com/jcw780/LiveGameData2)
 ## Legal
