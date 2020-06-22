@@ -29,9 +29,11 @@ class ShellParameters extends React.PureComponent<shellParametersProps>{
 	handleValueChange = (value, k) => {this.props.handleValueChange(value, k);}
 	updateShells() {
 		const props = this.props;
-		Object.entries(props.formLabels).forEach(([key, value] : [formsT, labelT]): void => {
+		const updateItem = ([key, value] : [formsT, labelT]): void => {
 			value[labelI.ref].current!.updateValue(props.formData[key]);
-		});
+		}
+		const run = () => Object.entries(props.formLabels).forEach(updateItem);
+		return run();
 	}
 	updateDownloadJSON = () => {
 		const formData = this.props.formData, selectedData = clonedeep(FormData); delete selectedData.colors;
@@ -250,60 +252,49 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 	constructor(props){
 		super(props);
 		// Use this instead of defaultProps to prevent weird shallow copy things from happening
-		if('defaultData' in this.props){
-			this.defaultData = this.props.defaultData!;
-		}
-		if('formData' in this.props){
-			this.formData = this.props.formData!;
-		}
+		if('defaultData' in props) this.defaultData = props.defaultData!;
+		if('formData' in props) this.formData = props.formData!;	
 	}
 	returnData = () => {
-		if(this.graph){
-			return this.formData;
-		}else{
-			return false;
-		}
+		if(this.graph) return this.formData;
+		else return false;	
 	}
-	handleNameChange = (value : string, id) => {this.formData.name = value;}
-	handleValueChange = (value : string, k : formsT) => {this.formData[k] = parseFloat(value);}
+	handleNameChange = (value : string, id) => this.formData.name = value;
+	handleValueChange = (value : string, k : formsT) => this.formData[k] = parseFloat(value);
 	getDefaultData = (data, nameUnprocessed : string) => { //Query Version End
-		let name = nameUnprocessed;
-		if(this.props.settings.format.shortNames){
-			name = name.split("_").slice(1).join(" ");
-		}
-		this.formData.caliber = data.bulletDiametr;
-		this.formData.muzzleVelocity = data.bulletSpeed;
-		this.formData.dragCoefficient = data.bulletAirDrag;
-		this.formData.mass = data.bulletMass;
-		this.formData.krupp = data.bulletKrupp;
-		this.formData.fusetime = data.bulletDetonator;
-		this.formData.threshold = data.bulletDetonatorThreshold;
-		this.formData.normalization = data.bulletCapNormalizeMaxAngle;
-		this.formData.ra0 = data.bulletRicochetAt;
-		this.formData.ra1 = data.bulletAlwaysRicochetAt;
-		this.formData.HESAP = data.alphaPiercingHE;
-		this.formData.name = name; this.nameForm.current!.updateValue(name);
-		if(data.alphaPiercingCS > this.formData.HESAP){this.formData.HESAP = data.alphaPiercingCS;}
-		if(this.parameters.current){this.parameters.current!.updateShells();}
-		if(this.props.index + 1 === this.props.size){
-			//only resets add / delete when last item has finished mounting
-			//otherwise potential for crashes when adding ships
-			this.props.reset();
-		}
+		let name = nameUnprocessed; const formData = this.formData, props = this.props;
+		if(this.props.settings.format.shortNames) name = name.split("_").slice(1).join(" ");
+		formData.name = name; this.nameForm.current!.updateValue(name);
+		formData.caliber = data.bulletDiametr;
+		formData.muzzleVelocity = data.bulletSpeed;
+		formData.dragCoefficient = data.bulletAirDrag;
+		formData.mass = data.bulletMass;
+		formData.krupp = data.bulletKrupp;
+		formData.fusetime = data.bulletDetonator;
+		formData.threshold = data.bulletDetonatorThreshold;
+		formData.normalization = data.bulletCapNormalizeMaxAngle;
+		formData.ra0 = data.bulletRicochetAt;
+		formData.ra1 = data.bulletAlwaysRicochetAt;
+		formData.HESAP = data.alphaPiercingHE > data.alphaPiercingCS ? data.alphaPiercingHE : data.alphaPiercingCS;
+		if(this.parameters.current) this.parameters.current!.updateShells();
+		//only resets add / delete when last item has finished mounting
+		//otherwise potential for crashes when adding ships
+		if(props.index + 1 === props.size) props.reset();
 	}
-	deleteShip = () => {this.props.deleteShip(this.props.keyProp, this.props.index);}
-	copyShip = () => {this.props.copyShip(this.defaultData, this.formData, this.graph);}
+	deleteShip = () => this.props.deleteShip(this.props.keyProp, this.props.index);
+	copyShip = () => this.props.copyShip(this.defaultData, this.formData, this.graph);
 	updateCanvas = () => {
 		//Draws colors 
-		this.formData.colors = this.props.colors.slice(this.props.index * 3, this.props.index * 3 + 3);
+		const formData = this.formData;
+		formData.colors = this.props.colors.slice(this.props.index * 3, this.props.index * 3 + 3);
 		const ctx = this.canvasRef.current!.getContext('2d');
 		const height : number = this.canvasRef.current!.height;
 		const width : number = this.canvasRef.current!.width;
 
-		const arrayLength = this.formData.colors.length;
+		const arrayLength = formData.colors.length;
 		const interval : number = width / arrayLength;
 		const shift : number = 10;
-		this.formData.colors.forEach((color, i) => {
+		formData.colors.forEach((color, i) => {
 			const region = new Path2D();
 			if(i === 0){
 				region.moveTo(0, 0);
@@ -324,10 +315,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 			ctx!.fillStyle = color; ctx!.fill(region);
 		});
 	}
-	toggleGraph = (checked) => {
-		//this.graph = event.target.checked;
-		this.graph = checked;
-	}
+	toggleGraph = checked => this.graph = checked;
 	render() {
 		const props = this.props;
 		return(
@@ -390,19 +378,14 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		// Resets if it is a copied component
 		// Copied components do not change internal components 
 		// and would not properly reset - through this.getDefaultData
-		if(!this.props.copied){
-			this.defaults.current!.queryVersion();
-		}else{
-			this.props.reset();
-		}
+		if(!this.props.copied) this.defaults.current!.queryVersion();
+		else this.props.reset();
 	}
 	componentDidUpdate(){
 		this.updateCanvas();
 		// Allow additions when final component updates after deletion
 		// Update to final index will only occur on deletion
-		if(this.props.index === this.props.size - 1){
-			this.props.reset();
-		}
+		if(this.props.index === this.props.size - 1) this.props.reset();
 	}
 }
 

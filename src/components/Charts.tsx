@@ -286,15 +286,19 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 ]
             ],
         }
-        
-        staticChartTypes.forEach((key) => {
-            const chartConfig = this.chartConfigs[key], staticOption = staticOptionSetup[key], setup = staticOption[0];
-            chartConfig.forEach((chart, i) => {
-                const config = chart[singleChartIndex.config];
-                config.data.datasets.length = 0; //empty options and datasets
-                config.options = setup(staticOption[1][i]); //set options
-            });
-        });
+        const intializeStaticCharts = () => {
+            const singleType = (key) => {
+                const chartConfig = this.chartConfigs[key], staticOption = staticOptionSetup[key], setup = staticOption[0];
+                const singleChart = (chart, i) => {
+                    const config = chart[singleChartIndex.config];
+                    config.data.datasets.length = 0; //empty options and datasets
+                    config.options = setup(staticOption[1][i]); //set options
+                }
+                const run = () => chartConfig.forEach(singleChart); return run();
+            }
+            const run = () => staticChartTypes.forEach(singleType); return run();
+        }
+        intializeStaticCharts();
         //Post-Penetration Charts
         const configPost = this.chartConfigs.post, postData = graphData.post;
 
@@ -352,8 +356,8 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         }
         const postLine = (data : T.scatterPoint[], 
             label: string, color : string = "", show : boolean = true) : Record<string, any> => {
-            if(show){return addLine(data, label, 'detDist', color);
-            }else{return {
+            if(show) return addLine(data, label, 'detDist', color);
+            else{return {
                     data: data, showLine: false, label: label, yAxisID: 'detDist',
                     borderColor: color, fill: false, pointRadius: 0, pointHitRadius: 0
                 };
@@ -361,39 +365,47 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         }
         const assignPredefined = (shellIndex: number, name: string, target, configs : configsT[], 
             graphData, colors : string[]) => {
-            target.forEach((chart : singleChartType, rowIndex) => {
+            const singleChart = (chart : singleChartType, rowIndex) => {
                 let counter = 0;
-                configs[rowIndex].axes.forEach((axis, axisIndex) => {
-                    axis.lines.forEach((line, lineIndex) => {
+                const singleAxis = (axis) => {
+                    const singleLine = (line) => {
                         chart[singleChartIndex.config].data.datasets.push(addLine(
                             graphData[line.data][shellIndex], 
                             line.lineLabel + name, 
                             axis.id, 
                             colors[counter]));
                         counter++;
-                    })
-                })
-            })
+                    }
+                    const run = () => axis.lines.forEach(singleLine); return run();
+                }
+                const run = () => configs[rowIndex].axes.forEach(singleAxis); return run();
+            } 
+            const run = () => target.forEach(singleChart); return run();
         }
 
-        //Add angle labels
-        graphData.refAngles.forEach((data, i) => {
-            configAngle.forEach((chart) => {
-                chart[singleChartIndex.config].data.datasets.push({
-                    data: data, showLine: showLineValue, borderDash: [5, 5], label: `:${graphData.refLabels[i]}`, 
-                    yAxisID: 'angle', borderColor: "#505050", backgroundColor: "#505050", fill: false, 
-                    pointRadius: commonPointRadius, pointHitRadius: 5 ,
-                });
-            });
-        });
+        const addRefAngles = () => {
+            const singleRef = (data, i) => {
+                const singleChart = (chart) => {
+                    chart[singleChartIndex.config].data.datasets.push({
+                        data: data, showLine: showLineValue, borderDash: [5, 5], label: `:${graphData.refLabels[i]}`, 
+                        yAxisID: 'angle', borderColor: "#505050", backgroundColor: "#505050", fill: false, 
+                        pointRadius: commonPointRadius, pointHitRadius: 5 ,
+                    });
+                }
+                const run = () => configAngle.forEach(singleChart); return run();
+            }
+            const run = () => graphData.refAngles.forEach(singleRef); return run();
+        }
+        addRefAngles();
 
-        //Add data
-        for(let i=0; i<graphData.numShells; i++){
-            const name = graphData.names[i], colors = graphData.colors[i];
-            staticChartTypes.forEach((type) => {
+        const generateStatic = (i : number, name : string, colors : string[]) => {
+            const singleItem = (type) => {
                 assignPredefined(i, name, this.chartConfigs[type], staticOptionSetup[type][1], graphData[type], colors);
-            });
-            configPost.forEach((chart, index) => { //Post
+            }
+            const run = () => staticChartTypes.forEach(singleItem); return run();
+        }
+        const generatePost = (i : number, name : string, colors : string[]) => {
+            const singleItem = (chart, index) => { //Post
                 let pL : Array<any> = [
                     postData.fused[index + graphData.angles.length*i],
                     postData.notFused[index + graphData.angles.length*i]
@@ -406,7 +418,13 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     postLine(pL[0], WFL + name, colors[0], pLShow[0]),
                     postLine(pL[1], NFL + name, colors[1], pLShow[1]),
                 )
-            });
+            };
+            const run = () => configPost.forEach(singleItem); return run();
+        }
+        //Add data
+        for(let i=0; i<graphData.numShells; i++){
+            const name = graphData.names[i], colors = graphData.colors[i];
+            generateStatic(i, name, colors); generatePost(i, name, colors);
         }
 
         this.setState(this.state); //graph updates completed, trigger re-render
