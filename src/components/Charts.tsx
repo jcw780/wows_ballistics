@@ -185,15 +185,20 @@ export class ChartGroup extends React.Component<chartGroupProps>{
     }
     updateData = (graphData : T.calculatedData) => {
         //Common Utility Functions / Values
+        const settings = this.props.settings;
         const addCommas = (value, index, values) => {return value.toLocaleString();}
-        const showLineValue = this.props.settings.format.showLine, commonPointRadius = showLineValue ? 0 : 2;
+        const showLineValue = settings.format.showLine, commonPointRadius = showLineValue ? 0 : 2;
         const xAxesDistance = [{
             scaleLabel: {display: true, labelString: "Range (m)",},
             type: 'linear', ticks:{callback: addCommas}
         }];
-        Object.entries(this.props.settings.distance).forEach(([key, value]) => {
-            if(value !== null || true ){xAxesDistance[0].ticks[key] = value;}
-        });
+        const setXAxes = () => {
+            const singleSetting = ([key, value]) => {
+                if(value !== null || true ) xAxesDistance[0].ticks[key] = value;
+            }
+            const run = () => Object.entries(settings.distance).forEach(singleSetting); return run();
+        }
+        //setXAxes();
 
         const targetedArmor = `Armor Thickness: ${graphData.targets[0].armor}mm`;
         const targetInclination = `Vertical Inclination: ${graphData.targets[0].inclination}°`; 
@@ -233,9 +238,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             }
         }
 
-        const angleNameTemplate = (name: string) : string => {
-            return `${name} | ${targetedArmor} | ${targetInclination}`;
-        }
+        const angleNameTemplate = (name: string) : string => `${name} | ${targetedArmor} | ${targetInclination}`;
 
         //Colons are used to denote split between label and name
         const staticOptionSetup : Record<'impact' | 'angle', [(configsT) => any, configsT[]]> = {
@@ -298,52 +301,57 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             }
             const run = () => staticChartTypes.forEach(singleType); return run();
         }
-        intializeStaticCharts();
         //Post-Penetration Charts
         const configPost = this.chartConfigs.post, postData = graphData.post;
 
         //Resizing chartConfigs.post and props.links upon addition or deletion of angles
-        const angleLengthDiff = graphData.angles.length - configPost.length;
-        if(angleLengthDiff > 0){
-            for(let i=0; i<angleLengthDiff; i++){
-                configPost.push([{data: {datasets : Array<any>(),}, options: {}}, React.createRef<SingleChart>(), '']);
-                this.props.links.post.push(['', React.createRef<SingleChart>()]); // navbar links
+        const resizeAngleDependents = () => {
+            const angleLengthDiff = graphData.angles.length - configPost.length;
+            if(angleLengthDiff > 0){
+                for(let i=0; i<angleLengthDiff; i++){
+                    configPost.push([{data: {datasets : Array<any>(),}, options: {}}, React.createRef<SingleChart>(), '']);
+                    this.props.links.post.push(['', React.createRef<SingleChart>()]); // navbar links
+                }
+            }else if(angleLengthDiff < 0){
+                configPost.length = graphData.angles.length;
+                this.props.links.post.length = graphData.angles.length; // navbar links
             }
-        }else if(angleLengthDiff < 0){
-            configPost.length = graphData.angles.length;
-            this.props.links.post.length = graphData.angles.length; // navbar links
         }
 
         //Colons are used to denote split between label and name
         const WFL = "Fused: ", NFL = "No Fusing: ";
-        configPost.forEach((chart, i) => {
-            chart[singleChartIndex.config].data.datasets.length = 0; // clear dataset
-            chart[singleChartIndex.config].data.datasets.push( // add ship width line
-            {
-                data: postData.shipWidth[0], showLine: showLineValue, borderDash: [5, 5], label: ":Ship Width", 
-                yAxisID: 'detDist', borderColor: "#505050", fill: false, 
-                pointRadius: commonPointRadius, pointHitRadius: 5 ,
-            });
-            chart[singleChartIndex.config].options = {
-                title: {
-                    display: true,
-                    text: 
-                    `Internal Width Traveled before Detonation | ${targetedArmor} | ${targetInclination} | Horizontal Impact Angle: ${graphData.angles[i]}°`
-                },
-                scales: {
-                    xAxes: xAxesDistance,
-                    yAxes: [{
-                        id: 'detDist',
-                        scaleLabel: {
-                            display: true,
-                            labelString: "Shell Detonation Distance (m)",
-                        },
-                    }],
-                },
-                tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}},            
-            }
-            chart[singleChartIndex.name] = `Horizontal Impact Angle ${i + 1}: ${graphData.angles[i]}°`
-        });
+        const initializePostCharts = () => {
+            const singleChart = (chart, i) => {
+                chart[singleChartIndex.config].data.datasets.length = 0; // clear dataset
+                chart[singleChartIndex.config].data.datasets.push( // add ship width line
+                {
+                    data: postData.shipWidth[0], showLine: showLineValue, borderDash: [5, 5], label: ":Ship Width", 
+                    yAxisID: 'detDist', borderColor: "#505050", fill: false, 
+                    pointRadius: commonPointRadius, pointHitRadius: 5 ,
+                });
+                chart[singleChartIndex.config].options = {
+                    title: {
+                        display: true,
+                        text: 
+                        `Internal Width Traveled before Detonation | ${targetedArmor} | ${targetInclination} | Horizontal Impact Angle: ${graphData.angles[i]}°`
+                    },
+                    scales: {
+                        xAxes: xAxesDistance,
+                        yAxes: [{
+                            id: 'detDist',
+                            scaleLabel: {
+                                display: true,
+                                labelString: "Shell Detonation Distance (m)",
+                            },
+                        }],
+                    },
+                    tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}},            
+                }
+                chart[singleChartIndex.name] = `Horizontal Impact Angle ${i + 1}: ${graphData.angles[i]}°`
+            } 
+            const run = () => configPost.forEach(singleChart); return run();
+        }
+        //initializePostCharts();
         //Add Lines
         const addLine = (data : T.scatterPoint[], 
                             label: string, yAxisID : string, 
@@ -396,7 +404,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             }
             const run = () => graphData.refAngles.forEach(singleRef); return run();
         }
-        addRefAngles();
+        //addRefAngles();
 
         const generateStatic = (i : number, name : string, colors : string[]) => {
             const singleItem = (type) => {
@@ -421,13 +429,21 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             };
             const run = () => configPost.forEach(singleItem); return run();
         }
-        //Add data
-        for(let i=0; i<graphData.numShells; i++){
-            const name = graphData.names[i], colors = graphData.colors[i];
-            generateStatic(i, name, colors); generatePost(i, name, colors);
-        }
+        const run = () => {
+            setXAxes();
+            intializeStaticCharts();
+            resizeAngleDependents();
+            initializePostCharts();
+            addRefAngles();
+            //Add data
+            for(let i=0; i<graphData.numShells; i++){
+                const name = graphData.names[i], colors = graphData.colors[i];
+                generateStatic(i, name, colors); generatePost(i, name, colors);
+            }
 
-        this.setState(this.state); //graph updates completed, trigger re-render
+            this.setState(this.state); //graph updates completed, trigger re-render
+        }
+        return run();
     }
     updateCharts = () => {
         const triggerChartUpdate = (value : singleChartType, i) => {
