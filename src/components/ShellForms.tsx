@@ -70,16 +70,17 @@ class ShellParameters extends React.PureComponent<shellParametersProps>{
 }
 
 interface shellFormsProps{
-	index: number, colors: Array<string>, keyProp: number, deleteShip : Function, copyShip : Function,
+	index: number, colors: Array<string>, keyProp: number, graph: boolean,
+	deleteShip : Function, copyShip : Function,
 	reset: () => void, settings : T.settingsT, size: number
 	formData?: formDataT, defaultData?: T.defaultDataT, copied: boolean
 }
 interface formDataT extends formTemplate<number>{name: string, colors: string[]}
 export class ShellForms extends React.PureComponent<shellFormsProps> {
 	public static defaultProps = {
-		copied : false
+		copied : false, graph : true
 	}
-	graph = true;
+	graph = this.props.graph;
 	defaultData : T.defaultDataT = Object.seal({
 		version: ['', [''], ['']], nation: ['', [''], ['']], shipType: ['', [''], ['']], 
 		ship: ['', [''], ['']], artillery: ['', [''], ['']], shellType: ['', [''], ['']],
@@ -91,16 +92,6 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		normalization: 0, ra0: 0, ra1: 0, HESAP: 0,
 		name : '', colors : [],
 	})
-	constructor(props){
-		super(props);
-		// Use this instead of defaultProps to prevent weird shallow copy things from happening
-		if('defaultData' in this.props){
-			this.defaultData = this.props.defaultData!;
-		}
-		if('formData' in this.props){
-			this.formData = this.props.formData!;
-		}
-	}
 	parameters : React.RefObject<ShellParameters> = React.createRef<ShellParameters>()
 	defaults : React.RefObject<DefaultShips> = React.createRef<DefaultShips>()
 	nameForm : React.RefObject<ParameterForm> = React.createRef<ParameterForm>()
@@ -256,6 +247,16 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 			</table>
 		</>],
 	})
+	constructor(props){
+		super(props);
+		// Use this instead of defaultProps to prevent weird shallow copy things from happening
+		if('defaultData' in this.props){
+			this.defaultData = this.props.defaultData!;
+		}
+		if('formData' in this.props){
+			this.formData = this.props.formData!;
+		}
+	}
 	returnData = () => {
 		if(this.graph){
 			return this.formData;
@@ -291,7 +292,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		}
 	}
 	deleteShip = () => {this.props.deleteShip(this.props.keyProp, this.props.index);}
-	copyShip = () => {this.props.copyShip(this.defaultData, this.formData);}
+	copyShip = () => {this.props.copyShip(this.defaultData, this.formData, this.graph);}
 	updateCanvas = () => {
 		//Draws colors 
 		this.formData.colors = this.props.colors.slice(this.props.index * 3, this.props.index * 3 + 3);
@@ -406,7 +407,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 }
 
 interface copyTempT {
-	default: T.defaultDataT, data: formDataT
+	default: T.defaultDataT, data: formDataT, graph: boolean
 }
 export class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {keys: Set<number>, disabled: boolean}>{
 	state = {keys: new Set([0, 1]), disabled: false}; deletedKeys: number[] = [];
@@ -446,8 +447,8 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 			}
 		}
 	}
-	copyShip = (defaultData : T.defaultDataT, shellData : formDataT) => {
-		this.copyTemp = {default: defaultData, data: shellData};
+	copyShip = (defaultData : T.defaultDataT, shellData : formDataT, graph : boolean) => {
+		this.copyTemp = {default: defaultData, data: shellData, graph: graph};
 		this.copied = true; this.addShip();
 	}
 	returnShellData = () => {
@@ -508,7 +509,8 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 					deleteShip={this.deleteShip} copyShip={this.copyShip}
 					keyProp={value} ref={this.shellRefs[i]} reset={this.reset} 
 					settings={props.settings} size={state.keys.size}
-					defaultData={clonedeep(this.copyTemp.default)} formData={clonedeep(this.copyTemp.data)} copied={true}/>
+					defaultData={clonedeep(this.copyTemp.default)} formData={clonedeep(this.copyTemp.data)} 
+					graph={this.copyTemp.graph} copied={true}/>
 				</Col>
 			) //pass a deep copied version so clones target the correct shell form
 			return returnValue;
@@ -518,7 +520,7 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 					<ShellForms colors={this.colors} index={i}
 					deleteShip={this.deleteShip} copyShip={this.copyShip}
 					keyProp={value} ref={this.shellRefs[i]} reset={this.reset} 
-					settings={props.settings} size={state.keys.size}/>
+					settings={props.settings} size={state.keys.size} copy/>
 				</Col>;
 			})
 		}
