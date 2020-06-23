@@ -4,11 +4,11 @@ import BootstrapSwitchButton from 'bootstrap-switch-button-react';
 import distinctColors from 'distinct-colors';
 import clonedeep from 'lodash.clonedeep';
 
-import * as T from './commonTypes';
-import {ParameterForm} from './ParameterForm';
+import * as T from '../commonTypes';
+import {ParameterForm} from '../ParameterForm';
 import DefaultShips from './DefaultForms'
-import DownloadButton from './DownloadButton';
-import GeneralTooltip from './Tooltips';
+import DownloadButton from '../DownloadButton';
+import GeneralTooltip from '../Tooltips';
 
 
 enum labelI {name, unit, ref, description}

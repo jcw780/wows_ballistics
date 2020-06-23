@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {SingleChart} from './Charts';
-import ShellFormsContainer from './ShellForms';
+import ShellFormsContainer from './ShellForms/ShellForms';
 import TargetFormsContainer from './TargetForms';
 import SettingsBar from './SettingsBar';
 //Collapsible Titles - General

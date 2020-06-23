@@ -3,7 +3,7 @@ import {Button, Col, Row} from 'react-bootstrap';
 import { saveAs } from 'file-saver';
 
 import * as T from './commonTypes';
-import ShellFormsContainer from './ShellForms';
+import ShellFormsContainer from './ShellForms/ShellForms';
 import TargetFormsContainer from './TargetForms';
 import AllCharts from './Charts';
 import NavbarCustom from './Navbar';
