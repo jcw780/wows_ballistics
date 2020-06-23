@@ -9,3 +9,5 @@ export interface formTemplate<K>{
 }
 export type formLabelsT = formTemplate<labelT>;
 export type formsT = keyof(formLabelsT);
+
+export interface formDataT extends formTemplate<number>{name: string, colors: string[]}
