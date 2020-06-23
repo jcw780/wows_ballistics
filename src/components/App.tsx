@@ -5,7 +5,7 @@ import { saveAs } from 'file-saver';
 import * as T from './commonTypes';
 import ShellFormsContainer from './ShellForms';
 import TargetFormsContainer from './TargetForms';
-import ChartGroup from './Charts';
+import AllCharts from './Charts';
 import NavbarCustom from './Navbar';
 import SettingsBar from './SettingsBar';
 
@@ -15,7 +15,7 @@ class App extends React.Component<{},{}> {
 	SFCref = React.createRef<ShellFormsContainer>();
 	TFCref = React.createRef<TargetFormsContainer>();
 	Settingsref = React.createRef<SettingsBar>();
-	graphsRef : React.RefObject<ChartGroup> = React.createRef<ChartGroup>();
+	graphsRef : React.RefObject<AllCharts> = React.createRef<AllCharts>();
 	navRef : React.RefObject<NavbarCustom> = React.createRef<NavbarCustom>();
 
 	//Navbar Links
@@ -244,6 +244,10 @@ class App extends React.Component<{},{}> {
 	updateInitialData = (data) => { //Only used to for replacing initialData = not useful in release
 		const fileToSave = new Blob([JSON.stringify(data)], {type: 'application/json',});
 		saveAs(fileToSave, 'initialData.json');
+		//const compressed = pako.deflate(JSON.stringify(data));
+		//console.log(compressed);
+		//const fileToSave2 = new Blob([compressed], {type: 'text/plain',});
+		//saveAs(fileToSave2, 'initialData.deflate');
 	}
 	onUpdate = () =>{this.navRef.current!.update();} // Update Navbar when charts are updated
 	updateColors = () => { // For updating when color settings change
@@ -272,7 +276,7 @@ class App extends React.Component<{},{}> {
 		<Col/>
 	</Row>
 	<hr/>
-	<ChartGroup ref={this.graphsRef} settings={this.settings} links={this.links} onUpdate={this.onUpdate}/>
+	<AllCharts ref={this.graphsRef} settings={this.settings} links={this.links} onUpdate={this.onUpdate}/>
 </div>
 		);
 	}
