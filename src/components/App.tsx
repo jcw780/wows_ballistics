@@ -7,7 +7,7 @@ import ShellFormsContainer from './ShellForms/ShellForms';
 import TargetFormsContainer from './TargetForms';
 import AllCharts from './Charts';
 import NavbarCustom from './Navbar';
-import SettingsBar from './SettingsBar';
+import SettingsBar from './SettingsBar/SettingsBar';
 
 import ShellWasm from '../wasm/shellWasm.wasm';
 class App extends React.Component<{},{}> {

@@ -1,9 +1,9 @@
 import React from 'react';
-import {Button, ToggleButtonGroup, ToggleButton, Collapse, Container, Col, Row} from 'react-bootstrap';
+import {ToggleButtonGroup, ToggleButton, Container, Col, Row} from 'react-bootstrap';
 import BootstrapSwitchButton from 'bootstrap-switch-button-react';
 
-import * as T from './commonTypes';
-import {ParameterForm} from './ParameterForm';
+import * as T from '../commonTypes';
+import {ParameterForm} from '../ParameterForm';
 
 class CalculationRadio extends React.PureComponent<{settings: T.settingsT}, {value: number}>{
     constructor(props){
@@ -42,16 +42,11 @@ class CalculationRadio extends React.PureComponent<{settings: T.settingsT}, {val
     }
 }
 
-interface settingsBarState{open: boolean}
 interface settingsBarProps{
     settings: T.settingsT, updateColors: Function
 }
-export class SettingsBar extends React.PureComponent<settingsBarProps, settingsBarState>{
-    state = {open : false}; scrollRef = React.createRef<Button & HTMLButtonElement>();
+export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
     titles : T.collapseTitlesT = ["Hide: ", "Show: "]; // 0: Hide 1: Show
-    private toggleCollapse = () => {
-        this.setState((current) => {return {open: !current.open}});
-    }
     private forms = {
         graphs : {
             distance : [['min', 'Minimum'], ['max', 'Maximum'], ['stepSize', 'Step Size']]
@@ -192,14 +187,8 @@ export class SettingsBar extends React.PureComponent<settingsBarProps, settingsB
         </>);
     }
     render(){
-        const settings = this.props.settings, format = settings.format, open = this.state.open;
-        return(<>
-<Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
-        onClick={this.toggleCollapse} ref={this.scrollRef}
-        aria-controls="collapseSettings"
-        aria-expanded={open} variant="dark"
-        className={open === true ? 'active' : ''}>{this.titles[Number(!open)] + 'Settings'}</Button>
-<Collapse in={open}><div id="collapseSettings">
+        const settings = this.props.settings, format = settings.format;
+        return(
     <Container style={{maxWidth: '100%'}}><Row>
         <Col sm="6" style={{padding: 0}}>
             <h3>Graphs</h3>
@@ -258,9 +247,8 @@ export class SettingsBar extends React.PureComponent<settingsBarProps, settingsB
             </Row>
         </Col>
     </Row></Container>
-</div></Collapse> 
-        </>);
+        );
     }
 }
 
-export default SettingsBar;
+export default SettingsBarInternal;
