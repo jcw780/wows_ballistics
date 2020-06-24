@@ -1,8 +1,6 @@
 import React from 'react';
 import {Form, Col, Row} from 'react-bootstrap';
-
 import clonedeep from 'lodash.clonedeep';
-
 
 import * as S from './Types';
 import {ParameterForm} from '../ParameterForm';
@@ -38,7 +36,7 @@ export class ShellParameters extends React.PureComponent<shellParametersProps>{
 				type="number" append={value[S.labelI.unit]}
 				style={{inputGroup:{width: "50%"}}} ariaLabel={name}>
 					<GeneralTooltip title={name} content={value[S.labelI.description]}>
-						<text>{name}</text>
+						<div>{name}</div>
 					</GeneralTooltip>
 			</ParameterForm>);
 		}
@@ -61,5 +59,7 @@ export class ShellParameters extends React.PureComponent<shellParametersProps>{
 		);
 	}
 }
+
+export type ShellParametersT = ShellParameters;
 
 export default ShellParameters;

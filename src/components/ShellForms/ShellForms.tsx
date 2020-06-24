@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Suspense} from 'react';
 import {Col, Row, Modal, Container, Button, Popover, OverlayTrigger} from 'react-bootstrap';
 import BootstrapSwitchButton from 'bootstrap-switch-button-react';
 import distinctColors from 'distinct-colors';
@@ -8,7 +8,10 @@ import * as T from '../commonTypes';
 import * as S from './Types';
 import {ParameterForm} from '../ParameterForm';
 import DefaultShips from './DefaultForms'
-import ShellParameters from './ShellParameters';
+import {ShellParametersT} from './ShellParameters';
+
+const ShellParameters = React.lazy(() => import('./ShellParameters'));
+//import ShellParameters from './ShellParameters';
 
 interface shellFormsProps{
 	index: number, colors: Array<string>, keyProp: number, graph: boolean,
@@ -32,7 +35,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		normalization: 0, ra0: 0, ra1: 0, HESAP: 0,
 		name : '', colors : [],
 	})
-	parameters : React.RefObject<ShellParameters> = React.createRef<ShellParameters>()
+	parameters : React.RefObject<ShellParametersT> = React.createRef<ShellParametersT>()
 	defaults : React.RefObject<DefaultShips> = React.createRef<DefaultShips>()
 	nameForm : React.RefObject<ParameterForm> = React.createRef<ParameterForm>()
 	canvasRef = React.createRef<HTMLCanvasElement>();
@@ -214,7 +217,10 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		formData.ra0 = data.bulletRicochetAt;
 		formData.ra1 = data.bulletAlwaysRicochetAt;
 		formData.HESAP = data.alphaPiercingHE > data.alphaPiercingCS ? data.alphaPiercingHE : data.alphaPiercingCS;
-		if(this.parameters.current) this.parameters.current!.updateShells();
+		
+		if(this.parameters !== undefined && this.parameters !== null){
+			if(this.parameters.current !== undefined && this.parameters.current !== null) this.parameters.current!.updateShells();
+		}
 		//only resets add / delete when last item has finished mounting
 		//otherwise potential for crashes when adding ships
 		if(props.index + 1 === props.size) props.reset();
@@ -294,8 +300,10 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 						<Popover.Content>
 						<Container style={{padding: 0}}>
 							<Col sm="12" style={{padding: 0}}>
-							<ShellParameters handleValueChange={this.handleValueChange}
-								formLabels={this.formLabels} ref={this.parameters} formData={this.formData}/>
+								<Suspense fallback={<div>Loading...</div>}>
+									<ShellParameters handleValueChange={this.handleValueChange}
+										formLabels={this.formLabels} ref={this.parameters} formData={this.formData}/>
+								</Suspense>
 							</Col>
 						</Container>
 						</Popover.Content>
