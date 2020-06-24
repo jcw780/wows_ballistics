@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {Form, Container} from 'react-bootstrap';
 import pako from 'pako';
 //import TargetFormsContainer from 'TargetForms';
-import * as T from './commonTypes';
+import * as T from '../commonTypes';
 
 interface defaultFormProps{
 	controlId: string, keyProp: number, ariaLabel : string, children : string | JSX.Element, 

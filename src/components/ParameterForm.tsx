@@ -53,3 +53,5 @@ export class ParameterForm extends React.Component<parameterFormProps, parameter
 		
 	}
 }
+
+export default ParameterForm;

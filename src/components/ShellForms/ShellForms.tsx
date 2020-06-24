@@ -1,86 +1,24 @@
-import React from 'react';
-import {Form, Col, Row, Modal, Container, Button, Popover, OverlayTrigger} from 'react-bootstrap';
+import React, {Suspense} from 'react';
+import {Col, Row, Modal, Container, Button, Popover, OverlayTrigger} from 'react-bootstrap';
 import BootstrapSwitchButton from 'bootstrap-switch-button-react';
 import distinctColors from 'distinct-colors';
 import clonedeep from 'lodash.clonedeep';
 
-import * as T from './commonTypes';
-import {ParameterForm} from './ParameterForm';
+import * as T from '../commonTypes';
+import * as S from './Types';
+import {ParameterForm} from '../ParameterForm';
 import DefaultShips from './DefaultForms'
-import DownloadButton from './DownloadButton';
-import GeneralTooltip from './Tooltips';
+import {ShellParametersT} from './ShellParameters';
 
-
-enum labelI {name, unit, ref, description}
-type labelT = [string, string,React.RefObject<ParameterForm>, string | JSX.Element];
-interface formTemplate<K>{
-	caliber: K, muzzleVelocity: K, dragCoefficient: K, mass: K,
-	krupp: K, fusetime: K, threshold: K, normalization: K, 
-	ra0: K, ra1: K, HESAP: K,
-}
-type formLabelsT = formTemplate<labelT>;
-type formsT = keyof(formLabelsT);
-
-interface shellParametersProps {handleValueChange: any, formLabels : formLabelsT, formData: formDataT}
-class ShellParameters extends React.PureComponent<shellParametersProps>{
-	nameForm = React.createRef<ParameterForm>();
-	downloadRef = React.createRef<DownloadButton>();
-	handleValueChange = (value, k) => {this.props.handleValueChange(value, k);}
-	updateShells() {
-		const props = this.props;
-		const updateItem = ([key, value] : [formsT, labelT]): void => {
-			value[labelI.ref].current!.updateValue(props.formData[key]);
-		}
-		const run = () => Object.entries(props.formLabels).forEach(updateItem);
-		return run();
-	}
-	updateDownloadJSON = () => {
-		const formData = this.props.formData, selectedData = clonedeep(FormData); delete selectedData.colors;
-        const url = URL.createObjectURL(new Blob([JSON.stringify(selectedData)], {type: 'text/json;charset=utf-8'}));
-        this.downloadRef.current!.update(url, formData.name + '.json');
-	}
-	addForms = () => {
-		const props = this.props;
-		const singleForm = ([key, value] : [formsT, labelT], i) => {
-			const name = value[labelI.name];
-			return (
-			<ParameterForm key={i} controlId={key} ref={value[labelI.ref]}
-				newValue={String(props.formData[key])}
-				handleValueChange={this.handleValueChange} 
-				type="number" append={value[labelI.unit]}
-				style={{inputGroup:{width: "50%"}}} ariaLabel={name}>
-					<GeneralTooltip title={name} content={value[labelI.description]}>
-						<text>{name}</text>
-					</GeneralTooltip>
-			</ParameterForm>);
-		}
-		const run = () => Object.entries(props.formLabels).map(singleForm); return run();
-	}
-	render() {
-		return(
-<>
-	<Form>
-		{this.addForms()}	
-	</Form>
-	<Row>
-		<Col sm="3"/>
-		<Col sm="6">
-		<DownloadButton label="Download Raw" updateData={this.updateDownloadJSON} ref={this.downloadRef} style={{width: "100%"}}/>
-		</Col>
-		<Col sm="3"/>
-	</Row>
-</>
-		);
-	}
-}
+const ShellParameters = React.lazy(() => import('./ShellParameters'));
+//import ShellParameters from './ShellParameters';
 
 interface shellFormsProps{
 	index: number, colors: Array<string>, keyProp: number, graph: boolean,
 	deleteShip : Function, copyShip : Function,
 	reset: () => void, settings : T.settingsT, size: number
-	formData?: formDataT, defaultData?: T.defaultDataT, copied: boolean
+	formData?: S.formDataT, defaultData?: T.defaultDataT, copied: boolean
 }
-interface formDataT extends formTemplate<number>{name: string, colors: string[]}
 export class ShellForms extends React.PureComponent<shellFormsProps> {
 	public static defaultProps = {
 		copied : false, graph : true
@@ -91,17 +29,17 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		ship: ['', [''], ['']], artillery: ['', [''], ['']], shellType: ['', [''], ['']],
 		queriedData: {}
 	});
-	formData : formDataT = Object.seal({
+	formData : S.formDataT = Object.seal({
 		caliber: 0, muzzleVelocity: 0, dragCoefficient: 0,
 		mass: 0, krupp: 0, fusetime: 0, threshold: 0, 
 		normalization: 0, ra0: 0, ra1: 0, HESAP: 0,
 		name : '', colors : [],
 	})
-	parameters : React.RefObject<ShellParameters> = React.createRef<ShellParameters>()
+	parameters : React.RefObject<ShellParametersT> = React.createRef<ShellParametersT>()
 	defaults : React.RefObject<DefaultShips> = React.createRef<DefaultShips>()
 	nameForm : React.RefObject<ParameterForm> = React.createRef<ParameterForm>()
 	canvasRef = React.createRef<HTMLCanvasElement>();
-	formLabels : formLabelsT = Object.seal({
+	formLabels : S.formLabelsT = Object.seal({
 		caliber: ['Caliber', 'm', React.createRef(), 
 		<>
 			Diameter of the shell. <br/> 
@@ -263,7 +201,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		else return false;	
 	}
 	handleNameChange = (value : string, id) => this.formData.name = value;
-	handleValueChange = (value : string, k : formsT) => this.formData[k] = parseFloat(value);
+	handleValueChange = (value : string, k : S.formsT) => this.formData[k] = parseFloat(value);
 	getDefaultData = (data, nameUnprocessed : string) => { //Query Version End
 		let name = nameUnprocessed; const formData = this.formData, props = this.props;
 		if(this.props.settings.format.shortNames) name = name.split("_").slice(1).join(" ");
@@ -279,7 +217,10 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		formData.ra0 = data.bulletRicochetAt;
 		formData.ra1 = data.bulletAlwaysRicochetAt;
 		formData.HESAP = data.alphaPiercingHE > data.alphaPiercingCS ? data.alphaPiercingHE : data.alphaPiercingCS;
-		if(this.parameters.current) this.parameters.current!.updateShells();
+		
+		if(this.parameters !== undefined && this.parameters !== null){
+			if(this.parameters.current !== undefined && this.parameters.current !== null) this.parameters.current!.updateShells();
+		}
 		//only resets add / delete when last item has finished mounting
 		//otherwise potential for crashes when adding ships
 		if(props.index + 1 === props.size) props.reset();
@@ -359,8 +300,10 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 						<Popover.Content>
 						<Container style={{padding: 0}}>
 							<Col sm="12" style={{padding: 0}}>
-							<ShellParameters handleValueChange={this.handleValueChange}
-								formLabels={this.formLabels} ref={this.parameters} formData={this.formData}/>
+								<Suspense fallback={<div>Loading...</div>}>
+									<ShellParameters handleValueChange={this.handleValueChange}
+										formLabels={this.formLabels} ref={this.parameters} formData={this.formData}/>
+								</Suspense>
 							</Col>
 						</Container>
 						</Popover.Content>
@@ -393,7 +336,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 }
 
 interface copyTempT {
-	default: T.defaultDataT, data: formDataT, graph: boolean
+	default: T.defaultDataT, data: S.formDataT, graph: boolean
 }
 export class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {keys: Set<number>, disabled: boolean}>{
 	state = {keys: new Set([0, 1]), disabled: false}; deletedKeys: number[] = [];
@@ -433,14 +376,14 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 			}
 		}
 	}
-	copyShip = (defaultData : T.defaultDataT, shellData : formDataT, graph : boolean) => {
+	copyShip = (defaultData : T.defaultDataT, shellData : S.formDataT, graph : boolean) => {
 		this.copyTemp = {default: defaultData, data: shellData, graph: graph};
 		this.copied = true; this.addShip();
 	}
 	returnShellData = () => {
-		let data = Array<formDataT>();
+		let data = Array<S.formDataT>();
 		this.shellRefs.forEach((reference, i) => {
-			const returnedData : formDataT | false = reference.current!.returnData();
+			const returnedData : S.formDataT | false = reference.current!.returnData();
 			if(returnedData !== false){
 				data.push(returnedData);
 			}

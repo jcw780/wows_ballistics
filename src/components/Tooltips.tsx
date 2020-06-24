@@ -17,4 +17,5 @@ export const GeneralTooltip : React.SFC<generalTooltipProps> = ({title, content,
     );
 }
 
+export type GeneralTooltipT = typeof GeneralTooltip;
 export default GeneralTooltip;
