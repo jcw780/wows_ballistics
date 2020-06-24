@@ -84,6 +84,54 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
     }
 }
 
+interface subGroupState {
+    updateTrigger: boolean
+}
+interface subGroupProps {
+    config: singleChartType[], links: T.singleLinkT[], updateLinks: boolean
+    onUpdate: Function,
+    dimensions: {height: number, width: number},  
+} 
+class SubGroup extends React.Component<subGroupProps, subGroupState>{
+    public static defaultProps = {
+        updateLinks: false
+    };
+    state: {updateTrigger: false};
+    private addChart = () => {
+        const singleChart = (value, i) : JSX.Element => {
+            return (<SingleChart 
+                ref={value[singleChartIndex.ref]} key={i} 
+                data={value}
+                dimensions={this.props.dimensions} 
+                />);
+        }
+        const chartTarget = this.props.config;
+        const run = () => chartTarget.map(singleChart); return run();
+    }
+    render(){
+    return(<>{this.addChart()}</>);
+    }
+    componentDidMount(){
+        const links = this.props.links; //Initialize Links Names
+        this.props.config.forEach((chart, i) => {
+            if(links.length === i){ links.push(['', React.createRef<SingleChart>()]);}
+            const link = links[i];
+            link[T.singleLinkIndex.name] = chart[singleChartIndex.name]; 
+            link[T.singleLinkIndex.ref] = chart[singleChartIndex.ref];
+        });
+    }
+    componentDidUpdate(){
+        if(this.props.updateLinks){
+            this.props.config.forEach((chart, i) => {
+                const link = this.props.links[i];
+                link[T.singleLinkIndex.name] = chart[singleChartIndex.name]; 
+                link[T.singleLinkIndex.ref] = chart[singleChartIndex.ref];
+            });
+            this.props.onUpdate(); // Update navbar links on update
+        }
+    }
+}
+
 // Config Type for Chart Labels / Data
 interface lineT {lineLabel: string, data: string}
 interface axisT {id: string, axLabel?: string, lines: lineT[]}
@@ -93,7 +141,6 @@ interface chartGroupProps{
     settings: T.settingsT, links: T.linkT, onUpdate: Function
 }
 export class ChartGroup extends React.Component<chartGroupProps>{
-    state={updateTrigger: true}; //State needs value otherwise render won't trigger
     dimensions = {height: 300, width: 1200};
     chartConfigs : Record<T.chartT, singleChartType[]> = {
         impact: [ //impact charts
@@ -129,6 +176,11 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 React.createRef<SingleChart>(), ''],
         ]
     }
+    groupRefs = {
+        impact: React.createRef<SubGroup>(), 
+        angle: React.createRef<SubGroup>(), 
+        post: React.createRef<SubGroup>()
+    };
     private callbackFunctions = {
         Penetration: (x, y) => {return `(${x}m, ${y}mm)`;},
         Angle: (x, y) => {return `(${x}m, ${y}°)`;},
@@ -436,27 +488,38 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 const name = graphData.names[i], colors = graphData.colors[i];
                 generateStatic(i, name, colors); generatePost(i, name, colors);
             }
-
-            this.setState(this.state); //graph updates completed, trigger re-render
+            this.updateGroup('impact');
+            this.updateGroup('angle');
+            this.updateGroup('post');
         }
         return run();
     }
-    updateCharts = () => {
+    updateGroup = (target : T.chartT) => {
+        this.groupRefs[target].current!.forceUpdate();
+    }
+    updateCharts = (target : T.chartT) => {
         const triggerChartUpdate = (value : singleChartType, i) => {
-            const ref = value[singleChartIndex.ref]; if(ref.current !== undefined){ref.current!.update();}
+            const ref = value[singleChartIndex.ref]; 
+            if(ref.current !== undefined){
+                console.log(ref);
+                ref.current!.chartRef.current!.forceUpdate();
+            }
         }
-        Object.entries(this.chartConfigs).forEach(([key, value]) => {value.forEach(triggerChartUpdate)});
+        this.chartConfigs[target].forEach(triggerChartUpdate);
     }
     private addChart = (target : T.chartT) => {
-        const singleChart = (value, i) : JSX.Element => {
-            return (<SingleChart 
-                ref={value[singleChartIndex.ref]} key={i} 
-                data={value}
-                dimensions={this.dimensions} 
-                />);
+        const updateLinks = {
+            impact: false, angle: false, post: true,
         }
-        const chartTarget = this.chartConfigs[target];
-        const run = () => chartTarget.map(singleChart); return run();
+        return(
+            <SubGroup ref={this.groupRefs[target]}
+                config={this.chartConfigs[target]} 
+                links={this.props.links[target]}
+                updateLinks={updateLinks[target]}
+                onUpdate={this.props.onUpdate}
+                dimensions={this.dimensions}
+            />
+        );
     }
     render(){
         return(
@@ -506,27 +569,12 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         );
     }
     componentDidMount(){
-        //Initialize Links Names
-        const setupNavbarCharts = (target : T.chartT) => {
-            const link = this.props.links[target];
-            this.chartConfigs[target].forEach((chart, i) => {
-                if(link.length === i){ link.push(['', React.createRef<SingleChart>()]);}
-                link[i][T.singleLinkIndex.name] = chart[singleChartIndex.name]; link[i][T.singleLinkIndex.ref] = chart[singleChartIndex.ref];
-            });
-        }
-        Object.keys(this.chartConfigs).forEach((chartType : T.chartT) => {setupNavbarCharts(chartType)});
         // Preinitialize chart after mounting - to mitigate user confusion
         // Also due to the fact that getting wasm to run on startup is apparently impossible
         const initialJson = require('../static/initialData.json');
         this.updateData(initialJson);
     }
-    componentDidUpdate(){
-        this.chartConfigs.post.forEach((chart, i) => {
-            this.props.links.post[i][T.singleLinkIndex.name] = chart[singleChartIndex.name]; 
-            this.props.links.post[i][T.singleLinkIndex.ref] = chart[singleChartIndex.ref];
-        });
-        this.props.onUpdate(); // Update navbar links on update
-    }
+    //componentDidUpdate(){}
 }
 
 export default ChartGroup;
