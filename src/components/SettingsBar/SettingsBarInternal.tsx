@@ -117,7 +117,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
     private generateNumericalMethodForm = () => {
         const forms = this.forms;
         const calculationSettings = this.props.settings.calculationSettings;
-        return forms.calculations.numericalMethod.map((value, i) => {
+        const singleForm = (value, i) => {
             const initialValue = calculationSettings[value[0]];
             return(
                 <ParameterForm newValue={String(initialValue)} controlId={value[0]} key={i} ariaLabel={value[1]}
@@ -125,7 +125,8 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                     {value[1]}
                 </ParameterForm>
             );
-        });
+        }
+        const run = () => forms.calculations.numericalMethod.map(singleForm); return run();
     }
     //Format
     private handleRoundingChange = (value: string, id: string) : void | string => {
@@ -177,76 +178,81 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                 );
             });
         }
-        return (<>
-            <Row style={{maxHeight: rowHeight}}>
-                <Col sm={typeWidth} className="no-lr-padding" style={{maxHeight: rowHeight}}/>
-                <Col className="no-lr-padding" style={{maxHeight: rowHeight}}>Minimum</Col>
-                <Col className="no-lr-padding" style={{maxHeight: rowHeight}}>Maximum</Col>
-            </Row>
-            {addForm()}
-        </>);
+        const run = () => {
+            return (<>
+                <Row style={{maxHeight: rowHeight}}>
+                    <Col sm={typeWidth} className="no-lr-padding" style={{maxHeight: rowHeight}}/>
+                    <Col className="no-lr-padding" style={{maxHeight: rowHeight}}>Minimum</Col>
+                    <Col className="no-lr-padding" style={{maxHeight: rowHeight}}>Maximum</Col>
+                </Row>
+                {addForm()}
+            </>)
+        }
+        return run();
     }
     render(){
         const settings = this.props.settings, format = settings.format;
         return(
-    <Container style={{maxWidth: '100%'}}><Row>
-        <Col sm="6" style={{padding: 0}}>
-            <h3>Graphs</h3>
-            <Row>
-                <Col style={{paddingRight: 0}}>
-                    <h4>Line</h4>
-                    <Row>
+    <Container style={{maxWidth: '100%'}}>
+        <Row>
+            <Col sm="6" style={{padding: 0}}>
+                <h3>Graphs</h3>
+                <Row>
+                    <Col style={{paddingRight: 0}}>
+                        <h4>Line</h4>
+                        <Row>
+                            <Col sm="1"/>
+                            <Col>
+                                <BootstrapSwitchButton style='switch-toggle'
+                                    onlabel='Show Line' offlabel='Show Point' onstyle='success' offstyle='danger'
+                                    onChange={this.handleShowLineChange} checked={format.showLine}
+                                />
+                            </Col>
+                            <Col sm="1"/>  
+                        </Row>
+                        <hr/><h4>Range Axis</h4>
+                        {this.generateGraphForm()}
+                    </Col>
+                    <Col style={{padding: 0}}>
+                        <h4>Labeling</h4>
+                        <Row>
                         <Col sm="1"/>
-                        <Col>
-                            <BootstrapSwitchButton style='switch-toggle'
-                                onlabel='Show Line' offlabel='Show Point' onstyle='success' offstyle='danger'
-                                onChange={this.handleShowLineChange} checked={format.showLine}
-                            />
-                        </Col>
-                        <Col sm="1"/>  
-                    </Row>
-                    <hr/><h4>Range Axis</h4>
-                    {this.generateGraphForm()}
-                </Col>
-                <Col style={{padding: 0}}>
-                    <h4>Labeling</h4>
-                    <Row>
-                    <Col sm="1"/>
-                        <Col>
-                            <BootstrapSwitchButton style='switch-toggle'
-                                onlabel='Short Names' offlabel='Long Names' onstyle='success' offstyle='danger'
-                                onChange={this.handleShortNameChange} checked={format.shortNames}
-                            />
-                        </Col>
-                    <Col sm="1"/>
-                    </Row>
-                    <ParameterForm 
-                        controlId="rounding" ariaLabel="Tooltip Rounding" type="number" 
-                        newValue={String(format.rounding)}
-                        handleValueChange={this.handleRoundingChange} 
-                        labelWidth={3} append="dp">
-                        Tooltip Rounding
-                    </ParameterForm>
-                    <hr/><h4>Color Generation</h4>
-                    {this.generateColorForms()}
-                </Col>
-            </Row>
-        </Col>
-        <Col style={{padding: 0}}>
-            <h3>Calculations</h3>
-            <Row>
-                <Col style={{padding: 0}}>
-                    <h4>Launch Angle</h4>
-                    {this.generateLaunchAngleForm()}
-                </Col>
-                <Col sm="6" style={{paddingRight: 0, paddingLeft: 0}}>
-                    <h4>Numerical Analysis</h4>
-                    <CalculationRadio settings={settings}/>
-                    {this.generateNumericalMethodForm()}
-                </Col>
-            </Row>
-        </Col>
-    </Row></Container>
+                            <Col>
+                                <BootstrapSwitchButton style='switch-toggle'
+                                    onlabel='Short Names' offlabel='Long Names' onstyle='success' offstyle='danger'
+                                    onChange={this.handleShortNameChange} checked={format.shortNames}
+                                />
+                            </Col>
+                        <Col sm="1"/>
+                        </Row>
+                        <ParameterForm 
+                            controlId="rounding" ariaLabel="Tooltip Rounding" type="number" 
+                            newValue={String(format.rounding)}
+                            handleValueChange={this.handleRoundingChange} 
+                            labelWidth={3} append="dp">
+                            Tooltip Rounding
+                        </ParameterForm>
+                        <hr/><h4>Color Generation</h4>
+                        {this.generateColorForms()}
+                    </Col>
+                </Row>
+            </Col>
+            <Col style={{padding: 0}}>
+                <h3>Calculations</h3>
+                <Row>
+                    <Col style={{padding: 0}}>
+                        <h4>Launch Angle</h4>
+                        {this.generateLaunchAngleForm()}
+                    </Col>
+                    <Col sm="6" style={{paddingRight: 0, paddingLeft: 0}}>
+                        <h4>Numerical Analysis</h4>
+                        <CalculationRadio settings={settings}/>
+                        {this.generateNumericalMethodForm()}
+                    </Col>
+                </Row>
+            </Col>
+        </Row>
+    </Container>
         );
     }
 }
