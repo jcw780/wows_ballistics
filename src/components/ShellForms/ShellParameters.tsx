@@ -1,11 +1,12 @@
-import React from 'react';
+import React, {Suspense} from 'react';
 import {Form, Col, Row} from 'react-bootstrap';
 import clonedeep from 'lodash.clonedeep';
 
 import * as S from './Types';
 import {ParameterForm} from '../ParameterForm';
 import DownloadButton from '../DownloadButton';
-import GeneralTooltip from '../Tooltips';
+
+const GeneralTooltip = React.lazy(() => import('../Tooltips'));
 
 interface shellParametersProps {handleValueChange: any, formLabels : S.formLabelsT, formData: S.formDataT}
 export class ShellParameters extends React.PureComponent<shellParametersProps>{
@@ -35,9 +36,11 @@ export class ShellParameters extends React.PureComponent<shellParametersProps>{
 				handleValueChange={this.handleValueChange} 
 				type="number" append={value[S.labelI.unit]}
 				style={{inputGroup:{width: "50%"}}} ariaLabel={name}>
-					<GeneralTooltip title={name} content={value[S.labelI.description]}>
-						<div>{name}</div>
-					</GeneralTooltip>
+                    <Suspense fallback={<div>Loading...</div>}>
+                        <GeneralTooltip title={name} content={value[S.labelI.description]}>
+                            <div>{name}</div>
+                        </GeneralTooltip>
+                    </Suspense>
 			</ParameterForm>);
 		}
 		const run = () => Object.entries(props.formLabels).map(singleForm); return run();
