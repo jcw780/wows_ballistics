@@ -19,7 +19,7 @@ export class ParameterForm extends React.Component<parameterFormProps, parameter
         super(props);
 		this.state = {value: this.props.newValue || '', invalid: false};
 	}
-	handleChange = event => {
+	onChange = event => {
         const errorCode = this.props.handleValueChange(event.target.value, this.props.controlId);
         if(errorCode === undefined) this.updateValue(event.target.value); //Input is fine - update
         else this.setState(current => {return {...current, invalid: true};});
@@ -36,7 +36,7 @@ export class ParameterForm extends React.Component<parameterFormProps, parameter
 		const formControl = (
 			<Form.Control type={props.type} value={state.value} 
 			style={style.formControl} isInvalid={state.invalid}
-			placeholder={props.placeholder} onChange={this.handleChange}
+			placeholder={props.placeholder} onChange={this.onChange}
 			aria-describedby="addon" aria-label={props.ariaLabel}/>
 		);
 		return () => {
