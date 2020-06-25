@@ -1,4 +1,4 @@
-import ParameterForm from '../ParameterForm';
+import ParameterForm from '../UtilityComponents/ParameterForm';
 
 export enum labelI {name, unit, ref, description}
 export type labelT = [string, string,React.RefObject<ParameterForm>, string | JSX.Element];

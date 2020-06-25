@@ -3,7 +3,7 @@ import {ToggleButtonGroup, ToggleButton, Container, Col, Row} from 'react-bootst
 import BootstrapSwitchButton from 'bootstrap-switch-button-react';
 
 import * as T from '../commonTypes';
-import {ParameterForm} from '../ParameterForm';
+import {ParameterForm} from '../UtilityComponents/ParameterForm';
 
 class CalculationRadio extends React.PureComponent<{settings: T.settingsT}, {value: number}>{
     constructor(props){

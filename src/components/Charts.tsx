@@ -5,8 +5,8 @@ import 'chartjs-plugin-annotation';
 import {Button, Collapse, Row, Col} from 'react-bootstrap';
 
 import * as T from './commonTypes';
-import DownloadButton from './DownloadButton';
-import GeneralTooltip from './Tooltips';
+import DownloadButton from './UtilityComponents/DownloadButton';
+import GeneralTooltip from './UtilityComponents/Tooltips';
 
 // chartConfigs type
 interface chartDataOption{data: Record<string, any>, options: Record<string, any>}
