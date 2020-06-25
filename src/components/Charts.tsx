@@ -52,9 +52,7 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
             this.wrapperRef.current!.forceUpdate();
         }
     }
-    toggleCollapse = () => {
-        this.setState((current) => {return {open: !current.open}});
-    }
+    toggleCollapse = () => this.setState((current) => {return {open: !current.open}});
     updateDownloadGraph = () => {
         const url = this.chartRef.current!.chartInstance.toBase64Image();
         this.DownloadRef[0].current!.update(url, this.chartRef.current!.chartInstance.options.title.text + '.png');
@@ -79,19 +77,21 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
     >{this.titles[Number(!this.state.open)] + this.props.data[singleChartIndex.name]}</Button>
     <Collapse in={this.state.open}>
         <div id="collapseChart">
-        <ChartInternal ref={this.wrapperRef}
-            data={this.props.data} 
-            dimensions={this.props.dimensions} 
-            datasetKeyProvider={this.datasetKeyProvider} 
-            chartRef={this.chartRef}/>
-        <Row style={{margin: 0}}>
-            <Col sm="4" style={{padding: 0}}/>
-            <Col sm="2" style={{padding: 0}}><DownloadButton ref={this.DownloadRef[0]} updateData={this.updateDownloadGraph} 
-            label="Download Graph"/></Col>
-            <Col sm="2" style={{padding: 0}}><DownloadButton ref={this.DownloadRef[1]} updateData={this.updateDownloadJSON} 
-            label="Download Data"/></Col>
-            <Col sm="4" style={{padding: 0}}/>
-        </Row>
+            <ChartInternal ref={this.wrapperRef}
+                data={this.props.data} 
+                dimensions={this.props.dimensions} 
+                datasetKeyProvider={this.datasetKeyProvider} 
+                chartRef={this.chartRef}/>
+            <Row style={{margin: 0}}>
+                <Col sm="4" style={{padding: 0}}/>
+                <Col sm="2" style={{padding: 0}}>
+                    <DownloadButton ref={this.DownloadRef[0]} updateData={this.updateDownloadGraph} label="Download Graph"/>
+                </Col>
+                <Col sm="2" style={{padding: 0}}>
+                    <DownloadButton ref={this.DownloadRef[1]} updateData={this.updateDownloadJSON} label="Download Data"/>
+                </Col>
+                <Col sm="4" style={{padding: 0}}/>
+            </Row>
         </div>
     </Collapse> 
 </> 
@@ -111,7 +111,7 @@ class SubGroup extends React.Component<subGroupProps>{
     public static defaultProps = {
         updateLinks: false
     };
-    private addChart = () => {
+    private addChartInternal = () => {
         const singleChart = (value, i) : JSX.Element => {
             return (<SingleChart 
                 ref={value[singleChartIndex.ref]} key={i} 
@@ -120,8 +120,9 @@ class SubGroup extends React.Component<subGroupProps>{
                 />);
         }
         const chartTarget = this.props.config;
-        const run = () => chartTarget.map(singleChart); return run();
+        return () => chartTarget.map(singleChart);
     }
+    private addChart = this.addChartInternal();
     render(){return(<>{this.addChart()}</>)}
     componentDidMount(){
         const links = this.props.links; //Initialize Links Names
@@ -250,9 +251,9 @@ export class ChartGroup extends React.Component<chartGroupProps>{
     }
     private updateDataInternal = (graphData : T.calculatedData) => {
         //Common Utility Functions / Values
-        const settings = this.props.settings;
+        const settings = this.props.settings, lineSettings = settings.line;
         const addCommas = (value, index, values) => {return value.toLocaleString();}
-        const showLineValue = settings.format.showLine, commonPointRadius = showLineValue ? 0 : 2;
+        const showLineValue = lineSettings.showLine, commonPointRadius = showLineValue ? 0 : lineSettings.pointRadius;
         const xAxesDistance = [{
             scaleLabel: {display: true, labelString: "Range (m)",},
             type: 'linear', ticks:{callback: addCommas}
@@ -422,7 +423,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                             color : string = "") : Record<string, any> => {
             return {
                 data: data, showLine: showLineValue, label: label, yAxisID: yAxisID, 
-                fill: false, pointRadius: commonPointRadius, pointHitRadius: 5,
+                fill: false, pointRadius: commonPointRadius, pointHitRadius: lineSettings.pointHitRadius,
                 borderColor: color, backgroundColor: color
             };
         }

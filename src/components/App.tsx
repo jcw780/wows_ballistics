@@ -35,13 +35,16 @@ class App extends React.Component<{},{}> {
 			launchAngle : {min: 0, max: 25, precision: 0.1},
 		},
 		format: {
-			rounding: 3, shortNames: true, showLine: true,
+			rounding: 3, shortNames: true,
 			colors : {
 				hueMin: 0, hueMax: 360,
 				chromaMin: 40, chromaMax: 70,
 				lightMin: 15, lightMax: 85,
 			}
 		},
+		line: {
+			showLine: true, pointRadius: 2, pointHitRadius: 5
+		}
 	}
 	// Calculated Data
 	calculatedData: T.calculatedData
@@ -141,13 +144,14 @@ class App extends React.Component<{},{}> {
 			}
 			Object.entries(this.calculatedData[index]).forEach(singleKey);
 		}
+		const calculatedData = this.calculatedData;
 		return () => {
-			this.calculatedData.numShells = numShells;
+			calculatedData.numShells = numShells;
 			chartIndicesNonPost.forEach(singleIndex);
 			const angleShells = numAngles * numShells;
 			//this.resizePointArray(this.calculatedData.post.shipWidth, [1, impactSize]);
-			this.resizePointArray(this.calculatedData.post.notFused, [angleShells, 0]);
-			this.resizePointArray(this.calculatedData.post.fused, [angleShells, 0]);
+			this.resizePointArray(calculatedData.post.notFused, [angleShells, 0]);
+			this.resizePointArray(calculatedData.post.fused, [angleShells, 0]);
 		}
 	}
 	resizeCalculatedData = (numShells, impactSize, numAngles) : void => {

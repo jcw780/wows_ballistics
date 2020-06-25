@@ -49,26 +49,72 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
     titles : T.collapseTitlesT = ["Hide: ", "Show: "]; // 0: Hide 1: Show
     private forms = {
         graphs : {
-            distance : [['min', 'Minimum'], ['max', 'Maximum'], ['stepSize', 'Step Size']]
+            distance : [
+                ['min', 'Minimum', 'm'], 
+                ['max', 'Maximum', 'm'], 
+                ['stepSize', 'Step Size', 'm']
+            ]
         },
         calculations : {
-            launchAngle : [['min', 'Minimum', '°'], ['max', 'Maximum', '°'], ['precision', 'Increment', '°']],
+            launchAngle : [
+                ['min', 'Minimum', '°'], 
+                ['max', 'Maximum', '°'], 
+                ['precision', 'Increment', '°']
+            ],
             numericalMethod : [['timeStep', 'Time Step', 's']]
         },
         colors : [
             ['Hue', [['hueMin', 'Min'], ['hueMax', 'Max']]],
 			['Chroma', [['chromaMin', 'Min'], ['chromaMax', 'Max']]],
 			['Light', [['lightMin', 'Min'], ['lightMax', 'Max']]],
+        ],
+        line : [
+            ['pointRadius', 'Draw Radius', 'px'], 
+            ['pointHitRadius', 'Hover Radius', 'px']
+        ],
+        format : [
+            ['rounding', 'Tooltip Rounding', 'dp']
         ]
     }
     private defaultFormStyle = {
-        formLabel: {display: "inline-block", marginRight: ".1rem", minWidth:"6rem"},
-        formControl: {minWidth: '6rem', maxWidth: '9rem', display: "inline-flex"},
+        formLabel: {display: "block ruby", padding: 0},
+        formControl: {minWidth: '6rem', maxWidth: '6rem', display: "inline-flex"},
         inputGroup: {display: "inline-flex"},
         inputGroupAppend: {display: "inline-block"},
         formGroup: {display: "block ruby", marginBottom: ".5rem" },
     }
-    //Graphs
+    private generateForms = (forms, target, onChange, sm=4) => {
+        return forms.map((value, i) => {
+            return(
+                <Row key={i}>
+                    <Col className="no-lr-padding" sm={sm}>{value[1]}</Col>
+                    <Col className="no-lr-padding">
+                        <ParameterForm 
+                        controlId={value[0]} type="number" 
+                        handleValueChange={onChange} 
+                        newValue={String(target[value[0]])} 
+                        append={value[2]} 
+                        labelWidth={3} ariaLabel={value[1]}
+                        style={this.defaultFormStyle}>
+                            <></>
+                        </ParameterForm>
+                    </Col>
+                </Row>
+            );
+        });
+    }
+    //Line
+    private onlineChange = (value: string, id: string) => {
+        this.props.settings.line[id] = parseFloat(value);
+    }
+    private generateLineForms = () => {
+        return this.generateForms(
+            this.forms.line,
+            this.props.settings.line,
+            this.onlineChange, 
+        );
+    }
+    //Distance Axis
     private handleGraphChange = (value: string, id: string) => {
         var numValue : number | undefined;
         if(value === ''){numValue = undefined;} 
@@ -76,19 +122,11 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
         this.props.settings.distance[id] = numValue; 
     }
     private generateGraphForm = () => {
-        return this.forms.graphs.distance.map((value, i) => {
-            return(
-                <ParameterForm 
-                controlId={value[0]} key={i} type="number" 
-                handleValueChange={this.handleGraphChange} 
-                newValue={String(this.props.settings.distance[value[0]])} 
-                append="m" 
-                labelWidth={3} ariaLabel={value[1]}
-                style={this.defaultFormStyle}>
-                    {value[1]}
-                </ParameterForm>
-            );
-        });
+        return this.generateForms(
+            this.forms.graphs.distance, 
+            this.props.settings.distance, 
+            this.handleGraphChange
+        );
     }
     //Calculations
     private handleCalculationChange = (value: string, id: string) : void | string => {
@@ -98,23 +136,11 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
         calculationSettings.launchAngle[id] = numValue;
     }
     private generateLaunchAngleForm = () => {
-        const forms = this.forms, calculationSettings = this.props.settings.calculationSettings;
-        const run = () : JSX.Element[] => {return forms.calculations.launchAngle.map((value, i) => {
-            const initialValue = calculationSettings.launchAngle[value[0]];
-            return(
-                
-                <ParameterForm 
-                controlId={value[0]} key={i} type="number" 
-                newValue={String(initialValue)} 
-                handleValueChange={this.handleCalculationChange} 
-                labelWidth={3} append={value[2]} ariaLabel={value[1]}
-                style={this.defaultFormStyle}>{value[1]}</ParameterForm>
-                
-            );
-        })}
-        return(
-            <>{run()}</>
-        )
+        return this.generateForms(
+            this.forms.calculations.launchAngle, 
+            this.props.settings.calculationSettings.launchAngle, 
+            this.handleCalculationChange
+        );
     }
     private handleNumericalMethodChange = (value: string, id: string) : void | string => {
         const calculationSettings = this.props.settings.calculationSettings;
@@ -126,29 +152,31 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
         }
     }
     private generateNumericalMethodForm = () => {
-        const forms = this.forms;
-        const calculationSettings = this.props.settings.calculationSettings;
-        const singleForm = (value, i) => {
-            const initialValue = calculationSettings[value[0]];
-            return(
-                <ParameterForm newValue={String(initialValue)} controlId={value[0]} key={i} ariaLabel={value[1]}
-                type="number" handleValueChange={this.handleNumericalMethodChange} labelWidth={3} append={value[2]} style={this.defaultFormStyle}>
-                    {value[1]}
-                </ParameterForm>
-            );
-        }
-        const run = () => forms.calculations.numericalMethod.map(singleForm); return run();
+        return this.generateForms(
+            this.forms.calculations.numericalMethod, 
+            this.props.settings.calculationSettings, 
+            this.handleNumericalMethodChange
+        );
     }
+
     //Format
     private handleRoundingChange = (value: string, id: string) : void | string => {
         let numValue : number | null = parseInt(value);
         if(numValue < 0){return 'error';} if(value === ''){numValue = null;}
         this.props.settings.format.rounding = numValue; 
     } 
-    private handleShortNameChange = (checked) => {this.props.settings.format.shortNames = checked;}
-    private handleShowLineChange = (checked) => {
+    private generateFormatForms = () => {
+        return this.generateForms(
+            this.forms.format, 
+            this.props.settings.format, 
+            this.handleRoundingChange
+        );
+    }
+
+    private onShortNameChange = (checked) => {this.props.settings.format.shortNames = checked;}
+    private onShowLineChange = (checked) => {
         //this.props.settings.format.showLine = event.target.checked;
-        this.props.settings.format.showLine = checked;
+        this.props.settings.line.showLine = checked;
         //console.log(event);
     }
     //----Color
@@ -204,14 +232,17 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
         }
         return run;
     }
-    private generateColorForms = () => this.generateColorFormsInternal()();
+    private generateColorForms = this.generateColorFormsInternal();
     render(){
         const settings = this.props.settings, format = settings.format;
         return(
     <Container style={{maxWidth: '100%'}}>
         <Row>
+            <Col style={{padding: 0}}><h3>Graphs</h3></Col>
+            <Col style={{padding: 0}}><h3>Calculations</h3></Col>
+        </Row>
+        <Row>
             <Col sm="6" style={{padding: 0}}>
-                <h3>Graphs</h3>
                 <Row>
                     <Col style={{paddingRight: 0}}>
                         <h4>Line</h4>
@@ -220,13 +251,13 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                             <Col>
                                 <BootstrapSwitchButton style='switch-toggle'
                                     onlabel='Show Line' offlabel='Show Point' onstyle='success' offstyle='danger'
-                                    onChange={this.handleShowLineChange} checked={format.showLine}
+                                    onChange={this.onShowLineChange} checked={settings.line.showLine}
                                 />
+                                <h5>Point</h5>
+                                {this.generateLineForms()}
                             </Col>
                             <Col sm="1"/>  
                         </Row>
-                        <hr/><h4>Range Axis</h4>
-                        {this.generateGraphForm()}
                     </Col>
                     <Col style={{padding: 0}}>
                         <h4>Labeling</h4>
@@ -235,25 +266,16 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                             <Col>
                                 <BootstrapSwitchButton style='switch-toggle'
                                     onlabel='Short Names' offlabel='Long Names' onstyle='success' offstyle='danger'
-                                    onChange={this.handleShortNameChange} checked={format.shortNames}
+                                    onChange={this.onShortNameChange} checked={format.shortNames}
                                 />
                             </Col>
                         <Col sm="1"/>
                         </Row>
-                        <ParameterForm 
-                            controlId="rounding" ariaLabel="Tooltip Rounding" type="number" 
-                            newValue={String(format.rounding)}
-                            handleValueChange={this.handleRoundingChange} 
-                            labelWidth={3} append="dp" style={this.defaultFormStyle}>
-                            Rounding
-                        </ParameterForm>
-                        <hr/><h4>Color Generation</h4>
-                        {this.generateColorForms()}
+                        {this.generateFormatForms()}
                     </Col>
                 </Row>
             </Col>
             <Col style={{padding: 0}}>
-                <h3>Calculations</h3>
                 <Row>
                     <Col style={{padding: 0}}>
                         <h4>Launch Angle</h4>
@@ -266,6 +288,22 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                     </Col>
                 </Row>
             </Col>
+        </Row>
+        <hr/>
+        <Row>
+            <Col sm="6" style={{padding: 0}}>
+                <Row>
+                    <Col>
+                        <h4>Range Axis</h4>
+                        {this.generateGraphForm()}
+                    </Col>
+                    <Col>
+                        <h4>Color Generation</h4>
+                        {this.generateColorForms()}
+                    </Col>
+                </Row>
+            </Col>
+            <Col sm="6" style={{padding: 0}}></Col>
         </Row>
     </Container>
         );
