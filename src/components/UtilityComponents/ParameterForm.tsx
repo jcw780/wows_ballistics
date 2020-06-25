@@ -15,15 +15,14 @@ export class ParameterForm extends React.Component<parameterFormProps, parameter
 		style : {formGroup: {marginBottom: "0.5rem"}, label: {}, inputGroup: {}, 
 			formControl: {}, inputGroupAppend: {}}
 	}
-	appendText: JSX.Element = <></>;
 	constructor(props){
         super(props);
 		this.state = {value: this.props.newValue || '', invalid: false};
 	}
 	handleChange = (event) => {
         const errorCode = this.props.handleValueChange(event.target.value, this.props.controlId);
-        if(errorCode === undefined){this.updateValue(event.target.value);} //Input is fine - update
-        else{this.setState((current) => {return {...current, invalid: true};});}
+        if(errorCode === undefined) this.updateValue(event.target.value); //Input is fine - update
+        else this.setState(current => {return {...current, invalid: true};});
     }
 	updateValue = (newValue) => {
 		this.setState((state) => {return {value: newValue, invalid: false};});
@@ -33,38 +32,36 @@ export class ParameterForm extends React.Component<parameterFormProps, parameter
 			return (<InputGroup.Text id="addon">{this.props.append}</InputGroup.Text>);
 		}else{return false;}
 	};
-	render(){
+	private makeInputGroup = () => {
 		const props = this.props, state = this.state, style = props.style;
 		const appendText = this.makeAppend();
-		if(appendText !== false){
-			return (
-	<Form.Group className="form-inline" style={style.formGroup}>
-		<Form.Label column sm={props.labelWidth} style={style.formLabel}>{props.children}</Form.Label>
-		<InputGroup style={props.style.inputGroup}>
+		const formControl = (
 			<Form.Control type={props.type} value={state.value} 
 			style={style.formControl} isInvalid={state.invalid}
 			placeholder={props.placeholder} onChange={this.handleChange}
 			aria-describedby="addon" aria-label={props.ariaLabel}/>
-			<InputGroup.Append style={style.inputGroupAppend}>
-				{appendText}
-			</InputGroup.Append>
-		</InputGroup>
-	</Form.Group>
-			);
-		}else{
-			return (
-	<Form.Group className="form-inline" style={style.formGroup}>
-		<Form.Label column sm={props.labelWidth} style={style.formLabel}>{props.children}</Form.Label>
-		
-			<Form.Control type={props.type} value={state.value} 
-			style={style.formControl} isInvalid={state.invalid}
-			placeholder={props.placeholder} onChange={this.handleChange}
-			aria-describedby="addon" aria-label={props.ariaLabel}/>
-		
-	</Form.Group>
-			);
+		);
+		return () => {
+			if(appendText !== false){
+				return(
+					<InputGroup style={props.style.inputGroup}>
+						{formControl}
+						<InputGroup.Append style={style.inputGroupAppend}>
+							{appendText}
+						</InputGroup.Append>
+					</InputGroup>
+				);
+			}else return formControl;
 		}
-		
+	}
+	render(){
+		const props = this.props, style = props.style;
+		return(
+			<Form.Group className="form-inline" style={style.formGroup}>
+				<Form.Label column sm={props.labelWidth} style={style.formLabel}>{props.children}</Form.Label>
+				{this.makeInputGroup()()}
+			</Form.Group>
+		);	
 	}
 }
 
