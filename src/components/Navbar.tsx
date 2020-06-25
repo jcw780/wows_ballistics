@@ -4,7 +4,7 @@ import {Nav, Navbar, NavDropdown as ND} from 'react-bootstrap';
 import * as T from './commonTypes';
 
 const NavDropdown = React.lazy(() => import('react-bootstrap/NavDropdown'));
-
+const fallback = <div>Loading...</div>;
 class NavbarCustom extends React.Component<{links: T.linkT}>{
     state = {update: true};
     update = () => {this.setState(this.state);}
@@ -26,22 +26,22 @@ class NavbarCustom extends React.Component<{links: T.linkT}>{
 <Navbar variant="dark" bg="dark" expand="lg" fixed="top">
     <Navbar.Brand onClick={this.scrollToTop}>World of Warships Ballistics Calculator</Navbar.Brand>
     <Nav className="mr-auto">
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={fallback}>
             <NavDropdown title="Parameters" id="basic-nav-dropdown">
                 {this.makeDropdowns('parameters')}
             </NavDropdown>
         </Suspense>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={fallback}>
             <NavDropdown title="Impact Charts" id="basic-nav-dropdown">
                 {this.makeDropdowns('impact')}
             </NavDropdown>
         </Suspense>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={fallback}>
             <NavDropdown title="Angle Charts" id="basic-nav-dropdown">
                 {this.makeDropdowns('angle')}
             </NavDropdown>
         </Suspense>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={fallback}>
             <NavDropdown title="Post-Pentration Charts" id="basic-nav-dropdown">
                 {this.makeDropdowns('post')}
             </NavDropdown>
