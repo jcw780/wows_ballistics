@@ -19,12 +19,12 @@ export class ParameterForm extends React.Component<parameterFormProps, parameter
         super(props);
 		this.state = {value: this.props.newValue || '', invalid: false};
 	}
-	handleChange = (event) => {
+	handleChange = event => {
         const errorCode = this.props.handleValueChange(event.target.value, this.props.controlId);
         if(errorCode === undefined) this.updateValue(event.target.value); //Input is fine - update
         else this.setState(current => {return {...current, invalid: true};});
     }
-	updateValue = (newValue) => this.setState(state => {return {value: newValue, invalid: false};});
+	updateValue = newValue => this.setState(state => {return {value: newValue, invalid: false};});
 	private makeAppend = () => {
 		if(this.props.append !== ""){
 			return (<InputGroup.Text id="addon">{this.props.append}</InputGroup.Text>);

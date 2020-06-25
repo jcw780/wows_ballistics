@@ -248,7 +248,7 @@ class App extends React.Component<{},{}> {
 			if(this.graphsRef.current){this.graphsRef.current.updateData(calculatedData);}
 		}
 	}
-	updateInitialData = (data) => { //Only used to for replacing initialData = not useful in release
+	private updateInitialData = (data) => { //Only used to for replacing initialData = not useful in release
 		const fileToSave = new Blob([JSON.stringify(data)], {type: 'application/json',});
 		saveAs(fileToSave, 'initialData.json');
 		//const compressed = pako.deflate(JSON.stringify(data));
