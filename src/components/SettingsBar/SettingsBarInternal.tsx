@@ -159,35 +159,38 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
         this.props.settings.format.colors[id] = numValues;
         this.props.updateColors();
     }
-    private generateColorForms = () : JSX.Element => {
+    private generateColorFormsInternal = () => {
         const typeWidth = 3, rowHeight = '3rem'; let counter = 0;
         const addForm = () => {
-            return this.forms.colors.map((rowGroup : any) => {
+            const singleRow = (rowGroup : any) => {
                 const rowLabel = rowGroup[0], row = rowGroup[1];
+                const singleForm = (form) => {
+                    const id = form[0], label = form[1];
+                    return(
+                        <Col className="no-lr-padding" style={{maxHeight: rowHeight}} key={counter++}>
+                        <ParameterForm
+                            controlId={id} ariaLabel={`${label} ${rowLabel}`} type="number" 
+                            newValue={String(this.props.settings.format.colors[id])} 
+                            handleValueChange={this.handleColorChange} 
+                            labelWidth={0}
+                            style={{
+                                formLabel: {display: "inline-block"},
+                                formControl: {maxWidth: '6rem', display: "inline-block"},
+                                inputGroup: {display: "inline-block"},
+                                formGroup: {display: "inline-block", },
+                            }}></ParameterForm></Col>
+                    );
+                }
                 return (
                     <Row style={{maxHeight: rowHeight}} key={counter++}>
                         <Col sm={typeWidth} className="no-lr-padding" style={{maxHeight: rowHeight}}>
-                            {rowLabel}</Col>
-                    {row.map((form) => {
-                        const id = form[0], label = form[1];
-                        return(
-                            <Col className="no-lr-padding" style={{maxHeight: rowHeight}} key={counter++}>
-                            <ParameterForm
-                                controlId={id} ariaLabel={`${label} ${rowLabel}`} type="number" 
-                                newValue={String(this.props.settings.format.colors[id])} 
-                                handleValueChange={this.handleColorChange} 
-                                labelWidth={0}
-                                style={{
-                                    formLabel: {display: "inline-block"},
-                                    formControl: {maxWidth: '6rem', display: "inline-block"},
-                                    inputGroup: {display: "inline-block"},
-                                    formGroup: {display: "inline-block", },
-                                }}></ParameterForm></Col>
-                        );
-                    })}
+                            {rowLabel}
+                        </Col>
+                        {row.map(singleForm)}
                     </Row>
                 );
-            });
+            }
+            return this.forms.colors.map(singleRow);
         }
         const run = () => {
             return (<>
@@ -199,8 +202,9 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                 {addForm()}
             </>)
         }
-        return run();
+        return run;
     }
+    private generateColorForms = () => this.generateColorFormsInternal()();
     render(){
         const settings = this.props.settings, format = settings.format;
         return(

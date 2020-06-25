@@ -43,13 +43,13 @@ export class ShellParameters extends React.PureComponent<shellParametersProps>{
                     </Suspense>
 			</ParameterForm>);
 		}
-		const run = () => Object.entries(props.formLabels).map(singleForm); return run();
+		const run = () => Object.entries(props.formLabels).map(singleForm); return run;
 	}
 	render() {
 		return(
 <>
 	<Form>
-		{this.addForms()}	
+		{this.addForms()()}	
 	</Form>
 	<Row>
 		<Col sm="3"/>

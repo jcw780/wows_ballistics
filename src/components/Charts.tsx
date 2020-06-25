@@ -248,7 +248,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         const color = chart.config.data.datasets[tooltipItem.datasetIndex].borderColor;
         return {borderColor: color,backgroundColor: color}
     }
-    updateData = (graphData : T.calculatedData) => {
+    private updateDataInternal = (graphData : T.calculatedData) => {
         //Common Utility Functions / Values
         const settings = this.props.settings;
         const addCommas = (value, index, values) => {return value.toLocaleString();}
@@ -257,13 +257,13 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             scaleLabel: {display: true, labelString: "Range (m)",},
             type: 'linear', ticks:{callback: addCommas}
         }];
+        const callbackHelper = (f: Function) => {return (...args) => {f(...args)();}}
         const setXAxes = () => {
             const singleSetting = ([key, value]) => {
                 if(value !== null || true ) xAxesDistance[0].ticks[key] = value;
             }
-            const run = () => Object.entries(settings.distance).forEach(singleSetting); return run();
+            return () => Object.entries(settings.distance).forEach(singleSetting);
         }
-        //setXAxes();
 
         const targetedArmor = `Armor Thickness: ${graphData.targets[0].armor}mm`;
         const targetInclination = `Vertical Inclination: ${graphData.targets[0].inclination}°`; 
@@ -362,9 +362,9 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     config.data.datasets.length = 0; //empty options and datasets
                     config.options = setup(staticOption[1][i]); //set options
                 }
-                const run = () => chartConfig.forEach(singleChart); return run();
+                return () => chartConfig.forEach(singleChart);
             }
-            const run = () => staticChartTypes.forEach(singleType); return run();
+            return () => staticChartTypes.forEach(callbackHelper(singleType));
         }
         //Post-Penetration Charts
         const configPost = this.chartConfigs.post, postData = graphData.post;
@@ -414,7 +414,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 }
                 chart[singleChartIndex.name] = `Horizontal Impact Angle ${i + 1}: ${graphData.angles[i]}°`
             } 
-            const run = () => configPost.forEach(singleChart); return run();
+            return () => configPost.forEach(singleChart);
         }
         //Add Lines
         const addLine = (data : T.scatterPoint[], 
@@ -448,11 +448,11 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                             colors[counter]));
                         counter++;
                     }
-                    const run = () => axis.lines.forEach(singleLine); return run();
+                    return () => axis.lines.forEach(singleLine);
                 }
-                const run = () => configs[rowIndex].axes.forEach(singleAxis); return run();
+                return () => configs[rowIndex].axes.forEach(callbackHelper(singleAxis));
             } 
-            const run = () => target.forEach(singleChart); return run();
+            return () => target.forEach(callbackHelper(singleChart));
         }
 
         const addRefAngles = () => {
@@ -464,15 +464,15 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                         pointRadius: commonPointRadius, pointHitRadius: 5 ,
                     });
                 }
-                const run = () => configAngle.forEach(singleChart); return run();
+                return () => configAngle.forEach(singleChart); 
             }
-            const run = () => graphData.refAngles.forEach(singleRef); return run();
+            return () => graphData.refAngles.forEach(callbackHelper(singleRef)); 
         }
         const generateStatic = (i : number, name : string, colors : string[]) => {
             const singleItem = (type) => {
-                assignPredefined(i, name, this.chartConfigs[type], staticOptionSetup[type][1], graphData[type], colors);
+                assignPredefined(i, name, this.chartConfigs[type], staticOptionSetup[type][1], graphData[type], colors)();
             }
-            const run = () => staticChartTypes.forEach(singleItem); return run();
+            return () => staticChartTypes.forEach(singleItem); 
         }
         const generatePost = (i : number, name : string, colors : string[]) => {
             const singleItem = (chart, index) => { //Post
@@ -489,26 +489,24 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     postLine(pL[1], NFL + name, colors[1], pLShow[1]),
                 )
             };
-            const run = () => configPost.forEach(singleItem); return run();
+            return () => configPost.forEach(singleItem);
         }
-        const run = () => {
-            setXAxes(); intializeStaticCharts();
-            resizeAngleDependents(); initializePostCharts();
-            addRefAngles();
+        return () => {
+            setXAxes()(); intializeStaticCharts()();
+            resizeAngleDependents(); initializePostCharts()();
+            addRefAngles()();
             //Add data
             for(let i=0; i<graphData.numShells; i++){
                 const name = graphData.names[i], colors = graphData.colors[i];
-                generateStatic(i, name, colors); generatePost(i, name, colors);
+                generateStatic(i, name, colors)(); generatePost(i, name, colors)();
             }
             this.updateCharts('impact'); //Only need to update charts not surrounding components
             this.updateCharts('angle');
             this.updateGroup('post'); //May need to for this - could optimize it later
         }
-        return run();
     }
-    updateGroup = (target : T.chartT) => {
-        this.groupRefs[target].current!.forceUpdate();
-    }
+    updateData = (graphData : T.calculatedData) => this.updateDataInternal(graphData)();
+    updateGroup = (target : T.chartT) => this.groupRefs[target].current!.forceUpdate();
     updateCharts = (target : T.chartT) => {
         const triggerChartUpdate = (value : singleChartType, i) => {
             const ref = value[singleChartIndex.ref]; 

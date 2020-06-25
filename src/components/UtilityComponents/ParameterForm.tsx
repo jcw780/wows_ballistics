@@ -24,15 +24,13 @@ export class ParameterForm extends React.Component<parameterFormProps, parameter
         if(errorCode === undefined) this.updateValue(event.target.value); //Input is fine - update
         else this.setState(current => {return {...current, invalid: true};});
     }
-	updateValue = (newValue) => {
-		this.setState((state) => {return {value: newValue, invalid: false};});
-	}
+	updateValue = (newValue) => this.setState(state => {return {value: newValue, invalid: false};});
 	private makeAppend = () => {
 		if(this.props.append !== ""){
 			return (<InputGroup.Text id="addon">{this.props.append}</InputGroup.Text>);
-		}else{return false;}
+		}else return false;
 	};
-	private makeInputGroup = () => {
+	private makeInputGroupInternal = () => {
 		const props = this.props, state = this.state, style = props.style;
 		const appendText = this.makeAppend();
 		const formControl = (
@@ -54,12 +52,13 @@ export class ParameterForm extends React.Component<parameterFormProps, parameter
 			}else return formControl;
 		}
 	}
+	private makeInputGroup = () => this.makeInputGroupInternal()();
 	render(){
 		const props = this.props, style = props.style;
 		return(
 			<Form.Group className="form-inline" style={style.formGroup}>
 				<Form.Label column sm={props.labelWidth} style={style.formLabel}>{props.children}</Form.Label>
-				{this.makeInputGroup()()}
+				{this.makeInputGroup()}
 			</Form.Group>
 		);	
 	}

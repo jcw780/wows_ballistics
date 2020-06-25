@@ -133,18 +133,25 @@ class App extends React.Component<{},{}> {
 		this.resizeArray(array, newLength[0], Array);
 		array.forEach((subArray) => {this.resizeArray(subArray, newLength[1]);});
 	}
-	resizeCalculatedData = (numShells, impactSize, numAngles) : void => {
-		this.calculatedData.numShells = numShells;
+	private resizeCalculatedDataInternal = (numShells, impactSize, numAngles) => {
 		const chartIndicesNonPost : Array<'impact' | 'angle'> = ['impact', 'angle'];
-		chartIndicesNonPost.forEach((index) => {
-			Object.entries(this.calculatedData[index]).forEach(([key, value]) => {
+		const singleIndex = (index : 'impact' | 'angle') => {
+			const singleKey = ([key, value]) => {
 				this.resizePointArray(value, [numShells, impactSize]);
-			})
-		})
-		const angleShells = numAngles * numShells;
-		//this.resizePointArray(this.calculatedData.post.shipWidth, [1, impactSize]);
-		this.resizePointArray(this.calculatedData.post.notFused, [angleShells, 0]);
-		this.resizePointArray(this.calculatedData.post.fused, [angleShells, 0]);
+			}
+			Object.entries(this.calculatedData[index]).forEach(singleKey);
+		}
+		return () => {
+			this.calculatedData.numShells = numShells;
+			chartIndicesNonPost.forEach(singleIndex);
+			const angleShells = numAngles * numShells;
+			//this.resizePointArray(this.calculatedData.post.shipWidth, [1, impactSize]);
+			this.resizePointArray(this.calculatedData.post.notFused, [angleShells, 0]);
+			this.resizePointArray(this.calculatedData.post.fused, [angleShells, 0]);
+		}
+	}
+	resizeCalculatedData = (numShells, impactSize, numAngles) : void => {
+		return this.resizeCalculatedDataInternal(numShells, impactSize, numAngles)();
 	}
 	
 	// Calculate and generate data for charts
@@ -251,9 +258,7 @@ class App extends React.Component<{},{}> {
 	}
 	onUpdate = () =>{this.navRef.current!.update();} // Update Navbar when charts are updated
 	updateColors = () => { // For updating when color settings change
-		if(this.SFCref.current){
-			this.SFCref.current.updateAllCanvas();
-		}
+		if(this.SFCref.current) this.SFCref.current.updateAllCanvas();
 	}	
 	render () {
 		return (
