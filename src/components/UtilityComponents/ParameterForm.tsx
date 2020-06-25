@@ -19,12 +19,6 @@ export class ParameterForm extends React.Component<parameterFormProps, parameter
 	constructor(props){
         super(props);
 		this.state = {value: this.props.newValue || '', invalid: false};
-		const makeAppend = () => {
-			if(this.props.append !== ""){
-				return (<InputGroup.Text id="addon">{this.props.append}</InputGroup.Text>);
-			}else{return (<></>);}
-		};
-		this.appendText = makeAppend();
 	}
 	handleChange = (event) => {
         const errorCode = this.props.handleValueChange(event.target.value, this.props.controlId);
@@ -33,23 +27,43 @@ export class ParameterForm extends React.Component<parameterFormProps, parameter
     }
 	updateValue = (newValue) => {
 		this.setState((state) => {return {value: newValue, invalid: false};});
-    }
+	}
+	private makeAppend = () => {
+		if(this.props.append !== ""){
+			return (<InputGroup.Text id="addon">{this.props.append}</InputGroup.Text>);
+		}else{return false;}
+	};
 	render(){
 		const props = this.props, state = this.state, style = props.style;
-		return (
-<Form.Group className="form-inline" style={style.formGroup}>
-	<Form.Label column sm={props.labelWidth} style={style.formLabel}>{props.children}</Form.Label>
-	<InputGroup style={props.style.inputGroup}>
-		<Form.Control type={props.type} value={state.value} 
-		style={style.formControl} isInvalid={state.invalid}
-		placeholder={props.placeholder} onChange={this.handleChange}
-		aria-describedby="addon" aria-label={props.ariaLabel}/>
-		<InputGroup.Append style={style.inputGroupAppend}>
-			{this.appendText}
-		</InputGroup.Append>
-	</InputGroup>
-</Form.Group>
-		);
+		const appendText = this.makeAppend();
+		if(appendText !== false){
+			return (
+	<Form.Group className="form-inline" style={style.formGroup}>
+		<Form.Label column sm={props.labelWidth} style={style.formLabel}>{props.children}</Form.Label>
+		<InputGroup style={props.style.inputGroup}>
+			<Form.Control type={props.type} value={state.value} 
+			style={style.formControl} isInvalid={state.invalid}
+			placeholder={props.placeholder} onChange={this.handleChange}
+			aria-describedby="addon" aria-label={props.ariaLabel}/>
+			<InputGroup.Append style={style.inputGroupAppend}>
+				{appendText}
+			</InputGroup.Append>
+		</InputGroup>
+	</Form.Group>
+			);
+		}else{
+			return (
+	<Form.Group className="form-inline" style={style.formGroup}>
+		<Form.Label column sm={props.labelWidth} style={style.formLabel}>{props.children}</Form.Label>
+		
+			<Form.Control type={props.type} value={state.value} 
+			style={style.formControl} isInvalid={state.invalid}
+			placeholder={props.placeholder} onChange={this.handleChange}
+			aria-describedby="addon" aria-label={props.ariaLabel}/>
+		
+	</Form.Group>
+			);
+		}
 		
 	}
 }

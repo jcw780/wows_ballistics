@@ -61,6 +61,13 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
 			['Light', [['lightMin', 'Min'], ['lightMax', 'Max']]],
         ]
     }
+    private defaultFormStyle = {
+        formLabel: {display: "inline-block", marginRight: ".1rem", minWidth:"6rem"},
+        formControl: {minWidth: '6rem', maxWidth: '9rem', display: "inline-flex"},
+        inputGroup: {display: "inline-flex"},
+        inputGroupAppend: {display: "inline-block"},
+        formGroup: {display: "block ruby", marginBottom: ".5rem" },
+    }
     //Graphs
     private handleGraphChange = (value: string, id: string) => {
         var numValue : number | undefined;
@@ -69,7 +76,6 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
         this.props.settings.distance[id] = numValue; 
     }
     private generateGraphForm = () => {
-        const rangeAxisFormStyle = {formLabel: {paddingTop: 0, paddingBottom: 0}, formGroup: {marginBottom: ".5rem"}};
         return this.forms.graphs.distance.map((value, i) => {
             return(
                 <ParameterForm 
@@ -77,7 +83,8 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                 handleValueChange={this.handleGraphChange} 
                 newValue={String(this.props.settings.distance[value[0]])} 
                 append="m" 
-                labelWidth={3} style={rangeAxisFormStyle} ariaLabel={value[1]}>
+                labelWidth={3} ariaLabel={value[1]}
+                style={this.defaultFormStyle}>
                     {value[1]}
                 </ParameterForm>
             );
@@ -92,18 +99,22 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
     }
     private generateLaunchAngleForm = () => {
         const forms = this.forms, calculationSettings = this.props.settings.calculationSettings;
-        return forms.calculations.launchAngle.map((value, i) => {
+        const run = () : JSX.Element[] => {return forms.calculations.launchAngle.map((value, i) => {
             const initialValue = calculationSettings.launchAngle[value[0]];
             return(
+                
                 <ParameterForm 
                 controlId={value[0]} key={i} type="number" 
                 newValue={String(initialValue)} 
                 handleValueChange={this.handleCalculationChange} 
-                labelWidth={3} append={value[2]} ariaLabel={value[1]}>
-                    {value[1]}
-                </ParameterForm>
+                labelWidth={3} append={value[2]} ariaLabel={value[1]}
+                style={this.defaultFormStyle}>{value[1]}</ParameterForm>
+                
             );
-        });
+        })}
+        return(
+            <>{run()}</>
+        )
     }
     private handleNumericalMethodChange = (value: string, id: string) : void | string => {
         const calculationSettings = this.props.settings.calculationSettings;
@@ -121,7 +132,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
             const initialValue = calculationSettings[value[0]];
             return(
                 <ParameterForm newValue={String(initialValue)} controlId={value[0]} key={i} ariaLabel={value[1]}
-                type="number" handleValueChange={this.handleNumericalMethodChange} labelWidth={3} append={value[2]}>
+                type="number" handleValueChange={this.handleNumericalMethodChange} labelWidth={3} append={value[2]} style={this.defaultFormStyle}>
                     {value[1]}
                 </ParameterForm>
             );
@@ -229,8 +240,8 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                             controlId="rounding" ariaLabel="Tooltip Rounding" type="number" 
                             newValue={String(format.rounding)}
                             handleValueChange={this.handleRoundingChange} 
-                            labelWidth={3} append="dp">
-                            Tooltip Rounding
+                            labelWidth={3} append="dp" style={this.defaultFormStyle}>
+                            Rounding
                         </ParameterForm>
                         <hr/><h4>Color Generation</h4>
                         {this.generateColorForms()}

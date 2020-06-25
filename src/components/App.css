@@ -81,6 +81,7 @@ body{
 
 .switch-toggle{
   width: 80%! important; 
+  margin-bottom: .5rem! important;
 }
 
 /* Tooltip Styles */
