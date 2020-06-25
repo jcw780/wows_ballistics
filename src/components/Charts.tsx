@@ -18,6 +18,21 @@ interface singleChartProps{
     data: singleChartType
     dimensions: dimensionsT
 }
+
+interface ChartInternalProps extends singleChartProps{
+    datasetKeyProvider: (any: any) => string, chartRef: React.RefObject<Scatter>
+}
+class ChartInternal extends React.Component<ChartInternalProps>{
+    render(){
+        const config = this.props.data[singleChartIndex.config];
+        return(
+            <Scatter data={config.data} options={config.options}
+            width={this.props.dimensions.width} height={this.props.dimensions.height}
+            ref={this.props.chartRef} datasetKeyProvider={this.props.datasetKeyProvider}/>
+        );
+    }
+}
+
 interface singleChartState{open: boolean}
 export class SingleChart extends React.Component<singleChartProps, singleChartState> {
     public static defaultProps = {
@@ -26,14 +41,16 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
     }
     state = {open : true}; //apparently you need a value in state or else set state doesn't trigger rerender
     titles : T.collapseTitlesT = ["Hide: ", "Show: "]; // 0: Hide 1: Show
-
+    wrapperRef : React.RefObject<ChartInternal> = React.createRef<ChartInternal>();
     chartRef : React.RefObject<Scatter> = React.createRef<Scatter>();
     scrollRef : React.RefObject<Button & HTMLButtonElement> = React.createRef<Button & HTMLButtonElement>();
     DownloadRef : React.RefObject<DownloadButton>[] = [
         React.createRef<DownloadButton>(), React.createRef<DownloadButton>()
     ];
-    update = () => {
-        this.setState(this.state); //trigger rerender
+    updateInternal = () => {
+        if(this.wrapperRef.current !== undefined){
+            this.wrapperRef.current!.forceUpdate();
+        }
     }
     toggleCollapse = () => {
         this.setState((current) => {return {open: !current.open}});
@@ -53,7 +70,6 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
         return `${dataset.label}${dataset.borderColor}`;
     }
     render(){
-        const config = this.props.data[singleChartIndex.config];
         return(
 <>
     <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
@@ -63,9 +79,11 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
     >{this.titles[Number(!this.state.open)] + this.props.data[singleChartIndex.name]}</Button>
     <Collapse in={this.state.open}>
         <div id="collapseChart">
-        <Scatter data={config.data} options={config.options}
-        width={this.props.dimensions.width} height={this.props.dimensions.height}
-        ref={this.chartRef} datasetKeyProvider={this.datasetKeyProvider}/>
+        <ChartInternal ref={this.wrapperRef}
+            data={this.props.data} 
+            dimensions={this.props.dimensions} 
+            datasetKeyProvider={this.datasetKeyProvider} 
+            chartRef={this.chartRef}/>
         <Row style={{margin: 0}}>
             <Col sm="4" style={{padding: 0}}/>
             <Col sm="2" style={{padding: 0}}><DownloadButton ref={this.DownloadRef[0]} updateData={this.updateDownloadGraph} 
@@ -84,19 +102,15 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
     }
 }
 
-interface subGroupState {
-    updateTrigger: boolean
-}
 interface subGroupProps {
     config: singleChartType[], links: T.singleLinkT[], updateLinks: boolean
     onUpdate: Function,
     dimensions: {height: number, width: number},  
 } 
-class SubGroup extends React.Component<subGroupProps, subGroupState>{
+class SubGroup extends React.Component<subGroupProps>{
     public static defaultProps = {
         updateLinks: false
     };
-    state: {updateTrigger: false};
     private addChart = () => {
         const singleChart = (value, i) : JSX.Element => {
             return (<SingleChart 
@@ -108,9 +122,7 @@ class SubGroup extends React.Component<subGroupProps, subGroupState>{
         const chartTarget = this.props.config;
         const run = () => chartTarget.map(singleChart); return run();
     }
-    render(){
-    return(<>{this.addChart()}</>);
-    }
+    render(){return(<>{this.addChart()}</>)}
     componentDidMount(){
         const links = this.props.links; //Initialize Links Names
         this.props.config.forEach((chart, i) => {
@@ -488,9 +500,9 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 const name = graphData.names[i], colors = graphData.colors[i];
                 generateStatic(i, name, colors); generatePost(i, name, colors);
             }
-            this.updateGroup('impact');
-            this.updateGroup('angle');
-            this.updateGroup('post');
+            this.updateCharts('impact'); //Only need to update charts not surrounding components
+            this.updateCharts('angle');
+            this.updateGroup('post'); //May need to for this - could optimize it later
         }
         return run();
     }
@@ -500,17 +512,12 @@ export class ChartGroup extends React.Component<chartGroupProps>{
     updateCharts = (target : T.chartT) => {
         const triggerChartUpdate = (value : singleChartType, i) => {
             const ref = value[singleChartIndex.ref]; 
-            if(ref.current !== undefined){
-                console.log(ref);
-                ref.current!.chartRef.current!.forceUpdate();
-            }
+            if(ref.current !== undefined) ref.current!.updateInternal();
         }
         this.chartConfigs[target].forEach(triggerChartUpdate);
     }
     private addChart = (target : T.chartT) => {
-        const updateLinks = {
-            impact: false, angle: false, post: true,
-        }
+        const updateLinks = {impact: false, angle: false, post: true,}
         return(
             <SubGroup ref={this.groupRefs[target]}
                 config={this.chartConfigs[target]} 
@@ -568,10 +575,10 @@ export class ChartGroup extends React.Component<chartGroupProps>{
 </>
         );
     }
-    componentDidMount(){
+    async componentDidMount(){
         // Preinitialize chart after mounting - to mitigate user confusion
         // Also due to the fact that getting wasm to run on startup is apparently impossible
-        const initialJson = require('../static/initialData.json');
+        const initialJson = await import('../static/initialData.json');
         this.updateData(initialJson);
     }
     //componentDidUpdate(){}
