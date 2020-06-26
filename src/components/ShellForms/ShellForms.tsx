@@ -6,7 +6,7 @@ import clonedeep from 'lodash.clonedeep';
 
 import * as T from '../commonTypes';
 import * as S from './Types';
-import {ParameterForm} from '../ParameterForm';
+import {ParameterForm} from '../UtilityComponents/ParameterForm';
 import DefaultShips from './DefaultForms'
 import {ShellParametersT} from './ShellParameters';
 

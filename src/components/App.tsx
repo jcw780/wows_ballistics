@@ -35,13 +35,16 @@ class App extends React.Component<{},{}> {
 			launchAngle : {min: 0, max: 25, precision: 0.1},
 		},
 		format: {
-			rounding: 3, shortNames: true, showLine: true,
+			rounding: 3, shortNames: true,
 			colors : {
 				hueMin: 0, hueMax: 360,
 				chromaMin: 40, chromaMax: 70,
 				lightMin: 15, lightMax: 85,
 			}
 		},
+		line: {
+			showLine: true, pointRadius: 2, pointHitRadius: 5
+		}
 	}
 	// Calculated Data
 	calculatedData: T.calculatedData
@@ -133,18 +136,26 @@ class App extends React.Component<{},{}> {
 		this.resizeArray(array, newLength[0], Array);
 		array.forEach((subArray) => {this.resizeArray(subArray, newLength[1]);});
 	}
-	resizeCalculatedData = (numShells, impactSize, numAngles) : void => {
-		this.calculatedData.numShells = numShells;
+	private resizeCalculatedDataInternal = (numShells, impactSize, numAngles) => {
 		const chartIndicesNonPost : Array<'impact' | 'angle'> = ['impact', 'angle'];
-		chartIndicesNonPost.forEach((index) => {
-			Object.entries(this.calculatedData[index]).forEach(([key, value]) => {
+		const singleIndex = (index : 'impact' | 'angle') => {
+			const singleKey = ([key, value]) => {
 				this.resizePointArray(value, [numShells, impactSize]);
-			})
-		})
-		const angleShells = numAngles * numShells;
-		//this.resizePointArray(this.calculatedData.post.shipWidth, [1, impactSize]);
-		this.resizePointArray(this.calculatedData.post.notFused, [angleShells, 0]);
-		this.resizePointArray(this.calculatedData.post.fused, [angleShells, 0]);
+			}
+			Object.entries(this.calculatedData[index]).forEach(singleKey);
+		}
+		const calculatedData = this.calculatedData;
+		return () => {
+			calculatedData.numShells = numShells;
+			chartIndicesNonPost.forEach(singleIndex);
+			const angleShells = numAngles * numShells;
+			//this.resizePointArray(this.calculatedData.post.shipWidth, [1, impactSize]);
+			this.resizePointArray(calculatedData.post.notFused, [angleShells, 0]);
+			this.resizePointArray(calculatedData.post.fused, [angleShells, 0]);
+		}
+	}
+	resizeCalculatedData = (numShells, impactSize, numAngles) : void => {
+		return this.resizeCalculatedDataInternal(numShells, impactSize, numAngles)();
 	}
 	
 	// Calculate and generate data for charts
@@ -241,7 +252,7 @@ class App extends React.Component<{},{}> {
 			if(this.graphsRef.current){this.graphsRef.current.updateData(calculatedData);}
 		}
 	}
-	updateInitialData = (data) => { //Only used to for replacing initialData = not useful in release
+	private updateInitialData = (data) => { //Only used to for replacing initialData = not useful in release
 		const fileToSave = new Blob([JSON.stringify(data)], {type: 'application/json',});
 		saveAs(fileToSave, 'initialData.json');
 		//const compressed = pako.deflate(JSON.stringify(data));
@@ -251,9 +262,7 @@ class App extends React.Component<{},{}> {
 	}
 	onUpdate = () =>{this.navRef.current!.update();} // Update Navbar when charts are updated
 	updateColors = () => { // For updating when color settings change
-		if(this.SFCref.current){
-			this.SFCref.current.updateAllCanvas();
-		}
+		if(this.SFCref.current) this.SFCref.current.updateAllCanvas();
 	}	
 	render () {
 		return (

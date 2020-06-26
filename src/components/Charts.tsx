@@ -5,8 +5,8 @@ import 'chartjs-plugin-annotation';
 import {Button, Collapse, Row, Col} from 'react-bootstrap';
 
 import * as T from './commonTypes';
-import DownloadButton from './DownloadButton';
-import GeneralTooltip from './Tooltips';
+import DownloadButton from './UtilityComponents/DownloadButton';
+import GeneralTooltip from './UtilityComponents/Tooltips';
 
 // chartConfigs type
 interface chartDataOption{data: Record<string, any>, options: Record<string, any>}
@@ -18,6 +18,21 @@ interface singleChartProps{
     data: singleChartType
     dimensions: dimensionsT
 }
+
+interface ChartInternalProps extends singleChartProps{
+    datasetKeyProvider: (any: any) => string, chartRef: React.RefObject<Scatter>
+}
+class ChartInternal extends React.Component<ChartInternalProps>{
+    render(){
+        const config = this.props.data[singleChartIndex.config];
+        return(
+            <Scatter data={config.data} options={config.options}
+            width={this.props.dimensions.width} height={this.props.dimensions.height}
+            ref={this.props.chartRef} datasetKeyProvider={this.props.datasetKeyProvider}/>
+        );
+    }
+}
+
 interface singleChartState{open: boolean}
 export class SingleChart extends React.Component<singleChartProps, singleChartState> {
     public static defaultProps = {
@@ -26,18 +41,18 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
     }
     state = {open : true}; //apparently you need a value in state or else set state doesn't trigger rerender
     titles : T.collapseTitlesT = ["Hide: ", "Show: "]; // 0: Hide 1: Show
-
+    wrapperRef : React.RefObject<ChartInternal> = React.createRef<ChartInternal>();
     chartRef : React.RefObject<Scatter> = React.createRef<Scatter>();
     scrollRef : React.RefObject<Button & HTMLButtonElement> = React.createRef<Button & HTMLButtonElement>();
     DownloadRef : React.RefObject<DownloadButton>[] = [
         React.createRef<DownloadButton>(), React.createRef<DownloadButton>()
     ];
-    update = () => {
-        this.setState(this.state); //trigger rerender
+    updateInternal = () => {
+        if(this.wrapperRef.current !== undefined){
+            this.wrapperRef.current!.forceUpdate();
+        }
     }
-    toggleCollapse = () => {
-        this.setState((current) => {return {open: !current.open}});
-    }
+    toggleCollapse = () => this.setState((current) => {return {open: !current.open}});
     updateDownloadGraph = () => {
         const url = this.chartRef.current!.chartInstance.toBase64Image();
         this.DownloadRef[0].current!.update(url, this.chartRef.current!.chartInstance.options.title.text + '.png');
@@ -53,7 +68,6 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
         return `${dataset.label}${dataset.borderColor}`;
     }
     render(){
-        const config = this.props.data[singleChartIndex.config];
         return(
 <>
     <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
@@ -63,17 +77,21 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
     >{this.titles[Number(!this.state.open)] + this.props.data[singleChartIndex.name]}</Button>
     <Collapse in={this.state.open}>
         <div id="collapseChart">
-        <Scatter data={config.data} options={config.options}
-        width={this.props.dimensions.width} height={this.props.dimensions.height}
-        ref={this.chartRef} datasetKeyProvider={this.datasetKeyProvider}/>
-        <Row style={{margin: 0}}>
-            <Col sm="4" style={{padding: 0}}/>
-            <Col sm="2" style={{padding: 0}}><DownloadButton ref={this.DownloadRef[0]} updateData={this.updateDownloadGraph} 
-            label="Download Graph"/></Col>
-            <Col sm="2" style={{padding: 0}}><DownloadButton ref={this.DownloadRef[1]} updateData={this.updateDownloadJSON} 
-            label="Download Data"/></Col>
-            <Col sm="4" style={{padding: 0}}/>
-        </Row>
+            <ChartInternal ref={this.wrapperRef}
+                data={this.props.data} 
+                dimensions={this.props.dimensions} 
+                datasetKeyProvider={this.datasetKeyProvider} 
+                chartRef={this.chartRef}/>
+            <Row style={{margin: 0}}>
+                <Col sm="4" style={{padding: 0}}/>
+                <Col sm="2" style={{padding: 0}}>
+                    <DownloadButton ref={this.DownloadRef[0]} updateData={this.updateDownloadGraph} label="Download Graph"/>
+                </Col>
+                <Col sm="2" style={{padding: 0}}>
+                    <DownloadButton ref={this.DownloadRef[1]} updateData={this.updateDownloadJSON} label="Download Data"/>
+                </Col>
+                <Col sm="4" style={{padding: 0}}/>
+            </Row>
         </div>
     </Collapse> 
 </> 
@@ -81,6 +99,49 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
     }
     componentDidUpdate(){
         this.chartRef.current!.chartInstance.generateLegend();
+    }
+}
+
+interface subGroupProps {
+    config: singleChartType[], links: T.singleLinkT[], updateLinks: boolean
+    onUpdate: Function,
+    dimensions: {height: number, width: number},  
+} 
+class SubGroup extends React.Component<subGroupProps>{
+    public static defaultProps = {
+        updateLinks: false
+    };
+    private addChartInternal = () => {
+        const singleChart = (value, i) : JSX.Element => {
+            return (<SingleChart 
+                ref={value[singleChartIndex.ref]} key={i} 
+                data={value}
+                dimensions={this.props.dimensions} 
+                />);
+        }
+        const chartTarget = this.props.config;
+        return () => chartTarget.map(singleChart);
+    }
+    private addChart = this.addChartInternal();
+    render(){return(<>{this.addChart()}</>)}
+    componentDidMount(){
+        const links = this.props.links; //Initialize Links Names
+        this.props.config.forEach((chart, i) => {
+            if(links.length === i){ links.push(['', React.createRef<SingleChart>()]);}
+            const link = links[i];
+            link[T.singleLinkIndex.name] = chart[singleChartIndex.name]; 
+            link[T.singleLinkIndex.ref] = chart[singleChartIndex.ref];
+        });
+    }
+    componentDidUpdate(){
+        if(this.props.updateLinks){
+            this.props.config.forEach((chart, i) => {
+                const link = this.props.links[i];
+                link[T.singleLinkIndex.name] = chart[singleChartIndex.name]; 
+                link[T.singleLinkIndex.ref] = chart[singleChartIndex.ref];
+            });
+            this.props.onUpdate(); // Update navbar links on update
+        }
     }
 }
 
@@ -93,7 +154,6 @@ interface chartGroupProps{
     settings: T.settingsT, links: T.linkT, onUpdate: Function
 }
 export class ChartGroup extends React.Component<chartGroupProps>{
-    state={updateTrigger: true}; //State needs value otherwise render won't trigger
     dimensions = {height: 300, width: 1200};
     chartConfigs : Record<T.chartT, singleChartType[]> = {
         impact: [ //impact charts
@@ -129,6 +189,11 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 React.createRef<SingleChart>(), ''],
         ]
     }
+    groupRefs = {
+        impact: React.createRef<SubGroup>(), 
+        angle: React.createRef<SubGroup>(), 
+        post: React.createRef<SubGroup>()
+    };
     private callbackFunctions = {
         Penetration: (x, y) => {return `(${x}m, ${y}mm)`;},
         Angle: (x, y) => {return `(${x}m, ${y}°)`;},
@@ -184,22 +249,22 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         const color = chart.config.data.datasets[tooltipItem.datasetIndex].borderColor;
         return {borderColor: color,backgroundColor: color}
     }
-    updateData = (graphData : T.calculatedData) => {
+    private updateDataInternal = (graphData : T.calculatedData) => {
         //Common Utility Functions / Values
-        const settings = this.props.settings;
+        const settings = this.props.settings, lineSettings = settings.line;
         const addCommas = (value, index, values) => {return value.toLocaleString();}
-        const showLineValue = settings.format.showLine, commonPointRadius = showLineValue ? 0 : 2;
+        const showLineValue = lineSettings.showLine, commonPointRadius = showLineValue ? 0 : lineSettings.pointRadius;
         const xAxesDistance = [{
             scaleLabel: {display: true, labelString: "Range (m)",},
             type: 'linear', ticks:{callback: addCommas}
         }];
+        const callbackHelper = (f: Function) => {return (...args) => {f(...args)();}}
         const setXAxes = () => {
             const singleSetting = ([key, value]) => {
                 if(value !== null || true ) xAxesDistance[0].ticks[key] = value;
             }
-            const run = () => Object.entries(settings.distance).forEach(singleSetting); return run();
+            return () => Object.entries(settings.distance).forEach(singleSetting);
         }
-        //setXAxes();
 
         const targetedArmor = `Armor Thickness: ${graphData.targets[0].armor}mm`;
         const targetInclination = `Vertical Inclination: ${graphData.targets[0].inclination}°`; 
@@ -298,9 +363,9 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     config.data.datasets.length = 0; //empty options and datasets
                     config.options = setup(staticOption[1][i]); //set options
                 }
-                const run = () => chartConfig.forEach(singleChart); return run();
+                return () => chartConfig.forEach(singleChart);
             }
-            const run = () => staticChartTypes.forEach(singleType); return run();
+            return () => staticChartTypes.forEach(callbackHelper(singleType));
         }
         //Post-Penetration Charts
         const configPost = this.chartConfigs.post, postData = graphData.post;
@@ -350,7 +415,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 }
                 chart[singleChartIndex.name] = `Horizontal Impact Angle ${i + 1}: ${graphData.angles[i]}°`
             } 
-            const run = () => configPost.forEach(singleChart); return run();
+            return () => configPost.forEach(singleChart);
         }
         //Add Lines
         const addLine = (data : T.scatterPoint[], 
@@ -358,7 +423,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                             color : string = "") : Record<string, any> => {
             return {
                 data: data, showLine: showLineValue, label: label, yAxisID: yAxisID, 
-                fill: false, pointRadius: commonPointRadius, pointHitRadius: 5,
+                fill: false, pointRadius: commonPointRadius, pointHitRadius: lineSettings.pointHitRadius,
                 borderColor: color, backgroundColor: color
             };
         }
@@ -384,11 +449,11 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                             colors[counter]));
                         counter++;
                     }
-                    const run = () => axis.lines.forEach(singleLine); return run();
+                    return () => axis.lines.forEach(singleLine);
                 }
-                const run = () => configs[rowIndex].axes.forEach(singleAxis); return run();
+                return () => configs[rowIndex].axes.forEach(callbackHelper(singleAxis));
             } 
-            const run = () => target.forEach(singleChart); return run();
+            return () => target.forEach(callbackHelper(singleChart));
         }
 
         const addRefAngles = () => {
@@ -400,15 +465,15 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                         pointRadius: commonPointRadius, pointHitRadius: 5 ,
                     });
                 }
-                const run = () => configAngle.forEach(singleChart); return run();
+                return () => configAngle.forEach(singleChart); 
             }
-            const run = () => graphData.refAngles.forEach(singleRef); return run();
+            return () => graphData.refAngles.forEach(callbackHelper(singleRef)); 
         }
         const generateStatic = (i : number, name : string, colors : string[]) => {
             const singleItem = (type) => {
-                assignPredefined(i, name, this.chartConfigs[type], staticOptionSetup[type][1], graphData[type], colors);
+                assignPredefined(i, name, this.chartConfigs[type], staticOptionSetup[type][1], graphData[type], colors)();
             }
-            const run = () => staticChartTypes.forEach(singleItem); return run();
+            return () => staticChartTypes.forEach(singleItem); 
         }
         const generatePost = (i : number, name : string, colors : string[]) => {
             const singleItem = (chart, index) => { //Post
@@ -425,38 +490,42 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     postLine(pL[1], NFL + name, colors[1], pLShow[1]),
                 )
             };
-            const run = () => configPost.forEach(singleItem); return run();
+            return () => configPost.forEach(singleItem);
         }
-        const run = () => {
-            setXAxes(); intializeStaticCharts();
-            resizeAngleDependents(); initializePostCharts();
-            addRefAngles();
+        return () => {
+            setXAxes()(); intializeStaticCharts()();
+            resizeAngleDependents(); initializePostCharts()();
+            addRefAngles()();
             //Add data
             for(let i=0; i<graphData.numShells; i++){
                 const name = graphData.names[i], colors = graphData.colors[i];
-                generateStatic(i, name, colors); generatePost(i, name, colors);
+                generateStatic(i, name, colors)(); generatePost(i, name, colors)();
             }
-
-            this.setState(this.state); //graph updates completed, trigger re-render
+            this.updateCharts('impact'); //Only need to update charts not surrounding components
+            this.updateCharts('angle');
+            this.updateGroup('post'); //May need to for this - could optimize it later
         }
-        return run();
     }
-    updateCharts = () => {
+    updateData = (graphData : T.calculatedData) => this.updateDataInternal(graphData)();
+    updateGroup = (target : T.chartT) => this.groupRefs[target].current!.forceUpdate();
+    updateCharts = (target : T.chartT) => {
         const triggerChartUpdate = (value : singleChartType, i) => {
-            const ref = value[singleChartIndex.ref]; if(ref.current !== undefined){ref.current!.update();}
+            const ref = value[singleChartIndex.ref]; 
+            if(ref.current !== undefined) ref.current!.updateInternal();
         }
-        Object.entries(this.chartConfigs).forEach(([key, value]) => {value.forEach(triggerChartUpdate)});
+        this.chartConfigs[target].forEach(triggerChartUpdate);
     }
     private addChart = (target : T.chartT) => {
-        const singleChart = (value, i) : JSX.Element => {
-            return (<SingleChart 
-                ref={value[singleChartIndex.ref]} key={i} 
-                data={value}
-                dimensions={this.dimensions} 
-                />);
-        }
-        const chartTarget = this.chartConfigs[target];
-        const run = () => chartTarget.map(singleChart); return run();
+        const updateLinks = {impact: false, angle: false, post: true,}
+        return(
+            <SubGroup ref={this.groupRefs[target]}
+                config={this.chartConfigs[target]} 
+                links={this.props.links[target]}
+                updateLinks={updateLinks[target]}
+                onUpdate={this.props.onUpdate}
+                dimensions={this.dimensions}
+            />
+        );
     }
     render(){
         return(
@@ -505,28 +574,13 @@ export class ChartGroup extends React.Component<chartGroupProps>{
 </>
         );
     }
-    componentDidMount(){
-        //Initialize Links Names
-        const setupNavbarCharts = (target : T.chartT) => {
-            const link = this.props.links[target];
-            this.chartConfigs[target].forEach((chart, i) => {
-                if(link.length === i){ link.push(['', React.createRef<SingleChart>()]);}
-                link[i][T.singleLinkIndex.name] = chart[singleChartIndex.name]; link[i][T.singleLinkIndex.ref] = chart[singleChartIndex.ref];
-            });
-        }
-        Object.keys(this.chartConfigs).forEach((chartType : T.chartT) => {setupNavbarCharts(chartType)});
+    async componentDidMount(){
         // Preinitialize chart after mounting - to mitigate user confusion
         // Also due to the fact that getting wasm to run on startup is apparently impossible
-        const initialJson = require('../static/initialData.json');
+        const initialJson = await import('../static/initialData.json');
         this.updateData(initialJson);
     }
-    componentDidUpdate(){
-        this.chartConfigs.post.forEach((chart, i) => {
-            this.props.links.post[i][T.singleLinkIndex.name] = chart[singleChartIndex.name]; 
-            this.props.links.post[i][T.singleLinkIndex.ref] = chart[singleChartIndex.ref];
-        });
-        this.props.onUpdate(); // Update navbar links on update
-    }
+    //componentDidUpdate(){}
 }
 
 export default ChartGroup;

@@ -30,7 +30,7 @@ export class DefaultForm extends React.PureComponent<defaultFormProps> {
 		const singleOption = (value,i) => {
 			return (<option aria-label={value} value={this.state.values[i]} key={i}>{value}</option>);
 		}
-		const run = () => this.state.options.map(singleOption); return run();
+		const run = () => this.state.options.map(singleOption); return run;
 	}
 	render(){
 		const props = this.props;
@@ -39,7 +39,7 @@ export class DefaultForm extends React.PureComponent<defaultFormProps> {
 				<Form.Label column sm="3">{props.children}</Form.Label>
 				<Form.Control as="select" placeholder="" defaultValue={props.defaultValue} aria-label={props.ariaLabel}
 				onChange={this.handleChange} ref={this.form} style={{width: "70%"}}>
-					{this.addOptions()}
+					{this.addOptions()()}
 				</Form.Control>
 			</Form.Group>
 		);
@@ -192,12 +192,12 @@ class DefaultShips extends React.PureComponent
 				{v[singleFormIndex.name]}
 			</DefaultForm>);
 		}
-		const run = () => Object.entries(this.defaultForms).map(singleForm); return run();
+		const run = () => Object.entries(this.defaultForms).map(singleForm); return run;
 	}
 	render(){
 		return(
 			<Container style={{paddingLeft: 0, paddingRight: 0}}>
-				{this.addDefaultForms()}
+				{this.addDefaultForms()()}
 			</Container>
 		);
 	}

@@ -42,17 +42,21 @@ export interface calculationSettingsT {
     calculationMethod: number, timeStep: number, 
     launchAngle: {min: number, max: number, precision: number}
 }
+export interface colorSettingsT{
+    hueMin: number, hueMax: number,
+    chromaMin: number, chromaMax: number,
+    lightMin: number, lightMax: number,
+}
+export interface lineSettingsT {
+    showLine: boolean, pointRadius: number, pointHitRadius: number,
+}
 export interface formatSettingsT {
-    rounding: number | null, shortNames: boolean, showLine: boolean,
-    colors: {
-        hueMin: number, hueMax: number,
-        chromaMin: number, chromaMax: number,
-        lightMin: number, lightMax: number,
-    }
+    rounding: number | null, shortNames: boolean,
+    colors: colorSettingsT
 }
 export interface settingsT{
     distance: distanceSettingsT, calculationSettings: calculationSettingsT,
-    format: formatSettingsT
+    format: formatSettingsT, line: lineSettingsT
 }
 
 //Generated / Calculated Data

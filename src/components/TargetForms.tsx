@@ -2,9 +2,9 @@ import React, {Suspense} from 'react';
 import {Row, Col, Button, Modal, Container} from 'react-bootstrap';
 
 import * as T from './commonTypes';
-import {ParameterForm} from './ParameterForm';
+import {ParameterForm} from './UtilityComponents/ParameterForm';
 //import GeneralTooltip from './Tooltips';
-const GeneralTooltip = React.lazy(() => import('./Tooltips'));
+const GeneralTooltip = React.lazy(() => import('./UtilityComponents/Tooltips'));
 
 interface refAngleFormProps {
     newValue: string[], index: number, keyProp : number, 

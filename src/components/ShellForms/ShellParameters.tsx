@@ -3,10 +3,10 @@ import {Form, Col, Row} from 'react-bootstrap';
 import clonedeep from 'lodash.clonedeep';
 
 import * as S from './Types';
-import {ParameterForm} from '../ParameterForm';
-import DownloadButton from '../DownloadButton';
+import {ParameterForm} from '../UtilityComponents/ParameterForm';
+import DownloadButton from '../UtilityComponents/DownloadButton';
 
-const GeneralTooltip = React.lazy(() => import('../Tooltips'));
+const GeneralTooltip = React.lazy(() => import('../UtilityComponents/Tooltips'));
 
 interface shellParametersProps {handleValueChange: any, formLabels : S.formLabelsT, formData: S.formDataT}
 export class ShellParameters extends React.PureComponent<shellParametersProps>{
@@ -43,13 +43,13 @@ export class ShellParameters extends React.PureComponent<shellParametersProps>{
                     </Suspense>
 			</ParameterForm>);
 		}
-		const run = () => Object.entries(props.formLabels).map(singleForm); return run();
+		const run = () => Object.entries(props.formLabels).map(singleForm); return run;
 	}
 	render() {
 		return(
 <>
 	<Form>
-		{this.addForms()}	
+		{this.addForms()()}	
 	</Form>
 	<Row>
 		<Col sm="3"/>
