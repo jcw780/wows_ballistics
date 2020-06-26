@@ -1,8 +1,9 @@
 # World of Warships Ballistics Calculator
 [![License](https://img.shields.io/github/license/jcw780/wows_ballistics)](./LICENSE)
 [![World of Warships Ballistics](https://img.shields.io/website?url=https%3A%2F%2Fjcw780.github.io/wows_ballistics/)](https://jcw780.github.io/wows_ballistics/)
+[![https://github.com/jcw780/wows_ballistics/pulse](https://img.shields.io/github/commit-activity/w/jcw780/wows_ballistics)
 - Page Link: https://jcw780.github.io/wows_ballistics/
-[![https://github.com/jcw780/wows_ballistics/pulse](https://img.shields.io/github/commit-activity/m/jcw780/wows_ballistics)
+
 ## Code Information
 ### Languages and Major Libraries
 - CSS, JavaScript, (React) TypeScript
