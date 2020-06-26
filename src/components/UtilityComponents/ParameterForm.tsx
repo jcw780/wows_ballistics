@@ -20,8 +20,8 @@ export class ParameterForm extends React.Component<parameterFormProps, parameter
 		this.state = {value: this.props.newValue || '', invalid: false};
 	}
 	onChange = event => {
-        const errorCode = this.props.handleValueChange(event.target.value, this.props.controlId);
-        if(errorCode === undefined) this.updateValue(event.target.value); //Input is fine - update
+		const errorCode = this.props.handleValueChange(event.target.value, this.props.controlId);
+        if(errorCode !== 'error') this.updateValue(event.target.value); //Input is fine - update
         else this.setState(current => {return {...current, invalid: true};});
     }
 	updateValue = newValue => this.setState(state => {return {value: newValue, invalid: false};});
