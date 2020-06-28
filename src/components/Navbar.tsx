@@ -24,7 +24,9 @@ class NavbarCustom extends React.Component<{links: T.linkT}>{
     render(){
         return(
 <Navbar variant="dark" bg="dark" expand="lg" fixed="top">
-    <Navbar.Brand onClick={this.scrollToTop}>World of Warships Ballistics Calculator</Navbar.Brand>
+    <Navbar.Brand onClick={this.scrollToTop}>
+        <img height='32' width='32' src={process.env.PUBLIC_URL + '/android-chrome-192x192.png'}/>
+    </Navbar.Brand>
     <Nav className="mr-auto">
         <Suspense fallback={fallback}>
             <NavDropdown title="Parameters" id="basic-nav-dropdown">
