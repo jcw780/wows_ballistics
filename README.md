@@ -1,4 +1,4 @@
-# ![World of Warships Ballistics Calculator](/public/favicon.ico) World of Warships Ballistics Calculator
+# ![World of Warships Ballistics Calculator](/public/android-chrome-512x512.png =32x32) World of Warships Ballistics Calculator
 [![License](https://img.shields.io/github/license/jcw780/wows_ballistics)](./LICENSE)
 [![World of Warships Ballistics](https://img.shields.io/website?url=https%3A%2F%2Fjcw780.github.io/wows_ballistics/)](https://jcw780.github.io/wows_ballistics/)
 - Page Link: https://jcw780.github.io/wows_ballistics/
