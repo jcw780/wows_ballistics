@@ -63,6 +63,10 @@
       }
     ]
   },
+  "reactSnap": {
+    "inlineCss": true,
+    "asyncScriptTags": true
+  },
   "browserslist": {
     "production": [
       ">0.2%",
