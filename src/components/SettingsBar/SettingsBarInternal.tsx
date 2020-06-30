@@ -249,8 +249,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                     <Col style={{paddingRight: 0}}>
                         <h4>Line</h4>
                         <Row>
-                            <Col sm="1"/>
-                            <Col>
+                            <Col className="no-lr-padding">
                                 <BootstrapSwitchButton style='switch-toggle'
                                     onlabel='Show Line' offlabel='Show Point' onstyle='success' offstyle='danger'
                                     onChange={this.onShowLineChange} checked={settings.line.showLine}
@@ -258,14 +257,13 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                                 <h5>Point</h5>
                                 {this.generateLineForms()}
                             </Col>
-                            <Col sm="1"/>  
                         </Row>
                     </Col>
                     <Col style={{padding: 0}}>
                         <h4>Labeling</h4>
                         <Row>
                         <Col sm="1"/>
-                            <Col>
+                            <Col className="no-lr-padding">
                                 <BootstrapSwitchButton style='switch-toggle'
                                     onlabel='Short Names' offlabel='Long Names' onstyle='success' offstyle='danger'
                                     onChange={this.onShortNameChange} checked={format.shortNames}
