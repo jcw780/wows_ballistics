@@ -78,7 +78,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
     }
     private defaultFormStyle = {
         formLabel: {display: "block ruby", padding: 0},
-        formControl: {minWidth: '6rem', maxWidth: '6rem', display: "inline-flex"},
+        formControl: {minWidth: '50%', maxWidth: '5.5rem', display: "inline-flex"},
         inputGroup: {display: "inline-flex"},
         inputGroupAppend: {display: "inline-block"},
         formGroup: {display: "block ruby", marginBottom: ".5rem" },
@@ -201,12 +201,14 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                             newValue={String(this.props.settings.format.colors[id])} 
                             handleValueChange={this.handleColorChange} 
                             labelWidth={0}
-                            style={{
-                                formLabel: {display: "inline-block"},
-                                formControl: {maxWidth: '6rem', display: "inline-block"},
-                                inputGroup: {display: "inline-block"},
-                                formGroup: {display: "inline-block", },
-                            }}></ParameterForm></Col>
+                            //style={{
+                            //    formLabel: {display: "inline-block"},
+                            //    formControl: {maxWidth: '6rem', display: "inline-block"},
+                            //    inputGroup: {display: "inline-block"},
+                            //    formGroup: {display: "inline-block", },
+                            //}}
+                            style={this.defaultFormStyle}
+                            ></ParameterForm></Col>
                     );
                 }
                 return (
@@ -293,11 +295,11 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
         <Row>
             <Col sm="6" style={{padding: 0}}>
                 <Row>
-                    <Col>
+                    <Col className="no-lr-padding">
                         <h4>Range Axis</h4>
                         {this.generateGraphForm()}
                     </Col>
-                    <Col>
+                    <Col style={{paddingLeft: 0, paddingRight: '15px'}}>
                         <h4>Color Generation</h4>
                         {this.generateColorForms()}
                     </Col>

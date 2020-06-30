@@ -26,11 +26,12 @@ class NavbarCustom extends React.Component<{links: T.linkT}>{
 <Navbar variant="dark" bg="dark" expand="lg" fixed="top">
     <Navbar.Brand onClick={this.scrollToTop}>
         <Row>
-        <Col className="no-lr-padding" style={{maxWidth: '32px'}}>
-            <img height='32' width='32' src={process.env.PUBLIC_URL + '/android-chrome-192x192.png'}/>
+            <Col className="no-lr-padding" style={{maxWidth: '32px'}}>
+                <img height='32' width='32' 
+                src={process.env.PUBLIC_URL + '/android-chrome-192x192.png'}/>
             </Col>
             <Col style={{paddingLeft: '1rem', paddingRight: 0}}>
-            WoWS Ballisitics Calculator
+                WoWS Ballisitics Calculator
             </Col>
         </Row>
     </Navbar.Brand>
