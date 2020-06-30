@@ -3,6 +3,7 @@ import Chart from 'chart.js';
 import {Scatter, defaults} from 'react-chartjs-2';
 import 'chartjs-plugin-annotation';
 import {Button, Collapse, Row, Col} from 'react-bootstrap';
+import {Icon} from 'semantic-ui-react';
 
 import * as T from './commonTypes';
 import DownloadButton from './UtilityComponents/DownloadButton';
@@ -543,7 +544,10 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         ** Scaled by x(1/3.1) ≈ game / real world  <br/>
         </>
     }>
-    <h3 style={{textAlign: "center", display:"inline-block"}}>Impact Charts</h3>
+        <div>
+            <h3 style={{textAlign: "center", display:"inline-block"}}>Impact Charts</h3>
+            <Icon name='question circle outline' color='grey' style={{verticalAlign: 'top'}}/>
+        </div>
     </GeneralTooltip>
     {this.addChart('impact')}
     <GeneralTooltip title="Angle Charts" content={
@@ -555,7 +559,10 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         Note: Adjusts for angle of fall and armor inclination
         </>
     }>
-        <h3 style={{textAlign: "center", display:"inline-block"}}>Angle Charts</h3>
+        <div>
+            <h3 style={{textAlign: "center", display:"inline-block"}}>Angle Charts</h3>
+            <Icon name='question circle outline' color='grey' style={{verticalAlign: 'top'}}/>
+        </div>
     </GeneralTooltip>
     {this.addChart('angle')}
     <GeneralTooltip title="Post-Penetration Charts" content={
@@ -568,7 +575,10 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         - Adjusts for angle of fall and armor inclination
         </>
     }>
-    <h3 style={{textAlign: "center", display:"inline-block"}}>Post-Penetration Charts</h3>
+        <div>
+            <h3 style={{textAlign: "center", display:"inline-block"}}>Post-Penetration Charts</h3>
+            <Icon name='question circle outline' color='grey' style={{verticalAlign: 'top'}}/>
+        </div>
     </GeneralTooltip>
     {this.addChart('post')}
 </>

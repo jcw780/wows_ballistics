@@ -1,5 +1,6 @@
 import React, {Suspense} from 'react';
 import {Form, Col, Row} from 'react-bootstrap';
+import {Icon} from 'semantic-ui-react';
 import clonedeep from 'lodash.clonedeep';
 
 import * as S from './Types';
@@ -28,6 +29,10 @@ export class ShellParameters extends React.PureComponent<shellParametersProps>{
 	}
 	addForms = () => {
 		const props = this.props;
+		const commonStyle = {
+			inputGroup:{width: "50%"},
+			formLabel:{padding: 0}
+		}
 		const singleForm = ([key, value] : [S.formsT, S.labelT], i) => {
 			const name = value[S.labelI.name];
 			return (
@@ -35,10 +40,13 @@ export class ShellParameters extends React.PureComponent<shellParametersProps>{
 				newValue={String(props.formData[key])}
 				handleValueChange={this.handleValueChange} 
 				type="number" append={value[S.labelI.unit]}
-				style={{inputGroup:{width: "50%"}}} ariaLabel={name}>
+				style={commonStyle} ariaLabel={name}>
                     <Suspense fallback={<div>Loading...</div>}>
                         <GeneralTooltip title={name} content={value[S.labelI.description]}>
-                            <div>{name}</div>
+							<div>
+								{name}
+								<Icon name='question circle outline' color='grey' style={{verticalAlign: 'top'}}/>
+							</div>
                         </GeneralTooltip>
                     </Suspense>
 			</ParameterForm>);

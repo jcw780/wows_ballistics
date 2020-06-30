@@ -18,11 +18,14 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "^3.4.1",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^0.88.2",
     "tslib": "^1.11.1"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "postbuild": "react-snap",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
@@ -64,8 +67,7 @@
     ]
   },
   "reactSnap": {
-    "inlineCss": true,
-    "asyncScriptTags": true
+    "inlineCss": true
   },
   "browserslist": {
     "production": [

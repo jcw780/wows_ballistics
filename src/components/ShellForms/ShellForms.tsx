@@ -179,7 +179,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 				</tbody>
 			</table>
 		</>], 
-		HESAP: ['HE/SAP penetration', 'mm', React.createRef(), 
+		HESAP: ['HE/SAP Penetration', 'mm', React.createRef(), 
 		<>
 			Angle independent penetration <br/> of HE or SAP shells.
 			<table id='tooltip-table'>
