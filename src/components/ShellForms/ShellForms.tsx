@@ -309,7 +309,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 						</Popover.Content>
 					</Popover>
 				}>
-				<Button style={{width: "100%"}} variant="dark">Raw Parameters</Button>
+				<Button style={{width: "100%"}} variant="dark">Raw Input</Button>
 			</OverlayTrigger>
 		</Col>
 		<Col className="no-lr-padding">
