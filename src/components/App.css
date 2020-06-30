@@ -48,7 +48,7 @@ body{
 }
 
 .navbar {
-  max-height: 3.5rem;
+  min-height: 3.5rem;
 }
 
 .popover{

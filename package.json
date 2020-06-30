@@ -4,11 +4,13 @@
   "private": true,
   "homepage": "http://jcw780.github.io/wows_ballistics",
   "dependencies": {
+    "babel-jest": "^24.9.0",
     "bootstrap-switch-button-react": "^1.2.0",
     "chart.js": "^2.9.3",
     "chartjs-plugin-annotation": "^0.5.7",
     "distinct-colors": "^3.0.0",
     "file-saver": "^2.0.2",
+    "jest": "24.9.0",
     "lodash": "^4.17.15",
     "lodash.clonedeep": "^4.5.0",
     "pako": "^1.0.11",
@@ -16,11 +18,14 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "^3.4.1",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^0.88.2",
     "tslib": "^1.11.1"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "postbuild": "react-snap",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
@@ -61,6 +66,9 @@
       }
     ]
   },
+  "reactSnap": {
+    "inlineCss": true
+  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -93,12 +101,13 @@
     "react-bootstrap": "^1.0.1",
     "react-chartjs-2": "^2.9.0",
     "react-scripts-ts": "^4.0.8",
+    "react-snap": "^1.23.0",
     "style-loader": "^1.2.1",
     "ts-loader": "^7.0.2",
     "typescript": "^3.9.5",
     "wasm-feature-detect": "^1.2.3",
-    "webpack": "^4.42.0",
+    "webpack": "4.42.0",
     "webpack-cli": "^3.3.11",
-    "webpack-dev-server": "^3.10.3"
+    "webpack-dev-server": "3.10.3"
   }
 }

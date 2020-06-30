@@ -1,5 +1,6 @@
 import React, {Suspense} from 'react';
 import {Row, Col, Button, Modal, Container} from 'react-bootstrap';
+import {Icon} from 'semantic-ui-react';
 
 import * as T from './commonTypes';
 import {ParameterForm} from './UtilityComponents/ParameterForm';
@@ -14,12 +15,16 @@ class RefAngleForm extends React.PureComponent<refAngleFormProps>{
     deleteElement = () => {
         this.props.deleteElement(this.props.keyProp, this.props.index);
     }
+    private angleStyle = {
+        formControl: {minWidth: '50%', maxWidth: '7rem', display: "inline-flex"},
+        formGroup: {flexFlow: 'unset'}
+    }
     render(){
         const props = this.props;
         return (
             <Modal.Dialog style={{width: '100%', margin: 0}}>
                 <Modal.Header 
-                style={{padding: 0, paddingTop: '0.5rem', paddingRight: '0.5rem', paddingLeft: '0.5rem'}}
+                style={{padding: 0, paddingTop: '0.25rem', paddingRight: '0.25rem', paddingLeft: '0.25rem'}}
                 closeButton onHide={this.deleteElement}>
                     <Modal.Title style={{marginLeft: "40%", marginRight: "auto", }}>Label {props.index + 1}</Modal.Title>
                 </Modal.Header>
@@ -35,7 +40,7 @@ class RefAngleForm extends React.PureComponent<refAngleFormProps>{
             newValue={props.newValue[0]}
             handleValueChange={props.handleValueChange[0]} 
             type="number" ariaLabel="Angle"
-            labelWidth={4} style={{formControl: {width: '60%'}, formGroup: {flexFlow: 'unset'}}} append="°">
+            labelWidth={4} style={this.angleStyle} append="°">
                 Angle
             </ParameterForm>
             </Modal.Body>
@@ -54,6 +59,10 @@ class AngleForm extends React.PureComponent<angleFormProps>{
     deleteElement = () => {
         this.props.deleteElement(this.props.keyProp, this.props.index);
     }
+    private commonStyle = {
+        formControl: {minWidth: '50%', maxWidth: '7rem', display: "inline-flex"},
+        formGroup: {flexFlow: 'unset', paddingBottom: 0}
+    }
     render(){
         const props = this.props;
         return (
@@ -65,7 +74,7 @@ class AngleForm extends React.PureComponent<angleFormProps>{
             newValue={props.newValue}
             handleValueChange={props.handleValueChange} 
             type="number" ariaLabel={props.label}
-            labelWidth={4} style={{formControl: {width: '50%'}, formGroup: {flexFlow: 'unset'}}} append="°">
+            labelWidth={undefined} style={this.commonStyle} append="°">
                 {props.label}
             </ParameterForm>
                 </Modal.Header>
@@ -227,23 +236,29 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
     }
     private renderFixedTargetLabels = () => {
         const targetData = this.targetData;
+        const commonStyle = {
+            formControl: {minWidth: '50%', maxWidth: '6rem', display: "inline-flex"},
+        };
         const singleLabel = ([key, value], i) => {
             return (
                 <Col key={i}>
                     <ParameterForm controlId={key}
                     newValue={String(targetData[key])} 
                     handleValueChange={this.handleChange} type="number"
-                    labelWidth={3} append={value[1]} ariaLabel={value[0]} style={{formControl: {width: "50%"}}}>
+                    labelWidth={5} append={value[1]} ariaLabel={value[0]} style={commonStyle}>
                         <Suspense fallback={<div>Loading...</div>}>
                             <GeneralTooltip title={value[0]} content={value[singleTargetI.description]}>
-                                <div>{value[0]}</div>
+                                <div>
+                                    {value[0]}
+                                    <Icon name='question circle outline' color='grey' style={{verticalAlign: 'top'}}/>
+                                </div>
                             </GeneralTooltip>
                         </Suspense>
                     </ParameterForm>
                 </Col>
             );
         }
-        const run = () => Object.entries(this.fixedTargetLabels).map(singleLabel); return run();
+        const run = () => Object.entries(this.fixedTargetLabels).map(singleLabel); return run;
     }
     render(){
         const elementsPerColumn = 1;
@@ -254,7 +269,7 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
             <h2 ref={this.scrollRef}>Target Parameters</h2>
             <Row>
                 <Col sm={1}/>
-                    {this.renderFixedTargetLabels()}
+                    {this.renderFixedTargetLabels()()}
                 <Col sm={1}/>
             </Row>
             <Suspense fallback={<div>Loading...</div>}>
@@ -273,7 +288,10 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
                     </table>
                     *0° angle of fall and armor inclination.
                 </>}>
-                    <h3 style={{display:"inline-block"}}>Target Angles</h3>
+                    <div>
+                        <h3 style={{display:"inline-block"}}>Target Angles</h3>
+                        <Icon name='question circle outline' color='grey' style={{verticalAlign: 'top'}}/>
+                    </div>
                 </GeneralTooltip>
             </Suspense>
             <Container style={{marginBottom: "1rem"}}>
@@ -290,7 +308,10 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
                     <>User generated labels for angle charts. 
                     <br/>These do not affect calculation values.</>}
                 >
-                    <h3 style={{display:"inline-block"}}>Angle Labels</h3>
+                    <div>
+                        <h3 style={{display:"inline-block", marginBottom: 0}}>Angle Labels</h3>
+                        <Icon name='question circle outline' color='grey' style={{verticalAlign: 'top'}}/>
+                    </div>
                 </GeneralTooltip>
             </Suspense>
             <Container style={{marginBottom: "1rem"}}>

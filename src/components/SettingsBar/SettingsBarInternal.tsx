@@ -78,7 +78,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
     }
     private defaultFormStyle = {
         formLabel: {display: "block ruby", padding: 0},
-        formControl: {minWidth: '6rem', maxWidth: '6rem', display: "inline-flex"},
+        formControl: {minWidth: '50%', maxWidth: '5.5rem', display: "inline-flex"},
         inputGroup: {display: "inline-flex"},
         inputGroupAppend: {display: "inline-block"},
         formGroup: {display: "block ruby", marginBottom: ".5rem" },
@@ -201,12 +201,14 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                             newValue={String(this.props.settings.format.colors[id])} 
                             handleValueChange={this.handleColorChange} 
                             labelWidth={0}
-                            style={{
-                                formLabel: {display: "inline-block"},
-                                formControl: {maxWidth: '6rem', display: "inline-block"},
-                                inputGroup: {display: "inline-block"},
-                                formGroup: {display: "inline-block", },
-                            }}></ParameterForm></Col>
+                            //style={{
+                            //    formLabel: {display: "inline-block"},
+                            //    formControl: {maxWidth: '6rem', display: "inline-block"},
+                            //    inputGroup: {display: "inline-block"},
+                            //    formGroup: {display: "inline-block", },
+                            //}}
+                            style={this.defaultFormStyle}
+                            ></ParameterForm></Col>
                     );
                 }
                 return (
@@ -247,8 +249,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                     <Col style={{paddingRight: 0}}>
                         <h4>Line</h4>
                         <Row>
-                            <Col sm="1"/>
-                            <Col>
+                            <Col className="no-lr-padding">
                                 <BootstrapSwitchButton style='switch-toggle'
                                     onlabel='Show Line' offlabel='Show Point' onstyle='success' offstyle='danger'
                                     onChange={this.onShowLineChange} checked={settings.line.showLine}
@@ -256,20 +257,17 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                                 <h5>Point</h5>
                                 {this.generateLineForms()}
                             </Col>
-                            <Col sm="1"/>  
                         </Row>
                     </Col>
                     <Col style={{padding: 0}}>
                         <h4>Labeling</h4>
                         <Row>
-                        <Col sm="1"/>
-                            <Col>
-                                <BootstrapSwitchButton style='switch-toggle'
-                                    onlabel='Short Names' offlabel='Long Names' onstyle='success' offstyle='danger'
-                                    onChange={this.onShortNameChange} checked={format.shortNames}
-                                />
-                            </Col>
-                        <Col sm="1"/>
+                        <Col className="no-lr-padding">
+                            <BootstrapSwitchButton style='switch-toggle'
+                                onlabel='Short Names' offlabel='Long Names' onstyle='success' offstyle='danger'
+                                onChange={this.onShortNameChange} checked={format.shortNames}
+                            />
+                        </Col>
                         </Row>
                         {this.generateFormatForms()}
                     </Col>
@@ -293,11 +291,11 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
         <Row>
             <Col sm="6" style={{padding: 0}}>
                 <Row>
-                    <Col>
+                    <Col className="no-lr-padding">
                         <h4>Range Axis</h4>
                         {this.generateGraphForm()}
                     </Col>
-                    <Col>
+                    <Col style={{paddingLeft: 0, paddingRight: '15px'}}>
                         <h4>Color Generation</h4>
                         {this.generateColorForms()}
                     </Col>

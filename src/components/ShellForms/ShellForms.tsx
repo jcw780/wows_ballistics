@@ -57,8 +57,8 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		</>], 
 		muzzleVelocity: ['Muzzle Velocity', 'm/s', React.createRef(), 
 		<>
-			Shell velocity as it leaves the <br/> 
-			barrel. Effects - All else equal: 
+			Shell velocity as it leaves the gun.<br/> 
+			Effects - All else equal: 
 			<table id='tooltip-table'>
 				<tbody>
 					<tr><th>Muzzle Velocity      </th><th>↑</th><th>↓</th></tr>
@@ -72,8 +72,9 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		</>], 
 		dragCoefficient: ['Drag Coefficient', '(1)', React.createRef(), 
 		<>
-			Representation of shell's air drag <br/>
-			characteristics. Effects - All else equal: 
+			Represents the shell geometry's <br/>
+			effect on air drag. <br/>
+			Effects - All else equal: 
 			<table id='tooltip-table'>
 				<tbody>
 					<tr><th>Drag Coefficient     </th><th>↑</th><th>↓</th></tr>
@@ -102,7 +103,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		</>], 
 		krupp: ['Krupp', '(1)', React.createRef(), 
 		<>
-			Constant used to directly scale <br/>
+			Constant used to linearly scale <br/>
 			penetration. Effects - All else equal:
 			<table id='tooltip-table'>
 				<tbody>
@@ -179,7 +180,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 				</tbody>
 			</table>
 		</>], 
-		HESAP: ['HE/SAP penetration', 'mm', React.createRef(), 
+		HESAP: ['HE/SAP Penetration', 'mm', React.createRef(), 
 		<>
 			Angle independent penetration <br/> of HE or SAP shells.
 			<table id='tooltip-table'>
@@ -309,7 +310,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 						</Popover.Content>
 					</Popover>
 				}>
-				<Button style={{width: "100%"}} variant="dark">Raw Parameters</Button>
+				<Button style={{width: "100%"}} variant="dark">Raw Input</Button>
 			</OverlayTrigger>
 		</Col>
 		<Col className="no-lr-padding">
