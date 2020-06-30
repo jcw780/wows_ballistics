@@ -15,12 +15,16 @@ class RefAngleForm extends React.PureComponent<refAngleFormProps>{
     deleteElement = () => {
         this.props.deleteElement(this.props.keyProp, this.props.index);
     }
+    private angleStyle = {
+        formControl: {minWidth: '50%', maxWidth: '7rem', display: "inline-flex"},
+        formGroup: {flexFlow: 'unset'}
+    }
     render(){
         const props = this.props;
         return (
             <Modal.Dialog style={{width: '100%', margin: 0}}>
                 <Modal.Header 
-                style={{padding: 0, paddingTop: '0.5rem', paddingRight: '0.5rem', paddingLeft: '0.5rem'}}
+                style={{padding: 0, paddingTop: '0.25rem', paddingRight: '0.25rem', paddingLeft: '0.25rem'}}
                 closeButton onHide={this.deleteElement}>
                     <Modal.Title style={{marginLeft: "40%", marginRight: "auto", }}>Label {props.index + 1}</Modal.Title>
                 </Modal.Header>
@@ -36,7 +40,7 @@ class RefAngleForm extends React.PureComponent<refAngleFormProps>{
             newValue={props.newValue[0]}
             handleValueChange={props.handleValueChange[0]} 
             type="number" ariaLabel="Angle"
-            labelWidth={4} style={{formControl: {width: '60%'}, formGroup: {flexFlow: 'unset'}}} append="°">
+            labelWidth={4} style={this.angleStyle} append="°">
                 Angle
             </ParameterForm>
             </Modal.Body>
@@ -55,6 +59,10 @@ class AngleForm extends React.PureComponent<angleFormProps>{
     deleteElement = () => {
         this.props.deleteElement(this.props.keyProp, this.props.index);
     }
+    private commonStyle = {
+        formControl: {minWidth: '50%', maxWidth: '7rem', display: "inline-flex"},
+        formGroup: {flexFlow: 'unset', paddingBottom: 0}
+    }
     render(){
         const props = this.props;
         return (
@@ -66,7 +74,7 @@ class AngleForm extends React.PureComponent<angleFormProps>{
             newValue={props.newValue}
             handleValueChange={props.handleValueChange} 
             type="number" ariaLabel={props.label}
-            labelWidth={4} style={{formControl: {width: '50%'}, formGroup: {flexFlow: 'unset'}}} append="°">
+            labelWidth={undefined} style={this.commonStyle} append="°">
                 {props.label}
             </ParameterForm>
                 </Modal.Header>
