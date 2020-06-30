@@ -262,14 +262,12 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                     <Col style={{padding: 0}}>
                         <h4>Labeling</h4>
                         <Row>
-                        <Col sm="1"/>
-                            <Col className="no-lr-padding">
-                                <BootstrapSwitchButton style='switch-toggle'
-                                    onlabel='Short Names' offlabel='Long Names' onstyle='success' offstyle='danger'
-                                    onChange={this.onShortNameChange} checked={format.shortNames}
-                                />
-                            </Col>
-                        <Col sm="1"/>
+                        <Col className="no-lr-padding">
+                            <BootstrapSwitchButton style='switch-toggle'
+                                onlabel='Short Names' offlabel='Long Names' onstyle='success' offstyle='danger'
+                                onChange={this.onShortNameChange} checked={format.shortNames}
+                            />
+                        </Col>
                         </Row>
                         {this.generateFormatForms()}
                     </Col>
