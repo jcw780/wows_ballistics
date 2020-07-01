@@ -113,6 +113,11 @@ class App extends React.Component<{},{}> {
 	}
 	
 	// Calculate and generate data for charts
+	private initializePoint = (target, shell : number) => {
+		Object.entries(target).forEach(([label, points] : [string, T.scatterPoint[][]]) => {
+			points[shell] = [];
+		});
+	}
 	private makeImpactPoints = (shell, index, dist) => {
 		const pointFunction = (index, dataType, shell) => {
 			return this.instance.getImpactPoint(index, this.arrayIndices.impactDataIndex[dataType], shell);
@@ -158,14 +163,9 @@ class App extends React.Component<{},{}> {
 			calculatedData.angles = tgtData.angles;
 			calculatedData.targets[0] = {armor: tgtData.armor, inclination: tgtData.inclination, width: tgtData.width}
 			shellData.forEach((value, i) => {calculatedData.names[i] = value.name; calculatedData.colors[i] = value.colors;});
-			const initializePoint = (target, shell : number) => {
-				Object.entries(target).forEach(([label, points] : [string, T.scatterPoint[][]]) => {
-					points[shell] = [];
-				});
-			}
 			for(let j=0; j<numShells; j++){
-				initializePoint(calculatedData.impact, j);
-				initializePoint(calculatedData.angle, j);
+				this.initializePoint(calculatedData.impact, j);
+				this.initializePoint(calculatedData.angle, j);
 				for(let i=0; i<numAngles; i++){
 					calculatedData.post.notFused[i+j*numAngles] = [];
 					calculatedData.post.fused[i+j*numAngles] = [];
