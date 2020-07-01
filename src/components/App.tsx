@@ -138,8 +138,7 @@ class App extends React.Component<{},{}> {
 		if(numShells <= 0){return
 		}else{
 			const instance = this.instance, arrayIndices = this.arrayIndices, calculatedData = this.calculatedData;
-			instance.resize(numShells);
-			calculatedData.numShells = numShells;
+			instance.resize(numShells); calculatedData.numShells = numShells;
 			this.applyCalculationSettings();
 			//Update Shell Data
 			shellData.forEach((value, i) => {
@@ -159,19 +158,19 @@ class App extends React.Component<{},{}> {
 			calculatedData.angles = tgtData.angles;
 			calculatedData.targets[0] = {armor: tgtData.armor, inclination: tgtData.inclination, width: tgtData.width}
 			shellData.forEach((value, i) => {calculatedData.names[i] = value.name; calculatedData.colors[i] = value.colors;});
+			const initializePoint = (target, shell : number) => {
+				Object.entries(target).forEach(([label, points] : [string, T.scatterPoint[][]]) => {
+					points[shell] = [];
+				});
+			}
 			for(let j=0; j<numShells; j++){
-				Object.entries(calculatedData.impact).forEach(([label, points]) => {
-					points[j] = [];
-				});
-				Object.entries(calculatedData.angle).forEach(([label, points]) => {
-					points[j] = [];
-				});
+				initializePoint(calculatedData.impact, j);
+				initializePoint(calculatedData.angle, j);
 				for(let i=0; i<numAngles; i++){
 					calculatedData.post.notFused[i+j*numAngles] = [];
 					calculatedData.post.fused[i+j*numAngles] = [];
 				}
 			}
-			console.log(calculatedData);
 			let maxDist = 0; //Maximum Distance for shipWidth
 			// Converts flat array data format to {x, y} format for chart.js
 			for(let j=0; j<numShells; j++){ // iterate through shells
@@ -207,14 +206,16 @@ class App extends React.Component<{},{}> {
 			});
 			//Angle Chart Annotations / Labels
 			calculatedData.refLabels = tgtData.refLabels;
-
-			calculatedData.refAngles.forEach((array, index) => {
-				const length = array.length - 1;
-				for(let i=0; i < array.length; i++){
+			calculatedData.refAngles = [];
+			for(let j=0; j<calculatedData.refLabels.length; j++){
+				const temp : T.scatterPoint[] = [];
+				const length = this.referenceLineSize - 1;
+				for(let i=0; i < this.referenceLineSize; i++){
 					const xV : number = i / length * maxAdj;
-					array[i] = {x: xV, y: tgtData.refAngles[index]};
+					temp[i] = {x: xV, y: tgtData.refAngles[j]};
 				}
-			});
+				calculatedData.refAngles.push(temp);
+			}
 			//this.updateInitialData(calculatedData);
 			if(this.graphsRef.current){this.graphsRef.current.updateData(calculatedData);}
 		}
