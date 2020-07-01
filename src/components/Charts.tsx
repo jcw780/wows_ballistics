@@ -48,6 +48,11 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
     DownloadRef : React.RefObject<DownloadButton>[] = [
         React.createRef<DownloadButton>(), React.createRef<DownloadButton>()
     ];
+    collapseId : string = 'chart'
+    constructor(props){
+        super(props);
+        this.collapseId = props.data[singleChartIndex.name].replace(/ /g,"-");;
+    }
     updateInternal = () => {
         if(this.wrapperRef.current !== undefined){
             this.wrapperRef.current!.forceUpdate();
@@ -69,15 +74,16 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
         return `${dataset.label}${dataset.borderColor}`;
     }
     render(){
+        
         return(
 <>
     <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
         onClick={this.toggleCollapse} ref={this.scrollRef} variant="dark"
-        aria-controls="collapseChart" aria-expanded={this.state.open}
+        aria-controls={this.collapseId} aria-expanded={this.state.open}
         className={this.state.open === true ? 'active' : ''}
     >{this.titles[Number(!this.state.open)] + this.props.data[singleChartIndex.name]}</Button>
     <Collapse in={this.state.open}>
-        <div id="collapseChart">
+        <div id={this.collapseId}>
             <ChartInternal ref={this.wrapperRef}
                 data={this.props.data} 
                 dimensions={this.props.dimensions} 

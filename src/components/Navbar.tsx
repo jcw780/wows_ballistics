@@ -42,29 +42,29 @@ class NavbarCustom extends React.Component<{links: T.linkT}>{
     <Navbar.Collapse id="responsive-navbar-nav">
         <Nav className="mr-auto">
             <Suspense fallback={fallback}>
-                <NavDropdown title="Parameters" id="collapsible-nav-dropdown">
+                <NavDropdown title="Parameters" id="parameters">
                     {this.makeDropdowns('parameters')}
                 </NavDropdown>
             </Suspense>
             <Suspense fallback={fallback}>
-                <NavDropdown title="Impact Charts" id="collapsible-nav-dropdown">
+                <NavDropdown title="Impact Charts" id="impact charts">
                     {this.makeDropdowns('impact')}
                 </NavDropdown>
             </Suspense>
             <Suspense fallback={fallback}>
-                <NavDropdown title="Angle Charts" id="collapsible-nav-dropdown">
+                <NavDropdown title="Angle Charts" id="angle charts">
                     {this.makeDropdowns('angle')}
                 </NavDropdown>
             </Suspense>
             <Suspense fallback={fallback}>
-                <NavDropdown title="Post-Pentration Charts" id="collapsible-nav-dropdown">
+                <NavDropdown title="Post-Pentration Charts" id="post penetration">
                     {this.makeDropdowns('post')}
                 </NavDropdown>
             </Suspense>
         </Nav>
         <Nav>
             <Suspense fallback={<div>Loading...</div>}>
-                <NavDropdown title="Support" id="collapsible-nav-dropdown" alignRight>
+                <NavDropdown title="Support" id="support" alignRight>
                     <ND.Item href="https://github.com/jcw780/wows_ballistics">Github</ND.Item>
                     <ND.Item href="https://github.com/jcw780/wows_ballistics/issues">Issues</ND.Item>
                 </NavDropdown>
