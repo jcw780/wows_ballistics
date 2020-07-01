@@ -47,7 +47,7 @@ class App extends React.Component<{},{}> {
 		}
 	}
 	// Calculated Data
-	calculatedData: T.calculatedData
+	calculatedData: T.calculatedData;
 	referenceLineSize: Readonly<number> = 251;
 
 	//Compile Wasm 
@@ -64,34 +64,28 @@ class App extends React.Component<{},{}> {
 	}
 	constructor(props){
 		super(props); this.compile();
-		//initialize calculatedData
-		const numShells = 2, impactSize = 251, numAngles = 8;
-		const createNewPointArray = (lines, points) => {
-			return Array.from({length: lines}, _ => new Array<T.scatterPoint>(points))
-		}
-
 		this.calculatedData = {
 			impact: {
-				rawPen : createNewPointArray(numShells, impactSize),
-				ePenHN : createNewPointArray(numShells, impactSize),
-				impactAHD : createNewPointArray(numShells, impactSize),
-				ePenDN : createNewPointArray(numShells, impactSize),
-				impactADD : createNewPointArray(numShells, impactSize),
-				impactV: createNewPointArray(numShells, impactSize),
-				tToTargetA: createNewPointArray(numShells, impactSize),
+				rawPen : [],
+				ePenHN : [],
+				impactAHD : [],
+				ePenDN : [],
+				impactADD : [],
+				impactV: [],
+				tToTargetA: [],
 			}, angle: {
-				armorD : createNewPointArray(numShells, impactSize),
-				fuseD : createNewPointArray(numShells, impactSize),
-				ra0D : createNewPointArray(numShells, impactSize),
-				ra1D : createNewPointArray(numShells, impactSize),
+				armorD : [],
+				fuseD : [],
+				ra0D : [],
+				ra1D : [],
 			}, post: {
-				shipWidth : createNewPointArray(1, this.referenceLineSize),
-				notFused: createNewPointArray(numShells * numAngles, 0),
-				fused: createNewPointArray(numShells * numAngles, 0),
+				shipWidth : [],
+				notFused: [],
+				fused: [],
 			},
-			numShells : numShells, names : Array<string>(numShells), colors : Array<Array<string>>(numShells),
+			numShells : 2, names : [], colors : [],
 			targets : Array<T.targetDataNoAngleT>(1), angles : [], 
-			refAngles : createNewPointArray(0, this.referenceLineSize), refLabels : [],
+			refAngles : [], refLabels : [],
 		}
 	}
 
@@ -116,46 +110,6 @@ class App extends React.Component<{},{}> {
 		};
 		if (method in calcImpactFunc){calcImpactFunc[method]();}
 		else{console.log('Error', method); throw new Error('Invalid parameter');}
-	}
-
-	// Resize point arrays before use
-	resizeArray = <K extends {}>(array : Array<any>, newLength : number, 
-		fill : (new() => K) | undefined =undefined ) : void => {
-		const diff = newLength - array.length;
-		if(diff > 0){
-			if(fill !== undefined){
-				for(let i=0; i<diff; i++){
-					const nObj : K = new fill(); array.push(nObj);
-				}
-			}else{for(let i=0; i<diff; i++){array.push(undefined);}}
-		}else if(diff < 0){array.length = newLength;}
-	}
-
-	// Resize specific multidimensional array
-	resizePointArray = (array: Array<Array<any>>, newLength: [number, number]) : void => {
-		this.resizeArray(array, newLength[0], Array);
-		array.forEach((subArray) => {this.resizeArray(subArray, newLength[1]);});
-	}
-	private resizeCalculatedDataInternal = (numShells, impactSize, numAngles) => {
-		const chartIndicesNonPost : Array<'impact' | 'angle'> = ['impact', 'angle'];
-		const singleIndex = (index : 'impact' | 'angle') => {
-			const singleKey = ([key, value]) => {
-				this.resizePointArray(value, [numShells, impactSize]);
-			}
-			Object.entries(this.calculatedData[index]).forEach(singleKey);
-		}
-		const calculatedData = this.calculatedData;
-		return () => {
-			calculatedData.numShells = numShells;
-			chartIndicesNonPost.forEach(singleIndex);
-			const angleShells = numAngles * numShells;
-			//this.resizePointArray(this.calculatedData.post.shipWidth, [1, impactSize]);
-			this.resizePointArray(calculatedData.post.notFused, [angleShells, 0]);
-			this.resizePointArray(calculatedData.post.fused, [angleShells, 0]);
-		}
-	}
-	resizeCalculatedData = (numShells, impactSize, numAngles) : void => {
-		return this.resizeCalculatedDataInternal(numShells, impactSize, numAngles)();
 	}
 	
 	// Calculate and generate data for charts
@@ -185,6 +139,7 @@ class App extends React.Component<{},{}> {
 		}else{
 			const instance = this.instance, arrayIndices = this.arrayIndices, calculatedData = this.calculatedData;
 			instance.resize(numShells);
+			calculatedData.numShells = numShells;
 			this.applyCalculationSettings();
 			//Update Shell Data
 			shellData.forEach((value, i) => {
@@ -201,10 +156,22 @@ class App extends React.Component<{},{}> {
 				tgtData.angles, true, true);
 			//Post-Processing
 			const impactSize: number = instance.getImpactSize(), numAngles: number = tgtData.angles.length;
-			this.resizeCalculatedData(numShells, impactSize, numAngles);
 			calculatedData.angles = tgtData.angles;
 			calculatedData.targets[0] = {armor: tgtData.armor, inclination: tgtData.inclination, width: tgtData.width}
 			shellData.forEach((value, i) => {calculatedData.names[i] = value.name; calculatedData.colors[i] = value.colors;});
+			for(let j=0; j<numShells; j++){
+				Object.entries(calculatedData.impact).forEach(([label, points]) => {
+					points[j] = [];
+				});
+				Object.entries(calculatedData.angle).forEach(([label, points]) => {
+					points[j] = [];
+				});
+				for(let i=0; i<numAngles; i++){
+					calculatedData.post.notFused[i+j*numAngles] = [];
+					calculatedData.post.fused[i+j*numAngles] = [];
+				}
+			}
+			console.log(calculatedData);
 			let maxDist = 0; //Maximum Distance for shipWidth
 			// Converts flat array data format to {x, y} format for chart.js
 			for(let j=0; j<numShells; j++){ // iterate through shells
@@ -230,15 +197,15 @@ class App extends React.Component<{},{}> {
 			//Generate Ship Width Line 
 			const stepSize = this.settings.distance.stepSize !== undefined ? this.settings.distance.stepSize: 2000;
 			const maxAdj = Math.ceil(maxDist / stepSize) * stepSize;
+			calculatedData.post.shipWidth = [[],];
 			calculatedData.post.shipWidth.forEach((singleShipWidth) => {
-				const length = singleShipWidth.length - 1;
-				for(let i=0; i < singleShipWidth.length; i++){
+				const length = this.referenceLineSize - 1;
+				for(let i=0; i < this.referenceLineSize; i++){
 					const xV : number = i / length * maxAdj;
 					singleShipWidth[i] = {x: xV, y: tgtData.width};
 				}
 			});
 			//Angle Chart Annotations / Labels
-			this.resizePointArray(calculatedData.refAngles, [tgtData.refAngles.length, this.referenceLineSize]);
 			calculatedData.refLabels = tgtData.refLabels;
 
 			calculatedData.refAngles.forEach((array, index) => {
