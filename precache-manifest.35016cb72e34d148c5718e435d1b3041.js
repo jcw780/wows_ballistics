@@ -1,43 +1,43 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "a645d5e384663c2a86eb701bc080c94e",
+    "revision": "bca774dcc51ff09d73e72972e712e7ea",
     "url": "/wows_ballistics/index.html"
   },
   {
-    "revision": "afa15b3115b477cc05cf",
+    "revision": "fd7d4cfbacf42639d203",
     "url": "/wows_ballistics/static/css/2.993ad785.chunk.css"
   },
   {
-    "revision": "3fd08f476b24869d18f9",
+    "revision": "cb7b6c7d7767ff6d0d74",
     "url": "/wows_ballistics/static/css/main.ac89236b.chunk.css"
   },
   {
-    "revision": "afa15b3115b477cc05cf",
-    "url": "/wows_ballistics/static/js/2.59776f22.chunk.js"
+    "revision": "fd7d4cfbacf42639d203",
+    "url": "/wows_ballistics/static/js/2.eb06119e.chunk.js"
   },
   {
     "revision": "56deb76207836fbde2222134746ebd4f",
-    "url": "/wows_ballistics/static/js/2.59776f22.chunk.js.LICENSE.txt"
+    "url": "/wows_ballistics/static/js/2.eb06119e.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "7864e0228683e6af94bf",
-    "url": "/wows_ballistics/static/js/3.8a3d72e8.chunk.js"
+    "revision": "64f74b8f0b42f3d1edff",
+    "url": "/wows_ballistics/static/js/3.a00cabfb.chunk.js"
   },
   {
-    "revision": "3224b46c70b868f8d7bd",
-    "url": "/wows_ballistics/static/js/4.acb04d4e.chunk.js"
+    "revision": "5cb3ebfef04cb608cfa0",
+    "url": "/wows_ballistics/static/js/4.4a046d83.chunk.js"
   },
   {
-    "revision": "94f5f3d9e9477745689d",
-    "url": "/wows_ballistics/static/js/5.1022e437.chunk.js"
+    "revision": "8af891dcf54a02aca856",
+    "url": "/wows_ballistics/static/js/5.3adfd119.chunk.js"
   },
   {
-    "revision": "3fd08f476b24869d18f9",
-    "url": "/wows_ballistics/static/js/main.50271d69.chunk.js"
+    "revision": "cb7b6c7d7767ff6d0d74",
+    "url": "/wows_ballistics/static/js/main.543f35d5.chunk.js"
   },
   {
-    "revision": "460210b97c66a14f5890",
-    "url": "/wows_ballistics/static/js/runtime-main.3f5d07cc.js"
+    "revision": "5ce653a9c2fa657d065a",
+    "url": "/wows_ballistics/static/js/runtime-main.8f033d0d.js"
   },
   {
     "revision": "13db00b7a34fee4d819ab7f9838cc428",
