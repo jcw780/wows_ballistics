@@ -53,7 +53,7 @@ export class DefaultForm extends React.PureComponent<defaultFormProps> {
 	}
 }
 
-const dataURL = "https://jcw780.github.io/LiveGameData2/data/"
+const dataURL = "https://jcw780.github.io/LiveGameData2/data_uncompressed/"
 
 const fetchJson = (target, onSucess) => {
     fetch(target)
@@ -70,21 +70,13 @@ const fetchJson = (target, onSucess) => {
     );
 }
 
-//File is compressed
-const fetchJsonData = async (target) => {
+const fetchJsonData = (target) => {
     return fetch(target)
         .then((response) => {
             if (!response.ok) {
             throw new Error('Network response was not ok');
 			}
-            return response;
-		})
-		.then(async (response) => {
-			const Abuffer = await response.arrayBuffer();
-			const enc = new TextDecoder("utf-8");
-			const outputStr = enc.decode(pako.inflate(Abuffer));
-			const output = JSON.parse(outputStr);
-			return output;
+            return response.json();
 		})
         .catch((error) => {
             console.error('There has been a problem with your fetch operation:', error);
@@ -135,7 +127,7 @@ class DefaultShips extends React.PureComponent
 	}
 	queryNation = async () => {
 		const defaultData = this.props.defaultData;
-		const data = await fetchJsonData(`${dataURL}${defaultData.version[T.singleDefaultDataIndex.value]}_s.gz`);
+		const data = await fetchJsonData(`${dataURL}${defaultData.version[T.singleDefaultDataIndex.value]}_s.json`);
 		this.props.defaultData.queriedData = data;
 		const options = Object.keys(data.ships);
 		this.updateForm('nation', options, options);
