@@ -220,14 +220,14 @@ class App extends React.Component<{},{}> {
 			if(this.graphsRef.current){this.graphsRef.current.updateData(calculatedData);}
 		}
 	}
-	private updateInitialData = (data) => { //Only used to for replacing initialData = not useful in release
+	/*private updateInitialData = (data) => { //Only used to for replacing initialData = not useful in release
 		const fileToSave = new Blob([JSON.stringify(data)], {type: 'application/json',});
 		saveAs(fileToSave, 'initialData.json');
 		//const compressed = pako.deflate(JSON.stringify(data));
 		//console.log(compressed);
 		//const fileToSave2 = new Blob([compressed], {type: 'text/plain',});
 		//saveAs(fileToSave2, 'initialData.deflate');
-	}
+	}*/
 	onUpdate = () =>{this.navRef.current!.update();} // Update Navbar when charts are updated
 	updateColors = () => { // For updating when color settings change
 		if(this.SFCref.current) this.SFCref.current.updateAllCanvas();
