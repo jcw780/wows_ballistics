@@ -1,8 +1,6 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {Form, Container} from 'react-bootstrap';
-import pako from 'pako';
-//import TargetFormsContainer from 'TargetForms';
 import * as T from '../commonTypes';
 
 interface defaultFormProps{
@@ -55,21 +53,6 @@ export class DefaultForm extends React.PureComponent<defaultFormProps> {
 
 const dataURL = "https://jcw780.github.io/LiveGameData2/data_uncompressed/"
 
-const fetchJson = (target, onSucess) => {
-    fetch(target)
-        .then((response) => {
-            if (!response.ok) {
-            throw new Error('Network response was not ok');
-			}
-            return response.json();
-        })
-        .then(onSucess)
-        .catch((error) => {
-            console.error('There has been a problem with your fetch operation:', error);
-        }
-    );
-}
-
 const fetchJsonData = (target) => {
     return fetch(target)
         .then((response) => {
@@ -119,11 +102,10 @@ class DefaultShips extends React.PureComponent
 			refCurrent.updateOptions(options, values);
 		}
 	}
-	queryVersion = () => {
-		fetchJson(dataURL + "versions.json", (data) => {
-			let dataSorted = data.reverse();
-			this.updateForm('version', dataSorted, dataSorted);
-		});
+	queryVersion = async () => {
+		const data = await fetchJsonData(`${dataURL}versions.json`);
+		const reversed = data.reverse();
+		this.updateForm('version', reversed, reversed);
 	}
 	queryNation = async () => {
 		const defaultData = this.props.defaultData;
