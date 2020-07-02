@@ -85,7 +85,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
     private generateForms = (forms, target, onChange, sm=4) => {
         return forms.map((value, i) => {
             return(
-                <Row key={i}>
+                <Row key={i} className="no-lr-margin">
                     <Col className="no-lr-padding" sm={sm}>{value[1]}</Col>
                     <Col className="no-lr-padding">
                         <ParameterForm 
@@ -238,7 +238,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
     render(){
         const settings = this.props.settings, format = settings.format;
         return(
-    <Container style={{maxWidth: '100%'}}>
+    <>
         <Row>
             <Col style={{padding: 0}}><h3>Graphs</h3></Col>
             <Col style={{padding: 0}}><h3>Calculations</h3></Col>
@@ -303,7 +303,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
             </Col>
             <Col sm="6" style={{padding: 0}}></Col>
         </Row>
-    </Container>
+    </>
         );
     }
 }

@@ -267,7 +267,7 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
         return(
         <>
             <h2 ref={this.scrollRef}>Target Parameters</h2>
-            <Row className="justify-content-md-center" style={{paddingLeft: '10%', paddingRight: '10%'}}>
+            <Row className="justify-content-sm-center no-lr-margin" style={{paddingLeft: '10%', paddingRight: '10%'}}>
                 {this.renderFixedTargetLabels()()}
             </Row>
             <Suspense fallback={<div>Loading...</div>}>
@@ -292,14 +292,15 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
                     </div>
                 </GeneralTooltip>
             </Suspense>
-            <Container style={{marginBottom: "1rem"}}>
-                <Row>{this.renderAngleElements(angleElements)}</Row>
-            </Container>
-            <Row style={{marginBottom: "1rem"}}>
-                <Col/>
-                <Col sm="6"><Button className="form-control" variant="outline-secondary" onClick={this.addAngle}>
-                    Add Angle</Button></Col>
-                <Col/>
+            <Row style={{marginBottom: "1rem", marginLeft: '10%', marginRight: '10%'}}>
+                {this.renderAngleElements(angleElements)}
+            </Row>
+            <Row className="justify-content-sm-center no-lr-margin" style={{marginBottom: "1rem"}}>
+                <Col sm="6">
+                    <Button className="form-control" variant="outline-secondary" onClick={this.addAngle}>
+                        Add Angle
+                    </Button>
+                </Col>
             </Row>
             <Suspense fallback={<div>Loading...</div>}>
                 <GeneralTooltip title="Angle Label" content={
@@ -312,14 +313,15 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
                     </div>
                 </GeneralTooltip>
             </Suspense>
-            <Container style={{marginBottom: "1rem"}}>
-                <Row>{this.renderAngleElements(refAngleElements)}</Row>
-            </Container>
-            <Row style={{marginBottom: "1rem"}}>
-                <Col/>
-                <Col sm="6"><Button className="form-control" variant="outline-secondary" onClick={this.addRefAngle}>
-                    Add Angle</Button></Col>
-                <Col/>
+            <Row style={{marginBottom: "1rem", marginLeft: '10%', marginRight: '10%'}}>
+                {this.renderAngleElements(refAngleElements)}
+            </Row>
+            <Row className="justify-content-sm-center no-lr-margin" style={{marginBottom: "1rem"}}>
+                <Col sm="6">
+                    <Button className="form-control" variant="outline-secondary" onClick={this.addRefAngle}>
+                        Add Angle
+                    </Button>
+                </Col>          
             </Row>
         </>
         );

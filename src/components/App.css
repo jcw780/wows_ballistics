@@ -59,11 +59,6 @@ body{
 .btn-group-toggle{
   display: flex! important;
 }
-
-.row{
-  margin-left: 0! important;
-  margin-right: 0! important;
-}
  
 .input-group-text{
   padding-left: .3rem! important;
@@ -73,6 +68,16 @@ body{
 .no-lr-padding{
   padding-left: 0! important;
   padding-right: 0! important;
+}
+
+.no-lr-margin{
+  margin-left: 0! important;
+  margin-right: 0! important;
+}
+
+.row{
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .common-margin{

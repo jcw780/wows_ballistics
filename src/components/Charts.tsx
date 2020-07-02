@@ -89,15 +89,13 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
                 dimensions={this.props.dimensions} 
                 datasetKeyProvider={this.datasetKeyProvider} 
                 chartRef={this.chartRef}/>
-            <Row style={{margin: 0}}>
-                <Col sm="4" style={{padding: 0}}/>
+            <Row style={{margin: 0}} className="justify-content-sm-center">
                 <Col sm="2" style={{padding: 0}}>
                     <DownloadButton ref={this.DownloadRef[0]} updateData={this.updateDownloadGraph} label="Download Graph"/>
                 </Col>
                 <Col sm="2" style={{padding: 0}}>
                     <DownloadButton ref={this.DownloadRef[1]} updateData={this.updateDownloadJSON} label="Download Data"/>
                 </Col>
-                <Col sm="4" style={{padding: 0}}/>
             </Row>
         </div>
     </Collapse> 
