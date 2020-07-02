@@ -4,12 +4,16 @@ import {Nav, Navbar, NavDropdown as ND} from 'react-bootstrap';
 import * as T from '../commonTypes';
 import NavDropdownContainer from './NavDropdownContainer';
 
-//const NavDropdownContainer = React.lazy(() => import('./NavDropdownContainer'));
 const NavDropdown = React.lazy(() => import('react-bootstrap/NavDropdown'));
-const fallback = <div>Loading...</div>;
 class NavbarCustom extends React.Component<{links: T.linkT}>{
     state = {update: true};
-    navDropdownContainers : React.RefObject<NavDropdownContainer>[] = [];
+    navDropdownContainers : React.RefObject<NavDropdownContainer>[] = 
+    Object.seal([
+        React.createRef<NavDropdownContainer>(),
+        React.createRef<NavDropdownContainer>(),
+        React.createRef<NavDropdownContainer>(),
+        React.createRef<NavDropdownContainer>(),
+    ]);
     update = () => {
         if(this.navDropdownContainers[3] !== undefined){
             this.navDropdownContainers[3].current!.forceUpdate();
@@ -22,7 +26,6 @@ class NavbarCustom extends React.Component<{links: T.linkT}>{
             }
         })
     }
-    
     private scrollToTop = _ => window.scrollTo(0, 0);
     render(){
         const links = this.props.links;
@@ -38,16 +41,16 @@ class NavbarCustom extends React.Component<{links: T.linkT}>{
     <Navbar.Toggle aria-controls="responsive-navbar-nav" label="Toggle Navigation"/>
     <Navbar.Collapse id="responsive-navbar-nav">
         <Nav className="mr-auto">
-            <NavDropdownContainer title="Parameters" links={links['parameters']} shouldUpdate={false}
+            <NavDropdownContainer title="Parameters" links={links['parameters']} 
                 ref={this.navDropdownContainers[0]}
             />
-            <NavDropdownContainer title="Impact Charts" links={links['impact']} shouldUpdate={false}
+            <NavDropdownContainer title="Impact Charts" links={links['impact']} 
                 ref={this.navDropdownContainers[1]}
             />
-            <NavDropdownContainer title="Angle Charts" links={links['angle']} shouldUpdate={false}
+            <NavDropdownContainer title="Angle Charts" links={links['angle']} 
                 ref={this.navDropdownContainers[2]}
             />
-            <NavDropdownContainer title="Post-Pentration Charts" links={links['post']} shouldUpdate={true}
+            <NavDropdownContainer title="Post-Pentration Charts" links={links['post']} 
                 ref={this.navDropdownContainers[3]}
             />
         </Nav>

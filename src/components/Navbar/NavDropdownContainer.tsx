@@ -1,12 +1,12 @@
 import React, {Suspense} from 'react';
-import {Nav, Navbar, NavDropdown as ND} from 'react-bootstrap';
+import {NavDropdown as ND} from 'react-bootstrap';
 
 import * as T from '../commonTypes';
 
 const NavDropdown = React.lazy(() => import('react-bootstrap/NavDropdown'));
 
 interface propsT{
-    links: T.singleLinkT[], title: string, shouldUpdate: boolean
+    links: T.singleLinkT[], title: string,
 }
 export class NavDropdownContainer extends React.Component<propsT>{
     private makeScroller = (ref : T.chartRefT | T.parameterRefT) => {
@@ -23,9 +23,6 @@ export class NavDropdownContainer extends React.Component<propsT>{
             </ND.Item>
             );
         })
-    }
-    shouldComponentUpdate(){
-        return this.props.shouldUpdate;
     }
     render(){
         const title = this.props.title;

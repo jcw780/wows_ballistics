@@ -1,5 +1,5 @@
 import React from 'react';
-import {ToggleButtonGroup, ToggleButton, Container, Col, Row} from 'react-bootstrap';
+import {ToggleButtonGroup, ToggleButton, Col, Row} from 'react-bootstrap';
 import BootstrapSwitchButton from 'bootstrap-switch-button-react';
 
 import * as T from '../commonTypes';
