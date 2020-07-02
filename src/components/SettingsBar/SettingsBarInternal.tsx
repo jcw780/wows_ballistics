@@ -221,12 +221,13 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
             }
             return this.forms.colors.map(singleRow);
         }
+        const topLabelStyle : React.CSSProperties = {maxHeight: rowHeight, textAlign: 'left'};
         const run = () => {
             return (<>
                 <Row style={{maxHeight: rowHeight}}>
-                    <Col sm={typeWidth} className="no-lr-padding" style={{maxHeight: rowHeight}}/>
-                    <Col className="no-lr-padding" style={{maxHeight: rowHeight}}>Minimum</Col>
-                    <Col className="no-lr-padding" style={{maxHeight: rowHeight}}>Maximum</Col>
+                    <Col sm={typeWidth} className="no-lr-padding" style={topLabelStyle}/>
+                    <Col className="no-lr-padding" style={topLabelStyle}>Minimum</Col>
+                    <Col className="no-lr-padding" style={topLabelStyle}>Maximum</Col>
                 </Row>
                 {addForm()}
             </>)

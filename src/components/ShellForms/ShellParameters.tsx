@@ -14,14 +14,15 @@ export class ShellParameters extends React.PureComponent<shellParametersProps>{
 	nameForm = React.createRef<ParameterForm>();
 	downloadRef = React.createRef<DownloadButton>();
 	handleValueChange = (value, k) => {this.props.handleValueChange(value, k);}
-	updateShells() {
+	private updateShellsI = () => {
 		const props = this.props;
 		const updateItem = ([key, value] : [S.formsT, S.labelT]): void => {
 			value[S.labelI.ref].current!.updateValue(props.formData[key]);
 		}
 		const run = () => Object.entries(props.formLabels).forEach(updateItem);
-		return run();
+		return run;
 	}
+	updateShells = () => {this.updateShellsI()();}
 	updateDownloadJSON = () => {
 		const formData = this.props.formData, selectedData = clonedeep(FormData); delete selectedData.colors;
         const url = URL.createObjectURL(new Blob([JSON.stringify(selectedData)], {type: 'text/json;charset=utf-8'}));

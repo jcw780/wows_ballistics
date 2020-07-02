@@ -267,10 +267,8 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
         return(
         <>
             <h2 ref={this.scrollRef}>Target Parameters</h2>
-            <Row>
-                <Col sm={1}/>
-                    {this.renderFixedTargetLabels()()}
-                <Col sm={1}/>
+            <Row className="justify-content-md-center" style={{paddingLeft: '10%', paddingRight: '10%'}}>
+                {this.renderFixedTargetLabels()()}
             </Row>
             <Suspense fallback={<div>Loading...</div>}>
                 <GeneralTooltip title="Target Angles" content={
