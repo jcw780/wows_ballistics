@@ -3,7 +3,7 @@ import {Row, Col, Button, Modal} from 'react-bootstrap';
 import {Icon} from 'semantic-ui-react';
 
 import * as T from './commonTypes';
-import {ParameterForm} from './UtilityComponents/ParameterForm';
+import {ParameterForm} from './UtilityComponents';
 //import GeneralTooltip from './Tooltips';
 const GeneralTooltip = React.lazy(() => import('./UtilityComponents/Tooltips'));
 
@@ -26,7 +26,7 @@ class RefAngleForm extends React.PureComponent<refAngleFormProps>{
                 <Modal.Header 
                 style={{padding: 0, paddingTop: '0.25rem', paddingRight: '0.25rem', paddingLeft: '0.25rem'}}
                 closeButton onHide={this.deleteElement}>
-                    <Modal.Title style={{marginLeft: "40%", marginRight: "auto", }}>Label {props.index + 1}</Modal.Title>
+                    <Modal.Title style={{justifyContent: 'center'}}>Label {props.index + 1}</Modal.Title>
                 </Modal.Header>
             <Modal.Body>
             <ParameterForm controlId={this.props.index} 
@@ -250,7 +250,7 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
                             <GeneralTooltip title={value[0]} content={value[singleTargetI.description]}>
                                 <div>
                                     {value[0]}
-                                    <Icon name='question circle outline' color='grey' style={{verticalAlign: 'top'}}/>
+                                    <Icon name='question circle outline' color='grey'/>
                                 </div>
                             </GeneralTooltip>
                         </Suspense>
@@ -288,7 +288,7 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
                 </>}>
                     <div>
                         <h3 style={{display:"inline-block"}}>Target Angles</h3>
-                        <Icon name='question circle outline' color='grey' style={{verticalAlign: 'top'}}/>
+                        <Icon name='question circle outline' color='grey'/>
                     </div>
                 </GeneralTooltip>
             </Suspense>
@@ -309,7 +309,7 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
                 >
                     <div>
                         <h3 style={{display:"inline-block", marginBottom: 0}}>Angle Labels</h3>
-                        <Icon name='question circle outline' color='grey' style={{verticalAlign: 'top'}}/>
+                        <Icon name='question circle outline' color='grey'/>
                     </div>
                 </GeneralTooltip>
             </Suspense>

@@ -3,7 +3,7 @@ import {Button, Col, Row} from 'react-bootstrap';
 //import { saveAs } from 'file-saver';
 
 import * as T from './commonTypes';
-import ShellFormsContainer from './ShellForms/ShellForms';
+import {ShellFormsContainer} from './ShellForms';
 import TargetFormsContainer from './TargetForms';
 import AllCharts from './Charts';
 import NavbarCustom from './Navbar/Navbar';
@@ -236,7 +236,7 @@ class App extends React.Component<{},{}> {
 		return (
 <div className="App">
 	<NavbarCustom links={this.links} ref={this.navRef}/>
-	<h1 style={{textAlign: 'center'}}>World of Warships Ballistics Calculator</h1>
+	<h1>World of Warships Ballistics Calculator</h1>
 	<hr/>
 	<ShellFormsContainer ref={this.SFCref} settings={this.settings}/>
 	<hr/>
@@ -244,13 +244,13 @@ class App extends React.Component<{},{}> {
 	<hr/>
 	<SettingsBar settings={this.settings} ref={this.Settingsref} updateColors={this.updateColors}/>
 	<hr/>
-	<Row>
-		<Col/>
+	<Row className="justify-content-sm-center">
 		<Col sm="9">
 			<Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem"}}
-		variant="success" onClick={this.generate}>Make Graphs!</Button>
+				variant="success" onClick={this.generate}>
+				Make Graphs!
+			</Button>
 		</Col>
-		<Col/>
 	</Row>
 	<hr/>
 	<AllCharts ref={this.graphsRef} settings={this.settings} links={this.links} onUpdate={this.onUpdate}/>

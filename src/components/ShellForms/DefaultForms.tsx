@@ -18,7 +18,6 @@ export class DefaultForm extends React.PureComponent<defaultFormProps> {
 		event.stopPropagation();
 		this.props.handleValueChange(event.target.value, this.props.controlId);
 	}
-
 	updateOptions = (newOptions, newValues) => {
 		this.updated = true;
 		this.setState((state) => {return {options: newOptions, values: newValues};});
@@ -27,7 +26,7 @@ export class DefaultForm extends React.PureComponent<defaultFormProps> {
 		const singleOption = (value,i) => {
 			return (<option aria-label={value} value={this.state.values[i]} key={i}>{value}</option>);
 		}
-		const run = () => this.state.options.map(singleOption); return run;
+		return () => this.state.options.map(singleOption);
 	}
 	render(){
 		const props = this.props;
@@ -70,7 +69,7 @@ enum singleFormIndex {name, ref, queryIndex}
 type singleFormT = [string, React.RefObject<DefaultForm>, number]
 type defaultFormType = T.defaultFormGeneric<singleFormT>
 
-class DefaultShips extends React.PureComponent
+export class DefaultShips extends React.PureComponent
 <{sendDefault: Function, reset: Function, index: number, keyProp: number, defaultData: T.defaultDataT}> {
 	defaultForms : defaultFormType = Object.seal({
 		version:   ['Version'   , React.createRef<DefaultForm>(), 0],
@@ -168,11 +167,7 @@ class DefaultShips extends React.PureComponent
 		const run = () => Object.entries(this.defaultForms).map(singleForm); return run;
 	}
 	render(){
-		return(
-			<Container style={{paddingLeft: 0, paddingRight: 0}}>
-				{this.addDefaultForms()()}
-			</Container>
-		);
+		return(<>{this.addDefaultForms()()}</>);
 	}
 	//componentDidUpdate(){}
 }

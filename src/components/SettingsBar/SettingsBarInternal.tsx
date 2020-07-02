@@ -3,7 +3,7 @@ import {ToggleButtonGroup, ToggleButton, Col, Row} from 'react-bootstrap';
 import BootstrapSwitchButton from 'bootstrap-switch-button-react';
 
 import * as T from '../commonTypes';
-import {ParameterForm} from '../UtilityComponents/ParameterForm';
+import {ParameterForm} from '../UtilityComponents';
 
 class CalculationRadio extends React.PureComponent<{settings: T.settingsT}, {value: number}>{
     constructor(props){
@@ -212,7 +212,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                 }
                 return (
                     <Row style={{maxHeight: rowHeight}} key={counter++}>
-                        <Col sm={typeWidth} className="no-lr-padding" style={{maxHeight: rowHeight}}>
+                        <Col sm={typeWidth} style={{maxHeight: rowHeight}}>
                             {rowLabel}
                         </Col>
                         {row.map(singleForm)}
@@ -225,9 +225,9 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
         const run = () => {
             return (<>
                 <Row style={{maxHeight: rowHeight}}>
-                    <Col sm={typeWidth} className="no-lr-padding" style={topLabelStyle}/>
-                    <Col className="no-lr-padding" style={topLabelStyle}>Minimum</Col>
-                    <Col className="no-lr-padding" style={topLabelStyle}>Maximum</Col>
+                    <Col sm={typeWidth} style={topLabelStyle}/>
+                    <Col style={topLabelStyle}>Minimum</Col>
+                    <Col style={topLabelStyle}>Maximum</Col>
                 </Row>
                 {addForm()}
             </>)
@@ -249,7 +249,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                     <Col style={{paddingRight: 0}}>
                         <h4>Line</h4>
                         <Row>
-                            <Col className="no-lr-padding">
+                            <Col>
                                 <BootstrapSwitchButton style='switch-toggle'
                                     onlabel='Show Line' offlabel='Show Point' onstyle='success' offstyle='danger'
                                     onChange={this.onShowLineChange} checked={settings.line.showLine}
@@ -262,7 +262,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                     <Col style={{padding: 0}}>
                         <h4>Labeling</h4>
                         <Row>
-                        <Col className="no-lr-padding">
+                        <Col>
                             <BootstrapSwitchButton style='switch-toggle'
                                 onlabel='Short Names' offlabel='Long Names' onstyle='success' offstyle='danger'
                                 onChange={this.onShortNameChange} checked={format.shortNames}
@@ -291,7 +291,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
         <Row>
             <Col sm="6" style={{padding: 0}}>
                 <Row>
-                    <Col className="no-lr-padding">
+                    <Col>
                         <h4>Range Axis</h4>
                         {this.generateGraphForm()}
                     </Col>
@@ -301,7 +301,6 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                     </Col>
                 </Row>
             </Col>
-            <Col sm="6" style={{padding: 0}}></Col>
         </Row>
     </>
         );

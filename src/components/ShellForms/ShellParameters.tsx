@@ -4,8 +4,7 @@ import {Icon} from 'semantic-ui-react';
 import clonedeep from 'lodash.clonedeep';
 
 import * as S from './Types';
-import {ParameterForm} from '../UtilityComponents/ParameterForm';
-import DownloadButton from '../UtilityComponents/DownloadButton';
+import {ParameterForm, DownloadButton} from '../UtilityComponents';
 
 const GeneralTooltip = React.lazy(() => import('../UtilityComponents/Tooltips'));
 
@@ -46,7 +45,7 @@ export class ShellParameters extends React.PureComponent<shellParametersProps>{
                         <GeneralTooltip title={name} content={value[S.labelI.description]}>
 							<div>
 								{name}
-								<Icon name='question circle outline' color='grey' style={{verticalAlign: 'top'}}/>
+								<Icon name='question circle outline' color='grey'/>
 							</div>
                         </GeneralTooltip>
                     </Suspense>

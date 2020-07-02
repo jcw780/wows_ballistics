@@ -6,9 +6,10 @@ import clonedeep from 'lodash.clonedeep';
 
 import * as T from '../commonTypes';
 import * as S from './Types';
-import {ParameterForm} from '../UtilityComponents/ParameterForm';
+import {ParameterForm} from '../UtilityComponents';
 import DefaultShips from './DefaultForms'
 import {ShellParametersT} from './ShellParameters';
+import './ShellForms.css';
 
 const ShellParameters = React.lazy(() => import('./ShellParameters'));
 //import ShellParameters from './ShellParameters';
@@ -267,10 +268,10 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		const props = this.props;
 		return(
 <Modal.Dialog>
-	<Modal.Header closeButton onHide={this.deleteShip} style={{padding: "0.5rem"}}>
+	<Modal.Header closeButton onHide={this.deleteShip}>
 		<Modal.Title style={{marginLeft: "40%", marginRight: "auto", }}>Shell {props.index + 1}</Modal.Title>
 	</Modal.Header>
-	<Modal.Body style={{padding: "0.5rem"}}>
+	<Modal.Body>
 		<ParameterForm controlId='shipName' ref={this.nameForm}
 		newValue={this.formData.name}
 		handleValueChange={this.handleNameChange}
@@ -294,8 +295,8 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		<DefaultShips sendDefault={this.getDefaultData} ref={this.defaults} keyProp={props.keyProp}
 		reset={props.reset} index={props.index} defaultData={this.defaultData}/>
 	</Modal.Body>
-	<Modal.Footer style={{padding: "0.5rem"}}>				
-		<Col className="no-lr-padding">
+	<Modal.Footer>				
+		<Col className="footer-style">
 			<OverlayTrigger trigger="click" placement="bottom-start" overlay={
 					<Popover id='popover'>
 						<Popover.Content>
@@ -306,11 +307,11 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 						</Popover.Content>
 					</Popover>
 				}>
-				<Button style={{width: "100%"}} variant="dark">Raw Input</Button>
+				<Button className="footer-button" variant="dark">Raw Input</Button>
 			</OverlayTrigger>
 		</Col>
-		<Col className="no-lr-padding">
-			<Button style={{width: "100%"}} onClick={this.copyShip} variant="dark" >Clone</Button>
+		<Col className="footer-style">
+			<Button className="footer-button" onClick={this.copyShip} variant="dark" >Clone</Button>
 		</Col>
 	</Modal.Footer>
 </Modal.Dialog>

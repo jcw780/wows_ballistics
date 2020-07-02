@@ -6,8 +6,7 @@ import {Button, Collapse, Row, Col} from 'react-bootstrap';
 import {Icon} from 'semantic-ui-react';
 
 import * as T from './commonTypes';
-import DownloadButton from './UtilityComponents/DownloadButton';
-import GeneralTooltip from './UtilityComponents/Tooltips';
+import {DownloadButton, GeneralTooltip} from './UtilityComponents';
 
 // chartConfigs type
 interface chartDataOption{data: Record<string, any>, options: Record<string, any>}
@@ -550,7 +549,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
     }>
         <div>
             <h3 style={{textAlign: "center", display:"inline-block"}}>Impact Charts</h3>
-            <Icon name='question circle outline' color='grey' style={{verticalAlign: 'top'}}/>
+            <Icon name='question circle outline' color='grey'/>
         </div>
     </GeneralTooltip>
     {this.addChart('impact')}
@@ -565,7 +564,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
     }>
         <div>
             <h3 style={{textAlign: "center", display:"inline-block"}}>Angle Charts</h3>
-            <Icon name='question circle outline' color='grey' style={{verticalAlign: 'top'}}/>
+            <Icon name='question circle outline' color='grey'/>
         </div>
     </GeneralTooltip>
     {this.addChart('angle')}
@@ -581,7 +580,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
     }>
         <div>
             <h3 style={{textAlign: "center", display:"inline-block"}}>Post-Penetration Charts</h3>
-            <Icon name='question circle outline' color='grey' style={{verticalAlign: 'top'}}/>
+            <Icon name='question circle outline' color='grey'/>
         </div>
     </GeneralTooltip>
     {this.addChart('post')}
