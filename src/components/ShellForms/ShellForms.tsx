@@ -1,5 +1,5 @@
 import React, {Suspense} from 'react';
-import {Col, Row, Modal, Container, Button, Popover, OverlayTrigger} from 'react-bootstrap';
+import {Col, Row, Modal, Button, Popover, OverlayTrigger} from 'react-bootstrap';
 import BootstrapSwitchButton from 'bootstrap-switch-button-react';
 import distinctColors from 'distinct-colors';
 import clonedeep from 'lodash.clonedeep';
@@ -262,7 +262,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 			ctx!.fillStyle = color; ctx!.fill(region);
 		});
 	}
-	toggleGraph = checked => this.graph = checked;
+	toggleGraph = checked => {this.graph = checked};
 	render() {
 		const props = this.props;
 		return(
@@ -271,44 +271,38 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		<Modal.Title style={{marginLeft: "40%", marginRight: "auto", }}>Shell {props.index + 1}</Modal.Title>
 	</Modal.Header>
 	<Modal.Body style={{padding: "0.5rem"}}>
-
-			<ParameterForm controlId='shipName' ref={this.nameForm}
-			newValue={this.formData.name}
-			handleValueChange={this.handleNameChange}
-			type="text" labelWidth={3} ariaLabel="Shell Label"
-			style={{formControl: {width: '70%'}, formGroup: {marginBottom: ".5rem"}}}>
-				Shell Label
-			</ParameterForm>
-			<Row style={{marginBottom: ".5rem", maxWidth: '100%'}} className="no-lr-padding no-lr-margin">
-				<Col sm="3" style={{paddingLeft: '15px', paddingRight: '15px'}}>
-					Colors
-				</Col>
-				<Col sm="8" className="no-lr-padding">
-					<canvas style={{maxHeight: "1.5rem", width: "100%"}} width="600" height="150" ref={this.canvasRef}/>
-				</Col>
-			</Row>
-			<BootstrapSwitchButton style='switch-toggle common-margin'
-				onlabel='Graph' offlabel='Do Not Graph' onstyle='success' offstyle='danger'
-				onChange={this.toggleGraph} checked={this.graph}
-			/>
-			<hr style={{marginTop: 0}}/>
-			<DefaultShips sendDefault={this.getDefaultData} ref={this.defaults} keyProp={props.keyProp}
-			reset={props.reset} index={props.index} defaultData={this.defaultData}/>
-
+		<ParameterForm controlId='shipName' ref={this.nameForm}
+		newValue={this.formData.name}
+		handleValueChange={this.handleNameChange}
+		type="text" labelWidth={3} ariaLabel="Shell Label"
+		style={{formControl: {width: '70%'}, formGroup: {marginBottom: ".5rem"}}}>
+			Shell Label
+		</ParameterForm>
+		<Row style={{marginBottom: ".5rem"}} className="no-lr-padding">
+			<Col sm="3" style={{paddingLeft: '15px', paddingRight: '15px'}}>
+				Colors
+			</Col>
+			<Col sm="8" className="no-lr-padding">
+				<canvas style={{maxHeight: "1.5rem", width: "100%"}} width="600" height="150" ref={this.canvasRef}/>
+			</Col>
+		</Row>
+		<BootstrapSwitchButton style='switch-toggle common-margin'
+			onlabel='Graph' offlabel='Do Not Graph' onstyle='success' offstyle='danger'
+			onChange={this.toggleGraph} checked={this.graph}
+		/>
+		<hr style={{marginTop: 0}}/>
+		<DefaultShips sendDefault={this.getDefaultData} ref={this.defaults} keyProp={props.keyProp}
+		reset={props.reset} index={props.index} defaultData={this.defaultData}/>
 	</Modal.Body>
 	<Modal.Footer style={{padding: "0.5rem"}}>				
 		<Col className="no-lr-padding">
 			<OverlayTrigger trigger="click" placement="bottom-start" overlay={
 					<Popover id='popover'>
 						<Popover.Content>
-						<Container style={{padding: 0}}>
-							<Col sm="12" style={{padding: 0}}>
-								<Suspense fallback={<div>Loading...</div>}>
-									<ShellParameters handleValueChange={this.handleValueChange}
-										formLabels={this.formLabels} ref={this.parameters} formData={this.formData}/>
-								</Suspense>
-							</Col>
-						</Container>
+							<Suspense fallback={<div>Loading...</div>}>
+								<ShellParameters handleValueChange={this.handleValueChange}
+									formLabels={this.formLabels} ref={this.parameters} formData={this.formData}/>
+							</Suspense>
 						</Popover.Content>
 					</Popover>
 				}>
