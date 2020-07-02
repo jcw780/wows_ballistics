@@ -59,12 +59,10 @@ export class ShellParameters extends React.PureComponent<shellParametersProps>{
 	<Form>
 		{this.addForms()()}	
 	</Form>
-	<Row>
-		<Col sm="3"/>
+	<Row className="justify-content-sm-center">
 		<Col sm="6">
 		<DownloadButton label="Download Raw" updateData={this.updateDownloadJSON} ref={this.downloadRef} style={{width: "100%"}}/>
 		</Col>
-		<Col sm="3"/>
 	</Row>
 </>
 		);

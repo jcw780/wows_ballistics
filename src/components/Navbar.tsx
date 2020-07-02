@@ -1,5 +1,5 @@
 import React, {Suspense} from 'react';
-import {Row, Col, Nav, Navbar, NavDropdown as ND} from 'react-bootstrap';
+import {Nav, Navbar, NavDropdown as ND} from 'react-bootstrap';
 
 import * as T from './commonTypes';
 
@@ -28,15 +28,11 @@ class NavbarCustom extends React.Component<{links: T.linkT}>{
         return(
 <Navbar collapseOnSelect variant="dark" bg="dark" expand="lg" fixed="top">
     <Navbar.Brand onClick={this.scrollToTop}>
-        <Row>
-            <Col className="no-lr-padding" style={{maxWidth: '32px'}}>
-                <img height='32' width='32' alt="logo"
-                src={process.env.PUBLIC_URL + '/android-chrome-192x192.png'}/>
-            </Col>
-            <Col style={{paddingLeft: '1rem', paddingRight: 0}}>
-                WoWS Ballisitics Calculator
-            </Col>
-        </Row>
+        <img height='32' width='32' alt="logo"
+        src={process.env.PUBLIC_URL + '/android-chrome-192x192.png'}/>
+    </Navbar.Brand>
+    <Navbar.Brand onClick={this.scrollToTop}>
+        WoWS Ballisitics Calculator
     </Navbar.Brand>
     <Navbar.Toggle aria-controls="responsive-navbar-nav" label="Toggle Navigation"/>
     <Navbar.Collapse id="responsive-navbar-nav">

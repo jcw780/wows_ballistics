@@ -1,5 +1,4 @@
 import React from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import {Form, Container} from 'react-bootstrap';
 import * as T from '../commonTypes';
 

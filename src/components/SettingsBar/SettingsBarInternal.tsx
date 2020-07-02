@@ -18,9 +18,9 @@ class CalculationRadio extends React.PureComponent<{settings: T.settingsT}, {val
     render(){
         const setCalcMethod = this.setCalcMethod;
         return(
-            <Row style={{paddingLeft: '1rem', paddingRight: '1rem', paddingBottom: '.5rem'}}>
-                <Col sm="1"/>
-                <Col>
+            <Row className="justify-content-md-center" 
+            style={{paddingLeft: '1rem', paddingRight: '1rem', paddingBottom: '.5rem'}}>
+                <Col sm="10">
             <ToggleButtonGroup toggle vertical type="radio" name="radio" value={this.state.value}>
                 <ToggleButton onChange={setCalcMethod} type="radio" value={0} variant="secondary">
                 Adams-Bashforth 5
@@ -36,7 +36,6 @@ class CalculationRadio extends React.PureComponent<{settings: T.settingsT}, {val
                 </ToggleButton>
             </ToggleButtonGroup>
             </Col>
-            <Col sm="1"/>
             </Row>
         );
     }
