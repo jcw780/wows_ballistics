@@ -1,14 +1,15 @@
 import React, {Suspense} from 'react';
-import {Col, Row, Modal, Container, Button, Popover, OverlayTrigger} from 'react-bootstrap';
+import {Col, Row, Modal, Button, Popover, OverlayTrigger} from 'react-bootstrap';
 import BootstrapSwitchButton from 'bootstrap-switch-button-react';
 import distinctColors from 'distinct-colors';
 import clonedeep from 'lodash.clonedeep';
 
 import * as T from '../commonTypes';
 import * as S from './Types';
-import {ParameterForm} from '../UtilityComponents/ParameterForm';
+import {ParameterForm} from '../UtilityComponents';
 import DefaultShips from './DefaultForms'
 import {ShellParametersT} from './ShellParameters';
+import './ShellForms.css';
 
 const ShellParameters = React.lazy(() => import('./ShellParameters'));
 //import ShellParameters from './ShellParameters';
@@ -194,8 +195,10 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 	constructor(props){
 		super(props);
 		// Use this instead of defaultProps to prevent weird shallow copy things from happening
-		if('defaultData' in props) this.defaultData = props.defaultData!;
-		if('formData' in props) this.formData = props.formData!;	
+		if(props.copied){
+			if('defaultData' in props) this.defaultData = props.defaultData!;
+			if('formData' in props) this.formData = props.formData!;	
+		}
 	}
 	returnData = () => {
 		if(this.graph) return this.formData;
@@ -260,61 +263,55 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 			ctx!.fillStyle = color; ctx!.fill(region);
 		});
 	}
-	toggleGraph = checked => this.graph = checked;
+	toggleGraph = checked => {this.graph = checked};
 	render() {
 		const props = this.props;
 		return(
 <Modal.Dialog>
-	<Modal.Header closeButton onHide={this.deleteShip} style={{padding: "0.5rem"}}>
+	<Modal.Header closeButton onHide={this.deleteShip}>
 		<Modal.Title style={{marginLeft: "40%", marginRight: "auto", }}>Shell {props.index + 1}</Modal.Title>
 	</Modal.Header>
-	<Modal.Body style={{padding: "0.5rem"}}>
-		<Container style={{padding: 0}}>
-		<Col sm='12' style={{padding: 0}}>
-			<ParameterForm controlId='shipName' ref={this.nameForm}
-			newValue={this.formData.name}
-			handleValueChange={this.handleNameChange}
-			type="text" labelWidth={3} ariaLabel="Shell Label"
-			style={{formControl: {width: '70%'}, formGroup: {marginBottom: ".5rem"}}}>
-				Shell Label
-			</ParameterForm>
-			<Row style={{marginBottom: ".5rem"}}>
-				<Col sm="3" className="no-lr-padding">Colors</Col>
-				<Col sm="8" className="no-lr-padding">
-					<canvas style={{maxHeight: "1.5rem", width: "100%"}} width="600" height="150" ref={this.canvasRef}/>
-				</Col>
-			</Row>
-			<BootstrapSwitchButton style='switch-toggle common-margin'
-				onlabel='Graph' offlabel='Do Not Graph' onstyle='success' offstyle='danger'
-				onChange={this.toggleGraph} checked={this.graph}
-			/>
-			<hr style={{marginTop: 0}}/>
-			<DefaultShips sendDefault={this.getDefaultData} ref={this.defaults} keyProp={props.keyProp}
-			reset={props.reset} index={props.index} defaultData={this.defaultData}/>
-		</Col>
-		</Container>
+	<Modal.Body>
+		<ParameterForm controlId='shipName' ref={this.nameForm}
+		newValue={this.formData.name}
+		handleValueChange={this.handleNameChange}
+		type="text" labelWidth={3} ariaLabel="Shell Label"
+		style={{formControl: {width: '70%'}, formGroup: {marginBottom: ".5rem"}}}>
+			Shell Label
+		</ParameterForm>
+		<Row style={{marginBottom: ".5rem"}} className="no-lr-padding">
+			<Col sm="3" style={{paddingLeft: '15px', paddingRight: '15px'}}>
+				Colors
+			</Col>
+			<Col sm="8" className="no-lr-padding">
+				<canvas style={{maxHeight: "1.5rem", width: "100%"}} width="600" height="150" ref={this.canvasRef}/>
+			</Col>
+		</Row>
+		<BootstrapSwitchButton style='switch-toggle common-margin'
+			onlabel='Graph' offlabel='Do Not Graph' onstyle='success' offstyle='danger'
+			onChange={this.toggleGraph} checked={this.graph}
+		/>
+		<hr style={{marginTop: 0}}/>
+		<DefaultShips sendDefault={this.getDefaultData} ref={this.defaults} keyProp={props.keyProp}
+		reset={props.reset} index={props.index} defaultData={this.defaultData}/>
 	</Modal.Body>
-	<Modal.Footer style={{padding: "0.5rem"}}>				
-		<Col className="no-lr-padding">
+	<Modal.Footer>				
+		<Col className="footer-style">
 			<OverlayTrigger trigger="click" placement="bottom-start" overlay={
 					<Popover id='popover'>
 						<Popover.Content>
-						<Container style={{padding: 0}}>
-							<Col sm="12" style={{padding: 0}}>
-								<Suspense fallback={<div>Loading...</div>}>
-									<ShellParameters handleValueChange={this.handleValueChange}
-										formLabels={this.formLabels} ref={this.parameters} formData={this.formData}/>
-								</Suspense>
-							</Col>
-						</Container>
+							<Suspense fallback={<div>Loading...</div>}>
+								<ShellParameters handleValueChange={this.handleValueChange}
+									formLabels={this.formLabels} ref={this.parameters} formData={this.formData}/>
+							</Suspense>
 						</Popover.Content>
 					</Popover>
 				}>
-				<Button style={{width: "100%"}} variant="dark">Raw Input</Button>
+				<Button className="footer-button" variant="dark">Raw Input</Button>
 			</OverlayTrigger>
 		</Col>
-		<Col className="no-lr-padding">
-			<Button style={{width: "100%"}} onClick={this.copyShip} variant="dark" >Clone</Button>
+		<Col className="footer-style">
+			<Button className="footer-button" onClick={this.copyShip} variant="dark" >Clone</Button>
 		</Col>
 	</Modal.Footer>
 </Modal.Dialog>
@@ -416,60 +413,68 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 		}
 	}
 	shouldComponentUpdate(nextProps, nextState){return nextState.disabled;}
-	private generateShellForms = () => {
-		const props = this.props, state = this.state, stateKeys = Array.from(this.state.keys);
-		if(this.copied){
-			let returnValue : JSX.Element[] = [];
-			for(let i=0; i< stateKeys.length - 1; i++){
-				const value = stateKeys[i];
-				returnValue.push(
-					<Col key={value} style={{margin: 0, padding: "0.5rem"}} sm="4">
-						<ShellForms colors={this.colors} index={i}
-						deleteShip={this.deleteShip} copyShip={this.copyShip}
-						keyProp={value} ref={this.shellRefs[i]} reset={this.reset} 
-						settings={props.settings} size={state.keys.size}/>
-					</Col>
-				)
+	private addShellForm = (key : number, index : number, copied : boolean) => {
+		const props = this.props, state = this.state;
+		const ref = this.shellRefs[index], stateKeys = state.keys.size;
+		const makeShellForm = () => {
+			if(!copied){
+				return(
+					<ShellForms colors={this.colors} index={index}
+					deleteShip={this.deleteShip} copyShip={this.copyShip}
+					keyProp={key} ref={ref} reset={this.reset} 
+					settings={props.settings} size={stateKeys} copied={copied}/>
+				);
+			}else{
+				//pass a deep copied version so clones target the correct shell form
+				const copyTemp = this.copyTemp;
+				return( 
+					<ShellForms colors={this.colors} index={index}
+					deleteShip={this.deleteShip} copyShip={this.copyShip}
+					keyProp={key} ref={ref} reset={this.reset} 
+					settings={props.settings} size={stateKeys} copied={copied}
+					defaultData={clonedeep(copyTemp.default)} formData={clonedeep(copyTemp.data)}
+					graph={copyTemp.graph}/>
+				);
 			}
-			const i = stateKeys.length - 1
-			const value = stateKeys[i];
-			returnValue.push(
-				<Col key={value} style={{margin: 0, padding: "0.5rem"}} sm="4">
-					<ShellForms colors={this.colors} index={i}
-					deleteShip={this.deleteShip} copyShip={this.copyShip}
-					keyProp={value} ref={this.shellRefs[i]} reset={this.reset} 
-					settings={props.settings} size={state.keys.size}
-					defaultData={clonedeep(this.copyTemp.default)} formData={clonedeep(this.copyTemp.data)} 
-					graph={this.copyTemp.graph} copied={true}/>
-				</Col>
-			) //pass a deep copied version so clones target the correct shell form
-			return returnValue;
+		}
+		return () => {return (
+			<Col key={key} style={{margin: 0, padding: "0.5rem"}} sm="4">
+				{makeShellForm()}
+			</Col>
+		)};
+	}
+	private generateShellForms = () => {
+		const stateKeys = Array.from(this.state.keys);
+		const output : JSX.Element[] = [];
+		if(this.copied){
+			stateKeys.forEach((value, i) => {
+				if(i !== stateKeys.length - 1){
+					output.push(this.addShellForm(value, i, false)());
+				}else{
+					output.push(this.addShellForm(value, i, true)());
+				}
+			});
 		}else{
-			return stateKeys.map((value, i) => {
-				return <Col key={value} style={{margin: 0, padding: "0.5rem"}} sm="4">
-					<ShellForms colors={this.colors} index={i}
-					deleteShip={this.deleteShip} copyShip={this.copyShip}
-					keyProp={value} ref={this.shellRefs[i]} reset={this.reset} 
-					settings={props.settings} size={state.keys.size}/>
-				</Col>;
+			stateKeys.forEach((value, i) => {
+				output.push(this.addShellForm(value, i, false)());
 			})
 		}
+		return output;
 	}
 	render(){
 		this.updateColors();
 		return(
 <>
 	<h2 ref={this.scrollRef}>Shell Parameters</h2>
-	<Container style={{marginBottom : "0rem", paddingRight: 0, paddingLeft: 0, maxWidth: '90%'}}>
-		<Row>
-		{this.generateShellForms()}
+		<Row style={{marginBottom : "0rem", paddingRight: '5%', paddingLeft: '5%'}}>
+			{this.generateShellForms()}
 		</Row>
-	</Container>
-	<Row style={{marginBottom : "1rem"}}>
-		<Col/>
-		<Col sm="6"><Button className="form-control" variant="outline-secondary" onClick={this.addShip}>
-			Add Ship</Button></Col>
-		<Col/>
+	<Row style={{marginBottom : "1rem"}} className="justify-content-sm-center">
+		<Col sm="6">
+			<Button className="form-control" variant="outline-secondary" onClick={this.addShip}>
+				Add Ship
+			</Button>
+		</Col>
 	</Row>
 </>
 		);

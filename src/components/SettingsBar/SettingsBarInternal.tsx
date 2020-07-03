@@ -1,9 +1,9 @@
 import React from 'react';
-import {ToggleButtonGroup, ToggleButton, Container, Col, Row} from 'react-bootstrap';
+import {ToggleButtonGroup, ToggleButton, Col, Row} from 'react-bootstrap';
 import BootstrapSwitchButton from 'bootstrap-switch-button-react';
 
 import * as T from '../commonTypes';
-import {ParameterForm} from '../UtilityComponents/ParameterForm';
+import {ParameterForm} from '../UtilityComponents';
 
 class CalculationRadio extends React.PureComponent<{settings: T.settingsT}, {value: number}>{
     constructor(props){
@@ -18,9 +18,9 @@ class CalculationRadio extends React.PureComponent<{settings: T.settingsT}, {val
     render(){
         const setCalcMethod = this.setCalcMethod;
         return(
-            <Row style={{paddingLeft: '1rem', paddingRight: '1rem', paddingBottom: '.5rem'}}>
-                <Col sm="1"/>
-                <Col>
+            <Row className="justify-content-md-center" 
+            style={{paddingLeft: '1rem', paddingRight: '1rem', paddingBottom: '.5rem'}}>
+                <Col sm="10">
             <ToggleButtonGroup toggle vertical type="radio" name="radio" value={this.state.value}>
                 <ToggleButton onChange={setCalcMethod} type="radio" value={0} variant="secondary">
                 Adams-Bashforth 5
@@ -36,7 +36,6 @@ class CalculationRadio extends React.PureComponent<{settings: T.settingsT}, {val
                 </ToggleButton>
             </ToggleButtonGroup>
             </Col>
-            <Col sm="1"/>
             </Row>
         );
     }
@@ -86,7 +85,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
     private generateForms = (forms, target, onChange, sm=4) => {
         return forms.map((value, i) => {
             return(
-                <Row key={i}>
+                <Row key={i} className="no-lr-margin">
                     <Col className="no-lr-padding" sm={sm}>{value[1]}</Col>
                     <Col className="no-lr-padding">
                         <ParameterForm 
@@ -213,7 +212,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                 }
                 return (
                     <Row style={{maxHeight: rowHeight}} key={counter++}>
-                        <Col sm={typeWidth} className="no-lr-padding" style={{maxHeight: rowHeight}}>
+                        <Col sm={typeWidth} style={{maxHeight: rowHeight}}>
                             {rowLabel}
                         </Col>
                         {row.map(singleForm)}
@@ -222,12 +221,13 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
             }
             return this.forms.colors.map(singleRow);
         }
+        const topLabelStyle : React.CSSProperties = {maxHeight: rowHeight, textAlign: 'left'};
         const run = () => {
             return (<>
                 <Row style={{maxHeight: rowHeight}}>
-                    <Col sm={typeWidth} className="no-lr-padding" style={{maxHeight: rowHeight}}/>
-                    <Col className="no-lr-padding" style={{maxHeight: rowHeight}}>Minimum</Col>
-                    <Col className="no-lr-padding" style={{maxHeight: rowHeight}}>Maximum</Col>
+                    <Col sm={typeWidth} style={topLabelStyle}/>
+                    <Col style={topLabelStyle}>Minimum</Col>
+                    <Col style={topLabelStyle}>Maximum</Col>
                 </Row>
                 {addForm()}
             </>)
@@ -238,7 +238,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
     render(){
         const settings = this.props.settings, format = settings.format;
         return(
-    <Container style={{maxWidth: '100%'}}>
+    <>
         <Row>
             <Col style={{padding: 0}}><h3>Graphs</h3></Col>
             <Col style={{padding: 0}}><h3>Calculations</h3></Col>
@@ -249,7 +249,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                     <Col style={{paddingRight: 0}}>
                         <h4>Line</h4>
                         <Row>
-                            <Col className="no-lr-padding">
+                            <Col>
                                 <BootstrapSwitchButton style='switch-toggle'
                                     onlabel='Show Line' offlabel='Show Point' onstyle='success' offstyle='danger'
                                     onChange={this.onShowLineChange} checked={settings.line.showLine}
@@ -262,7 +262,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                     <Col style={{padding: 0}}>
                         <h4>Labeling</h4>
                         <Row>
-                        <Col className="no-lr-padding">
+                        <Col>
                             <BootstrapSwitchButton style='switch-toggle'
                                 onlabel='Short Names' offlabel='Long Names' onstyle='success' offstyle='danger'
                                 onChange={this.onShortNameChange} checked={format.shortNames}
@@ -291,7 +291,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
         <Row>
             <Col sm="6" style={{padding: 0}}>
                 <Row>
-                    <Col className="no-lr-padding">
+                    <Col>
                         <h4>Range Axis</h4>
                         {this.generateGraphForm()}
                     </Col>
@@ -301,9 +301,8 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                     </Col>
                 </Row>
             </Col>
-            <Col sm="6" style={{padding: 0}}></Col>
         </Row>
-    </Container>
+    </>
         );
     }
 }

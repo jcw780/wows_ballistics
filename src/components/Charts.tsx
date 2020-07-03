@@ -6,8 +6,7 @@ import {Button, Collapse, Row, Col} from 'react-bootstrap';
 import {Icon} from 'semantic-ui-react';
 
 import * as T from './commonTypes';
-import DownloadButton from './UtilityComponents/DownloadButton';
-import GeneralTooltip from './UtilityComponents/Tooltips';
+import {DownloadButton, GeneralTooltip} from './UtilityComponents';
 
 // chartConfigs type
 interface chartDataOption{data: Record<string, any>, options: Record<string, any>}
@@ -48,6 +47,11 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
     DownloadRef : React.RefObject<DownloadButton>[] = [
         React.createRef<DownloadButton>(), React.createRef<DownloadButton>()
     ];
+    collapseId : string = 'chart'
+    constructor(props){
+        super(props);
+        this.collapseId = props.data[singleChartIndex.name].replace(/ /g,"-");;
+    }
     updateInternal = () => {
         if(this.wrapperRef.current !== undefined){
             this.wrapperRef.current!.forceUpdate();
@@ -69,29 +73,28 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
         return `${dataset.label}${dataset.borderColor}`;
     }
     render(){
+        
         return(
 <>
     <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
         onClick={this.toggleCollapse} ref={this.scrollRef} variant="dark"
-        aria-controls="collapseChart" aria-expanded={this.state.open}
+        aria-controls={this.collapseId} aria-expanded={this.state.open}
         className={this.state.open === true ? 'active' : ''}
     >{this.titles[Number(!this.state.open)] + this.props.data[singleChartIndex.name]}</Button>
     <Collapse in={this.state.open}>
-        <div id="collapseChart">
+        <div id={this.collapseId}>
             <ChartInternal ref={this.wrapperRef}
                 data={this.props.data} 
                 dimensions={this.props.dimensions} 
                 datasetKeyProvider={this.datasetKeyProvider} 
                 chartRef={this.chartRef}/>
-            <Row style={{margin: 0}}>
-                <Col sm="4" style={{padding: 0}}/>
+            <Row style={{margin: 0}} className="justify-content-sm-center">
                 <Col sm="2" style={{padding: 0}}>
                     <DownloadButton ref={this.DownloadRef[0]} updateData={this.updateDownloadGraph} label="Download Graph"/>
                 </Col>
                 <Col sm="2" style={{padding: 0}}>
                     <DownloadButton ref={this.DownloadRef[1]} updateData={this.updateDownloadJSON} label="Download Data"/>
                 </Col>
-                <Col sm="4" style={{padding: 0}}/>
             </Row>
         </div>
     </Collapse> 
@@ -546,7 +549,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
     }>
         <div>
             <h3 style={{textAlign: "center", display:"inline-block"}}>Impact Charts</h3>
-            <Icon name='question circle outline' color='grey' style={{verticalAlign: 'top'}}/>
+            <Icon name='question circle outline' color='grey'/>
         </div>
     </GeneralTooltip>
     {this.addChart('impact')}
@@ -561,7 +564,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
     }>
         <div>
             <h3 style={{textAlign: "center", display:"inline-block"}}>Angle Charts</h3>
-            <Icon name='question circle outline' color='grey' style={{verticalAlign: 'top'}}/>
+            <Icon name='question circle outline' color='grey'/>
         </div>
     </GeneralTooltip>
     {this.addChart('angle')}
@@ -577,7 +580,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
     }>
         <div>
             <h3 style={{textAlign: "center", display:"inline-block"}}>Post-Penetration Charts</h3>
-            <Icon name='question circle outline' color='grey' style={{verticalAlign: 'top'}}/>
+            <Icon name='question circle outline' color='grey'/>
         </div>
     </GeneralTooltip>
     {this.addChart('post')}

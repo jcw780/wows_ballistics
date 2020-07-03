@@ -1,0 +1,11 @@
+.modal-header, .modal-body, .modal-footer{
+    padding: .5rem;
+}
+
+.footer-style{
+    margin: .25rem;
+}
+
+.footer-button{
+    width: 100%;
+}

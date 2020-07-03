@@ -1,9 +1,9 @@
 import React, {Suspense} from 'react';
-import {Row, Col, Button, Modal, Container} from 'react-bootstrap';
+import {Row, Col, Button, Modal} from 'react-bootstrap';
 import {Icon} from 'semantic-ui-react';
 
 import * as T from './commonTypes';
-import {ParameterForm} from './UtilityComponents/ParameterForm';
+import {ParameterForm} from './UtilityComponents';
 //import GeneralTooltip from './Tooltips';
 const GeneralTooltip = React.lazy(() => import('./UtilityComponents/Tooltips'));
 
@@ -26,7 +26,7 @@ class RefAngleForm extends React.PureComponent<refAngleFormProps>{
                 <Modal.Header 
                 style={{padding: 0, paddingTop: '0.25rem', paddingRight: '0.25rem', paddingLeft: '0.25rem'}}
                 closeButton onHide={this.deleteElement}>
-                    <Modal.Title style={{marginLeft: "40%", marginRight: "auto", }}>Label {props.index + 1}</Modal.Title>
+                    <Modal.Title style={{justifyContent: 'center'}}>Label {props.index + 1}</Modal.Title>
                 </Modal.Header>
             <Modal.Body>
             <ParameterForm controlId={this.props.index} 
@@ -250,7 +250,7 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
                             <GeneralTooltip title={value[0]} content={value[singleTargetI.description]}>
                                 <div>
                                     {value[0]}
-                                    <Icon name='question circle outline' color='grey' style={{verticalAlign: 'top'}}/>
+                                    <Icon name='question circle outline' color='grey'/>
                                 </div>
                             </GeneralTooltip>
                         </Suspense>
@@ -267,10 +267,8 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
         return(
         <>
             <h2 ref={this.scrollRef}>Target Parameters</h2>
-            <Row>
-                <Col sm={1}/>
-                    {this.renderFixedTargetLabels()()}
-                <Col sm={1}/>
+            <Row className="justify-content-sm-center no-lr-margin" style={{paddingLeft: '10%', paddingRight: '10%'}}>
+                {this.renderFixedTargetLabels()()}
             </Row>
             <Suspense fallback={<div>Loading...</div>}>
                 <GeneralTooltip title="Target Angles" content={
@@ -290,18 +288,19 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
                 </>}>
                     <div>
                         <h3 style={{display:"inline-block"}}>Target Angles</h3>
-                        <Icon name='question circle outline' color='grey' style={{verticalAlign: 'top'}}/>
+                        <Icon name='question circle outline' color='grey'/>
                     </div>
                 </GeneralTooltip>
             </Suspense>
-            <Container style={{marginBottom: "1rem"}}>
-                <Row>{this.renderAngleElements(angleElements)}</Row>
-            </Container>
-            <Row style={{marginBottom: "1rem"}}>
-                <Col/>
-                <Col sm="6"><Button className="form-control" variant="outline-secondary" onClick={this.addAngle}>
-                    Add Angle</Button></Col>
-                <Col/>
+            <Row style={{marginBottom: "1rem", marginLeft: '10%', marginRight: '10%'}}>
+                {this.renderAngleElements(angleElements)}
+            </Row>
+            <Row className="justify-content-sm-center no-lr-margin" style={{marginBottom: "1rem"}}>
+                <Col sm="6">
+                    <Button className="form-control" variant="outline-secondary" onClick={this.addAngle}>
+                        Add Angle
+                    </Button>
+                </Col>
             </Row>
             <Suspense fallback={<div>Loading...</div>}>
                 <GeneralTooltip title="Angle Label" content={
@@ -310,18 +309,19 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
                 >
                     <div>
                         <h3 style={{display:"inline-block", marginBottom: 0}}>Angle Labels</h3>
-                        <Icon name='question circle outline' color='grey' style={{verticalAlign: 'top'}}/>
+                        <Icon name='question circle outline' color='grey'/>
                     </div>
                 </GeneralTooltip>
             </Suspense>
-            <Container style={{marginBottom: "1rem"}}>
-                <Row>{this.renderAngleElements(refAngleElements)}</Row>
-            </Container>
-            <Row style={{marginBottom: "1rem"}}>
-                <Col/>
-                <Col sm="6"><Button className="form-control" variant="outline-secondary" onClick={this.addRefAngle}>
-                    Add Angle</Button></Col>
-                <Col/>
+            <Row style={{marginBottom: "1rem", marginLeft: '10%', marginRight: '10%'}}>
+                {this.renderAngleElements(refAngleElements)}
+            </Row>
+            <Row className="justify-content-sm-center no-lr-margin" style={{marginBottom: "1rem"}}>
+                <Col sm="6">
+                    <Button className="form-control" variant="outline-secondary" onClick={this.addRefAngle}>
+                        Add Angle
+                    </Button>
+                </Col>          
             </Row>
         </>
         );

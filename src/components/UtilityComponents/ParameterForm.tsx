@@ -53,11 +53,21 @@ export class ParameterForm extends React.Component<parameterFormProps, parameter
 		}
 	}
 	private makeInputGroup = () => this.makeInputGroupInternal()();
+	private makeLabelGroup = () => {
+		const props = this.props, style = props.style;
+		if(props.children !== undefined && props.children !== (<></>)){
+			return (
+				<Form.Label column sm={props.labelWidth} style={style.formLabel}>{props.children}</Form.Label>
+			);
+		}else{
+			return (<></>);
+		}
+	}
 	render(){
 		const props = this.props, style = props.style;
 		return(
 			<Form.Group className="form-inline" style={style.formGroup}>
-				<Form.Label column sm={props.labelWidth} style={style.formLabel}>{props.children}</Form.Label>
+				{this.makeLabelGroup()}
 				{this.makeInputGroup()}
 			</Form.Group>
 		);	
