@@ -34,10 +34,16 @@ export class ParameterForm extends React.Component<parameterFormProps, parameter
 		const props = this.props, state = this.state, style = props.style;
 		const appendText = this.makeAppend();
 		const formControl = (
-			<Form.Control type={props.type} value={state.value} 
-			style={style.formControl} isInvalid={state.invalid}
-			placeholder={props.placeholder} onChange={this.onChange}
-			aria-describedby="addon" aria-label={props.ariaLabel}/>
+			<Form.Control 
+				type={props.type} 
+				value={state.value} 
+				style={style.formControl} 
+				isInvalid={state.invalid}
+				placeholder={props.placeholder} 
+				onChange={this.onChange}
+				aria-describedby="addon" 
+				aria-label={props.ariaLabel}
+			/>
 		);
 		return () => {
 			if(appendText !== false){
@@ -57,7 +63,11 @@ export class ParameterForm extends React.Component<parameterFormProps, parameter
 		const props = this.props, style = props.style;
 		if(props.children !== undefined && props.children !== (<></>)){
 			return (
-				<Form.Label column sm={props.labelWidth} style={style.formLabel}>{props.children}</Form.Label>
+				<Form.Label column 
+					sm={props.labelWidth} 
+					style={style.formLabel}
+					>{props.children}
+				</Form.Label>
 			);
 		}else{
 			return (<></>);

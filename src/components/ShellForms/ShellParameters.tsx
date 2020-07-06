@@ -12,7 +12,7 @@ interface shellParametersProps {handleValueChange: any, formLabels : S.formLabel
 export class ShellParameters extends React.PureComponent<shellParametersProps>{
 	nameForm = React.createRef<ParameterForm>();
 	downloadRef = React.createRef<DownloadButton>();
-	handleValueChange = (value, k) => {this.props.handleValueChange(value, k);}
+	onChange = (value, k) => {this.props.handleValueChange(value, k);}
 	private updateShellsI = () => {
 		const props = this.props;
 		const updateItem = ([key, value] : [S.formsT, S.labelT]): void => {
@@ -36,11 +36,15 @@ export class ShellParameters extends React.PureComponent<shellParametersProps>{
 		const singleForm = ([key, value] : [S.formsT, S.labelT], i) => {
 			const name = value[S.labelI.name];
 			return (
-			<ParameterForm key={i} controlId={key} ref={value[S.labelI.ref]}
+			<ParameterForm ref={value[S.labelI.ref]}
+				key={i} 
+				controlId={key}
 				newValue={String(props.formData[key])}
-				onChange={this.handleValueChange} 
-				type="number" append={value[S.labelI.unit]}
-				style={commonStyle} ariaLabel={name}>
+				onChange={this.onChange} 
+				type="number" 
+				append={value[S.labelI.unit]}
+				style={commonStyle} 
+				ariaLabel={name}>
                     <Suspense fallback={<div>Loading...</div>}>
                         <GeneralTooltip title={name} content={value[S.labelI.description]}>
 							<div>
@@ -61,7 +65,11 @@ export class ShellParameters extends React.PureComponent<shellParametersProps>{
 	</Form>
 	<Row className="justify-content-sm-center">
 		<Col sm="6">
-		<DownloadButton label="Download Raw" updateData={this.updateDownloadJSON} ref={this.downloadRef} style={{width: "100%"}}/>
+			<DownloadButton ref={this.downloadRef}
+				label="Download Raw" 
+				updateData={this.updateDownloadJSON}
+				style={{width: "100%"}}
+			/>
 		</Col>
 	</Row>
 </>

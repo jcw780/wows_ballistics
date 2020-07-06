@@ -23,24 +23,28 @@ class RefAngleForm extends React.PureComponent<refAngleFormProps>{
         const props = this.props;
         return (
             <Modal.Dialog style={{width: '100%', margin: 0}}>
-                <Modal.Header 
-                style={{padding: 0, paddingTop: '0.25rem', paddingRight: '0.25rem', paddingLeft: '0.25rem'}}
-                closeButton onHide={this.deleteElement}>
+                <Modal.Header closeButton 
+                    style={{padding: 0, paddingTop: '0.25rem', paddingRight: '0.25rem', paddingLeft: '0.25rem'}}
+                    onHide={this.deleteElement}
+                >
                     <Modal.Title style={{justifyContent: 'center'}}>Label {props.index + 1}</Modal.Title>
                 </Modal.Header>
             <Modal.Body>
             <ParameterForm controlId={this.props.index} 
-            newValue={props.newValue[1]}
-            onChange={props.onChange[1]} 
-            type="text" ariaLabel="Text"
-            labelWidth={4} style={{formControl: {width: '60%'}, formGroup: {flexFlow: 'unset'}}}>
+                newValue={props.newValue[1]}
+                onChange={props.onChange[1]} 
+                type="text" ariaLabel="Text"
+                labelWidth={4} 
+                style={{formControl: {width: '60%'}, formGroup: {flexFlow: 'unset'}}}
+            >
                 Text
             </ParameterForm>
             <ParameterForm controlId={this.props.index} 
-            newValue={props.newValue[0]}
-            onChange={props.onChange[0]} 
-            type="number" ariaLabel="Angle"
-            labelWidth={4} style={this.angleStyle} append="°">
+                newValue={props.newValue[0]}
+                onChange={props.onChange[0]} 
+                type="number" ariaLabel="Angle"
+                labelWidth={4} style={this.angleStyle} append="°"
+            >
                 Angle
             </ParameterForm>
             </Modal.Body>
@@ -59,24 +63,34 @@ class AngleForm extends React.PureComponent<angleFormProps>{
     deleteElement = () => {
         this.props.deleteElement(this.props.keyProp, this.props.index);
     }
-    private commonStyle = {
+    private commonStyle = Object.freeze({
         formControl: {minWidth: '50%', maxWidth: '7rem', display: "inline-flex"},
         formGroup: {flexFlow: 'unset', paddingBottom: 0}
-    }
+    });
     render(){
         const props = this.props;
         return (
             <Modal.Dialog style={{width: '100%', margin: 0}}>
-                <Modal.Header 
-                style={{padding: 0, paddingTop: '0.5rem', paddingRight: '0.5rem', paddingLeft: '0.5rem'}}
-                closeButton onHide={this.deleteElement}>
-            <ParameterForm controlId={props.index} 
-            newValue={props.newValue}
-            onChange={props.onChange} 
-            type="number" ariaLabel={props.label}
-            labelWidth={undefined} style={this.commonStyle} append="°">
-                {props.label}
-            </ParameterForm>
+                <Modal.Header closeButton
+                    style={{
+                        padding: 0, 
+                        paddingTop: '0.5rem', 
+                        paddingRight: '0.5rem', 
+                        paddingLeft: '0.5rem'
+                    }}
+                    onHide={this.deleteElement}
+                >
+                    <ParameterForm controlId={props.index} 
+                        newValue={props.newValue}
+                        onChange={props.onChange} 
+                        type="number" 
+                        ariaLabel={props.label}
+                        labelWidth={undefined} 
+                        style={this.commonStyle} 
+                        append="°"
+                        >
+                        {props.label}
+                    </ParameterForm>
                 </Modal.Header>
             </Modal.Dialog>
         );
@@ -188,10 +202,13 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
             const columnIndex = Math.floor(i / elementsPerColumn);
             if(i % elementsPerColumn === 0){angleElements.push([]);}
             angleElements[columnIndex].push(
-                <AngleForm key={key} keyProp={key} index={i} 
-                newValue={String(targetData.angles[i])} deleteElement={this.deleteAngle}
-                onChange={this.handleAngleChange}
-                label={`Angle ${i + 1}`}/> //start at 1 for display
+                <AngleForm key={key} keyProp={key} 
+                    index={i} 
+                    newValue={String(targetData.angles[i])} 
+                    deleteElement={this.deleteAngle}
+                    onChange={this.handleAngleChange}
+                    label={`Angle ${i + 1}`}
+                /> //start at 1 for display
             );
         });
         return angleElements;
@@ -212,12 +229,17 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
         const stateKeys = this.state.keys; let angleElements : Array<Array<JSX.Element>> = [];
         Array.from(stateKeys.refAngles).forEach((key, i) => {
             const columnIndex = Math.floor(i / elementsPerColumn);
-            if(i % elementsPerColumn === 0){angleElements.push([]);}
+            if(i % elementsPerColumn === 0) angleElements.push([]);
             angleElements[columnIndex].push(
-                <RefAngleForm key={key} keyProp={key} index={i} 
-                newValue={[String(this.targetData.refAngles[i]), String(this.targetData.refLabels[i])]} 
-                deleteElement={this.deleteRefAngle}
-                onChange={[this.onRefAngleChange, this.onRefLabelChange]}/>
+                <RefAngleForm key={key} keyProp={key} 
+                    index={i} 
+                    newValue={[
+                        String(this.targetData.refAngles[i]), 
+                        String(this.targetData.refLabels[i])
+                    ]} 
+                    deleteElement={this.deleteRefAngle}
+                    onChange={[this.onRefAngleChange, this.onRefLabelChange]}
+                />
             );
         });
         return angleElements;
@@ -243,9 +265,14 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
             return (
                 <Col key={i}>
                     <ParameterForm controlId={key}
-                    newValue={String(targetData[key])} 
-                    onChange={this.handleChange} type="number"
-                    labelWidth={5} append={value[1]} ariaLabel={value[0]} style={commonStyle}>
+                        newValue={String(targetData[key])} 
+                        onChange={this.handleChange} 
+                        type="number"
+                        labelWidth={5} 
+                        append={value[1]} 
+                        ariaLabel={value[0]} 
+                        style={commonStyle}
+                    >
                         <Suspense fallback={<div>Loading...</div>}>
                             <GeneralTooltip title={value[0]} content={value[singleTargetI.description]}>
                                 <div>

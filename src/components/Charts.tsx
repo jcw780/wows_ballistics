@@ -15,8 +15,7 @@ type singleChartType = [chartDataOption, React.RefObject<SingleChart>, string]
 
 interface dimensionsT {height: number, width: number}
 interface singleChartProps{
-    data: singleChartType
-    dimensions: dimensionsT
+    data: singleChartType, dimensions: dimensionsT
 }
 
 interface ChartInternalProps extends singleChartProps{
@@ -26,9 +25,14 @@ class ChartInternal extends React.Component<ChartInternalProps>{
     render(){
         const config = this.props.data[singleChartIndex.config];
         return(
-            <Scatter data={config.data} options={config.options}
-            width={this.props.dimensions.width} height={this.props.dimensions.height}
-            ref={this.props.chartRef} datasetKeyProvider={this.props.datasetKeyProvider}/>
+            <Scatter 
+                data={config.data} 
+                options={config.options}
+                width={this.props.dimensions.width} 
+                height={this.props.dimensions.height}
+                ref={this.props.chartRef} 
+                datasetKeyProvider={this.props.datasetKeyProvider}
+            />
         );
     }
 }
@@ -77,8 +81,11 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
         return(
 <>
     <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
-        onClick={this.toggleCollapse} ref={this.scrollRef} variant="dark"
-        aria-controls={this.collapseId} aria-expanded={this.state.open}
+        onClick={this.toggleCollapse} 
+        ref={this.scrollRef} 
+        variant="dark"
+        aria-controls={this.collapseId} 
+        aria-expanded={this.state.open}
         className={this.state.open === true ? 'active' : ''}
     >{this.titles[Number(!this.state.open)] + this.props.data[singleChartIndex.name]}</Button>
     <Collapse in={this.state.open}>
@@ -90,10 +97,18 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
                 chartRef={this.chartRef}/>
             <Row style={{margin: 0}} className="justify-content-sm-center">
                 <Col sm="2" style={{padding: 0}}>
-                    <DownloadButton ref={this.DownloadRef[0]} updateData={this.updateDownloadGraph} label="Download Graph"/>
+                    <DownloadButton 
+                        ref={this.DownloadRef[0]} 
+                        updateData={this.updateDownloadGraph} 
+                        label="Download Graph"
+                    />
                 </Col>
                 <Col sm="2" style={{padding: 0}}>
-                    <DownloadButton ref={this.DownloadRef[1]} updateData={this.updateDownloadJSON} label="Download Data"/>
+                    <DownloadButton 
+                        ref={this.DownloadRef[1]} 
+                        updateData={this.updateDownloadJSON} 
+                        label="Download Data"
+                    />
                 </Col>
             </Row>
         </div>

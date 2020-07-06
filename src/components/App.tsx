@@ -19,16 +19,21 @@ class App extends React.Component<{},{}> {
 	navRef : React.RefObject<NavbarCustom> = React.createRef<NavbarCustom>();
 
 	//Navbar Links
-	links : T.linkT = {parameters : [], impact : [], angle : [], post : [],}
+	links : T.linkT = Object.seal({
+		parameters : [], 
+		impact : [], 
+		angle : [], 
+		post : [],
+	});
 
 	// Wasm
 	instance : any; // Wasm Instance
-	arrayIndices : Record<string, Record<string, number>> = {
+	arrayIndices : Record<string, Record<string, number>> = Object.seal({
 		impactDataIndex: {}, angleDataIndex: {}, postPenDataIndex: {} 
-	} //Condensed wasm enums
+	}); //Condensed wasm enums
 
 	// Settings Data
-	settings : T.settingsT = { //*implement component
+	settings : T.settingsT = Object.seal({ //*implement component
 		distance: {min: 0, max: undefined, stepSize: 1000, },
 		calculationSettings: {
 			calculationMethod: 1, timeStep: 0.02,
@@ -45,7 +50,7 @@ class App extends React.Component<{},{}> {
 		line: {
 			showLine: true, pointRadius: 2, pointHitRadius: 5
 		}
-	}
+	});
 	// Calculated Data
 	calculatedData: T.calculatedData;
 	referenceLineSize: Readonly<number> = 251;
@@ -109,7 +114,7 @@ class App extends React.Component<{},{}> {
 			3: _=> this.instance.calcImpactRungeKutta4()
 		};
 		if (method in calcImpactFunc){calcImpactFunc[method]();}
-		else{console.log('Error', method); throw new Error('Invalid parameter');}
+		else{console.error('Error', method); throw new Error('Invalid parameter');}
 	}
 	
 	// Calculate and generate data for charts
@@ -147,22 +152,46 @@ class App extends React.Component<{},{}> {
 			this.applyCalculationSettings();
 			//Update Shell Data
 			shellData.forEach((value, i) => {
-				instance.setValues(value.caliber, 
-					value.muzzleVelocity, value.dragCoefficient,
-					value.mass, value.krupp, value.normalization,
-					value.fusetime, value.threshold, value.ra0,
-					value.ra1, value.HESAP, i);
+				instance.setValues(
+					value.caliber, 
+					value.muzzleVelocity, 
+					value.dragCoefficient,
+					value.mass, 
+					value.krupp, 
+					value.normalization,
+					value.fusetime, 
+					value.threshold, 
+					value.ra0,
+					value.ra1, 
+					value.HESAP, 
+					i
+				);
 			})
 			//Run Computations
 			this.calcImpact(this.settings.calculationSettings.calculationMethod);
-			instance.calcAngles(tgtData.armor, tgtData.inclination);
-			instance.calcPostPen(tgtData.armor, tgtData.inclination,
-				tgtData.angles, true, true);
+			instance.calcAngles(
+				tgtData.armor, 
+				tgtData.inclination
+			);
+			instance.calcPostPen(
+				tgtData.armor, 
+				tgtData.inclination,
+				tgtData.angles, 
+				true, 
+				true
+			);
 			//Post-Processing
 			const impactSize: number = instance.getImpactSize(), numAngles: number = tgtData.angles.length;
 			calculatedData.angles = tgtData.angles;
-			calculatedData.targets[0] = {armor: tgtData.armor, inclination: tgtData.inclination, width: tgtData.width}
-			shellData.forEach((value, i) => {calculatedData.names[i] = value.name; calculatedData.colors[i] = value.colors;});
+			calculatedData.targets[0] = {
+				armor: tgtData.armor, 
+				inclination: tgtData.inclination, 
+				width: tgtData.width
+			}
+			shellData.forEach((value, i) => {
+				calculatedData.names[i] = value.name; 
+				calculatedData.colors[i] = value.colors;
+			});
 			for(let j=0; j<numShells; j++){
 				this.initializePoint(calculatedData.impact, j);
 				this.initializePoint(calculatedData.angle, j);
@@ -201,7 +230,10 @@ class App extends React.Component<{},{}> {
 				const length = this.referenceLineSize - 1;
 				for(let i=0; i < this.referenceLineSize; i++){
 					const xV : number = i / length * maxAdj;
-					singleShipWidth[i] = {x: xV, y: tgtData.width};
+					singleShipWidth[i] = {
+						x: xV, 
+						y: tgtData.width
+					};
 				}
 			});
 			//Angle Chart Annotations / Labels
@@ -212,7 +244,10 @@ class App extends React.Component<{},{}> {
 				const length = this.referenceLineSize - 1;
 				for(let i=0; i < this.referenceLineSize; i++){
 					const xV : number = i / length * maxAdj;
-					temp[i] = {x: xV, y: tgtData.refAngles[j]};
+					temp[i] = {
+						x: xV, 
+						y: tgtData.refAngles[j]
+					};
 				}
 				calculatedData.refAngles.push(temp);
 			}
@@ -228,21 +263,31 @@ class App extends React.Component<{},{}> {
 		//const fileToSave2 = new Blob([compressed], {type: 'text/plain',});
 		//saveAs(fileToSave2, 'initialData.deflate');
 	}*/
-	onUpdate = () =>{this.navRef.current!.update();} // Update Navbar when charts are updated
+	onUpdate = () => {this.navRef.current!.update();} // Update Navbar when charts are updated
 	updateColors = () => { // For updating when color settings change
 		if(this.SFCref.current) this.SFCref.current.updateAllCanvas();
 	}	
 	render () {
 		return (
 <div className="App">
-	<NavbarCustom links={this.links} ref={this.navRef}/>
+	<NavbarCustom 
+		links={this.links} 
+		ref={this.navRef}
+	/>
 	<h1>World of Warships Ballistics Calculator</h1>
 	<hr/>
-	<ShellFormsContainer ref={this.SFCref} settings={this.settings}/>
+	<ShellFormsContainer 
+		ref={this.SFCref} 
+		settings={this.settings}
+	/>
 	<hr/>
 	<TargetFormsContainer ref={this.TFCref}/>
 	<hr/>
-	<SettingsBar settings={this.settings} ref={this.Settingsref} updateColors={this.updateColors}/>
+	<SettingsBar 
+		settings={this.settings} 
+		ref={this.Settingsref} 
+		updateColors={this.updateColors}
+	/>
 	<hr/>
 	<Row className="justify-content-sm-center">
 		<Col sm="9">
@@ -253,7 +298,12 @@ class App extends React.Component<{},{}> {
 		</Col>
 	</Row>
 	<hr/>
-	<AllCharts ref={this.graphsRef} settings={this.settings} links={this.links} onUpdate={this.onUpdate}/>
+	<AllCharts 
+		ref={this.graphsRef} 
+		settings={this.settings} 
+		links={this.links} 
+		onUpdate={this.onUpdate}
+	/>
 </div>
 		);
 	}

@@ -204,7 +204,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		if(this.graph) return this.formData;
 		else return false;	
 	}
-	handleNameChange = (value : string, id) => {this.formData.name = value};
+	onNameChange = (value : string, id) => {this.formData.name = value};
 	handleValueChange = (value : string, k : S.formsT) => this.formData[k] = parseFloat(value);
 	getDefaultData = (data, nameUnprocessed : string) => { //Query Version End
 		let name = nameUnprocessed; const formData = this.formData, props = this.props;
@@ -272,11 +272,15 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		<Modal.Title style={{marginLeft: "40%", marginRight: "auto", }}>Shell {props.index + 1}</Modal.Title>
 	</Modal.Header>
 	<Modal.Body>
-		<ParameterForm controlId='shipName' ref={this.nameForm}
-		newValue={this.formData.name}
-		onChange={this.handleNameChange}
-		type="text" labelWidth={3} ariaLabel="Shell Label"
-		style={{formControl: {width: '70%'}, formGroup: {marginBottom: ".5rem"}}}>
+		<ParameterForm ref={this.nameForm}
+			type="text" 
+			labelWidth={3} 
+			style={{formControl: {width: '70%'}, formGroup: {marginBottom: ".5rem"}}}
+			controlId='shipName' 
+			ariaLabel="Ship Name"
+			newValue={this.formData.name}
+			onChange={this.onNameChange}
+		>
 			Shell Label
 		</ParameterForm>
 		<Row style={{marginBottom: ".5rem"}} className="no-lr-padding">
@@ -284,16 +288,29 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 				Colors
 			</Col>
 			<Col sm="8" className="no-lr-padding">
-				<canvas style={{maxHeight: "1.5rem", width: "100%"}} width="600" height="150" ref={this.canvasRef}/>
+				<canvas style={{maxHeight: "1.5rem", width: "100%"}} 
+					width="600" 
+					height="150" 
+					ref={this.canvasRef}
+				/>
 			</Col>
 		</Row>
 		<BootstrapSwitchButton style='switch-toggle common-margin'
-			onlabel='Graph' offlabel='Do Not Graph' onstyle='success' offstyle='danger'
-			onChange={this.toggleGraph} checked={this.graph}
+			onlabel='Graph' 
+			offlabel='Do Not Graph' 
+			onstyle='success' 
+			offstyle='danger'
+			onChange={this.toggleGraph} 
+			checked={this.graph}
 		/>
 		<hr style={{marginTop: 0}}/>
-		<DefaultShips sendDefault={this.getDefaultData} ref={this.defaults} keyProp={props.keyProp}
-		reset={props.reset} index={props.index} defaultData={this.defaultData}/>
+		<DefaultShips ref={this.defaults}
+			sendDefault={this.getDefaultData} 
+			defaultData={this.defaultData}
+			keyProp={props.keyProp}
+			reset={props.reset} 
+			index={props.index} 
+		/>
 	</Modal.Body>
 	<Modal.Footer>				
 		<Col className="footer-style">
@@ -301,8 +318,11 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 					<Popover id='popover'>
 						<Popover.Content>
 							<Suspense fallback={<div>Loading...</div>}>
-								<ShellParameters handleValueChange={this.handleValueChange}
-									formLabels={this.formLabels} ref={this.parameters} formData={this.formData}/>
+								<ShellParameters ref={this.parameters} 
+									handleValueChange={this.handleValueChange}
+									formLabels={this.formLabels} 
+									formData={this.formData}
+								/>
 							</Suspense>
 						</Popover.Content>
 					</Popover>
@@ -311,7 +331,9 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 			</OverlayTrigger>
 		</Col>
 		<Col className="footer-style">
-			<Button className="footer-button" onClick={this.copyShip} variant="dark" >Clone</Button>
+			<Button variant="dark" className="footer-button" 
+				onClick={this.copyShip} 
+			>Clone</Button>
 		</Col>
 	</Modal.Footer>
 </Modal.Dialog>
