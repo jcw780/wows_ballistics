@@ -315,7 +315,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         const angleNameTemplate = (name: string) : string => `${name} | ${targetedArmor} | ${targetInclination}`;
 
         //Colons are used to denote split between label and name
-        const staticOptionSetup : Record<'impact' | 'angle', [(configsT) => any, configsT[]]> = {
+        const staticOptionSetup : Record<'impact' | 'angle', [(configsT) => any, configsT[]]> = Object.freeze({
             impact: [setupImpact, 
                 [
                     {title: configImpact[0][singleChartIndex.name], axes: [
@@ -362,7 +362,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     ]}
                 ]
             ],
-        }
+        });
         const intializeStaticCharts = () => {
             const singleType = (key) => {
                 const chartConfig = this.chartConfigs[key], staticOption = staticOptionSetup[key], setup = staticOption[0];

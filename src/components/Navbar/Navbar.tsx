@@ -5,7 +5,7 @@ import * as T from '../commonTypes';
 import NavDropdownContainer from './NavDropdownContainer';
 
 const NavDropdown = React.lazy(() => import('react-bootstrap/NavDropdown'));
-class NavbarCustom extends React.Component<{links: T.linkT}>{
+export class NavbarCustom extends React.Component<{links: T.linkT}>{
     state = {update: true};
     navDropdownContainers : React.RefObject<NavDropdownContainer>[] = 
     Object.seal([

@@ -46,7 +46,7 @@ interface settingsBarProps{
 }
 export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
     titles : T.collapseTitlesT = ["Hide: ", "Show: "]; // 0: Hide 1: Show
-    private forms = {
+    private forms = Object.freeze({
         graphs : {
             distance : [
                 ['min', 'Minimum', 'm'], 
@@ -74,14 +74,14 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
         format : [
             ['rounding', 'Tooltip Rounding', 'dp']
         ]
-    }
-    private defaultFormStyle = {
+    });
+    private defaultFormStyle = Object.freeze({
         formLabel: {display: "block ruby", padding: 0},
         formControl: {minWidth: '50%', maxWidth: '5.5rem', display: "inline-flex"},
         inputGroup: {display: "inline-flex"},
         inputGroupAppend: {display: "inline-block"},
         formGroup: {display: "block ruby", marginBottom: ".5rem" },
-    }
+    });
     private generateForms = (forms, target, onChange, sm=4) => {
         return forms.map((value, i) => {
             return(
