@@ -439,23 +439,39 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 		const props = this.props, state = this.state;
 		const ref = this.shellRefs[index], stateKeys = state.keys.size;
 		const makeShellForm = () => {
+			//Key not needed - added later in surrounding component
 			if(!copied){
 				return(
-					<ShellForms colors={this.colors} index={index}
-					deleteShip={this.deleteShip} copyShip={this.copyShip}
-					keyProp={key} ref={ref} reset={this.reset} 
-					settings={props.settings} size={stateKeys} copied={copied}/>
+					<ShellForms keyProp={key} 
+						ref={ref}
+						index={index}
+						colors={this.colors} 
+						deleteShip={this.deleteShip} 
+						copyShip={this.copyShip}
+						reset={this.reset} 
+						settings={props.settings} 
+						size={stateKeys} 
+						copied={copied}
+					/>
 				);
 			}else{
 				//pass a deep copied version so clones target the correct shell form
 				const copyTemp = this.copyTemp;
 				return( 
-					<ShellForms colors={this.colors} index={index}
-					deleteShip={this.deleteShip} copyShip={this.copyShip}
-					keyProp={key} ref={ref} reset={this.reset} 
-					settings={props.settings} size={stateKeys} copied={copied}
-					defaultData={clonedeep(copyTemp.default)} formData={clonedeep(copyTemp.data)}
-					graph={copyTemp.graph}/>
+					<ShellForms keyProp={key} 
+						ref={ref}
+						index={index}
+						colors={this.colors}
+						deleteShip={this.deleteShip} 
+						copyShip={this.copyShip}
+						reset={this.reset} 
+						settings={props.settings} 
+						size={stateKeys} 
+						copied={copied}
+						defaultData={clonedeep(copyTemp.default)} 
+						formData={clonedeep(copyTemp.data)}
+						graph={copyTemp.graph}
+					/>
 				);
 			}
 		}
