@@ -274,7 +274,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 	<Modal.Body>
 		<ParameterForm controlId='shipName' ref={this.nameForm}
 		newValue={this.formData.name}
-		handleValueChange={this.handleNameChange}
+		onChange={this.handleNameChange}
 		type="text" labelWidth={3} ariaLabel="Shell Label"
 		style={{formControl: {width: '70%'}, formGroup: {marginBottom: ".5rem"}}}>
 			Shell Label

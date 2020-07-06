@@ -5,7 +5,7 @@ import * as T from '../commonTypes';
 
 interface parameterFormState {value: string, invalid: boolean}
 interface parameterFormProps {
-	newValue: string, controlId: string | number, handleValueChange: T.handleValueChangeT,
+	newValue: string, controlId: string | number, onChange: T.handleValueChangeT,
 	type: string, children?: JSX.Element | string, style: T.styleT, ariaLabel: string,
 	labelWidth: number, placeholder: string, append: string//counter?: number[]
 }
@@ -20,7 +20,7 @@ export class ParameterForm extends React.Component<parameterFormProps, parameter
 		this.state = {value: this.props.newValue || '', invalid: false};
 	}
 	onChange = event => {
-		const errorCode = this.props.handleValueChange(event.target.value, this.props.controlId);
+		const errorCode = this.props.onChange(event.target.value, this.props.controlId);
         if(errorCode !== 'error') this.updateValue(event.target.value); //Input is fine - update
         else this.setState(current => {return {...current, invalid: true};});
     }

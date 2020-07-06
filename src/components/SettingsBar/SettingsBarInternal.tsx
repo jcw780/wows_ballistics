@@ -90,7 +90,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                     <Col className="no-lr-padding">
                         <ParameterForm 
                         controlId={value[0]} type="number" 
-                        handleValueChange={onChange} 
+                        onChange={onChange} 
                         newValue={String(target[value[0]])} 
                         append={value[2]} 
                         labelWidth={3} ariaLabel={value[1]}
@@ -198,7 +198,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                         <ParameterForm
                             controlId={id} ariaLabel={`${label} ${rowLabel}`} type="number" 
                             newValue={String(this.props.settings.format.colors[id])} 
-                            handleValueChange={this.handleColorChange} 
+                            onChange={this.handleColorChange} 
                             labelWidth={0}
                             //style={{
                             //    formLabel: {display: "inline-block"},

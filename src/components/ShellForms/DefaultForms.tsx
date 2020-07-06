@@ -5,7 +5,7 @@ import * as S from './Types';
 
 interface defaultFormProps{
 	controlId: string, keyProp: number, ariaLabel : string, children : string | JSX.Element, 
-	defaultValue: string, defaultOptions: string[], defaultValues: string[], handleValueChange: Function,
+	defaultValue: string, defaultOptions: string[], defaultValues: string[], onChange: Function,
 }
 interface defaultFormState{
 	options: string[], value: string
@@ -23,7 +23,7 @@ export class DefaultForm extends React.PureComponent<defaultFormProps, defaultFo
 		this.setState((current) => {
 			return {...current, value: newValue};
 		});
-		this.props.handleValueChange(newValue, this.props.controlId);
+		this.props.onChange(newValue, this.props.controlId);
 	}
 	updateOptions = (newOptions, newValue) => {
 		this.setState((current) => {
@@ -41,8 +41,12 @@ export class DefaultForm extends React.PureComponent<defaultFormProps, defaultFo
 		return (
 			<Form.Group className="form-inline" style={{marginBottom: ".25rem"}}>
 				<Form.Label column sm="3">{props.children}</Form.Label>
-				<Form.Control as="select" aria-label={props.ariaLabel}
-				onChange={this.handleChange} ref={this.form} style={{width: "70%"}} value={this.state.value}>
+				<Form.Control as="select" 
+					aria-label={props.ariaLabel}
+					onChange={this.handleChange} 
+					ref={this.form} 
+					style={{width: "70%"}} 
+					value={this.state.value}>
 					{this.addOptions()()}
 				</Form.Control>
 			</Form.Group>
@@ -94,6 +98,7 @@ export class DefaultShips extends React.PureComponent
 			];
 		}
 		defaultData[id][S.DefaultDataRowI.value] = value;
+		// Now iterative - instead of waiting for rerenders and clogging stack depth
 		for(; queryIndex <= 5; queryIndex++){
 			this.postVersion(queryIndex)();
 		}
@@ -133,12 +138,13 @@ export class DefaultShips extends React.PureComponent
 			const options = Object.keys(dData.queriedData.ships);
 			this.updateForm('nation', options, options);
 		}
-		const nation = dData.nation[sDI];
+		//Aggressive length shortening
+		const nation = dData.nation[sDI], type = dData.shipType[sDI],
+			ship = dData.ship[sDI], artillery = dData.artillery[sDI];
 		const queryType = () => {
 			const options = Object.keys(qDataS[nation]);
 			this.updateForm('shipType', options, options);
 		}
-		const type = dData.shipType[sDI];
 		const queryShip = () => {
 			const ships = qDataS[nation][type];
 			let values = Object.keys(ships), options : string[] = [];
@@ -146,12 +152,10 @@ export class DefaultShips extends React.PureComponent
 			values.forEach((ship, i) => {options.push(`(${ships[ship]['Tier']}) ${ship}`);});
 			this.updateForm('ship', options, values);
 		}
-		const ship = dData.ship[sDI];
 		const queryArtillery = () => {
 			const options = Object.keys(qDataS[nation][type][ship].artillery);
 			this.updateForm('artillery', options, options);
 		}
-		const artillery = dData.artillery[sDI];
 		const queryShellType = () => {
 			const options = Object.keys(qDataS[nation][type][ship].artillery[artillery]);
 			this.updateForm('shellType', options, options);
@@ -164,7 +168,7 @@ export class DefaultShips extends React.PureComponent
 		const queries = [
 			queryNation, queryType, queryShip,
 			queryArtillery, queryShellType, sendData
-		]
+		];
 		return queries[index];
 	}
 	private addDefaultForms = () => {
@@ -176,13 +180,19 @@ export class DefaultShips extends React.PureComponent
 				defaultValue = defaultDataN[S.DefaultDataRowI.options][
 					defaultDataN[S.DefaultDataRowI.values].indexOf(defaultValue)]
 			}
-			return (<DefaultForm key={i} keyProp={this.props.keyProp} controlId={name} ref={v[singleFormIndex.ref]}
-			ariaLabel={v[singleFormIndex.name]} handleValueChange={this.changeForm} 
-			defaultValue={defaultValue}
-			defaultOptions={defaultDataN[S.DefaultDataRowI.options]}
-			defaultValues={defaultDataN[S.DefaultDataRowI.values]}>
+			return (
+			<DefaultForm key={i} 
+				keyProp={this.props.keyProp} 
+				controlId={name} 
+				ref={v[singleFormIndex.ref]}
+				ariaLabel={v[singleFormIndex.name]} 
+				onChange={this.changeForm} 
+				defaultValue={defaultValue}
+				defaultOptions={defaultDataN[S.DefaultDataRowI.options]}
+				defaultValues={defaultDataN[S.DefaultDataRowI.values]}>
 				{v[singleFormIndex.name]}
-			</DefaultForm>);
+			</DefaultForm>
+			);
 		}
 		const run = () => Object.entries(this.defaultForms).map(singleForm); return run;
 	}

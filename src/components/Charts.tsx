@@ -265,6 +265,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             scaleLabel: {display: true, labelString: "Range (m)",},
             type: 'linear', ticks:{callback: addCommas}
         }];
+        //For doing weird closure abuse things - tbh not sure I even need this...
         const callbackHelper = (f: Function) => {return (...args) => {f(...args)();}}
         const setXAxes = () => {
             const singleSetting = ([key, value]) => {
@@ -437,7 +438,10 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         const postLine = (data : T.scatterPoint[], 
             label: string, color : string = "", show : boolean = true) : Record<string, any> => {
             if(show) return addLine(data, label, 'detDist', color);
-            else{return {
+            //Special case where either shell always fuses or fails to and we still want 
+            //the other line to show up in legends without erroring out
+            else{ 
+                return {
                     data: data, showLine: false, label: label, yAxisID: 'detDist',
                     borderColor: color, fill: false, pointRadius: 0, pointHitRadius: 0
                 };

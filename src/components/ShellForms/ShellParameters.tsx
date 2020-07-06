@@ -38,7 +38,7 @@ export class ShellParameters extends React.PureComponent<shellParametersProps>{
 			return (
 			<ParameterForm key={i} controlId={key} ref={value[S.labelI.ref]}
 				newValue={String(props.formData[key])}
-				handleValueChange={this.handleValueChange} 
+				onChange={this.handleValueChange} 
 				type="number" append={value[S.labelI.unit]}
 				style={commonStyle} ariaLabel={name}>
                     <Suspense fallback={<div>Loading...</div>}>
