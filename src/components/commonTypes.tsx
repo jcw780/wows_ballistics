@@ -20,10 +20,6 @@ export interface defaultFormGeneric<T>{
     version: T, nation: T, shipType: T, 
 	ship: T, artillery: T, shellType: T,
 }
-export enum singleDefaultDataIndex {value, options, values}
-export type singleDefaultDataT = [string, string[], string[]]
-interface queriedDataT {queriedData: Record<string, Record<string, any>>}
-export type defaultDataT = defaultFormGeneric<singleDefaultDataT> & queriedDataT
 
 //Target Data
 export interface targetDataNoAngleT {

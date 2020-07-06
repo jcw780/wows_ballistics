@@ -1,3 +1,4 @@
+import * as T from '../commonTypes';
 import {ParameterForm} from '../UtilityComponents';
 
 export enum labelI {name, unit, ref, description}
@@ -11,3 +12,8 @@ export type formLabelsT = formTemplate<labelT>;
 export type formsT = keyof(formLabelsT);
 
 export interface formDataT extends formTemplate<number>{name: string, colors: string[]}
+
+export enum DefaultDataRowI {value, options, values}
+export type DefaultDataRowT = [string, string[], string[]]
+interface queriedDataT {queriedData: Record<string, Record<string, any>>}
+export type defaultDataT = T.defaultFormGeneric<DefaultDataRowT> & queriedDataT

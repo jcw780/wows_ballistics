@@ -18,14 +18,14 @@ interface shellFormsProps{
 	index: number, colors: Array<string>, keyProp: number, graph: boolean,
 	deleteShip : Function, copyShip : Function,
 	reset: () => void, settings : T.settingsT, size: number
-	formData?: S.formDataT, defaultData?: T.defaultDataT, copied: boolean
+	formData?: S.formDataT, defaultData?: S.defaultDataT, copied: boolean
 }
 export class ShellForms extends React.PureComponent<shellFormsProps> {
 	public static defaultProps = {
 		copied : false, graph : true
 	}
 	graph = this.props.graph;
-	defaultData : T.defaultDataT = Object.seal({
+	defaultData : S.defaultDataT = Object.seal({
 		version: ['', [''], ['']], nation: ['', [''], ['']], shipType: ['', [''], ['']], 
 		ship: ['', [''], ['']], artillery: ['', [''], ['']], shellType: ['', [''], ['']],
 		queriedData: {}
@@ -334,7 +334,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 }
 
 interface copyTempT {
-	default: T.defaultDataT, data: S.formDataT, graph: boolean
+	default: S.defaultDataT, data: S.formDataT, graph: boolean
 }
 export class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {keys: Set<number>, disabled: boolean}>{
 	state = {keys: new Set([0, 1]), disabled: false}; deletedKeys: number[] = [];
@@ -374,7 +374,7 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 			}
 		}
 	}
-	copyShip = (defaultData : T.defaultDataT, shellData : S.formDataT, graph : boolean) => {
+	copyShip = (defaultData : S.defaultDataT, shellData : S.formDataT, graph : boolean) => {
 		this.copyTemp = {default: defaultData, data: shellData, graph: graph};
 		this.copied = true; this.addShip();
 	}
