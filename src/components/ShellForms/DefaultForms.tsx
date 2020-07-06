@@ -127,40 +127,37 @@ export class DefaultShips extends React.PureComponent
 		this.changeForm(reversed[0], 'version');
 	}
 	postVersion = (index: number) => {
-		const dData = this.props.defaultData, qDataS = dData.queriedData.ships;
-		const sDI = S.DefaultDataRowI.value;
+		const dData = this.props.defaultData, qDataS = dData.queriedData.ships, 
+			sDI = S.DefaultDataRowI.value;
 		const queryNation = () => {
 			const options = Object.keys(dData.queriedData.ships);
 			this.updateForm('nation', options, options);
 		}
+		const nation = dData.nation[sDI];
 		const queryType = () => {
-			const nation = dData.nation[sDI];
-			const qDataS = dData.queriedData.ships;
 			const options = Object.keys(qDataS[nation]);
 			this.updateForm('shipType', options, options);
 		}
+		const type = dData.shipType[sDI];
 		const queryShip = () => {
-			const nation = dData.nation[sDI], type = dData.shipType[sDI];
 			const ships = qDataS[nation][type];
 			let values = Object.keys(ships), options : string[] = [];
 			values.sort((a, b) => {return ships[a]['Tier'] - ships[b]['Tier']});
 			values.forEach((ship, i) => {options.push(`(${ships[ship]['Tier']}) ${ship}`);});
 			this.updateForm('ship', options, values);
 		}
+		const ship = dData.ship[sDI];
 		const queryArtillery = () => {
-			const nation = dData.nation[sDI], type = dData.shipType[sDI], ship = dData.ship[sDI];
 			const options = Object.keys(qDataS[nation][type][ship].artillery);
 			this.updateForm('artillery', options, options);
 		}
+		const artillery = dData.artillery[sDI];
 		const queryShellType = () => {
-			const nation = dData.nation[sDI], type = dData.shipType[sDI];
-			const ship = dData.ship[sDI], artillery = dData.artillery[sDI];
 			const options = Object.keys(qDataS[nation][type][ship].artillery[artillery]);
 			this.updateForm('shellType', options, options);
 		}
 		const sendData = () => {
-			const nation = dData.nation[sDI], type = dData.shipType[sDI], ship = dData.ship[sDI];
-			const artillery = dData.artillery[sDI], shellType = dData.shellType[sDI];
+			const shellType = dData.shellType[sDI];
 			const shellName = qDataS[nation][type][ship].artillery[artillery][shellType];
 			this.props.sendDefault(dData.queriedData.shells[shellName], ship);
 		}

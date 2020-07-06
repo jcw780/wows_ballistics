@@ -225,6 +225,9 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         //Preinitialize postpenetration names
         this.chartConfigs.post.forEach((chart, i) => {
             chart[singleChartIndex.name] = 'Horizontal Impact Angle ' + (i + 1);});
+        
+        const initialJson = require('../static/initialData.json');
+        this.updateData(initialJson, false);
     }
 
     //Utility Functions for Graphs
@@ -253,7 +256,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         const color = chart.config.data.datasets[tooltipItem.datasetIndex].borderColor;
         return {borderColor: color,backgroundColor: color}
     }
-    private updateDataInternal = (graphData : T.calculatedData) => {
+    private updateDataInternal = (graphData : T.calculatedData, forceUpdate: boolean) => {
         //Common Utility Functions / Values
         const settings = this.props.settings, lineSettings = settings.line;
         const addCommas = (value, index, values) => {return value.toLocaleString();}
@@ -505,12 +508,14 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 const name = graphData.names[i], colors = graphData.colors[i];
                 generateStatic(i, name, colors)(); generatePost(i, name, colors)();
             }
-            this.updateCharts('impact'); //Only need to update charts not surrounding components
-            this.updateCharts('angle');
-            this.updateGroup('post'); //May need to for this - could optimize it later
+            if(forceUpdate){ //For disabling rerender in constructor [will be rendered anyways]
+                this.updateCharts('impact'); //Only need to update charts not surrounding components
+                this.updateCharts('angle');
+                this.updateGroup('post'); //May need to for this - could optimize it later
+            }
         }
     }
-    updateData = (graphData : T.calculatedData) => this.updateDataInternal(graphData)();
+    updateData = (graphData : T.calculatedData, forceUpdate : boolean = true) => this.updateDataInternal(graphData, forceUpdate)();
     updateGroup = (target : T.chartT) => this.groupRefs[target].current!.forceUpdate();
     updateCharts = (target : T.chartT) => {
         const triggerChartUpdate = (value : singleChartType, i) => {
@@ -587,12 +592,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
 </>
         );
     }
-    async componentDidMount(){
-        // Preinitialize chart after mounting - to mitigate user confusion
-        // Also due to the fact that getting wasm to run on startup is apparently impossible
-        const initialJson = await import('../static/initialData.json');
-        this.updateData(initialJson);
-    }
+    //componentDidMount(){}
     //componentDidUpdate(){}
 }
 
