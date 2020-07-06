@@ -6,25 +6,33 @@ interface defaultFormProps{
 	controlId: string, keyProp: number, ariaLabel : string, children : string | JSX.Element, 
 	defaultValue: string, defaultOptions: string[], defaultValues: string[], handleValueChange: Function,
 }
-
-export class DefaultForm extends React.PureComponent<defaultFormProps> {
+interface defaultFormState{
+	options: string[], value: string
+}
+export class DefaultForm extends React.PureComponent<defaultFormProps, defaultFormState> {
 	public static defaultProps = {
 		defaultValue : "", defaultOptions: [],
 	}
 	updated = false;
 	form = React.createRef<HTMLSelectElement>();
-	state = {options: this.props.defaultOptions, values: this.props.defaultValues};
+	state = {options: this.props.defaultOptions, value: ''};
 	handleChange = (event) => {
 		event.stopPropagation();
-		this.props.handleValueChange(event.target.value, this.props.controlId);
+		const newValue = event.target.value;
+		this.setState((current) => {
+			return {...current, value: newValue};
+		});
+		this.props.handleValueChange(newValue, this.props.controlId);
 	}
-	updateOptions = (newOptions, newValues) => {
+	updateOptions = (newOptions, newValue) => {
 		this.updated = true;
-		this.setState((state) => {return {options: newOptions, values: newValues};});
+		this.setState((current) => {
+			return {options: newOptions, value: newValue};
+		});
 	}
 	private addOptions = () => {
 		const singleOption = (value,i) => {
-			return (<option aria-label={value} value={this.state.values[i]} key={i}>{value}</option>);
+			return (<option aria-label={value} key={i}>{value}</option>);
 		}
 		return () => this.state.options.map(singleOption);
 	}
@@ -34,7 +42,7 @@ export class DefaultForm extends React.PureComponent<defaultFormProps> {
 			<Form.Group className="form-inline" style={{marginBottom: ".25rem"}}>
 				<Form.Label column sm="3">{props.children}</Form.Label>
 				<Form.Control as="select" placeholder="" defaultValue={props.defaultValue} aria-label={props.ariaLabel}
-				onChange={this.handleChange} ref={this.form} style={{width: "70%"}}>
+				onChange={this.handleChange} ref={this.form} style={{width: "70%"}} value={this.state.value}>
 					{this.addOptions()()}
 				</Form.Control>
 			</Form.Group>
@@ -82,6 +90,11 @@ export class DefaultShips extends React.PureComponent
 	changeForm = (value, id : keyof(defaultFormType)) => {
 		//this.defaultForms[id][singleFormIndex.value] = value;
 		const defaultData = this.props.defaultData;
+		if (id === 'ship'){
+			value = defaultData[id][T.singleDefaultDataIndex.values][
+				defaultData[id][T.singleDefaultDataIndex.options].indexOf(value)
+			];
+		}
 		defaultData[id][T.singleDefaultDataIndex.value] = value;
 		const queryIndex = this.defaultForms[id][singleFormIndex.queryIndex];
 		const queries = [
@@ -95,9 +108,15 @@ export class DefaultShips extends React.PureComponent
 		if(refCurrent){ 
 			//apparently prevents async calls from updating deleted refs I guess...
 			//fixes delete ship crash bug
-			this.props.defaultData[target][T.singleDefaultDataIndex.options] = options;
-			this.props.defaultData[target][T.singleDefaultDataIndex.values] = values;
-			refCurrent.updateOptions(options, values);
+			const targetData = this.props.defaultData[target]
+			targetData[T.singleDefaultDataIndex.options] = options;
+			targetData[T.singleDefaultDataIndex.values] = values;
+			let newValue = targetData[T.singleDefaultDataIndex.value];
+			if(!options.includes(newValue)){
+				newValue = options[0];
+			}
+
+			refCurrent.updateOptions(options, newValue);
 		}
 	}
 	queryVersion = async () => {
