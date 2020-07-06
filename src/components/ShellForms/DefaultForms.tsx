@@ -1,10 +1,10 @@
 import React from 'react';
-import {Form, Container} from 'react-bootstrap';
+import {Form} from 'react-bootstrap';
 import * as T from '../commonTypes';
 
 interface defaultFormProps{
 	controlId: string, keyProp: number, ariaLabel : string, children : string | JSX.Element, 
-	defaultValue: string, defaultOptions: string[], defaultValues: string[], handleValueChange: Function,
+	defaultValue: string, defaultIndex: number, defaultOptions: string[], defaultValues: string[], handleValueChange: Function,
 }
 interface defaultFormState{
 	options: string[], value: string
@@ -88,17 +88,16 @@ export class DefaultShips extends React.PureComponent
 			this.queryArtillery, this.queryShellType, this.sendData
 		]
 		const defaultData = this.props.defaultData;
+		if(queryIndex === 0){
+			defaultData.queriedData = await fetchJsonData(
+				`${dataURL}${value}_s.json`);
+		}else if (queryIndex === 3){
+			value = defaultData[id][T.singleDefaultDataIndex.values][
+				defaultData[id][T.singleDefaultDataIndex.options].indexOf(value)
+			];
+		}
+		defaultData[id][T.singleDefaultDataIndex.value] = value;
 		for(; queryIndex <= 5; queryIndex++){
-			if (queryIndex === 3){
-				value = defaultData[id][T.singleDefaultDataIndex.values][
-					defaultData[id][T.singleDefaultDataIndex.options].indexOf(value)
-				];
-			}
-			defaultData[id][T.singleDefaultDataIndex.value] = value;
-			if(queryIndex === 0){
-				defaultData.queriedData = await fetchJsonData(
-					`${dataURL}${defaultData.version[T.singleDefaultDataIndex.value]}_s.json`);
-			}
 			if(queryIndex in queries){queries[queryIndex]();}
 		}
 	}
@@ -187,7 +186,7 @@ export class DefaultShips extends React.PureComponent
 
 			return (<DefaultForm key={i} keyProp={this.props.keyProp} controlId={name} ref={v[singleFormIndex.ref]}
 			ariaLabel={v[singleFormIndex.name]} handleValueChange={this.changeForm} 
-			defaultValue={defaultValue} 
+			defaultValue={defaultValue} defaultIndex={i}
 			defaultOptions={defaultDataN[T.singleDefaultDataIndex.options]}
 			defaultValues={defaultDataN[T.singleDefaultDataIndex.values]}>
 				{v[singleFormIndex.name]}
