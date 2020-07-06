@@ -18,14 +18,14 @@ interface shellFormsProps{
 	index: number, colors: Array<string>, keyProp: number, graph: boolean,
 	deleteShip : Function, copyShip : Function,
 	reset: () => void, settings : T.settingsT, size: number
-	formData?: S.formDataT, defaultData?: T.defaultDataT, copied: boolean
+	formData?: S.formDataT, defaultData?: S.defaultDataT, copied: boolean
 }
 export class ShellForms extends React.PureComponent<shellFormsProps> {
 	public static defaultProps = {
 		copied : false, graph : true
 	}
 	graph = this.props.graph;
-	defaultData : T.defaultDataT = Object.seal({
+	defaultData : S.defaultDataT = Object.seal({
 		version: ['', [''], ['']], nation: ['', [''], ['']], shipType: ['', [''], ['']], 
 		ship: ['', [''], ['']], artillery: ['', [''], ['']], shellType: ['', [''], ['']],
 		queriedData: {}
@@ -204,7 +204,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		if(this.graph) return this.formData;
 		else return false;	
 	}
-	handleNameChange = (value : string, id) => {this.formData.name = value};
+	onNameChange = (value : string, id) => {this.formData.name = value};
 	handleValueChange = (value : string, k : S.formsT) => this.formData[k] = parseFloat(value);
 	getDefaultData = (data, nameUnprocessed : string) => { //Query Version End
 		let name = nameUnprocessed; const formData = this.formData, props = this.props;
@@ -272,11 +272,15 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		<Modal.Title style={{marginLeft: "40%", marginRight: "auto", }}>Shell {props.index + 1}</Modal.Title>
 	</Modal.Header>
 	<Modal.Body>
-		<ParameterForm controlId='shipName' ref={this.nameForm}
-		newValue={this.formData.name}
-		handleValueChange={this.handleNameChange}
-		type="text" labelWidth={3} ariaLabel="Shell Label"
-		style={{formControl: {width: '70%'}, formGroup: {marginBottom: ".5rem"}}}>
+		<ParameterForm ref={this.nameForm}
+			type="text" 
+			labelWidth={3} 
+			style={{formControl: {width: '70%'}, formGroup: {marginBottom: ".5rem"}}}
+			controlId='shipName' 
+			ariaLabel="Ship Name"
+			newValue={this.formData.name}
+			onChange={this.onNameChange}
+		>
 			Shell Label
 		</ParameterForm>
 		<Row style={{marginBottom: ".5rem"}} className="no-lr-padding">
@@ -284,16 +288,29 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 				Colors
 			</Col>
 			<Col sm="8" className="no-lr-padding">
-				<canvas style={{maxHeight: "1.5rem", width: "100%"}} width="600" height="150" ref={this.canvasRef}/>
+				<canvas style={{maxHeight: "1.5rem", width: "100%"}} 
+					width="600" 
+					height="150" 
+					ref={this.canvasRef}
+				/>
 			</Col>
 		</Row>
 		<BootstrapSwitchButton style='switch-toggle common-margin'
-			onlabel='Graph' offlabel='Do Not Graph' onstyle='success' offstyle='danger'
-			onChange={this.toggleGraph} checked={this.graph}
+			onlabel='Graph' 
+			offlabel='Do Not Graph' 
+			onstyle='success' 
+			offstyle='danger'
+			onChange={this.toggleGraph} 
+			checked={this.graph}
 		/>
 		<hr style={{marginTop: 0}}/>
-		<DefaultShips sendDefault={this.getDefaultData} ref={this.defaults} keyProp={props.keyProp}
-		reset={props.reset} index={props.index} defaultData={this.defaultData}/>
+		<DefaultShips ref={this.defaults}
+			sendDefault={this.getDefaultData} 
+			defaultData={this.defaultData}
+			keyProp={props.keyProp}
+			reset={props.reset} 
+			index={props.index} 
+		/>
 	</Modal.Body>
 	<Modal.Footer>				
 		<Col className="footer-style">
@@ -301,8 +318,11 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 					<Popover id='popover'>
 						<Popover.Content>
 							<Suspense fallback={<div>Loading...</div>}>
-								<ShellParameters handleValueChange={this.handleValueChange}
-									formLabels={this.formLabels} ref={this.parameters} formData={this.formData}/>
+								<ShellParameters ref={this.parameters} 
+									handleValueChange={this.handleValueChange}
+									formLabels={this.formLabels} 
+									formData={this.formData}
+								/>
 							</Suspense>
 						</Popover.Content>
 					</Popover>
@@ -311,7 +331,9 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 			</OverlayTrigger>
 		</Col>
 		<Col className="footer-style">
-			<Button className="footer-button" onClick={this.copyShip} variant="dark" >Clone</Button>
+			<Button variant="dark" className="footer-button" 
+				onClick={this.copyShip} 
+			>Clone</Button>
 		</Col>
 	</Modal.Footer>
 </Modal.Dialog>
@@ -334,7 +356,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 }
 
 interface copyTempT {
-	default: T.defaultDataT, data: S.formDataT, graph: boolean
+	default: S.defaultDataT, data: S.formDataT, graph: boolean
 }
 export class ShellFormsContainer extends React.Component<{settings : T.settingsT}, {keys: Set<number>, disabled: boolean}>{
 	state = {keys: new Set([0, 1]), disabled: false}; deletedKeys: number[] = [];
@@ -374,7 +396,7 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 			}
 		}
 	}
-	copyShip = (defaultData : T.defaultDataT, shellData : S.formDataT, graph : boolean) => {
+	copyShip = (defaultData : S.defaultDataT, shellData : S.formDataT, graph : boolean) => {
 		this.copyTemp = {default: defaultData, data: shellData, graph: graph};
 		this.copied = true; this.addShip();
 	}
@@ -417,23 +439,39 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 		const props = this.props, state = this.state;
 		const ref = this.shellRefs[index], stateKeys = state.keys.size;
 		const makeShellForm = () => {
+			//Key not needed - added later in surrounding component
 			if(!copied){
 				return(
-					<ShellForms colors={this.colors} index={index}
-					deleteShip={this.deleteShip} copyShip={this.copyShip}
-					keyProp={key} ref={ref} reset={this.reset} 
-					settings={props.settings} size={stateKeys} copied={copied}/>
+					<ShellForms keyProp={key} 
+						ref={ref}
+						index={index}
+						colors={this.colors} 
+						deleteShip={this.deleteShip} 
+						copyShip={this.copyShip}
+						reset={this.reset} 
+						settings={props.settings} 
+						size={stateKeys} 
+						copied={copied}
+					/>
 				);
 			}else{
 				//pass a deep copied version so clones target the correct shell form
 				const copyTemp = this.copyTemp;
 				return( 
-					<ShellForms colors={this.colors} index={index}
-					deleteShip={this.deleteShip} copyShip={this.copyShip}
-					keyProp={key} ref={ref} reset={this.reset} 
-					settings={props.settings} size={stateKeys} copied={copied}
-					defaultData={clonedeep(copyTemp.default)} formData={clonedeep(copyTemp.data)}
-					graph={copyTemp.graph}/>
+					<ShellForms keyProp={key} 
+						ref={ref}
+						index={index}
+						colors={this.colors}
+						deleteShip={this.deleteShip} 
+						copyShip={this.copyShip}
+						reset={this.reset} 
+						settings={props.settings} 
+						size={stateKeys} 
+						copied={copied}
+						defaultData={clonedeep(copyTemp.default)} 
+						formData={clonedeep(copyTemp.data)}
+						graph={copyTemp.graph}
+					/>
 				);
 			}
 		}

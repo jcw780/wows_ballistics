@@ -8,12 +8,14 @@ import {ParameterForm} from '../UtilityComponents';
 class CalculationRadio extends React.PureComponent<{settings: T.settingsT}, {value: number}>{
     constructor(props){
         super(props);
-        this.state = {value: this.props.settings.calculationSettings.calculationMethod};
+        this.state = {
+            value: props.settings.calculationSettings.calculationMethod
+        };
     }
     private setCalcMethod = (event) => {
         const value = parseInt(event.target.value);
         this.props.settings.calculationSettings.calculationMethod = value;
-        this.setState({value: parseInt(event.target.value)});
+        this.setState({value: value});
     }
     render(){
         const setCalcMethod = this.setCalcMethod;
@@ -21,21 +23,40 @@ class CalculationRadio extends React.PureComponent<{settings: T.settingsT}, {val
             <Row className="justify-content-md-center" 
             style={{paddingLeft: '1rem', paddingRight: '1rem', paddingBottom: '.5rem'}}>
                 <Col sm="10">
-            <ToggleButtonGroup toggle vertical type="radio" name="radio" value={this.state.value}>
-                <ToggleButton onChange={setCalcMethod} type="radio" value={0} variant="secondary">
-                Adams-Bashforth 5
-                </ToggleButton>
-                <ToggleButton onChange={setCalcMethod} type="radio" value={1} variant="secondary">
-                Forward Euler
-                </ToggleButton>
-                <ToggleButton onChange={setCalcMethod} type="radio" value={2} variant="secondary">
-                Runge-Kutta 2
-                </ToggleButton>
-                <ToggleButton onChange={setCalcMethod} type="radio" value={3} variant="secondary">
-                Runge-Kutta 4
-                </ToggleButton>
-            </ToggleButtonGroup>
-            </Col>
+                    <ToggleButtonGroup toggle vertical 
+                        type="radio" 
+                        name="radio" 
+                        value={this.state.value}>
+                        <ToggleButton 
+                            onChange={setCalcMethod} 
+                            type="radio" 
+                            value={0} 
+                            variant="secondary">
+                            Adams-Bashforth 5
+                        </ToggleButton>
+                        <ToggleButton 
+                            onChange={setCalcMethod} 
+                            type="radio" 
+                            value={1} 
+                            variant="secondary">
+                            Forward Euler
+                        </ToggleButton>
+                        <ToggleButton 
+                            onChange={setCalcMethod} 
+                            type="radio" 
+                            value={2} 
+                            variant="secondary">
+                            Runge-Kutta 2
+                        </ToggleButton>
+                        <ToggleButton 
+                            onChange={setCalcMethod} 
+                            type="radio" 
+                            value={3} 
+                            variant="secondary">
+                            Runge-Kutta 4
+                        </ToggleButton>
+                    </ToggleButtonGroup>
+                </Col>
             </Row>
         );
     }
@@ -46,7 +67,7 @@ interface settingsBarProps{
 }
 export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
     titles : T.collapseTitlesT = ["Hide: ", "Show: "]; // 0: Hide 1: Show
-    private forms = {
+    private forms = Object.freeze({
         graphs : {
             distance : [
                 ['min', 'Minimum', 'm'], 
@@ -74,14 +95,14 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
         format : [
             ['rounding', 'Tooltip Rounding', 'dp']
         ]
-    }
-    private defaultFormStyle = {
+    });
+    private defaultFormStyle = Object.freeze({
         formLabel: {display: "block ruby", padding: 0},
         formControl: {minWidth: '50%', maxWidth: '5.5rem', display: "inline-flex"},
         inputGroup: {display: "inline-flex"},
         inputGroupAppend: {display: "inline-block"},
         formGroup: {display: "block ruby", marginBottom: ".5rem" },
-    }
+    });
     private generateForms = (forms, target, onChange, sm=4) => {
         return forms.map((value, i) => {
             return(
@@ -90,13 +111,12 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                     <Col className="no-lr-padding">
                         <ParameterForm 
                         controlId={value[0]} type="number" 
-                        handleValueChange={onChange} 
+                        onChange={onChange} 
                         newValue={String(target[value[0]])} 
                         append={value[2]} 
                         labelWidth={3} ariaLabel={value[1]}
-                        style={this.defaultFormStyle}>
-                            <></>
-                        </ParameterForm>
+                        style={this.defaultFormStyle}
+                        />
                     </Col>
                 </Row>
             );
@@ -195,19 +215,16 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                     const id = form[0], label = form[1];
                     return(
                         <Col className="no-lr-padding" style={{maxHeight: rowHeight}} key={counter++}>
-                        <ParameterForm
-                            controlId={id} ariaLabel={`${label} ${rowLabel}`} type="number" 
-                            newValue={String(this.props.settings.format.colors[id])} 
-                            handleValueChange={this.handleColorChange} 
-                            labelWidth={0}
-                            //style={{
-                            //    formLabel: {display: "inline-block"},
-                            //    formControl: {maxWidth: '6rem', display: "inline-block"},
-                            //    inputGroup: {display: "inline-block"},
-                            //    formGroup: {display: "inline-block", },
-                            //}}
-                            style={this.defaultFormStyle}
-                            ></ParameterForm></Col>
+                            <ParameterForm
+                                controlId={id} 
+                                ariaLabel={`${label} ${rowLabel}`} 
+                                type="number" 
+                                newValue={String(this.props.settings.format.colors[id])} 
+                                onChange={this.handleColorChange} 
+                                labelWidth={0}
+                                style={this.defaultFormStyle}
+                            />
+                        </Col>
                     );
                 }
                 return (
@@ -250,9 +267,14 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                         <h4>Line</h4>
                         <Row>
                             <Col>
-                                <BootstrapSwitchButton style='switch-toggle'
-                                    onlabel='Show Line' offlabel='Show Point' onstyle='success' offstyle='danger'
-                                    onChange={this.onShowLineChange} checked={settings.line.showLine}
+                                <BootstrapSwitchButton 
+                                    style='switch-toggle'
+                                    onlabel='Show Line' 
+                                    offlabel='Show Point' 
+                                    onstyle='success' 
+                                    offstyle='danger'
+                                    onChange={this.onShowLineChange} 
+                                    checked={settings.line.showLine}
                                 />
                                 <h5>Point</h5>
                                 {this.generateLineForms()}
@@ -263,9 +285,14 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                         <h4>Labeling</h4>
                         <Row>
                         <Col>
-                            <BootstrapSwitchButton style='switch-toggle'
-                                onlabel='Short Names' offlabel='Long Names' onstyle='success' offstyle='danger'
-                                onChange={this.onShortNameChange} checked={format.shortNames}
+                            <BootstrapSwitchButton 
+                                style='switch-toggle'
+                                onlabel='Short Names' 
+                                offlabel='Long Names' 
+                                onstyle='success' 
+                                offstyle='danger'
+                                onChange={this.onShortNameChange} 
+                                checked={format.shortNames}
                             />
                         </Col>
                         </Row>

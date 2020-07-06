@@ -15,8 +15,7 @@ type singleChartType = [chartDataOption, React.RefObject<SingleChart>, string]
 
 interface dimensionsT {height: number, width: number}
 interface singleChartProps{
-    data: singleChartType
-    dimensions: dimensionsT
+    data: singleChartType, dimensions: dimensionsT
 }
 
 interface ChartInternalProps extends singleChartProps{
@@ -26,9 +25,14 @@ class ChartInternal extends React.Component<ChartInternalProps>{
     render(){
         const config = this.props.data[singleChartIndex.config];
         return(
-            <Scatter data={config.data} options={config.options}
-            width={this.props.dimensions.width} height={this.props.dimensions.height}
-            ref={this.props.chartRef} datasetKeyProvider={this.props.datasetKeyProvider}/>
+            <Scatter 
+                data={config.data} 
+                options={config.options}
+                width={this.props.dimensions.width} 
+                height={this.props.dimensions.height}
+                ref={this.props.chartRef} 
+                datasetKeyProvider={this.props.datasetKeyProvider}
+            />
         );
     }
 }
@@ -77,8 +81,11 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
         return(
 <>
     <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
-        onClick={this.toggleCollapse} ref={this.scrollRef} variant="dark"
-        aria-controls={this.collapseId} aria-expanded={this.state.open}
+        onClick={this.toggleCollapse} 
+        ref={this.scrollRef} 
+        variant="dark"
+        aria-controls={this.collapseId} 
+        aria-expanded={this.state.open}
         className={this.state.open === true ? 'active' : ''}
     >{this.titles[Number(!this.state.open)] + this.props.data[singleChartIndex.name]}</Button>
     <Collapse in={this.state.open}>
@@ -90,10 +97,18 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
                 chartRef={this.chartRef}/>
             <Row style={{margin: 0}} className="justify-content-sm-center">
                 <Col sm="2" style={{padding: 0}}>
-                    <DownloadButton ref={this.DownloadRef[0]} updateData={this.updateDownloadGraph} label="Download Graph"/>
+                    <DownloadButton 
+                        ref={this.DownloadRef[0]} 
+                        updateData={this.updateDownloadGraph} 
+                        label="Download Graph"
+                    />
                 </Col>
                 <Col sm="2" style={{padding: 0}}>
-                    <DownloadButton ref={this.DownloadRef[1]} updateData={this.updateDownloadJSON} label="Download Data"/>
+                    <DownloadButton 
+                        ref={this.DownloadRef[1]} 
+                        updateData={this.updateDownloadJSON} 
+                        label="Download Data"
+                    />
                 </Col>
             </Row>
         </div>
@@ -225,6 +240,9 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         //Preinitialize postpenetration names
         this.chartConfigs.post.forEach((chart, i) => {
             chart[singleChartIndex.name] = 'Horizontal Impact Angle ' + (i + 1);});
+        
+        const initialJson = require('../static/initialData.json');
+        this.updateData(initialJson, false);
     }
 
     //Utility Functions for Graphs
@@ -253,7 +271,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         const color = chart.config.data.datasets[tooltipItem.datasetIndex].borderColor;
         return {borderColor: color,backgroundColor: color}
     }
-    private updateDataInternal = (graphData : T.calculatedData) => {
+    private updateDataInternal = (graphData : T.calculatedData, forceUpdate: boolean) => {
         //Common Utility Functions / Values
         const settings = this.props.settings, lineSettings = settings.line;
         const addCommas = (value, index, values) => {return value.toLocaleString();}
@@ -262,6 +280,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             scaleLabel: {display: true, labelString: "Range (m)",},
             type: 'linear', ticks:{callback: addCommas}
         }];
+        //For doing weird closure abuse things - tbh not sure I even need this...
         const callbackHelper = (f: Function) => {return (...args) => {f(...args)();}}
         const setXAxes = () => {
             const singleSetting = ([key, value]) => {
@@ -311,7 +330,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         const angleNameTemplate = (name: string) : string => `${name} | ${targetedArmor} | ${targetInclination}`;
 
         //Colons are used to denote split between label and name
-        const staticOptionSetup : Record<'impact' | 'angle', [(configsT) => any, configsT[]]> = {
+        const staticOptionSetup : Record<'impact' | 'angle', [(configsT) => any, configsT[]]> = Object.freeze({
             impact: [setupImpact, 
                 [
                     {title: configImpact[0][singleChartIndex.name], axes: [
@@ -358,7 +377,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     ]}
                 ]
             ],
-        }
+        });
         const intializeStaticCharts = () => {
             const singleType = (key) => {
                 const chartConfig = this.chartConfigs[key], staticOption = staticOptionSetup[key], setup = staticOption[0];
@@ -434,7 +453,10 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         const postLine = (data : T.scatterPoint[], 
             label: string, color : string = "", show : boolean = true) : Record<string, any> => {
             if(show) return addLine(data, label, 'detDist', color);
-            else{return {
+            //Special case where either shell always fuses or fails to and we still want 
+            //the other line to show up in legends without erroring out
+            else{ 
+                return {
                     data: data, showLine: false, label: label, yAxisID: 'detDist',
                     borderColor: color, fill: false, pointRadius: 0, pointHitRadius: 0
                 };
@@ -505,12 +527,14 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 const name = graphData.names[i], colors = graphData.colors[i];
                 generateStatic(i, name, colors)(); generatePost(i, name, colors)();
             }
-            this.updateCharts('impact'); //Only need to update charts not surrounding components
-            this.updateCharts('angle');
-            this.updateGroup('post'); //May need to for this - could optimize it later
+            if(forceUpdate){ //For disabling rerender in constructor [will be rendered anyways]
+                this.updateCharts('impact'); //Only need to update charts not surrounding components
+                this.updateCharts('angle');
+                this.updateGroup('post'); //May need to for this - could optimize it later
+            }
         }
     }
-    updateData = (graphData : T.calculatedData) => this.updateDataInternal(graphData)();
+    updateData = (graphData : T.calculatedData, forceUpdate : boolean = true) => this.updateDataInternal(graphData, forceUpdate)();
     updateGroup = (target : T.chartT) => this.groupRefs[target].current!.forceUpdate();
     updateCharts = (target : T.chartT) => {
         const triggerChartUpdate = (value : singleChartType, i) => {
@@ -587,12 +611,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
 </>
         );
     }
-    async componentDidMount(){
-        // Preinitialize chart after mounting - to mitigate user confusion
-        // Also due to the fact that getting wasm to run on startup is apparently impossible
-        const initialJson = await import('../static/initialData.json');
-        this.updateData(initialJson);
-    }
+    //componentDidMount(){}
     //componentDidUpdate(){}
 }
 

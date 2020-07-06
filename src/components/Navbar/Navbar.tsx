@@ -5,7 +5,7 @@ import * as T from '../commonTypes';
 import NavDropdownContainer from './NavDropdownContainer';
 
 const NavDropdown = React.lazy(() => import('react-bootstrap/NavDropdown'));
-class NavbarCustom extends React.Component<{links: T.linkT}>{
+export class NavbarCustom extends React.Component<{links: T.linkT}>{
     state = {update: true};
     navDropdownContainers : React.RefObject<NavDropdownContainer>[] = 
     Object.seal([
@@ -14,7 +14,8 @@ class NavbarCustom extends React.Component<{links: T.linkT}>{
         React.createRef<NavDropdownContainer>(),
         React.createRef<NavDropdownContainer>(),
     ]);
-    update = () => {
+    update = () => { 
+        //only update one section - other sections dont get updated
         if(this.navDropdownContainers[3] !== undefined){
             this.navDropdownContainers[3].current!.forceUpdate();
         }
@@ -41,16 +42,24 @@ class NavbarCustom extends React.Component<{links: T.linkT}>{
     <Navbar.Toggle aria-controls="responsive-navbar-nav" label="Toggle Navigation"/>
     <Navbar.Collapse id="responsive-navbar-nav">
         <Nav className="mr-auto">
-            <NavDropdownContainer title="Parameters" links={links['parameters']} 
+            <NavDropdownContainer 
+                title="Parameters" 
+                links={links['parameters']} 
                 ref={this.navDropdownContainers[0]}
             />
-            <NavDropdownContainer title="Impact Charts" links={links['impact']} 
+            <NavDropdownContainer 
+                title="Impact Charts" 
+                links={links['impact']} 
                 ref={this.navDropdownContainers[1]}
             />
-            <NavDropdownContainer title="Angle Charts" links={links['angle']} 
+            <NavDropdownContainer 
+                title="Angle Charts" 
+                links={links['angle']} 
                 ref={this.navDropdownContainers[2]}
             />
-            <NavDropdownContainer title="Post-Pentration Charts" links={links['post']} 
+            <NavDropdownContainer 
+                title="Post-Pentration Charts" 
+                links={links['post']} 
                 ref={this.navDropdownContainers[3]}
             />
         </Nav>
