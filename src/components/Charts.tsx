@@ -58,6 +58,7 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
     }
     updateInternal = () => {
         if(this.wrapperRef.current !== undefined){
+            console.log(this.chartRef.current!.chartInstance);
             this.chartRef.current!.chartInstance.update();
         }
     }
@@ -385,7 +386,20 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     const config = chart[singleChartIndex.config];
                     config.data.datasets.length = 0; //empty options and datasets
                     //avoid mutations so we can use chart.js update instead of forceUpdate
-                    config.options = {...config.options, ...setup(staticOption[1][i])}; //set options
+                    const temp = setup(staticOption[1][i])
+                    config.options.scales = {...config.options.scales, ...temp.scales};
+                    config.options.tooltips = {...config.options.tooltips, ...temp.tooltips};
+                    if(config.options.title === undefined){
+                        config.options.title = temp.title;
+                    }else{
+                        //Only will be reached if ref is defined
+                        //Have to inject title into chartinstance because it doesn't update otherwise...
+                        //Not the best solution but if it works...
+                        chart[singleChartIndex.ref].current.chartRef.current.chartInstance.options.title.text = temp.title.text;
+                    }
+                    //config.options.title.text = temp.title.text;
+                    //config.options.title.display = true;
+                    //config.options = {...config.options, ...setup(staticOption[1][i])}; //set options
                 }
                 return () => chartConfig.forEach(singleChart);
             }
@@ -437,7 +451,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                         }],
                     },
                     tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}},            
-                }
+                } //Implement title injection when this becomes updateable
                 chart[singleChartIndex.name] = `Horizontal Impact Angle ${i + 1}: ${graphData.angles[i]}°`
             } 
             return () => configPost.forEach(singleChart);
