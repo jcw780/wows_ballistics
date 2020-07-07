@@ -261,72 +261,60 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
             <Col style={{padding: 0}}><h3>Calculations</h3></Col>
         </Row>
         <Row>
-            <Col sm="6" style={{padding: 0}}>
+            <Col style={{paddingRight: 0}} sm={3}>
+                <h4>Line</h4>
                 <Row>
-                    <Col style={{paddingRight: 0}}>
-                        <h4>Line</h4>
-                        <Row>
-                            <Col>
-                                <BootstrapSwitchButton 
-                                    style='switch-toggle'
-                                    onlabel='Show Line' 
-                                    offlabel='Show Point' 
-                                    onstyle='success' 
-                                    offstyle='danger'
-                                    onChange={this.onShowLineChange} 
-                                    checked={settings.line.showLine}
-                                />
-                                <h5>Point</h5>
-                                {this.generateLineForms()}
-                            </Col>
-                        </Row>
-                    </Col>
-                    <Col style={{padding: 0}}>
-                        <h4>Labeling</h4>
-                        <Row>
-                        <Col>
-                            <BootstrapSwitchButton 
-                                style='switch-toggle'
-                                onlabel='Short Names' 
-                                offlabel='Long Names' 
-                                onstyle='success' 
-                                offstyle='danger'
-                                onChange={this.onShortNameChange} 
-                                checked={format.shortNames}
-                            />
-                        </Col>
-                        </Row>
-                        {this.generateFormatForms()}
+                    <Col>
+                        <BootstrapSwitchButton 
+                            style='switch-toggle'
+                            onlabel='Show Line' 
+                            offlabel='Show Point' 
+                            onstyle='success' 
+                            offstyle='danger'
+                            onChange={this.onShowLineChange} 
+                            checked={settings.line.showLine}
+                        />
+                        <h5>Point</h5>
+                        {this.generateLineForms()}
                     </Col>
                 </Row>
             </Col>
-            <Col style={{padding: 0}}>
+            <Col style={{padding: 0}} sm={3}>
+                <h4>Labeling</h4>
                 <Row>
-                    <Col style={{padding: 0}}>
-                        <h4>Launch Angle</h4>
-                        {this.generateLaunchAngleForm()}
-                    </Col>
-                    <Col sm="6" style={{paddingRight: 0, paddingLeft: 0}}>
-                        <h4>Numerical Analysis</h4>
-                        <CalculationRadio settings={settings}/>
-                        {this.generateNumericalMethodForm()}
-                    </Col>
+                <Col>
+                    <BootstrapSwitchButton 
+                        style='switch-toggle'
+                        onlabel='Short Names' 
+                        offlabel='Long Names' 
+                        onstyle='success' 
+                        offstyle='danger'
+                        onChange={this.onShortNameChange} 
+                        checked={format.shortNames}
+                    />
+                </Col>
                 </Row>
+                {this.generateFormatForms()}
+            </Col>
+            <Col style={{padding: 0}} sm={3}>
+                <h4>Launch Angle</h4>
+                {this.generateLaunchAngleForm()}
+            </Col>
+            <Col style={{paddingRight: 0, paddingLeft: 0}} sm={3}>
+                <h4>Numerical Analysis</h4>
+                <CalculationRadio settings={settings}/>
+                {this.generateNumericalMethodForm()}
             </Col>
         </Row>
         <hr/>
         <Row>
-            <Col sm="6" style={{padding: 0}}>
-                <Row>
-                    <Col>
-                        <h4>Range Axis</h4>
-                        {this.generateGraphForm()}
-                    </Col>
-                    <Col style={{paddingLeft: 0, paddingRight: '15px'}}>
-                        <h4>Color Generation</h4>
-                        {this.generateColorForms()}
-                    </Col>
-                </Row>
+            <Col sm={3}>
+                <h4>Range Axis</h4>
+                {this.generateGraphForm()}
+            </Col>
+            <Col style={{paddingLeft: 0, paddingRight: '15px'}} sm={3}>
+                <h4>Color Generation</h4>
+                {this.generateColorForms()}
             </Col>
         </Row>
     </>
