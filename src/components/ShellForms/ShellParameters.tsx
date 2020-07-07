@@ -14,7 +14,7 @@ export class ShellParameters extends React.PureComponent<shellParametersProps>{
 	downloadRef = React.createRef<DownloadButton>();
 	onChange = (value, k) => {this.props.handleValueChange(value, k);}
 	private updateShellsI = () => {
-		const props = this.props;
+		const {props} = this;
 		const updateItem = ([key, value] : [S.formsT, S.labelT]): void => {
 			value[S.labelI.ref].current!.updateValue(props.formData[key]);
 		}
@@ -23,12 +23,12 @@ export class ShellParameters extends React.PureComponent<shellParametersProps>{
 	}
 	updateShells = () => {this.updateShellsI()();}
 	updateDownloadJSON = () => {
-		const formData = this.props.formData, selectedData = clonedeep(FormData); delete selectedData.colors;
+		const {formData} = this.props, selectedData = clonedeep(FormData); delete selectedData.colors;
         const url = URL.createObjectURL(new Blob([JSON.stringify(selectedData)], {type: 'text/json;charset=utf-8'}));
         this.downloadRef.current!.update(url, formData.name + '.json');
 	}
 	addForms = () => {
-		const props = this.props;
+		const {props} = this;
 		const commonStyle = {
 			inputGroup:{width: "50%"},
 			formLabel:{padding: 0}

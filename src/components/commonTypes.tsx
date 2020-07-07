@@ -48,7 +48,7 @@ export interface lineSettingsT {
 }
 export interface formatSettingsT {
     rounding: number | null, shortNames: boolean,
-    colors: colorSettingsT
+    colors: colorSettingsT, legendPosition: string,
 }
 export interface settingsT{
     distance: distanceSettingsT, calculationSettings: calculationSettingsT,

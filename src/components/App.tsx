@@ -40,7 +40,7 @@ class App extends React.Component<{},{}> {
 			launchAngle : {min: 0, max: 25, precision: 0.1},
 		},
 		format: {
-			rounding: 3, shortNames: true,
+			rounding: 3, shortNames: true, legendPosition: 'right',
 			colors : {
 				hueMin: 0, hueMax: 360,
 				chromaMin: 40, chromaMax: 70,
@@ -96,9 +96,9 @@ class App extends React.Component<{},{}> {
 
 	// Setup calculations - update with new general settings
 	applyCalculationSettings = () : void => {
-		const instance = this.instance; 
+		const {instance} = this; 
 		const calcSettings = this.settings.calculationSettings;
-		const launchAngle = calcSettings.launchAngle;
+		const {launchAngle} = calcSettings;
 		instance.setMax(launchAngle.max); 
 		instance.setMin(launchAngle.min);
 		instance.setPrecision(launchAngle.precision);
@@ -136,7 +136,7 @@ class App extends React.Component<{},{}> {
 		return this.makePoint(shell, index, dist, 'angle', pointFunction);
 	}
 	private makePoint = (shell, index, dist, target : 'impact'| 'angle', pointFunction) => {
-		const calculatedData = this.calculatedData;
+		const {calculatedData} = this;
 		Object.entries(calculatedData[target]).forEach(([dataType, output] : [string, T.pointArrays]) => {
 			output[shell][index] = {x: dist, y: pointFunction(index, dataType, shell)};
 		});
@@ -145,9 +145,10 @@ class App extends React.Component<{},{}> {
 		const shellData = this.SFCref.current!.returnShellData();
 		const tgtData = this.TFCref.current!.returnData();
 		const numShells: number = shellData.length;
+		if(this.instance === undefined) return;
 		if(numShells <= 0){return
 		}else{
-			const instance = this.instance, arrayIndices = this.arrayIndices, calculatedData = this.calculatedData;
+			const {instance, arrayIndices, calculatedData} = this;
 			instance.resize(numShells); calculatedData.numShells = numShells;
 			this.applyCalculationSettings();
 			//Update Shell Data

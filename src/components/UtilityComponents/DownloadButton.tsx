@@ -11,7 +11,7 @@ export class DownloadButton extends React.Component<{updateData: Function, label
     }
     private click = () => {this.props.updateData()}
     render(){
-        const state = this.state, props = this.props;
+        const {state, props} = this;
         return (
 <a download={state.download} href={state.href}>
     <Button variant="outline-secondary" onClick={this.click} style={props.style}>{props.label}</Button>

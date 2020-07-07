@@ -1,66 +1,40 @@
 import React from 'react';
-import {ToggleButtonGroup, ToggleButton, Col, Row} from 'react-bootstrap';
+import {Col, Row} from 'react-bootstrap';
 import BootstrapSwitchButton from 'bootstrap-switch-button-react';
 
 import * as T from '../commonTypes';
 import {ParameterForm} from '../UtilityComponents';
+import {SettingsRadio, CommonRadioFormat} from './SettingsRadio';
 
-class CalculationRadio extends React.PureComponent<{settings: T.settingsT}, {value: number}>{
-    constructor(props){
-        super(props);
-        this.state = {
-            value: props.settings.calculationSettings.calculationMethod
-        };
-    }
-    private setCalcMethod = (event) => {
-        const value = parseInt(event.target.value);
-        this.props.settings.calculationSettings.calculationMethod = value;
-        this.setState({value: value});
-    }
-    render(){
-        const setCalcMethod = this.setCalcMethod;
-        return(
-            <Row className="justify-content-md-center" 
-            style={{paddingLeft: '1rem', paddingRight: '1rem', paddingBottom: '.5rem'}}>
-                <Col sm="10">
-                    <ToggleButtonGroup toggle vertical 
-                        type="radio" 
-                        name="radio" 
-                        value={this.state.value}>
-                        <ToggleButton 
-                            onChange={setCalcMethod} 
-                            type="radio" 
-                            value={0} 
-                            variant="secondary">
-                            Adams-Bashforth 5
-                        </ToggleButton>
-                        <ToggleButton 
-                            onChange={setCalcMethod} 
-                            type="radio" 
-                            value={1} 
-                            variant="secondary">
-                            Forward Euler
-                        </ToggleButton>
-                        <ToggleButton 
-                            onChange={setCalcMethod} 
-                            type="radio" 
-                            value={2} 
-                            variant="secondary">
-                            Runge-Kutta 2
-                        </ToggleButton>
-                        <ToggleButton 
-                            onChange={setCalcMethod} 
-                            type="radio" 
-                            value={3} 
-                            variant="secondary">
-                            Runge-Kutta 4
-                        </ToggleButton>
-                    </ToggleButtonGroup>
-                </Col>
-            </Row>
-        );
-    }
-}
+
+const PositionRadio : React.FunctionComponent<{settings: T.settingsT}> = React.memo(({settings}) => {
+    const options=['Top', 'Left', 'Bottom', 'Right'];
+    const values=['top', 'left', 'bottom', 'right'];
+    const {format} = settings;
+    const onChange = (value) => {format.legendPosition = value;};
+    return (
+        <CommonRadioFormat>
+            <SettingsRadio options={options} values={values}
+                defaultValue={format.legendPosition}
+                onChange={onChange}
+            />
+        </CommonRadioFormat>
+    );
+});
+const CalculationRadio : React.FunctionComponent<{settings: T.settingsT}> = React.memo(({settings}) => {
+    const options = ["Adams-Bashforth 5", "Forward Euler", "Runge-Kutta 2", "Runge-Kutta 4"];
+    const values = [0, 1, 2, 3];
+    const {calculationSettings} = settings;
+    const onChange = (value) => {calculationSettings.calculationMethod = value;};
+    return(
+        <CommonRadioFormat>
+            <SettingsRadio options={options} values={values}
+                defaultValue={calculationSettings.calculationMethod}
+                onChange={onChange}
+            />
+        </CommonRadioFormat>
+    );
+});
 
 interface settingsBarProps{
     settings: T.settingsT, updateColors: Function
@@ -149,7 +123,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
     }
     //Calculations
     private handleCalculationChange = (value: string, id: string) : void | string => {
-        const calculationSettings = this.props.settings.calculationSettings;
+        const {calculationSettings} = this.props.settings;
         if(value === ''){return 'error';}
         const numValue = parseFloat(value);
         calculationSettings.launchAngle[id] = numValue;
@@ -162,7 +136,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
         );
     }
     private handleNumericalMethodChange = (value: string, id: string) : void | string => {
-        const calculationSettings = this.props.settings.calculationSettings;
+        const {calculationSettings} = this.props.settings;
         if(value === ''){return 'error';}
         const numValue = parseFloat(value);
         if(id === 'timeStep'){
@@ -253,80 +227,74 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
     }
     private generateColorForms = this.generateColorFormsInternal();
     render(){
-        const settings = this.props.settings, format = settings.format;
+        const {settings} = this.props, {format} = settings;
         return(
     <>
         <Row>
-            <Col style={{padding: 0}}><h3>Graphs</h3></Col>
+            <Col style={{padding: 0}} sm={9}><h3>Graphs</h3></Col>
             <Col style={{padding: 0}}><h3>Calculations</h3></Col>
         </Row>
+        <hr/>
         <Row>
-            <Col sm="6" style={{padding: 0}}>
+            <Col style={{paddingRight: 0}} sm={3}>
+                <h4>Line</h4>
                 <Row>
-                    <Col style={{paddingRight: 0}}>
-                        <h4>Line</h4>
-                        <Row>
-                            <Col>
-                                <BootstrapSwitchButton 
-                                    style='switch-toggle'
-                                    onlabel='Show Line' 
-                                    offlabel='Show Point' 
-                                    onstyle='success' 
-                                    offstyle='danger'
-                                    onChange={this.onShowLineChange} 
-                                    checked={settings.line.showLine}
-                                />
-                                <h5>Point</h5>
-                                {this.generateLineForms()}
-                            </Col>
-                        </Row>
-                    </Col>
-                    <Col style={{padding: 0}}>
-                        <h4>Labeling</h4>
-                        <Row>
-                        <Col>
-                            <BootstrapSwitchButton 
-                                style='switch-toggle'
-                                onlabel='Short Names' 
-                                offlabel='Long Names' 
-                                onstyle='success' 
-                                offstyle='danger'
-                                onChange={this.onShortNameChange} 
-                                checked={format.shortNames}
-                            />
-                        </Col>
-                        </Row>
-                        {this.generateFormatForms()}
+                    <Col>
+                        <BootstrapSwitchButton 
+                            style='switch-toggle'
+                            onlabel='Show Line' 
+                            offlabel='Show Point' 
+                            onstyle='success' 
+                            offstyle='danger'
+                            onChange={this.onShowLineChange} 
+                            checked={settings.line.showLine}
+                        />
+                        <h5>Point</h5>
+                        {this.generateLineForms()}
                     </Col>
                 </Row>
             </Col>
-            <Col style={{padding: 0}}>
+            <Col style={{padding: 0}} sm={3}>
+                <h4>Labeling</h4>
                 <Row>
-                    <Col style={{padding: 0}}>
-                        <h4>Launch Angle</h4>
-                        {this.generateLaunchAngleForm()}
-                    </Col>
-                    <Col sm="6" style={{paddingRight: 0, paddingLeft: 0}}>
-                        <h4>Numerical Analysis</h4>
-                        <CalculationRadio settings={settings}/>
-                        {this.generateNumericalMethodForm()}
-                    </Col>
+                <Col>
+                    <BootstrapSwitchButton 
+                        style='switch-toggle'
+                        onlabel='Short Names' 
+                        offlabel='Long Names' 
+                        onstyle='success' 
+                        offstyle='danger'
+                        onChange={this.onShortNameChange} 
+                        checked={format.shortNames}
+                    />
+                </Col>
                 </Row>
+                {this.generateFormatForms()}
+            </Col>
+            <Col sm={3}>
+                <h4>Legend Position</h4>
+                <PositionRadio settings={settings}/>
+            </Col>
+            <Col style={{padding: 0}} sm={3}>
+                <h4>Launch Angle</h4>
+                {this.generateLaunchAngleForm()}
             </Col>
         </Row>
         <hr/>
         <Row>
-            <Col sm="6" style={{padding: 0}}>
-                <Row>
-                    <Col>
-                        <h4>Range Axis</h4>
-                        {this.generateGraphForm()}
-                    </Col>
-                    <Col style={{paddingLeft: 0, paddingRight: '15px'}}>
-                        <h4>Color Generation</h4>
-                        {this.generateColorForms()}
-                    </Col>
-                </Row>
+            <Col sm={3}>
+                <h4>Range Axis</h4>
+                {this.generateGraphForm()}
+            </Col>
+            <Col style={{paddingLeft: 0, paddingRight: '15px'}} sm={3}>
+                <h4>Color Generation</h4>
+                {this.generateColorForms()}
+            </Col>
+            <Col sm={3}></Col>
+            <Col style={{paddingRight: 0, paddingLeft: 0}} sm={3}>
+                <h4>Numerical Analysis</h4>
+                <CalculationRadio settings={settings}/>
+                {this.generateNumericalMethodForm()}
             </Col>
         </Row>
     </>
