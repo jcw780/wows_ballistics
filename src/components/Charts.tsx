@@ -58,7 +58,6 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
     }
     updateInternal = () => {
         if(this.wrapperRef.current !== undefined){
-            console.log(this.chartRef.current!.chartInstance);
             this.chartRef.current!.chartInstance.update();
         }
     }
@@ -387,19 +386,12 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     config.data.datasets.length = 0; //empty options and datasets
                     //avoid mutations so we can use chart.js update instead of forceUpdate
                     const temp = setup(staticOption[1][i])
-                    config.options.scales = {...config.options.scales, ...temp.scales};
-                    config.options.tooltips = {...config.options.tooltips, ...temp.tooltips};
-                    if(config.options.title === undefined){
-                        config.options.title = temp.title;
-                    }else{
-                        //Only will be reached if ref is defined
-                        //Have to inject title into chartinstance because it doesn't update otherwise...
-                        //Not the best solution but if it works...
-                        chart[singleChartIndex.ref].current.chartRef.current.chartInstance.options.title.text = temp.title.text;
+                    config.options = {...config.options, ...temp}; //set options
+                    const chartRef = chart[singleChartIndex.ref].current;
+                    if(chartRef){ 
+                        //Inject title directly into chartInstance - otherwise won't display properly
+                        chartRef.chartRef.current.chartInstance.options.title.text = temp.title.text;
                     }
-                    //config.options.title.text = temp.title.text;
-                    //config.options.title.display = true;
-                    //config.options = {...config.options, ...setup(staticOption[1][i])}; //set options
                 }
                 return () => chartConfig.forEach(singleChart);
             }
@@ -408,15 +400,24 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         //Post-Penetration Charts
         const configPost = this.chartConfigs.post, postData = graphData.post;
 
+        
+        // Whether to use Chart.js update or groupUpdate post
+        //     true: use Chart.js update
+        //     false: groupUpdate post
+        
+        let updatePost = true;
+
         //Resizing chartConfigs.post and props.links upon addition or deletion of angles
         const resizeAngleDependents = () => {
             const angleLengthDiff = graphData.angles.length - configPost.length;
             if(angleLengthDiff > 0){
+                updatePost = false; //need to add charts
                 for(let i=0; i<angleLengthDiff; i++){
                     configPost.push([{data: {datasets : Array<any>(),}, options: {}}, React.createRef<SingleChart>(), '']);
                     this.props.links.post.push(['', React.createRef<SingleChart>()]); // navbar links
                 }
             }else if(angleLengthDiff < 0){
+                updatePost = false; //need to delete charts
                 configPost.length = graphData.angles.length;
                 this.props.links.post.length = graphData.angles.length; // navbar links
             }
@@ -433,13 +434,13 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     yAxisID: 'detDist', borderColor: "#505050", fill: false, 
                     pointRadius: commonPointRadius, pointHitRadius: 5 ,
                 });
+                //tabbed weirdly so actual string doesn't have tabs in it
+                const fullName = `Internal Width Traveled before Detonation | ${
+                    targetedArmor} | ${targetInclination} | Horizontal Impact Angle: ${    
+                    graphData.angles[i]}°`;
                 //avoid mutations so we can use chart.js update instead of forceUpdate
                 chart[singleChartIndex.config].options = {...chart[singleChartIndex.config].options, 
-                    title: {
-                        display: true,
-                        text: 
-                        `Internal Width Traveled before Detonation | ${targetedArmor} | ${targetInclination} | Horizontal Impact Angle: ${graphData.angles[i]}°`
-                    },
+                    title: {display: true, text: fullName},
                     scales: {
                         xAxes: xAxesDistance,
                         yAxes: [{
@@ -451,8 +452,18 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                         }],
                     },
                     tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}},            
-                } //Implement title injection when this becomes updateable
-                chart[singleChartIndex.name] = `Horizontal Impact Angle ${i + 1}: ${graphData.angles[i]}°`
+                }
+                //This is kind of for future charupdate implementations
+                const chartRef = chart[singleChartIndex.ref].current;
+                if(chartRef){ 
+                    //Inject title directly into chartInstance - otherwise won't display properly
+                    chartRef.chartRef.current.chartInstance.options.title.text = fullName;
+                }
+                const shortName = `Horizontal Impact Angle ${i + 1}: ${graphData.angles[i]}°`;
+                if(shortName != chart[singleChartIndex.name]){
+                    updatePost = false; //need to update buttons to match 
+                    chart[singleChartIndex.name] = shortName;
+                }
             } 
             return () => configPost.forEach(singleChart);
         }
@@ -546,7 +557,11 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             if(forceUpdate){ //For disabling rerender in constructor [will be rendered anyways]
                 this.updateCharts('impact'); //Only need to update charts not surrounding components
                 this.updateCharts('angle');
-                this.updateGroup('post'); //May need to for this - could optimize it later
+                if(updatePost){
+                    this.updateCharts('post');
+                }else{
+                    this.updateGroup('post');
+                }
             }
         }
     }
