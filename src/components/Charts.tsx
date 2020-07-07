@@ -169,7 +169,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             [{data: {datasets : Array<any>(),}, options: {}}, 
                 React.createRef<SingleChart>(), 'Maximum Angle for Perforation'],
             [{data: {datasets : Array<any>(),}, options: {}}, 
-                React.createRef<SingleChart>(), 'Minimum Fusing Angle'],
+                React.createRef<SingleChart>(), 'Minimum Fuzing Angle'],
         ],
         post: [ //postpenetration charts
             [{data: {datasets : Array<any>(),}, options: {}}, 
@@ -349,14 +349,14 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     {title: angleNameTemplate(configAngle[0][singleChartIndex.name]), axes: [
                         {id: 'angle',
                         lines: [
-                            {lineLabel: 'Maximum Perforation Angle: ', data: 'armorD'}, 
+                            {lineLabel: 'Max Perforation Angle: ', data: 'armorD'}, 
                             {lineLabel: ra0L, data: 'ra0D'}, {lineLabel: ra1L, data: 'ra1D'}, 
                         ]},
                     ]}, 
                     {title: angleNameTemplate(configAngle[1][singleChartIndex.name]), axes: [
                         {id: 'angle',
                         lines: [
-                            {lineLabel: 'Minimum Fusing Angle: ', data: 'fuseD'}, 
+                            {lineLabel: 'Min Fuzing Angle: ', data: 'fuseD'}, 
                             {lineLabel: ra0L, data: 'ra0D'}, {lineLabel: ra1L, data: 'ra1D'}, 
                         ]},
                     ]}
@@ -408,7 +408,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         }
 
         //Colons are used to denote split between label and name
-        const WFL = "Fused: ", NFL = "No Fusing: ";
+        const WFL = "Fuzed: ", NFL = "Unfuzed: ";
         const initializePostCharts = () => {
             const singleChart = (chart, i) => {
                 chart[singleChartIndex.config].data.datasets.length = 0; // clear dataset

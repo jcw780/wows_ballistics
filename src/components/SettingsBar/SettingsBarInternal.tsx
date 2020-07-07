@@ -4,43 +4,37 @@ import BootstrapSwitchButton from 'bootstrap-switch-button-react';
 
 import * as T from '../commonTypes';
 import {ParameterForm} from '../UtilityComponents';
-import {SettingsRadio} from './SettingsRadio';
+import {SettingsRadio, CommonRadioFormat} from './SettingsRadio';
 
 
-const PositionRadio : React.FunctionComponent<{settings: T.settingsT}> = ({settings}) => {
+const PositionRadio : React.FunctionComponent<{settings: T.settingsT}> = React.memo(({settings}) => {
     const options=['Top', 'Left', 'Bottom', 'Right'];
     const values=['top', 'left', 'bottom', 'right'];
     const {format} = settings;
     const onChange = (value) => {format.legendPosition = value;};
     return (
-        <Row className="justify-content-md-center" 
-            style={{paddingLeft: '1rem', paddingRight: '1rem', paddingBottom: '.5rem'}}>
-            <Col sm="10">
-                <SettingsRadio options={options} values={values}
-                    defaultValue={format.legendPosition}
-                    onChange={onChange}
-                />
-            </Col>
-        </Row>
+        <CommonRadioFormat>
+            <SettingsRadio options={options} values={values}
+                defaultValue={format.legendPosition}
+                onChange={onChange}
+            />
+        </CommonRadioFormat>
     );
-}
-const CalculationRadio : React.FunctionComponent<{settings: T.settingsT}> = ({settings}) => {
+});
+const CalculationRadio : React.FunctionComponent<{settings: T.settingsT}> = React.memo(({settings}) => {
     const options = ["Adams-Bashforth 5", "Forward Euler", "Runge-Kutta 2", "Runge-Kutta 4"];
     const values = [0, 1, 2, 3];
     const {calculationSettings} = settings;
     const onChange = (value) => {calculationSettings.calculationMethod = value;};
     return(
-        <Row className="justify-content-md-center" 
-        style={{paddingLeft: '1rem', paddingRight: '1rem', paddingBottom: '.5rem'}}>
-            <Col sm="10">
-                <SettingsRadio options={options} values={values}
-                    defaultValue={calculationSettings.calculationMethod}
-                    onChange={onChange}
-                />
-            </Col>
-        </Row>
+        <CommonRadioFormat>
+            <SettingsRadio options={options} values={values}
+                defaultValue={calculationSettings.calculationMethod}
+                onChange={onChange}
+            />
+        </CommonRadioFormat>
     );
-}
+});
 
 interface settingsBarProps{
     settings: T.settingsT, updateColors: Function
