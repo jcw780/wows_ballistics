@@ -1,61 +1,28 @@
 import React from 'react';
-import {ToggleButtonGroup, ToggleButton, Col, Row} from 'react-bootstrap';
+import {Col, Row} from 'react-bootstrap';
 import BootstrapSwitchButton from 'bootstrap-switch-button-react';
 
 import * as T from '../commonTypes';
 import {ParameterForm} from '../UtilityComponents';
+import {SettingsRadio} from './SettingsRadio';
 
 class CalculationRadio extends React.PureComponent<{settings: T.settingsT}, {value: number}>{
-    constructor(props){
-        super(props);
-        this.state = {
-            value: props.settings.calculationSettings.calculationMethod
-        };
-    }
-    private setCalcMethod = (event) => {
-        const value = parseInt(event.target.value);
+    options = ["Adams-Bashforth 5", "Forward Euler", "Runge-Kutta 2", "Runge-Kutta 4"];
+    values = [0, 1, 2, 3];
+    private setCalcMethod = (value) => {
         this.props.settings.calculationSettings.calculationMethod = value;
-        this.setState({value: value});
     }
     render(){
-        const {setCalcMethod} = this;
         return(
             <Row className="justify-content-md-center" 
             style={{paddingLeft: '1rem', paddingRight: '1rem', paddingBottom: '.5rem'}}>
                 <Col sm="10">
-                    <ToggleButtonGroup toggle vertical 
-                        type="radio" 
-                        name="radio" 
-                        value={this.state.value}>
-                        <ToggleButton 
-                            onChange={setCalcMethod} 
-                            type="radio" 
-                            value={0} 
-                            variant="secondary">
-                            Adams-Bashforth 5
-                        </ToggleButton>
-                        <ToggleButton 
-                            onChange={setCalcMethod} 
-                            type="radio" 
-                            value={1} 
-                            variant="secondary">
-                            Forward Euler
-                        </ToggleButton>
-                        <ToggleButton 
-                            onChange={setCalcMethod} 
-                            type="radio" 
-                            value={2} 
-                            variant="secondary">
-                            Runge-Kutta 2
-                        </ToggleButton>
-                        <ToggleButton 
-                            onChange={setCalcMethod} 
-                            type="radio" 
-                            value={3} 
-                            variant="secondary">
-                            Runge-Kutta 4
-                        </ToggleButton>
-                    </ToggleButtonGroup>
+                    <SettingsRadio
+                        options={this.options}
+                        values={this.values}
+                        defaultValue={this.props.settings.calculationSettings.calculationMethod}
+                        onChange={this.setCalcMethod}
+                    />
                 </Col>
             </Row>
         );
@@ -257,9 +224,10 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
         return(
     <>
         <Row>
-            <Col style={{padding: 0}}><h3>Graphs</h3></Col>
+            <Col style={{padding: 0}} sm={9}><h3>Graphs</h3></Col>
             <Col style={{padding: 0}}><h3>Calculations</h3></Col>
         </Row>
+        <hr/>
         <Row>
             <Col style={{paddingRight: 0}} sm={3}>
                 <h4>Line</h4>
@@ -296,14 +264,10 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                 </Row>
                 {this.generateFormatForms()}
             </Col>
+            <Col sm={3}></Col>
             <Col style={{padding: 0}} sm={3}>
                 <h4>Launch Angle</h4>
                 {this.generateLaunchAngleForm()}
-            </Col>
-            <Col style={{paddingRight: 0, paddingLeft: 0}} sm={3}>
-                <h4>Numerical Analysis</h4>
-                <CalculationRadio settings={settings}/>
-                {this.generateNumericalMethodForm()}
             </Col>
         </Row>
         <hr/>
@@ -315,6 +279,12 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
             <Col style={{paddingLeft: 0, paddingRight: '15px'}} sm={3}>
                 <h4>Color Generation</h4>
                 {this.generateColorForms()}
+            </Col>
+            <Col sm={3}></Col>
+            <Col style={{paddingRight: 0, paddingLeft: 0}} sm={3}>
+                <h4>Numerical Analysis</h4>
+                <CalculationRadio settings={settings}/>
+                {this.generateNumericalMethodForm()}
             </Col>
         </Row>
     </>
