@@ -7,23 +7,25 @@ interface settingsRadioProps{
 
 export const SettingsRadio: React.FunctionComponent<settingsRadioProps> = ({options, values, defaultValue, onChange} : settingsRadioProps) => {
     const [value, setValue] = useState(() => {
-        return values.indexOf(defaultValue)});
-    const onChangeInternal = (event) => {
+        return values.indexOf(defaultValue)
+    });
+    const onChangeInternal = event => {
         const value = parseInt(event.target.value);
         setValue(value);
         onChange(values[value]);
     }
     return (
         <ToggleButtonGroup toggle vertical 
-        type="radio" name="radio" 
-        value={value}>
+            type="radio" name="radio" 
+            value={value}
+        >
             {options.map(((option, i) => {
                 return (
-                <ToggleButton key={i}
+                <ToggleButton key={i} value={i} 
                     onChange={onChangeInternal} 
                     type="radio" 
-                    value={i} 
-                    variant="secondary">
+                    variant="secondary"
+                >
                     {option}
                 </ToggleButton>);
             }))}

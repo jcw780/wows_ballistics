@@ -40,7 +40,7 @@ class App extends React.Component<{},{}> {
 			launchAngle : {min: 0, max: 25, precision: 0.1},
 		},
 		format: {
-			rounding: 3, shortNames: true,
+			rounding: 3, shortNames: true, legendPosition: 'right',
 			colors : {
 				hueMin: 0, hueMax: 360,
 				chromaMin: 40, chromaMax: 70,

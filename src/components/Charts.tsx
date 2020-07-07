@@ -262,6 +262,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             scaleLabel: {display: true, labelString: "Range (m)",},
             type: 'linear', ticks:{callback: addCommas}
         }];
+        const legend = {display: true, position: settings.format.legendPosition};
         //For doing weird closure abuse things - tbh not sure I even need this...
         const callbackHelper = (f: Function) => {return (...args) => {f(...args)();}}
         const setXAxes = () => {
@@ -289,6 +290,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                         scaleLabel: {display: true, labelString: row.axes[1].axLabel}
                     },
                 ]},
+                legend: legend,
                 tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}},
             }
         }
@@ -305,6 +307,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                         ticks:{min: 0}
                     }]
                 },
+                legend: legend,
                 tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}},
             }
         }
@@ -432,6 +435,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                             },
                         }],
                     },
+                    legend: legend,
                     tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}},            
                 }
                 //This is kind of for future charupdate implementations

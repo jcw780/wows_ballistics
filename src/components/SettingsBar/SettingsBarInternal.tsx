@@ -6,27 +6,40 @@ import * as T from '../commonTypes';
 import {ParameterForm} from '../UtilityComponents';
 import {SettingsRadio} from './SettingsRadio';
 
-class CalculationRadio extends React.PureComponent<{settings: T.settingsT}, {value: number}>{
-    options = ["Adams-Bashforth 5", "Forward Euler", "Runge-Kutta 2", "Runge-Kutta 4"];
-    values = [0, 1, 2, 3];
-    private setCalcMethod = (value) => {
-        this.props.settings.calculationSettings.calculationMethod = value;
-    }
-    render(){
-        return(
-            <Row className="justify-content-md-center" 
+
+const PositionRadio : React.FunctionComponent<{settings: T.settingsT}> = ({settings}) => {
+    const options=['Top', 'Left', 'Bottom', 'Right'];
+    const values=['top', 'left', 'bottom', 'right'];
+    const {format} = settings;
+    const onChange = (value) => {format.legendPosition = value;};
+    return (
+        <Row className="justify-content-md-center" 
             style={{paddingLeft: '1rem', paddingRight: '1rem', paddingBottom: '.5rem'}}>
-                <Col sm="10">
-                    <SettingsRadio
-                        options={this.options}
-                        values={this.values}
-                        defaultValue={this.props.settings.calculationSettings.calculationMethod}
-                        onChange={this.setCalcMethod}
-                    />
-                </Col>
-            </Row>
-        );
-    }
+            <Col sm="10">
+                <SettingsRadio options={options} values={values}
+                    defaultValue={format.legendPosition}
+                    onChange={onChange}
+                />
+            </Col>
+        </Row>
+    );
+}
+const CalculationRadio : React.FunctionComponent<{settings: T.settingsT}> = ({settings}) => {
+    const options = ["Adams-Bashforth 5", "Forward Euler", "Runge-Kutta 2", "Runge-Kutta 4"];
+    const values = [0, 1, 2, 3];
+    const {calculationSettings} = settings;
+    const onChange = (value) => {calculationSettings.calculationMethod = value;};
+    return(
+        <Row className="justify-content-md-center" 
+        style={{paddingLeft: '1rem', paddingRight: '1rem', paddingBottom: '.5rem'}}>
+            <Col sm="10">
+                <SettingsRadio options={options} values={values}
+                    defaultValue={calculationSettings.calculationMethod}
+                    onChange={onChange}
+                />
+            </Col>
+        </Row>
+    );
 }
 
 interface settingsBarProps{
@@ -264,7 +277,10 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                 </Row>
                 {this.generateFormatForms()}
             </Col>
-            <Col sm={3}></Col>
+            <Col sm={3}>
+                <h4>Legend Position</h4>
+                <PositionRadio settings={settings}/>
+            </Col>
             <Col style={{padding: 0}} sm={3}>
                 <h4>Launch Angle</h4>
                 {this.generateLaunchAngleForm()}
