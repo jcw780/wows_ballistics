@@ -58,7 +58,7 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
     }
     updateInternal = () => {
         if(this.wrapperRef.current !== undefined){
-            this.wrapperRef.current!.forceUpdate();
+            this.chartRef.current!.chartInstance.update();
         }
     }
     toggleCollapse = () => this.setState((current) => {return {open: !current.open}});
@@ -384,7 +384,8 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 const singleChart = (chart, i) => {
                     const config = chart[singleChartIndex.config];
                     config.data.datasets.length = 0; //empty options and datasets
-                    config.options = setup(staticOption[1][i]); //set options
+                    //avoid mutations so we can use chart.js update instead of forceUpdate
+                    config.options = {...config.options, ...setup(staticOption[1][i])}; //set options
                 }
                 return () => chartConfig.forEach(singleChart);
             }
@@ -418,7 +419,8 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     yAxisID: 'detDist', borderColor: "#505050", fill: false, 
                     pointRadius: commonPointRadius, pointHitRadius: 5 ,
                 });
-                chart[singleChartIndex.config].options = {
+                //avoid mutations so we can use chart.js update instead of forceUpdate
+                chart[singleChartIndex.config].options = {...chart[singleChartIndex.config].options, 
                     title: {
                         display: true,
                         text: 
