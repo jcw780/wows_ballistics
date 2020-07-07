@@ -367,12 +367,11 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     const config = chart[singleChartIndex.config];
                     config.data.datasets.length = 0; //empty options and datasets
                     //avoid mutations so we can use chart.js update instead of forceUpdate
-                    const temp = setup(staticOption[1][i])
-                    config.options = {...config.options, ...temp}; //set options
+                    config.options = setup(staticOption[1][i]); //set options
                     const chartRef = chart[singleChartIndex.ref].current;
                     if(chartRef){ 
                         //Inject title directly into chartInstance - otherwise won't display properly
-                        chartRef.chartRef.current.chartInstance.options.title.text = temp.title.text;
+                        chartRef.chartRef.current.chartInstance.options = config.options;
                     }
                 }
                 return () => chartConfig.forEach(singleChart);
@@ -421,7 +420,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     targetedArmor} | ${targetInclination} | Horizontal Impact Angle: ${    
                     graphData.angles[i]}°`;
                 //avoid mutations so we can use chart.js update instead of forceUpdate
-                chart[singleChartIndex.config].options = {...chart[singleChartIndex.config].options, 
+                chart[singleChartIndex.config].options = {
                     title: {display: true, text: fullName},
                     scales: {
                         xAxes: xAxesDistance,
@@ -439,7 +438,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 const chartRef = chart[singleChartIndex.ref].current;
                 if(chartRef){ 
                     //Inject title directly into chartInstance - otherwise won't display properly
-                    chartRef.chartRef.current.chartInstance.options.title.text = fullName;
+                    chartRef.chartRef.current.chartInstance.options = chart[singleChartIndex.config].options;
                 }
                 const shortName = `Horizontal Impact Angle ${i + 1}: ${graphData.angles[i]}°`;
                 if(shortName !== chart[singleChartIndex.name]){
