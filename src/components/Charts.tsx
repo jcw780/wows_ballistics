@@ -15,27 +15,25 @@ type singleChartType = [chartDataOption, React.RefObject<SingleChart>, string]
 
 interface dimensionsT {height: number, width: number}
 interface singleChartProps{
-    data: singleChartType, dimensions: dimensionsT
+    config: singleChartType, dimensions: dimensionsT
 }
 
 interface singleChartState{open: boolean}
 export class SingleChart extends React.Component<singleChartProps, singleChartState> {
-    public static defaultProps = {
-        config : {data: {datasets : [],}, options: {}},
-        title : ""
-    }
+    /* public static defaultProps = {
+        config : {data: {datasets : [],}, options: {}}, title : ""
+    } */
     state = {open : true}; //apparently you need a value in state or else set state doesn't trigger rerender
     titles : T.collapseTitlesT = ["Hide: ", "Show: "]; // 0: Hide 1: Show
-    //wrapperRef : React.RefObject<ChartInternal> = React.createRef<ChartInternal>();
     chartRef : React.RefObject<Scatter> = React.createRef<Scatter>();
     scrollRef : React.RefObject<Button & HTMLButtonElement> = React.createRef<Button & HTMLButtonElement>();
     DownloadRef : React.RefObject<DownloadButton>[] = [
         React.createRef<DownloadButton>(), React.createRef<DownloadButton>()
     ];
     collapseId : string = 'chart'
-    constructor(props){
+    constructor(props : singleChartProps){
         super(props);
-        this.collapseId = props.data[singleChartIndex.name].replace(/ /g,"-");;
+        this.collapseId = props.config[singleChartIndex.name].replace(/ /g,"-");;
     }
     updateInternal = () => {
         if(this.chartRef.current !== undefined){
@@ -58,7 +56,8 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
         return `${dataset.label}${dataset.borderColor}`;
     }
     render(){
-        const config = this.props.data[singleChartIndex.config];
+        const {config, dimensions} = this.props; 
+        const configData = config[singleChartIndex.config];
         return(
 <>
     <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
@@ -68,14 +67,14 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
         aria-controls={this.collapseId} 
         aria-expanded={this.state.open}
         className={this.state.open === true ? 'active' : ''}
-    >{this.titles[Number(!this.state.open)] + this.props.data[singleChartIndex.name]}</Button>
+    >{this.titles[Number(!this.state.open)] + config[singleChartIndex.name]}</Button>
     <Collapse in={this.state.open}>
         <div id={this.collapseId}>
             <Scatter 
-                data={config.data} 
-                options={config.options}
-                width={this.props.dimensions.width} 
-                height={this.props.dimensions.height}
+                data={configData.data} 
+                options={configData.options}
+                width={dimensions.width} 
+                height={dimensions.height}
                 ref={this.chartRef} 
                 datasetKeyProvider={this.datasetKeyProvider}
             />
@@ -111,14 +110,12 @@ interface subGroupProps {
     dimensions: {height: number, width: number},  
 } 
 class SubGroup extends React.Component<subGroupProps>{
-    public static defaultProps = {
-        updateLinks: false
-    };
+    public static defaultProps = {updateLinks: false};
     private addChartInternal = () => {
         const singleChart = (value, i) : JSX.Element => {
             return (<SingleChart 
                 ref={value[singleChartIndex.ref]} key={i} 
-                data={value}
+                config={value}
                 dimensions={this.props.dimensions} 
                 />);
         }
@@ -128,7 +125,7 @@ class SubGroup extends React.Component<subGroupProps>{
     private addChart = this.addChartInternal();
     render(){return(<>{this.addChart()}</>)}
     componentDidMount(){
-        const links = this.props.links; //Initialize Links Names
+        const {links} = this.props; //Initialize Links Names
         this.props.config.forEach((chart, i) => {
             if(links.length === i){ links.push(['', React.createRef<SingleChart>()]);}
             const link = links[i];
@@ -138,8 +135,9 @@ class SubGroup extends React.Component<subGroupProps>{
     }
     componentDidUpdate(){
         if(this.props.updateLinks){
+            const {links} = this.props;
             this.props.config.forEach((chart, i) => {
-                const link = this.props.links[i];
+                const link = links[i];
                 link[T.singleLinkIndex.name] = chart[singleChartIndex.name]; 
                 link[T.singleLinkIndex.ref] = chart[singleChartIndex.ref];
             });
@@ -257,7 +255,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
     }
     private updateDataInternal = (graphData : T.calculatedData, forceUpdate: boolean) => {
         //Common Utility Functions / Values
-        const settings = this.props.settings, lineSettings = settings.line;
+        const {settings} = this.props, lineSettings = settings.line;
         const addCommas = (value, index, values) => {return value.toLocaleString();}
         const showLineValue = lineSettings.showLine, commonPointRadius = showLineValue ? 0 : lineSettings.pointRadius;
         const xAxesDistance = [{
