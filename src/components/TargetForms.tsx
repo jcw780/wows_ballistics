@@ -20,7 +20,7 @@ class RefAngleForm extends React.PureComponent<refAngleFormProps>{
         formGroup: {flexFlow: 'unset'}
     }
     render(){
-        const props = this.props;
+        const {props} = this;
         return (
             <Modal.Dialog style={{width: '100%', margin: 0}}>
                 <Modal.Header closeButton 
@@ -68,7 +68,7 @@ class AngleForm extends React.PureComponent<angleFormProps>{
         formGroup: {flexFlow: 'unset', paddingBottom: 0}
     });
     render(){
-        const props = this.props;
+        const {props} = this;
         return (
             <Modal.Dialog style={{width: '100%', margin: 0}}>
                 <Modal.Header closeButton
@@ -197,7 +197,7 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
     }
     private handleAngleChange = (value: string, id : number) : void => {this.targetData.angles[id] = parseFloat(value);}
     private generateAngleElements = (elementsPerColumn : number) => {
-        const stateKeys = this.state.keys, targetData = this.targetData; let angleElements : Array<Array<JSX.Element>> = [];
+        const stateKeys = this.state.keys, {targetData} = this; let angleElements : Array<Array<JSX.Element>> = [];
         Array.from(stateKeys.angles).forEach((key, i) => {
             const columnIndex = Math.floor(i / elementsPerColumn);
             if(i % elementsPerColumn === 0){angleElements.push([]);}
@@ -257,7 +257,7 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
         });
     }
     private renderFixedTargetLabels = () => {
-        const targetData = this.targetData;
+        const {targetData} = this;
         const commonStyle = {
             formControl: {minWidth: '50%', maxWidth: '6rem', display: "inline-flex"},
         };

@@ -18,7 +18,7 @@ class CalculationRadio extends React.PureComponent<{settings: T.settingsT}, {val
         this.setState({value: value});
     }
     render(){
-        const setCalcMethod = this.setCalcMethod;
+        const {setCalcMethod} = this;
         return(
             <Row className="justify-content-md-center" 
             style={{paddingLeft: '1rem', paddingRight: '1rem', paddingBottom: '.5rem'}}>
@@ -149,7 +149,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
     }
     //Calculations
     private handleCalculationChange = (value: string, id: string) : void | string => {
-        const calculationSettings = this.props.settings.calculationSettings;
+        const {calculationSettings} = this.props.settings;
         if(value === ''){return 'error';}
         const numValue = parseFloat(value);
         calculationSettings.launchAngle[id] = numValue;
@@ -162,7 +162,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
         );
     }
     private handleNumericalMethodChange = (value: string, id: string) : void | string => {
-        const calculationSettings = this.props.settings.calculationSettings;
+        const {calculationSettings} = this.props.settings;
         if(value === ''){return 'error';}
         const numValue = parseFloat(value);
         if(id === 'timeStep'){
@@ -253,7 +253,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
     }
     private generateColorForms = this.generateColorFormsInternal();
     render(){
-        const settings = this.props.settings, format = settings.format;
+        const {settings} = this.props, {format} = settings;
         return(
     <>
         <Row>

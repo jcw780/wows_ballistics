@@ -31,7 +31,7 @@ export class ParameterForm extends React.Component<parameterFormProps, parameter
 		}else return false;
 	};
 	private makeInputGroupInternal = () => {
-		const props = this.props, state = this.state, style = props.style;
+		const {props, state} = this, {style} = props;
 		const appendText = this.makeAppend();
 		const formControl = (
 			<Form.Control 
@@ -60,7 +60,7 @@ export class ParameterForm extends React.Component<parameterFormProps, parameter
 	}
 	private makeInputGroup = () => this.makeInputGroupInternal()();
 	private makeLabelGroup = () => {
-		const props = this.props, style = props.style;
+		const {props} = this, {style} = props;
 		if(props.children !== undefined && props.children !== (<></>)){
 			return (
 				<Form.Label column 
@@ -74,7 +74,7 @@ export class ParameterForm extends React.Component<parameterFormProps, parameter
 		}
 	}
 	render(){
-		const props = this.props, style = props.style;
+		const {props} = this, {style} = props;
 		return(
 			<Form.Group className="form-inline" style={style.formGroup}>
 				{this.makeLabelGroup()}

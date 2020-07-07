@@ -207,7 +207,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 	onNameChange = (value : string, id) => {this.formData.name = value};
 	handleValueChange = (value : string, k : S.formsT) => this.formData[k] = parseFloat(value);
 	getDefaultData = (data, nameUnprocessed : string) => { //Query Version End
-		let name = nameUnprocessed; const formData = this.formData, props = this.props;
+		let name = nameUnprocessed; const {formData, props} = this;
 		if(this.props.settings.format.shortNames) name = name.split("_").slice(1).join(" ");
 		formData.name = name; this.nameForm.current!.updateValue(name);
 		formData.caliber = data.bulletDiametr;
@@ -233,8 +233,8 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 	copyShip = () => this.props.copyShip(this.defaultData, this.formData, this.graph);
 	updateCanvas = () => {
 		//Draws colors 
-		const formData = this.formData;
-		formData.colors = this.props.colors.slice(this.props.index * 3, this.props.index * 3 + 3);
+		const {formData, props} = this;
+		formData.colors = props.colors.slice(props.index * 3, props.index * 3 + 3);
 		const ctx = this.canvasRef.current!.getContext('2d');
 		const height : number = this.canvasRef.current!.height;
 		const width : number = this.canvasRef.current!.width;
@@ -265,7 +265,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 	}
 	toggleGraph = checked => {this.graph = checked};
 	render() {
-		const props = this.props;
+		const {props} = this;
 		return(
 <Modal.Dialog>
 	<Modal.Header closeButton onHide={this.deleteShip}>
@@ -367,7 +367,7 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 	copyTemp : copyTempT; copied : boolean = false; colors : string[] = [];
 
 	addShip = () => {
-		const state = this.state;
+		const {state} = this;
 		if(state.disabled && (state.keys.size > 0)){return;}
 		else{
 			let index: number = 0;
@@ -384,7 +384,7 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 		}
 	}
 	deleteShip = (key, index) => {
-		const state = this.state;
+		const {state} = this;
 		if(state.disabled){return;}
 		else{
 			if(state.keys.size > 0){
@@ -436,7 +436,7 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 	}
 	shouldComponentUpdate(nextProps, nextState){return nextState.disabled;}
 	private addShellForm = (key : number, index : number, copied : boolean) => {
-		const props = this.props, state = this.state;
+		const {props, state} = this;
 		const ref = this.shellRefs[index], stateKeys = state.keys.size;
 		const makeShellForm = () => {
 			//Key not needed - added later in surrounding component

@@ -16,8 +16,9 @@ export class NavbarCustom extends React.Component<{links: T.linkT}>{
     ]);
     update = () => { 
         //only update one section - other sections dont get updated
-        if(this.navDropdownContainers[3] !== undefined){
-            this.navDropdownContainers[3].current!.forceUpdate();
+        const tgt = this.navDropdownContainers[3];
+        if(tgt !== undefined){
+            tgt.current!.forceUpdate();
         }
     }
     updateAll = () => {
@@ -29,7 +30,7 @@ export class NavbarCustom extends React.Component<{links: T.linkT}>{
     }
     private scrollToTop = _ => window.scrollTo(0, 0);
     render(){
-        const links = this.props.links;
+        const {links} = this.props;
         return(
 <Navbar collapseOnSelect variant="dark" bg="dark" expand="lg" fixed="top">
     <Navbar.Brand onClick={this.scrollToTop}>

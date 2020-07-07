@@ -37,7 +37,7 @@ export class DefaultForm extends React.PureComponent<defaultFormProps, defaultFo
 		return () => this.state.options.map(singleOption);
 	}
 	render(){
-		const props = this.props;
+		const {props} = this;
 		return (
 			<Form.Group className="form-inline" style={{marginBottom: ".25rem"}}>
 				<Form.Label column sm="3">{props.children}</Form.Label>
@@ -88,7 +88,7 @@ export class DefaultShips extends React.PureComponent
 	changeForm = async (value, id : keyof(defaultFormType)) => {
 		//this.defaultForms[id][singleFormIndex.value] = value;
 		let queryIndex = this.defaultForms[id][singleFormIndex.queryIndex];
-		const defaultData = this.props.defaultData;
+		const {defaultData} = this.props;
 		if(queryIndex === 0){
 			defaultData.queriedData = await fetchJsonData(
 				`${dataURL}${value}_s.json`);
@@ -172,7 +172,7 @@ export class DefaultShips extends React.PureComponent
 		return queries[index];
 	}
 	private addDefaultForms = () => {
-		const defaultData = this.props.defaultData;
+		const {defaultData} = this.props;
 		const singleForm = ([name, v] : [string, singleFormT], i) : JSX.Element => {
 			const defaultDataN = defaultData[name];
 			let defaultValue = defaultDataN[S.DefaultDataRowI.value];
