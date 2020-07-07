@@ -18,25 +18,6 @@ interface singleChartProps{
     data: singleChartType, dimensions: dimensionsT
 }
 
-interface ChartInternalProps extends singleChartProps{
-    datasetKeyProvider: (any: any) => string, chartRef: React.RefObject<Scatter>
-}
-class ChartInternal extends React.Component<ChartInternalProps>{
-    render(){
-        const config = this.props.data[singleChartIndex.config];
-        return(
-            <Scatter 
-                data={config.data} 
-                options={config.options}
-                width={this.props.dimensions.width} 
-                height={this.props.dimensions.height}
-                ref={this.props.chartRef} 
-                datasetKeyProvider={this.props.datasetKeyProvider}
-            />
-        );
-    }
-}
-
 interface singleChartState{open: boolean}
 export class SingleChart extends React.Component<singleChartProps, singleChartState> {
     public static defaultProps = {
@@ -45,7 +26,7 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
     }
     state = {open : true}; //apparently you need a value in state or else set state doesn't trigger rerender
     titles : T.collapseTitlesT = ["Hide: ", "Show: "]; // 0: Hide 1: Show
-    wrapperRef : React.RefObject<ChartInternal> = React.createRef<ChartInternal>();
+    //wrapperRef : React.RefObject<ChartInternal> = React.createRef<ChartInternal>();
     chartRef : React.RefObject<Scatter> = React.createRef<Scatter>();
     scrollRef : React.RefObject<Button & HTMLButtonElement> = React.createRef<Button & HTMLButtonElement>();
     DownloadRef : React.RefObject<DownloadButton>[] = [
@@ -57,7 +38,7 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
         this.collapseId = props.data[singleChartIndex.name].replace(/ /g,"-");;
     }
     updateInternal = () => {
-        if(this.wrapperRef.current !== undefined){
+        if(this.chartRef.current !== undefined){
             this.chartRef.current!.chartInstance.update();
         }
     }
@@ -77,7 +58,7 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
         return `${dataset.label}${dataset.borderColor}`;
     }
     render(){
-        
+        const config = this.props.data[singleChartIndex.config];
         return(
 <>
     <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
@@ -90,11 +71,14 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
     >{this.titles[Number(!this.state.open)] + this.props.data[singleChartIndex.name]}</Button>
     <Collapse in={this.state.open}>
         <div id={this.collapseId}>
-            <ChartInternal ref={this.wrapperRef}
-                data={this.props.data} 
-                dimensions={this.props.dimensions} 
-                datasetKeyProvider={this.datasetKeyProvider} 
-                chartRef={this.chartRef}/>
+            <Scatter 
+                data={config.data} 
+                options={config.options}
+                width={this.props.dimensions.width} 
+                height={this.props.dimensions.height}
+                ref={this.chartRef} 
+                datasetKeyProvider={this.datasetKeyProvider}
+            />
             <Row style={{margin: 0}} className="justify-content-sm-center">
                 <Col sm="2" style={{padding: 0}}>
                     <DownloadButton 
@@ -460,7 +444,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     chartRef.chartRef.current.chartInstance.options.title.text = fullName;
                 }
                 const shortName = `Horizontal Impact Angle ${i + 1}: ${graphData.angles[i]}°`;
-                if(shortName != chart[singleChartIndex.name]){
+                if(shortName !== chart[singleChartIndex.name]){
                     updatePost = false; //need to update buttons to match 
                     chart[singleChartIndex.name] = shortName;
                 }
