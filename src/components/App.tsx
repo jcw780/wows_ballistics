@@ -145,6 +145,7 @@ class App extends React.Component<{},{}> {
 		const shellData = this.SFCref.current!.returnShellData();
 		const tgtData = this.TFCref.current!.returnData();
 		const numShells: number = shellData.length;
+		if(this.instance === undefined) return;
 		if(numShells <= 0){return
 		}else{
 			const {instance, arrayIndices, calculatedData} = this;

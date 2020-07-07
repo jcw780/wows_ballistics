@@ -20,9 +20,6 @@ interface singleChartProps{
 
 interface singleChartState{open: boolean}
 export class SingleChart extends React.Component<singleChartProps, singleChartState> {
-    /* public static defaultProps = {
-        config : {data: {datasets : [],}, options: {}}, title : ""
-    } */
     state = {open : true}; //apparently you need a value in state or else set state doesn't trigger rerender
     titles : T.collapseTitlesT = ["Hide: ", "Show: "]; // 0: Hide 1: Show
     chartRef : React.RefObject<Scatter> = React.createRef<Scatter>();
@@ -51,12 +48,10 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
         const url = URL.createObjectURL(new Blob([JSON.stringify(selectedData)], {type: 'text/json;charset=utf-8'}));
         this.DownloadRef[1].current!.update(url, this.chartRef.current!.chartInstance.options.title.text + '.json');
     }
-    datasetKeyProvider = (dataset) => {
-        // Fix bug where datasets with the same labels and different colors have the same colors
-        return `${dataset.label}${dataset.borderColor}`;
-    }
+    // Fix bug where datasets with the same labels and different colors have the same colors
+    datasetKeyProvider = dataset => `${dataset.label}${dataset.borderColor}`;
     render(){
-        const {config, dimensions} = this.props; 
+        const {props, state} = this, {config, dimensions} = props; 
         const configData = config[singleChartIndex.config];
         return(
 <>
@@ -65,10 +60,10 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
         ref={this.scrollRef} 
         variant="dark"
         aria-controls={this.collapseId} 
-        aria-expanded={this.state.open}
-        className={this.state.open === true ? 'active' : ''}
-    >{this.titles[Number(!this.state.open)] + config[singleChartIndex.name]}</Button>
-    <Collapse in={this.state.open}>
+        aria-expanded={state.open}
+        className={state.open === true ? 'active' : ''}
+    >{this.titles[Number(!state.open)] + config[singleChartIndex.name]}</Button>
+    <Collapse in={state.open}>
         <div id={this.collapseId}>
             <Scatter 
                 data={configData.data} 
