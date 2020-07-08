@@ -2,6 +2,8 @@ import React, {Suspense} from 'react';
 import {Button, Collapse} from 'react-bootstrap';
 
 import * as T from '../commonTypes';
+import './SettingsBar.css';
+
 const SettingsBarInternal = React.lazy(() => import('./SettingsBarInternal'));
 
 interface settingsBarState{open: boolean}

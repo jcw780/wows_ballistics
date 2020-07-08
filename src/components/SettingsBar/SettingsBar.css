@@ -1,0 +1,27 @@
+.form-wrapper{
+    display: grid;
+    grid-gap: 0px;
+}
+
+.color-wrapper{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 0px;
+}
+
+.color-box{
+    padding: 0px;
+}
+
+.title-row{
+    display: grid;
+    grid-template-columns: 75% 25%; 
+    grid-gap: 0px;
+}
+
+.content-row{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
+    grid-gap: 0px;
+}
+
