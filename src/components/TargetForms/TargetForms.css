@@ -1,4 +1,19 @@
+.angleLabel-wrapper{
+    margin-bottom: 1rem; 
+    padding-left: 10%;
+    padding-right: 10%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-gap: .5rem;
+}
+
+.angleLabel-box{
+    max-width: 250px;
+}
+
 .fixedLabels-wrapper{
+    padding-left: 10%;
+    padding-right: 10%;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
 }

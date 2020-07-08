@@ -71,13 +71,14 @@ class AngleForm extends React.PureComponent<angleFormProps>{
     render(){
         const {props} = this;
         return (
-            <Modal.Dialog style={{width: '100%', margin: 0}}>
+            <Modal.Dialog style={{width: '100%', margin: 0, maxHeight: '57px'}}>
                 <Modal.Header closeButton
                     style={{
                         padding: 0, 
                         paddingTop: '0.5rem', 
                         paddingRight: '0.5rem', 
-                        paddingLeft: '0.5rem'
+                        paddingLeft: '0.5rem',
+                        maxHeight: '100%'
                     }}
                     onHide={this.deleteElement}
                 >
@@ -248,17 +249,17 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
     private onRefLabelChange = (value: string, id : string) : void => {this.targetData.refLabels[id] = value;}
     private renderAngleElements = (angleElements) => {
         return (
-            <Row style={{marginBottom: "1rem", marginLeft: '10%', marginRight: '10%'}}>
+            <div className="angleLabel-wrapper">
             {angleElements.map((column, i) => {
                 return (
-                    <Col key={i} sm="3" style={{margin: 0, padding: 0}}>
+                    <div key={i} className="angleLabel-box">
                         {column.map((angleElement) => {
                             return angleElement;
                         })}
-                    </Col>
+                    </div>
                 );
             })}
-            </Row>
+            </div>
         )
     }
     private renderFixedTargetLabels = () => {
