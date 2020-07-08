@@ -9,3 +9,10 @@
 .footer-button{
     width: 100%;
 }
+
+.shellForms-wrapper{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); 
+    grid-gap: .5rem;
+    padding: 2rem;
+}

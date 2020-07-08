@@ -438,48 +438,46 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 	private addShellForm = (key : number, index : number, copied : boolean) => {
 		const {props, state} = this;
 		const ref = this.shellRefs[index], stateKeys = state.keys.size;
-		const makeShellForm = () => {
-			//Key not needed - added later in surrounding component
-			if(!copied){
-				return(
-					<ShellForms keyProp={key} 
-						ref={ref}
-						index={index}
-						colors={this.colors} 
-						deleteShip={this.deleteShip} 
-						copyShip={this.copyShip}
-						reset={this.reset} 
-						settings={props.settings} 
-						size={stateKeys} 
-						copied={copied}
-					/>
-				);
-			}else{
-				//pass a deep copied version so clones target the correct shell form
-				const copyTemp = this.copyTemp;
-				return( 
-					<ShellForms keyProp={key} 
-						ref={ref}
-						index={index}
-						colors={this.colors}
-						deleteShip={this.deleteShip} 
-						copyShip={this.copyShip}
-						reset={this.reset} 
-						settings={props.settings} 
-						size={stateKeys} 
-						copied={copied}
-						defaultData={clonedeep(copyTemp.default)} 
-						formData={clonedeep(copyTemp.data)}
-						graph={copyTemp.graph}
-					/>
-				);
-			}
+		//Key not needed - added later in surrounding component
+		if(!copied){
+			return(
+				<div>
+				<ShellForms keyProp={key} 
+					ref={ref}
+					index={index}
+					colors={this.colors} 
+					deleteShip={this.deleteShip} 
+					copyShip={this.copyShip}
+					reset={this.reset} 
+					settings={props.settings} 
+					size={stateKeys} 
+					copied={copied}
+				/>
+				</div>
+			);
+		}else{
+			//pass a deep copied version so clones target the correct shell form
+			const copyTemp = this.copyTemp;
+			return( 
+				<div>
+				<ShellForms keyProp={key} 
+					ref={ref}
+					index={index}
+					colors={this.colors}
+					deleteShip={this.deleteShip} 
+					copyShip={this.copyShip}
+					reset={this.reset} 
+					settings={props.settings} 
+					size={stateKeys} 
+					copied={copied}
+					defaultData={clonedeep(copyTemp.default)} 
+					formData={clonedeep(copyTemp.data)}
+					graph={copyTemp.graph}
+				/>
+				</div>
+			);
 		}
-		return () => {return (
-			<Col key={key} style={{margin: 0, padding: "0.5rem"}} sm="4">
-				{makeShellForm()}
-			</Col>
-		)};
+		
 	}
 	private generateShellForms = () => {
 		const stateKeys = Array.from(this.state.keys);
@@ -487,26 +485,28 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 		if(this.copied){
 			stateKeys.forEach((value, i) => {
 				if(i !== stateKeys.length - 1){
-					output.push(this.addShellForm(value, i, false)());
+					output.push(this.addShellForm(value, i, false));
 				}else{
-					output.push(this.addShellForm(value, i, true)());
+					output.push(this.addShellForm(value, i, true));
 				}
 			});
 		}else{
 			stateKeys.forEach((value, i) => {
-				output.push(this.addShellForm(value, i, false)());
+				output.push(this.addShellForm(value, i, false));
 			})
 		}
-		return output;
+		return(
+			<div className="shellForms-wrapper">
+				{output}
+			</div>
+		);
 	}
 	render(){
 		this.updateColors();
 		return(
 <>
 	<h2 ref={this.scrollRef}>Shell Parameters</h2>
-		<Row style={{marginBottom : "0rem", paddingRight: '5%', paddingLeft: '5%'}}>
-			{this.generateShellForms()}
-		</Row>
+		{this.generateShellForms()}
 	<Row style={{marginBottom : "1rem"}} className="justify-content-sm-center">
 		<Col sm="6">
 			<Button className="form-control" variant="outline-secondary" onClick={this.addShip}>
