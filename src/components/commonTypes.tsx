@@ -1,9 +1,9 @@
 import React from 'react';
 
 import {SingleChart} from './Charts';
-import ShellFormsContainer from './ShellForms/ShellForms';
-import TargetFormsContainer from './TargetForms';
-import SettingsBar from './SettingsBar/SettingsBar';
+import {ShellFormsContainer} from './ShellForms';
+import {TargetFormsContainer} from './TargetForms';
+import {SettingsBar} from './SettingsBar';
 //Collapsible Titles - General
 export type collapseTitlesT = [string, string]
 

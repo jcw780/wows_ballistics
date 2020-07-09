@@ -1,5 +1,4 @@
 import React from 'react';
-import {Col, Row} from 'react-bootstrap';
 import BootstrapSwitchButton from 'bootstrap-switch-button-react';
 
 import * as T from '../commonTypes';
@@ -78,11 +77,11 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
         formGroup: {display: "block ruby", marginBottom: ".5rem" },
     });
     private generateForms = (forms, target, onChange, sm=4) => {
-        return forms.map((value, i) => {
+        const rendered = forms.map((value, i) => {
             return(
-                <Row key={i} className="no-lr-margin">
-                    <Col className="no-lr-padding" sm={sm}>{value[1]}</Col>
-                    <Col className="no-lr-padding">
+                <>
+                    <div>{value[1]}</div>
+                    <div>
                         <ParameterForm 
                         controlId={value[0]} type="number" 
                         onChange={onChange} 
@@ -91,10 +90,16 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                         labelWidth={3} ariaLabel={value[1]}
                         style={this.defaultFormStyle}
                         />
-                    </Col>
-                </Row>
+                    </div>
+                </>
             );
         });
+        const width = (sm / 12) * 100
+        return (
+            <div className="form-wrapper" style={{gridTemplateColumns: `${width}% ${100-width}%`}}>
+                {rendered}
+            </div>
+        );
     }
     //Line
     private onlineChange = (value: string, id: string) => {
@@ -181,14 +186,13 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
         this.props.updateColors();
     }
     private generateColorFormsInternal = () => {
-        const typeWidth = 3, rowHeight = '3rem'; let counter = 0;
         const addForm = () => {
             const singleRow = (rowGroup : any) => {
                 const rowLabel = rowGroup[0], row = rowGroup[1];
                 const singleForm = (form) => {
                     const id = form[0], label = form[1];
                     return(
-                        <Col className="no-lr-padding" style={{maxHeight: rowHeight}} key={counter++}>
+                        <div className="color-box">
                             <ParameterForm
                                 controlId={id} 
                                 ariaLabel={`${label} ${rowLabel}`} 
@@ -198,29 +202,28 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                                 labelWidth={0}
                                 style={this.defaultFormStyle}
                             />
-                        </Col>
+                        </div>
                     );
                 }
                 return (
-                    <Row style={{maxHeight: rowHeight}} key={counter++}>
-                        <Col sm={typeWidth} style={{maxHeight: rowHeight}}>
+                    <>
+                        <div className="color-box">
                             {rowLabel}
-                        </Col>
+                        </div>
                         {row.map(singleForm)}
-                    </Row>
+                    </>
                 );
             }
             return this.forms.colors.map(singleRow);
         }
-        const topLabelStyle : React.CSSProperties = {maxHeight: rowHeight, textAlign: 'left'};
         const run = () => {
             return (<>
-                <Row style={{maxHeight: rowHeight}}>
-                    <Col sm={typeWidth} style={topLabelStyle}/>
-                    <Col style={topLabelStyle}>Minimum</Col>
-                    <Col style={topLabelStyle}>Maximum</Col>
-                </Row>
-                {addForm()}
+                <div className="color-wrapper">
+                    <div className="color-box"/>
+                    <div className="color-box">Minimum</div>
+                    <div className="color-box">Maximum</div>
+                    {addForm()}
+                </div>
             </>)
         }
         return run;
@@ -230,34 +233,27 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
         const {settings} = this.props, {format} = settings;
         return(
     <>
-        <Row>
-            <Col style={{padding: 0}} sm={9}><h3>Graphs</h3></Col>
-            <Col style={{padding: 0}}><h3>Calculations</h3></Col>
-        </Row>
-        <hr/>
-        <Row>
-            <Col style={{paddingRight: 0}} sm={3}>
-                <h4>Line</h4>
-                <Row>
-                    <Col>
-                        <BootstrapSwitchButton 
-                            style='switch-toggle'
-                            onlabel='Show Line' 
-                            offlabel='Show Point' 
-                            onstyle='success' 
-                            offstyle='danger'
-                            onChange={this.onShowLineChange} 
-                            checked={settings.line.showLine}
-                        />
-                        <h5>Point</h5>
-                        {this.generateLineForms()}
-                    </Col>
-                </Row>
-            </Col>
-            <Col style={{padding: 0}} sm={3}>
-                <h4>Labeling</h4>
-                <Row>
-                <Col>
+        <div className="settings">
+            <div className="graph-region">
+                <div className="graph-title">
+                    <h3>Graphs</h3>
+                </div>
+                <div className="content-box">
+                    <h4>Line</h4>
+                    <BootstrapSwitchButton 
+                        style='switch-toggle'
+                        onlabel='Show Line' 
+                        offlabel='Show Point' 
+                        onstyle='success' 
+                        offstyle='danger'
+                        onChange={this.onShowLineChange} 
+                        checked={settings.line.showLine}
+                    />
+                    <h5>Point</h5>
+                    {this.generateLineForms()}
+                </div>
+                <div className="content-box">
+                    <h4>Labeling</h4>
                     <BootstrapSwitchButton 
                         style='switch-toggle'
                         onlabel='Short Names' 
@@ -266,37 +262,37 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                         offstyle='danger'
                         onChange={this.onShortNameChange} 
                         checked={format.shortNames}
-                    />
-                </Col>
-                </Row>
-                {this.generateFormatForms()}
-            </Col>
-            <Col sm={3}>
-                <h4>Legend Position</h4>
-                <PositionRadio settings={settings}/>
-            </Col>
-            <Col style={{padding: 0}} sm={3}>
-                <h4>Launch Angle</h4>
-                {this.generateLaunchAngleForm()}
-            </Col>
-        </Row>
-        <hr/>
-        <Row>
-            <Col sm={3}>
-                <h4>Range Axis</h4>
-                {this.generateGraphForm()}
-            </Col>
-            <Col style={{paddingLeft: 0, paddingRight: '15px'}} sm={3}>
-                <h4>Color Generation</h4>
-                {this.generateColorForms()}
-            </Col>
-            <Col sm={3}></Col>
-            <Col style={{paddingRight: 0, paddingLeft: 0}} sm={3}>
-                <h4>Numerical Analysis</h4>
-                <CalculationRadio settings={settings}/>
-                {this.generateNumericalMethodForm()}
-            </Col>
-        </Row>
+                    />                
+                    {this.generateFormatForms()}
+                </div>
+                <div className="content-box">
+                    <h4>Legend Position</h4>
+                    <PositionRadio settings={settings}/>
+                </div>
+                <div className="content-box">
+                    <h4>Range Axis</h4>
+                    {this.generateGraphForm()}
+                </div>
+                <div className="content-box">
+                    <h4>Color Generation</h4>
+                    {this.generateColorForms()}
+                </div>
+            </div>
+            <div className="calc-region">
+                <div className="calc-title">
+                    <h3>Calculations</h3>
+                </div>
+                <div className="content-box">
+                    <h4>Launch Angle</h4>
+                    {this.generateLaunchAngleForm()}
+                </div>
+                <div className="content-box">
+                    <h4>Numerical Analysis</h4>
+                    <CalculationRadio settings={settings}/>
+                    {this.generateNumericalMethodForm()}
+                </div>
+            </div>
+        </div>
     </>
         );
     }

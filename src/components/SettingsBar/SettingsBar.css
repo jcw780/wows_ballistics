@@ -1,0 +1,51 @@
+.form-wrapper{
+    display: grid;
+    grid-gap: 0px;
+}
+
+.color-wrapper{
+    display: grid;
+    grid-template-columns: 4rem 1fr 1fr;
+    grid-gap: 0px;
+}
+
+.color-box{
+    padding: 0px;
+}
+
+.settings{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+    grid-gap: 0;
+}
+
+.graph-region{
+    grid-column: span 3;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+    grid-gap: 0;
+}
+
+.graph-title{
+    grid-column-start: 1;
+    grid-column-end: -1;
+}
+
+.calc-region{
+    grid-column: span 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+    grid-gap: 0;
+}
+
+.calc-title{
+    grid-column-start: 1;
+    grid-column-end: -1;
+}
+
+.content-box{
+    background-color: #f2f2f2;
+    background-clip: content-box;
+    padding: .5rem;
+    height: 240px;
+}

@@ -1,0 +1,28 @@
+.angleLabel-wrapper{
+    margin-bottom: 1rem;
+    margin-left: 5%;
+    margin-right: 5%; 
+    padding-left: 5%;
+    padding-right: 5%;
+    padding-top: .5rem;
+    padding-bottom: .5rem;
+    background-color: #f2f2f2;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+
+.angleLabel-box{
+    max-width: 250px;
+    background-color: #f2f2f2;
+}
+
+.fixedLabels-wrapper{
+    margin-left: 5%;
+    margin-right: 5%; 
+    padding-left: 5%;
+    padding-right: 5%;
+    padding-top: .5rem;
+    background-color: #f2f2f2;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+}

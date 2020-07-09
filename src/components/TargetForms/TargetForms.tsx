@@ -2,10 +2,11 @@ import React, {Suspense} from 'react';
 import {Row, Col, Button, Modal} from 'react-bootstrap';
 import {Icon} from 'semantic-ui-react';
 
-import * as T from './commonTypes';
-import {ParameterForm} from './UtilityComponents';
+import * as T from '../commonTypes';
+import {ParameterForm} from '../UtilityComponents';
+import "./TargetForms.css";
 //import GeneralTooltip from './Tooltips';
-const GeneralTooltip = React.lazy(() => import('./UtilityComponents/Tooltips'));
+const GeneralTooltip = React.lazy(() => import('../UtilityComponents/Tooltips'));
 
 interface refAngleFormProps {
     newValue: string[], index: number, keyProp : number, 
@@ -70,13 +71,14 @@ class AngleForm extends React.PureComponent<angleFormProps>{
     render(){
         const {props} = this;
         return (
-            <Modal.Dialog style={{width: '100%', margin: 0}}>
+            <Modal.Dialog style={{width: '100%', margin: 0, maxHeight: '57px'}}>
                 <Modal.Header closeButton
                     style={{
                         padding: 0, 
                         paddingTop: '0.5rem', 
                         paddingRight: '0.5rem', 
-                        paddingLeft: '0.5rem'
+                        paddingLeft: '0.5rem',
+                        maxHeight: '100%'
                     }}
                     onHide={this.deleteElement}
                 >
@@ -106,7 +108,7 @@ type multiFormT = 'angles' | 'refAngles';
 interface targetFormsContainerState {
     keys: Record<multiFormT, Set<number>>
 }
-class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerState>{
+export class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerState>{
     state = {
         keys: {
             angles: new Set(Array<number>()),
@@ -246,15 +248,19 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
     }
     private onRefLabelChange = (value: string, id : string) : void => {this.targetData.refLabels[id] = value;}
     private renderAngleElements = (angleElements) => {
-        return angleElements.map((column, i) => {
-            return (
-                <Col key={i} sm="3" style={{margin: 0, padding: 0}}>
-                    {column.map((angleElement) => {
-                        return angleElement;
-                    })}
-                </Col>
-            );
-        });
+        return (
+            <div className="angleLabel-wrapper">
+            {angleElements.map((column, i) => {
+                return (
+                    <div key={i} className="angleLabel-box">
+                        {column.map((angleElement) => {
+                            return angleElement;
+                        })}
+                    </div>
+                );
+            })}
+            </div>
+        )
     }
     private renderFixedTargetLabels = () => {
         const {targetData} = this;
@@ -263,7 +269,7 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
         };
         const singleLabel = ([key, value], i) => {
             return (
-                <Col key={i}>
+                <div key={i}>
                     <ParameterForm controlId={key}
                         newValue={String(targetData[key])} 
                         onChange={this.handleChange} 
@@ -282,10 +288,16 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
                             </GeneralTooltip>
                         </Suspense>
                     </ParameterForm>
-                </Col>
+                </div>
             );
         }
-        const run = () => Object.entries(this.fixedTargetLabels).map(singleLabel); return run;
+        return () => {
+            return (
+                <div className="fixedLabels-wrapper">
+                    {Object.entries(this.fixedTargetLabels).map(singleLabel)}
+                </div>
+            );
+        };
     }
     render(){
         const elementsPerColumn = 1;
@@ -294,9 +306,7 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
         return(
         <>
             <h2 ref={this.scrollRef}>Target Parameters</h2>
-            <Row className="justify-content-sm-center no-lr-margin" style={{paddingLeft: '10%', paddingRight: '10%'}}>
-                {this.renderFixedTargetLabels()()}
-            </Row>
+            {this.renderFixedTargetLabels()()}
             <Suspense fallback={<div>Loading...</div>}>
                 <GeneralTooltip title="Target Angles" content={
                 <>
@@ -319,9 +329,9 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
                     </div>
                 </GeneralTooltip>
             </Suspense>
-            <Row style={{marginBottom: "1rem", marginLeft: '10%', marginRight: '10%'}}>
-                {this.renderAngleElements(angleElements)}
-            </Row>
+
+            {this.renderAngleElements(angleElements)}
+
             <Row className="justify-content-sm-center no-lr-margin" style={{marginBottom: "1rem"}}>
                 <Col sm="6">
                     <Button className="form-control" variant="outline-secondary" onClick={this.addAngle}>
@@ -340,9 +350,9 @@ class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerS
                     </div>
                 </GeneralTooltip>
             </Suspense>
-            <Row style={{marginBottom: "1rem", marginLeft: '10%', marginRight: '10%'}}>
-                {this.renderAngleElements(refAngleElements)}
-            </Row>
+
+            {this.renderAngleElements(refAngleElements)}
+            
             <Row className="justify-content-sm-center no-lr-margin" style={{marginBottom: "1rem"}}>
                 <Col sm="6">
                     <Button className="form-control" variant="outline-secondary" onClick={this.addRefAngle}>

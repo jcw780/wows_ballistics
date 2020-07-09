@@ -1,3 +1,7 @@
+.modal-dialog{
+    margin: 0;
+}
+
 .modal-header, .modal-body, .modal-footer{
     padding: .5rem;
 }
@@ -8,4 +12,15 @@
 
 .footer-button{
     width: 100%;
+}
+
+.shellForms-wrapper{
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-bottom: .5rem;
+    background-color: #f2f2f2;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); 
+    grid-gap: .5rem;
+    padding: 1rem;
 }

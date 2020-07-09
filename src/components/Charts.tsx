@@ -316,7 +316,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     {title: configImpact[0][singleChartIndex.name], axes: [
                             {id: 'Penetration', axLabel: 'Belt Penetration (mm)', 
                             lines: [
-                                {lineLabel: 'Effective Penetration: ', data: 'ePenHN'},
+                                {lineLabel: 'Belt Penetration: ', data: 'ePenHN'},
                                 //{lineLabel: 'Raw Penetration: ', data: 'rawPen'}
                             ]},
                             {id: 'Angle', axLabel: 'Belt Impact Angle (°)', 
@@ -325,9 +325,9 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     },
                     {title: configImpact[1][singleChartIndex.name], axes : [
                             {id: 'Penetration', axLabel: 'Deck Penetration (mm)', 
-                            lines: [{lineLabel: 'Effective Deck Penetration: ', data: 'ePenDN'}]},
+                            lines: [{lineLabel: 'Deck Penetration: ', data: 'ePenDN'}]},
                             {id: 'Angle', axLabel: 'Deck Impact Angle (°)', 
-                            lines: [{lineLabel: 'Deck Impact Angle: ', data: 'impactADD'}]} 
+                            lines: [{lineLabel: 'Impact Angle: ', data: 'impactADD'}]} 
                         ],
                     },
                     {title: configImpact[2][singleChartIndex.name], axes : [ 
