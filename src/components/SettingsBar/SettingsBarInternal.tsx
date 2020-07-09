@@ -277,7 +277,6 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                     <h4>Color Generation</h4>
                     {this.generateColorForms()}
                 </div>
-                <div className="content-box"></div>
             </div>
             <div className="calc-region">
                 <div className="calc-title">
@@ -287,8 +286,6 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                     <h4>Launch Angle</h4>
                     {this.generateLaunchAngleForm()}
                 </div>
-
-                
                 <div className="content-box">
                     <h4>Numerical Analysis</h4>
                     <CalculationRadio settings={settings}/>
