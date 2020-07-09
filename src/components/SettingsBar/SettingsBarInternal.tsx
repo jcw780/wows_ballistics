@@ -233,7 +233,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
         const {settings} = this.props, {format} = settings;
         return(
     <>
-        <div className="content-row">
+        <div className="settings">
             <div className="graph-region">
                 <div className="graph-title">
                     <h3>Graphs</h3>
