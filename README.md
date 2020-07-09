@@ -28,6 +28,7 @@
 ## Development Status
 - [Issues](https://github.com/jcw780/wows_ballistics/issues)
 - Feel free to open an issue for questions, bugs, feature requests etc. 
+- If there are formatting oddities try force refreshing the page using Ctrl+Shift+R
 ### Current Status
 - Calculations may be refined if contradicting data is provided
 ### Future Features
