@@ -13,16 +13,32 @@
     padding: 0px;
 }
 
-.title-row{
-    display: grid;
-    grid-template-columns: 75% 25%; 
-    grid-gap: 0px;
-}
-
 .content-row{
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 25%)); 
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
     grid-gap: 0;
+}
+
+.graph-region{
+    grid-column: span 3;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
+    grid-gap: 0;
+}
+
+.graph-title{
+    grid-column: span 3;
+}
+
+.calc-region{
+    grid-column: span 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
+    grid-gap: 0;
+}
+
+.calc-title{
+    grid-column: span 1;
 }
 
 .content-box{

@@ -233,60 +233,67 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
         const {settings} = this.props, {format} = settings;
         return(
     <>
-        <div className="title-row">
-            <h3>Graphs</h3>
-            <h3>Calculations</h3>
-        </div>
         <div className="content-row">
-            <div className="content-box">
-                <h4>Line</h4>
-                <BootstrapSwitchButton 
-                    style='switch-toggle'
-                    onlabel='Show Line' 
-                    offlabel='Show Point' 
-                    onstyle='success' 
-                    offstyle='danger'
-                    onChange={this.onShowLineChange} 
-                    checked={settings.line.showLine}
-                />
-                <h5>Point</h5>
-                {this.generateLineForms()}
+            <div className="graph-region">
+                <div className="graph-title">
+                    <h3>Graphs</h3>
+                </div>
+                <div className="content-box">
+                    <h4>Line</h4>
+                    <BootstrapSwitchButton 
+                        style='switch-toggle'
+                        onlabel='Show Line' 
+                        offlabel='Show Point' 
+                        onstyle='success' 
+                        offstyle='danger'
+                        onChange={this.onShowLineChange} 
+                        checked={settings.line.showLine}
+                    />
+                    <h5>Point</h5>
+                    {this.generateLineForms()}
+                </div>
+                <div className="content-box">
+                    <h4>Labeling</h4>
+                    <BootstrapSwitchButton 
+                        style='switch-toggle'
+                        onlabel='Short Names' 
+                        offlabel='Long Names' 
+                        onstyle='success' 
+                        offstyle='danger'
+                        onChange={this.onShortNameChange} 
+                        checked={format.shortNames}
+                    />                
+                    {this.generateFormatForms()}
+                </div>
+                <div className="content-box">
+                    <h4>Legend Position</h4>
+                    <PositionRadio settings={settings}/>
+                </div>
+                <div className="content-box">
+                    <h4>Range Axis</h4>
+                    {this.generateGraphForm()}
+                </div>
+                <div className="content-box">
+                    <h4>Color Generation</h4>
+                    {this.generateColorForms()}
+                </div>
+                <div className="content-box"></div>
             </div>
-            <div className="content-box">
-                <h4>Labeling</h4>
-                <BootstrapSwitchButton 
-                    style='switch-toggle'
-                    onlabel='Short Names' 
-                    offlabel='Long Names' 
-                    onstyle='success' 
-                    offstyle='danger'
-                    onChange={this.onShortNameChange} 
-                    checked={format.shortNames}
-                />                
-                {this.generateFormatForms()}
-            </div>
-            <div className="content-box">
-                <h4>Legend Position</h4>
-                <PositionRadio settings={settings}/>
-            </div>
-            <div className="content-box">
-                <h4>Launch Angle</h4>
-                {this.generateLaunchAngleForm()}
-            </div>
+            <div className="calc-region">
+                <div className="calc-title">
+                    <h3>Calculations</h3>
+                </div>
+                <div className="content-box">
+                    <h4>Launch Angle</h4>
+                    {this.generateLaunchAngleForm()}
+                </div>
 
-            <div className="content-box">
-                <h4>Range Axis</h4>
-                {this.generateGraphForm()}
-            </div>
-            <div className="content-box">
-                <h4>Color Generation</h4>
-                {this.generateColorForms()}
-            </div>
-            <div className="content-box"></div>
-            <div className="content-box">
-                <h4>Numerical Analysis</h4>
-                <CalculationRadio settings={settings}/>
-                {this.generateNumericalMethodForm()}
+                
+                <div className="content-box">
+                    <h4>Numerical Analysis</h4>
+                    <CalculationRadio settings={settings}/>
+                    {this.generateNumericalMethodForm()}
+                </div>
             </div>
         </div>
     </>
