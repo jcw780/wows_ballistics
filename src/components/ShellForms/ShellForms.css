@@ -1,3 +1,7 @@
+.modal-dialog{
+    margin: 0;
+}
+
 .modal-header, .modal-body, .modal-footer{
     padding: .5rem;
 }
@@ -18,5 +22,5 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); 
     grid-gap: .5rem;
-    padding: 2rem;
+    padding: .5rem;
 }
