@@ -237,9 +237,8 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
             <h3>Graphs</h3>
             <h3>Calculations</h3>
         </div>
-        <hr/>
         <div className="content-row">
-            <div>
+            <div className="content-box">
                 <h4>Line</h4>
                 <BootstrapSwitchButton 
                     style='switch-toggle'
@@ -253,7 +252,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                 <h5>Point</h5>
                 {this.generateLineForms()}
             </div>
-            <div>
+            <div className="content-box">
                 <h4>Labeling</h4>
                 <BootstrapSwitchButton 
                     style='switch-toggle'
@@ -266,27 +265,25 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                 />                
                 {this.generateFormatForms()}
             </div>
-            <div>
+            <div className="content-box">
                 <h4>Legend Position</h4>
                 <PositionRadio settings={settings}/>
             </div>
-            <div>
+            <div className="content-box">
                 <h4>Launch Angle</h4>
                 {this.generateLaunchAngleForm()}
             </div>
-        </div>
-        <hr/>
-        <div className="content-row">
-            <div>
+
+            <div className="content-box">
                 <h4>Range Axis</h4>
                 {this.generateGraphForm()}
             </div>
-            <div>
+            <div className="content-box">
                 <h4>Color Generation</h4>
                 {this.generateColorForms()}
             </div>
-            <div></div>
-            <div>
+            <div className="content-box"></div>
+            <div className="content-box">
                 <h4>Numerical Analysis</h4>
                 <CalculationRadio settings={settings}/>
                 {this.generateNumericalMethodForm()}

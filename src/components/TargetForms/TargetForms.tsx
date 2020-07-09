@@ -108,7 +108,7 @@ type multiFormT = 'angles' | 'refAngles';
 interface targetFormsContainerState {
     keys: Record<multiFormT, Set<number>>
 }
-class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerState>{
+export class TargetFormsContainer extends React.PureComponent<{}, targetFormsContainerState>{
     state = {
         keys: {
             angles: new Set(Array<number>()),

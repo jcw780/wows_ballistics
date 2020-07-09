@@ -5,7 +5,7 @@
 
 .color-wrapper{
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 4rem 1fr 1fr;
     grid-gap: 0px;
 }
 
@@ -21,7 +21,12 @@
 
 .content-row{
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
-    grid-gap: 0px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 25%)); 
+    grid-gap: 0;
 }
 
+.content-box{
+    background-color: #f2f2f2;
+    background-clip: content-box;
+    padding: .5rem;
+}

@@ -1,10 +1,12 @@
 .angleLabel-wrapper{
-    margin-bottom: 1rem; 
-    padding-left: 10%;
-    padding-right: 10%;
+    margin-bottom: 1rem;
+    margin-left: 5%;
+    margin-right: 5%; 
+    padding-left: 5%;
+    padding-right: 5%;
+    background-color: #f2f2f2;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    grid-gap: .5rem;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 20%));
 }
 
 .angleLabel-box{
@@ -12,8 +14,12 @@
 }
 
 .fixedLabels-wrapper{
-    padding-left: 10%;
-    padding-right: 10%;
+    margin-left: 5%;
+    margin-right: 5%; 
+    padding-left: 5%;
+    padding-right: 5%;
+    padding-top: .5rem;
+    background-color: #f2f2f2;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
 }
