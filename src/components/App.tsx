@@ -1,4 +1,4 @@
-import React from 'react'; import './App.css';
+import React, {Suspense} from 'react'; import './App.css';
 import {Button, Col, Row} from 'react-bootstrap';
 //import { saveAs } from 'file-saver';
 
@@ -10,6 +10,8 @@ import {NavbarCustom} from './Navbar';
 import {SettingsBar} from './SettingsBar';
 
 import ShellWasm from '../wasm/shellWasm.wasm';
+const SupportFooter = React.lazy(() => import('./SupportFooter'));
+
 class App extends React.Component<{},{}> {
 	//Refs
 	SFCref = React.createRef<ShellFormsContainer>();
@@ -305,6 +307,9 @@ class App extends React.Component<{},{}> {
 		links={this.links} 
 		onUpdate={this.onUpdate}
 	/>
+	<Suspense fallback={<div>Loading...</div>}>
+		<SupportFooter/>
+	</Suspense>
 </div>
 		);
 	}

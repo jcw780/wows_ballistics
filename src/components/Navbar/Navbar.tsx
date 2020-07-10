@@ -67,6 +67,7 @@ export class NavbarCustom extends React.Component<{links: T.linkT}>{
         <Nav>
             <Suspense fallback={<div>Loading...</div>}>
                 <NavDropdown title="Support" id="support" alignRight>
+                    <ND.Item href="https://discord.gg/fdJNbhe">Discord</ND.Item>
                     <ND.Item href="https://github.com/jcw780/wows_ballistics">Github</ND.Item>
                     <ND.Item href="https://github.com/jcw780/wows_ballistics/issues">Issues</ND.Item>
                 </NavDropdown>
