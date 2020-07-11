@@ -8,15 +8,17 @@ interface defaultFormProps{
 	defaultValue: string, defaultOptions: string[], defaultValues: string[], onChange: Function,
 }
 interface defaultFormState{
-	options: string[], value: string
+	options: string[], values: string[], value: string
 }
 export class DefaultForm extends React.PureComponent<defaultFormProps, defaultFormState> {
 	public static defaultProps = {
 		defaultValue : "", defaultOptions: [],
 	}
-	updated = false;
 	form = React.createRef<HTMLSelectElement>();
-	state = {options: this.props.defaultOptions, value: this.props.defaultValue};
+	state = {
+		options: this.props.defaultOptions, values: this.props.defaultValues,
+		value: this.props.defaultValue
+	};
 	handleChange = (event) => {
 		event.stopPropagation();
 		const newValue = event.target.value;
@@ -25,16 +27,21 @@ export class DefaultForm extends React.PureComponent<defaultFormProps, defaultFo
 		});
 		this.props.onChange(newValue, this.props.controlId);
 	}
-	updateOptions = (newOptions, newValue) => {
-		this.setState((current) => {
-			return {options: newOptions, value: newValue};
+	updateOptions = (newOptions: string[], newValues: string[], newValue: string) => {
+		this.setState(current => {
+			return {options: newOptions, values: newValues, value: newValue};
 		});
 	}
 	private addOptions = () => {
+		const {state} = this;
 		const singleOption = (option,i) => {
-			return (<option aria-label={option} key={i}>{option}</option>);
+			return (
+				<option aria-label={option} key={i} value={state.values[i]}>
+					{option}
+				</option>
+			);
 		}
-		return () => this.state.options.map(singleOption);
+		return () => state.options.map(singleOption);
 	}
 	render(){
 		const {props} = this;
@@ -71,6 +78,12 @@ const fetchJsonData = (target) => {
     );
 }
 
+const getTier = (str : string) : number => {
+	return parseInt(str.substring(
+		str.lastIndexOf("(") + 1, str.lastIndexOf(")")
+	));
+}
+
 enum singleFormIndex {name, ref, queryIndex}
 type singleFormT = [string, React.RefObject<DefaultForm>, number]
 type defaultFormType = T.defaultFormGeneric<singleFormT>
@@ -85,17 +98,13 @@ export class DefaultShips extends React.PureComponent
 		artillery: ['Artillery' , React.createRef<DefaultForm>(), 4], 
 		shellType: ['Shell Type', React.createRef<DefaultForm>(), 5],
 	})
-	changeForm = async (value, id : keyof(defaultFormType)) => {
+	changeForm = async (value: string, id: keyof(defaultFormType)) => {
 		//this.defaultForms[id][singleFormIndex.value] = value;
 		let queryIndex = this.defaultForms[id][singleFormIndex.queryIndex];
 		const {defaultData} = this.props;
 		if(queryIndex === 0){
 			defaultData.queriedData = await fetchJsonData(
 				`${dataURL}${value}_s.json`);
-		}else if (queryIndex === 3){
-			value = defaultData[id][S.DefaultDataRowI.values][
-				defaultData[id][S.DefaultDataRowI.options].indexOf(value)
-			];
 		}
 		defaultData[id][S.DefaultDataRowI.value] = value;
 		// Now iterative - instead of waiting for rerenders and clogging stack depth
@@ -103,26 +112,37 @@ export class DefaultShips extends React.PureComponent
 			this.postVersion(queryIndex)();
 		}
 	}
-	updateForm = (target : keyof(defaultFormType), options, values) => {
-		const refCurrent = this.defaultForms[target][singleFormIndex.ref].current;
-		if(refCurrent){ 
+	updateForm = (target: keyof(defaultFormType), options: string[], values: string[]) => {
+		const {current} = this.defaultForms[target][singleFormIndex.ref];
+		if(current){ 
 			//apparently prevents async calls from updating deleted refs I guess...
 			//fixes delete ship crash bug
 			const targetData = this.props.defaultData[target]
 			let newValue = targetData[S.DefaultDataRowI.value];
-			if(!options.includes(newValue)){
-				newValue = options[0];
+			if(!values.includes(newValue)){
+				if(target !== 'ship') newValue = values[0];
+				else{
+					const oldOption = targetData[S.DefaultDataRowI.options][
+						targetData[S.DefaultDataRowI.values].indexOf(newValue)
+					];
+					const oldTier = getTier(oldOption);
+					let found = false;
+					for(const [i, option] of options.entries()) {
+						const tier = getTier(option);
+						if(oldTier === tier){
+							found = true;
+							newValue = values[i];
+							break;
+						}
+					}
+					if(!found) newValue = values[0];
+				}
 			}
 			targetData[S.DefaultDataRowI.options] = options;
 			targetData[S.DefaultDataRowI.values] = values;
-			if(target === 'ship'){
-				targetData[S.DefaultDataRowI.value] = targetData[S.DefaultDataRowI.values][
-					targetData[S.DefaultDataRowI.options].indexOf(newValue)
-				];
-			}else{
-				targetData[S.DefaultDataRowI.value] = newValue;
-			}
-			refCurrent.updateOptions(options, newValue);
+			targetData[S.DefaultDataRowI.value] = newValue;
+			
+			current.updateOptions(options, values, newValue);
 		}
 	}
 	queryVersion = async () => { //probably should be called initialize since it is never called ever again...
@@ -133,21 +153,22 @@ export class DefaultShips extends React.PureComponent
 	}
 	postVersion = (index: number) => {
 		const dData = this.props.defaultData, qDataS = dData.queriedData.ships, 
-			sDI = S.DefaultDataRowI.value;
+			DDI = S.DefaultDataRowI.value;
 		const queryNation = () => {
-			const options = Object.keys(dData.queriedData.ships);
+			const options = Object.keys(qDataS);
 			this.updateForm('nation', options, options);
 		}
 		//Aggressive length shortening
-		const nation = dData.nation[sDI], type = dData.shipType[sDI],
-			ship = dData.ship[sDI], artillery = dData.artillery[sDI];
+		const nation = dData.nation[DDI], type = dData.shipType[DDI],
+			ship = dData.ship[DDI], artillery = dData.artillery[DDI],
+			shellType = dData.shellType[DDI];
 		const queryType = () => {
 			const options = Object.keys(qDataS[nation]);
 			this.updateForm('shipType', options, options);
 		}
 		const queryShip = () => {
 			const ships = qDataS[nation][type];
-			let values = Object.keys(ships), options : string[] = [];
+			const values = Object.keys(ships), options : string[] = [];
 			values.sort((a, b) => {return ships[a]['Tier'] - ships[b]['Tier']});
 			values.forEach((ship, i) => {options.push(`(${ships[ship]['Tier']}) ${ship}`);});
 			this.updateForm('ship', options, values);
@@ -161,7 +182,6 @@ export class DefaultShips extends React.PureComponent
 			this.updateForm('shellType', options, options);
 		}
 		const sendData = () => {
-			const shellType = dData.shellType[sDI];
 			const shellName = qDataS[nation][type][ship].artillery[artillery][shellType];
 			this.props.sendDefault(dData.queriedData.shells[shellName], ship);
 		}
@@ -173,13 +193,8 @@ export class DefaultShips extends React.PureComponent
 	}
 	private addDefaultForms = () => {
 		const {defaultData} = this.props;
-		const singleForm = ([name, v] : [string, singleFormT], i) : JSX.Element => {
-			const defaultDataN = defaultData[name];
-			let defaultValue = defaultDataN[S.DefaultDataRowI.value];
-			if(name === 'ship'){
-				defaultValue = defaultDataN[S.DefaultDataRowI.options][
-					defaultDataN[S.DefaultDataRowI.values].indexOf(defaultValue)]
-			}
+		const singleForm = ([name, v] : [keyof(defaultFormType), singleFormT], i) : JSX.Element => {
+			const form = defaultData[name], DDI = S.DefaultDataRowI;
 			return (
 			<DefaultForm key={i} 
 				keyProp={this.props.keyProp} 
@@ -187,9 +202,9 @@ export class DefaultShips extends React.PureComponent
 				ref={v[singleFormIndex.ref]}
 				ariaLabel={v[singleFormIndex.name]} 
 				onChange={this.changeForm} 
-				defaultValue={defaultValue}
-				defaultOptions={defaultDataN[S.DefaultDataRowI.options]}
-				defaultValues={defaultDataN[S.DefaultDataRowI.values]}>
+				defaultValue={form[DDI.value]}
+				defaultOptions={form[DDI.options]}
+				defaultValues={form[DDI.values]}>
 				{v[singleFormIndex.name]}
 			</DefaultForm>
 			);
