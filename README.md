@@ -1,7 +1,7 @@
 # <img src="/public/android-chrome-512x512.png" width="64" height="64"> World of Warships Ballistics Calculator
 [![License](https://img.shields.io/github/license/jcw780/wows_ballistics)](./LICENSE)
 [![World of Warships Ballistics](https://img.shields.io/website?url=https%3A%2F%2Fjcw780.github.io/wows_ballistics/)](https://jcw780.github.io/wows_ballistics/)
-[![Discord](https://discordapp.com/api/guilds/731224331136532531/widget.png)](https://discord.gg/WjDTtCB)
+[![Discord](https://discordapp.com/api/guilds/731224331136532531/widget.png)](https://discord.gg/fpDB9y5)
 - Page Link: https://jcw780.github.io/wows_ballistics/
 
 ## Code Information
