@@ -8,7 +8,7 @@ interface defaultFormProps{
 	defaultValue: string, defaultOptions: string[], defaultValues: string[], onChange: Function,
 }
 interface defaultFormState{
-	options: string[], value: string
+	options: string[], values: string[], value: string
 }
 export class DefaultForm extends React.PureComponent<defaultFormProps, defaultFormState> {
 	public static defaultProps = {
@@ -16,7 +16,14 @@ export class DefaultForm extends React.PureComponent<defaultFormProps, defaultFo
 	}
 	updated = false;
 	form = React.createRef<HTMLSelectElement>();
-	state = {options: this.props.defaultOptions, value: this.props.defaultValue};
+	constructor(props){
+		super(props);
+		this.state = {
+			options: this.props.defaultOptions, values: this.props.defaultValues,
+			value: this.props.defaultValue
+		};
+
+	}
 	handleChange = (event) => {
 		event.stopPropagation();
 		const newValue = event.target.value;
@@ -25,16 +32,21 @@ export class DefaultForm extends React.PureComponent<defaultFormProps, defaultFo
 		});
 		this.props.onChange(newValue, this.props.controlId);
 	}
-	updateOptions = (newOptions, newValue) => {
+	updateOptions = (newOptions, newValues, newValue) => {
 		this.setState((current) => {
-			return {options: newOptions, value: newValue};
+			return {options: newOptions, values: newValues, value: newValue};
 		});
 	}
 	private addOptions = () => {
+		const {state} = this;
 		const singleOption = (option,i) => {
-			return (<option aria-label={option} key={i}>{option}</option>);
+			return (
+				<option aria-label={option} key={i} value={state.values[i]}>
+					{option}
+				</option>
+			);
 		}
-		return () => this.state.options.map(singleOption);
+		return () => state.options.map(singleOption);
 	}
 	render(){
 		const {props} = this;
@@ -92,10 +104,6 @@ export class DefaultShips extends React.PureComponent
 		if(queryIndex === 0){
 			defaultData.queriedData = await fetchJsonData(
 				`${dataURL}${value}_s.json`);
-		}else if (queryIndex === 3){
-			value = defaultData[id][S.DefaultDataRowI.values][
-				defaultData[id][S.DefaultDataRowI.options].indexOf(value)
-			];
 		}
 		defaultData[id][S.DefaultDataRowI.value] = value;
 		// Now iterative - instead of waiting for rerenders and clogging stack depth
@@ -110,19 +118,14 @@ export class DefaultShips extends React.PureComponent
 			//fixes delete ship crash bug
 			const targetData = this.props.defaultData[target]
 			let newValue = targetData[S.DefaultDataRowI.value];
-			if(!options.includes(newValue)){
-				newValue = options[0];
+			if(!values.includes(newValue)){
+				newValue = values[0];
 			}
 			targetData[S.DefaultDataRowI.options] = options;
 			targetData[S.DefaultDataRowI.values] = values;
-			if(target === 'ship'){
-				targetData[S.DefaultDataRowI.value] = targetData[S.DefaultDataRowI.values][
-					targetData[S.DefaultDataRowI.options].indexOf(newValue)
-				];
-			}else{
-				targetData[S.DefaultDataRowI.value] = newValue;
-			}
-			refCurrent.updateOptions(options, newValue);
+			targetData[S.DefaultDataRowI.value] = newValue;
+			
+			refCurrent.updateOptions(options, values, newValue);
 		}
 	}
 	queryVersion = async () => { //probably should be called initialize since it is never called ever again...
@@ -176,10 +179,6 @@ export class DefaultShips extends React.PureComponent
 		const singleForm = ([name, v] : [string, singleFormT], i) : JSX.Element => {
 			const defaultDataN = defaultData[name];
 			let defaultValue = defaultDataN[S.DefaultDataRowI.value];
-			if(name === 'ship'){
-				defaultValue = defaultDataN[S.DefaultDataRowI.options][
-					defaultDataN[S.DefaultDataRowI.values].indexOf(defaultValue)]
-			}
 			return (
 			<DefaultForm key={i} 
 				keyProp={this.props.keyProp} 
