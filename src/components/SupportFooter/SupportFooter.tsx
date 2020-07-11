@@ -8,7 +8,7 @@ export const SupportFooter = (props) => {
 		</div>
 		<div>
 			<h4>Support</h4>
-			<a href="https://discord.gg/fdJNbhe">
+			<a href="https://discord.gg/fpDB9y5">
 			<div className="support-link">Discord</div>
 			</a> 
 			<a href="https://github.com/jcw780/wows_ballistics/issues">
