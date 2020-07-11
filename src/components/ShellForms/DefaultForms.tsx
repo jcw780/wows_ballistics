@@ -119,7 +119,31 @@ export class DefaultShips extends React.PureComponent
 			const targetData = this.props.defaultData[target]
 			let newValue = targetData[S.DefaultDataRowI.value];
 			if(!values.includes(newValue)){
-				newValue = values[0];
+				if(target != 'ship'){
+					newValue = values[0];
+				}else{
+					const oldOption = targetData[S.DefaultDataRowI.options][
+						targetData[S.DefaultDataRowI.values].indexOf(newValue)
+					];
+					const oldTier = parseInt(oldOption.substring(
+						oldOption.lastIndexOf("(") + 1, oldOption.lastIndexOf(")")
+					));
+					let found = false;
+					for(let i=0; i<options.length; i++) {
+						const option = options[i];
+						const tier = parseInt(option.substring(
+							option.lastIndexOf("(") + 1, option.lastIndexOf(")")
+						));
+						if(oldTier == tier){
+							found = true;
+							newValue = values[i];
+							break;
+						}
+					}
+					if(!found){
+						newValue = values[0];
+					}
+				}
 			}
 			targetData[S.DefaultDataRowI.options] = options;
 			targetData[S.DefaultDataRowI.values] = values;
@@ -143,7 +167,8 @@ export class DefaultShips extends React.PureComponent
 		}
 		//Aggressive length shortening
 		const nation = dData.nation[sDI], type = dData.shipType[sDI],
-			ship = dData.ship[sDI], artillery = dData.artillery[sDI];
+			ship = dData.ship[sDI], artillery = dData.artillery[sDI],
+			shellType = dData.shellType[sDI];
 		const queryType = () => {
 			const options = Object.keys(qDataS[nation]);
 			this.updateForm('shipType', options, options);
@@ -164,7 +189,7 @@ export class DefaultShips extends React.PureComponent
 			this.updateForm('shellType', options, options);
 		}
 		const sendData = () => {
-			const shellType = dData.shellType[sDI];
+			//const shellType = dData.shellType[sDI];
 			const shellName = qDataS[nation][type][ship].artillery[artillery][shellType];
 			this.props.sendDefault(dData.queriedData.shells[shellName], ship);
 		}
