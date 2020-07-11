@@ -129,8 +129,7 @@ export class DefaultShips extends React.PureComponent
 						oldOption.lastIndexOf("(") + 1, oldOption.lastIndexOf(")")
 					));
 					let found = false;
-					for(let i=0; i<options.length; i++) {
-						const option = options[i];
+					for(const [i, option] of options.entries()) {
 						const tier = parseInt(option.substring(
 							option.lastIndexOf("(") + 1, option.lastIndexOf(")")
 						));
@@ -140,9 +139,7 @@ export class DefaultShips extends React.PureComponent
 							break;
 						}
 					}
-					if(!found){
-						newValue = values[0];
-					}
+					if(!found) newValue = values[0];
 				}
 			}
 			targetData[S.DefaultDataRowI.options] = options;
