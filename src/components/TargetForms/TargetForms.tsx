@@ -3,7 +3,7 @@ import {Row, Col, Button, Modal} from 'react-bootstrap';
 import {Icon} from 'semantic-ui-react';
 
 import * as T from '../commonTypes';
-import {ParameterForm} from '../UtilityComponents';
+import {ParameterForm, CloseButton} from '../UtilityComponents';
 import "./TargetForms.css";
 //import GeneralTooltip from './Tooltips';
 const GeneralTooltip = React.lazy(() => import('../UtilityComponents/Tooltips'));
@@ -66,14 +66,14 @@ class AngleForm extends React.PureComponent<angleFormProps>{
     }
     private commonStyle = Object.freeze({
         formControl: {minWidth: '50%', maxWidth: '7rem', display: "inline-flex"},
-        formGroup: {flexFlow: 'unset', padding: 0,},
-        formLabel: {minWidth: '7rem'}
+        formGroup: {flexFlow: 'unset', padding: 0, marginBottom: '.5rem'},
+        formLabel: {backgroundColor: '#e9ecef'}
     });
     render(){
         const {props} = this;
         return (
             <Modal.Dialog style={{width: '100%', margin: 0, maxHeight: '57px'}}>
-                <Modal.Header closeButton
+                <Modal.Header
                     style={{
                         padding: 0, 
                         paddingTop: '0.5rem', 
@@ -94,6 +94,7 @@ class AngleForm extends React.PureComponent<angleFormProps>{
                         >
                         {props.label}
                     </ParameterForm>
+                    <CloseButton onClick={this.deleteElement}/>
                 </Modal.Header>
             </Modal.Dialog>
         );
@@ -210,7 +211,7 @@ export class TargetFormsContainer extends React.PureComponent<{}, targetFormsCon
                     newValue={String(targetData.angles[i])} 
                     deleteElement={this.deleteAngle}
                     onChange={this.handleAngleChange}
-                    label={`Angle ${i + 1}`}
+                    label={`${i + 1}`}
                 /> //start at 1 for display
             );
         });
