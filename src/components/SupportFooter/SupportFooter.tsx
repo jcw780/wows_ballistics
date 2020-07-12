@@ -1,4 +1,5 @@
 import React from 'react';
+import './SupportFooter.css';
 
 export const SupportFooter = (props) => {
     return(    

@@ -108,7 +108,7 @@ export class DefaultShips extends React.PureComponent
 		}
 		defaultData[id][S.DefaultDataRowI.value] = value;
 		// Now iterative - instead of waiting for rerenders and clogging stack depth
-		for(; queryIndex <= 5; queryIndex++){
+		for(; queryIndex <= 5; ++queryIndex){
 			this.postVersion(queryIndex)();
 		}
 	}

@@ -119,23 +119,19 @@ class SubGroup extends React.Component<subGroupProps>{
     }
     private addChart = this.addChartInternal();
     render(){return(<>{this.addChart()}</>)}
-    componentDidMount(){
-        const {links} = this.props; //Initialize Links Names
-        this.props.config.forEach((chart, i) => {
+    private updateLinks = () => {
+        const {links, config} = this.props; //Initialize Links Names
+        for(const[i, chart] of config.entries()){
             if(links.length === i){ links.push(['', React.createRef<SingleChart>()]);}
             const link = links[i];
             link[T.singleLinkIndex.name] = chart[singleChartIndex.name]; 
             link[T.singleLinkIndex.ref] = chart[singleChartIndex.ref];
-        });
+        }
     }
+    componentDidMount(){this.updateLinks();}
     componentDidUpdate(){
         if(this.props.updateLinks){
-            const {links} = this.props;
-            this.props.config.forEach((chart, i) => {
-                const link = links[i];
-                link[T.singleLinkIndex.name] = chart[singleChartIndex.name]; 
-                link[T.singleLinkIndex.ref] = chart[singleChartIndex.ref];
-            });
+            this.updateLinks();
             this.props.onUpdate(); // Update navbar links on update
         }
     }
@@ -258,13 +254,11 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             type: 'linear', ticks:{callback: addCommas}
         }];
         const legend = {display: true, position: settings.format.legendPosition};
-        //For doing weird closure abuse things - tbh not sure I even need this...
-        const callbackHelper = (f: Function) => {return (...args) => {f(...args)();}}
         const setXAxes = () => {
-            const singleSetting = ([key, value]) => {
+            const SDE = Object.entries(settings.distance);
+            for(const[key, value] of SDE){
                 if(value !== null || true ) xAxesDistance[0].ticks[key] = value;
             }
-            return () => Object.entries(settings.distance).forEach(singleSetting);
         }
 
         const targetedArmor = `Armor Thickness: ${graphData.targets[0].armor}mm`;
@@ -359,9 +353,10 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             ],
         });
         const intializeStaticCharts = () => {
-            const singleType = (key) => {
-                const chartConfig = this.chartConfigs[key], staticOption = staticOptionSetup[key], setup = staticOption[0];
-                const singleChart = (chart, i) => {
+            for(const [,key] of staticChartTypes.entries()){
+                const chartConfig = this.chartConfigs[key], 
+                    staticOption = staticOptionSetup[key], setup = staticOption[0];
+                for(const[i, chart] of chartConfig.entries()){
                     const config = chart[singleChartIndex.config];
                     config.data.datasets.length = 0; //empty options and datasets
                     //avoid mutations so we can use chart.js update instead of forceUpdate
@@ -372,9 +367,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                         chartRef.chartRef.current.chartInstance.options = config.options;
                     }
                 }
-                return () => chartConfig.forEach(singleChart);
             }
-            return () => staticChartTypes.forEach(callbackHelper(singleType));
         }
         //Post-Penetration Charts
         const configPost = this.chartConfigs.post, postData = graphData.post;
@@ -391,7 +384,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             const angleLengthDiff = graphData.angles.length - configPost.length;
             if(angleLengthDiff > 0){
                 updatePost = false; //need to add charts
-                for(let i=0; i<angleLengthDiff; i++){
+                for(let i=0; i<angleLengthDiff; ++i){
                     configPost.push([{data: {datasets : Array<any>(),}, options: {}}, React.createRef<SingleChart>(), '']);
                     this.props.links.post.push(['', React.createRef<SingleChart>()]); // navbar links
                 }
@@ -405,7 +398,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         //Colons are used to denote split between label and name
         const WFL = "Fuzed: ", NFL = "Unfuzed: ";
         const initializePostCharts = () => {
-            const singleChart = (chart, i) => {
+            for(const[i, chart] of configPost.entries()){
                 chart[singleChartIndex.config].data.datasets.length = 0; // clear dataset
                 chart[singleChartIndex.config].data.datasets.push( // add ship width line
                 {
@@ -433,11 +426,10 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     legend: legend,
                     tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}},            
                 }
-                //This is kind of for future charupdate implementations
                 const chartRef = chart[singleChartIndex.ref].current;
                 if(chartRef){ 
                     //Inject title directly into chartInstance - otherwise won't display properly
-                    chartRef.chartRef.current.chartInstance.options = chart[singleChartIndex.config].options;
+                    chartRef.chartRef.current!.chartInstance.options = chart[singleChartIndex.config].options;
                 }
                 const shortName = `Horizontal Impact Angle ${i + 1}: ${graphData.angles[i]}°`;
                 if(shortName !== chart[singleChartIndex.name]){
@@ -445,7 +437,6 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     chart[singleChartIndex.name] = shortName;
                 }
             } 
-            return () => configPost.forEach(singleChart);
         }
         //Add Lines
         const addLine = (data : T.scatterPoint[], 
@@ -471,10 +462,12 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         }
         const assignPredefined = (shellIndex: number, name: string, target, configs : configsT[], 
             graphData, colors : string[]) => {
-            const singleChart = (chart : singleChartType, rowIndex) => {
+            for(const [rowIndex, chart] of target.entries()){
                 let counter = 0;
-                const singleAxis = (axis) => {
-                    const singleLine = (line) => {
+                const CRA = configs[rowIndex].axes.entries();
+                for(const[, axis] of CRA){
+                    const ALE = axis.lines.entries();
+                    for(const[, line] of ALE){
                         chart[singleChartIndex.config].data.datasets.push(addLine(
                             graphData[line.data][shellIndex], 
                             line.lineLabel + name, 
@@ -482,57 +475,51 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                             colors[counter]));
                         counter++;
                     }
-                    return () => axis.lines.forEach(singleLine);
                 }
-                return () => configs[rowIndex].axes.forEach(callbackHelper(singleAxis));
             } 
-            return () => target.forEach(callbackHelper(singleChart));
         }
 
         const addRefAngles = () => {
-            const singleRef = (data, i) => {
-                const singleChart = (chart) => {
+            const CAE = configAngle.entries();
+            for(const[, data] of graphData.refAngles.entries()){
+                for(const[i, chart] of CAE){
                     chart[singleChartIndex.config].data.datasets.push({
                         data: data, showLine: showLineValue, borderDash: [5, 5], label: `:${graphData.refLabels[i]}`, 
                         yAxisID: 'angle', borderColor: "#505050", backgroundColor: "#505050", fill: false, 
                         pointRadius: commonPointRadius, pointHitRadius: 5 ,
                     });
                 }
-                return () => configAngle.forEach(singleChart); 
             }
-            return () => graphData.refAngles.forEach(callbackHelper(singleRef)); 
         }
         const generateStatic = (i : number, name : string, colors : string[]) => {
-            const singleItem = (type) => {
-                assignPredefined(i, name, this.chartConfigs[type], staticOptionSetup[type][1], graphData[type], colors)();
+            for(const[, type] of staticChartTypes.entries()){
+                assignPredefined(i, name, this.chartConfigs[type], staticOptionSetup[type][1], graphData[type], colors);
             }
-            return () => staticChartTypes.forEach(singleItem); 
         }
         const generatePost = (i : number, name : string, colors : string[]) => {
-            const singleItem = (chart, index) => { //Post
+            for(const [index, chart] of configPost.entries()) { //Post
                 let pL : Array<any> = [
                     postData.fused[index + graphData.angles.length*i],
                     postData.notFused[index + graphData.angles.length*i]
                 ];
                 let pLShow : boolean[] = [true, true];
-                for(let j=0; j<2; j++){ //react-chartjs-2 doesn't like undefined data
+                for(let j=0; j<2; ++j){ //react-chartjs-2 doesn't like undefined data
                     if(pL[j].length === 0){pL[j] = [{x: 0, y: 0}]; pLShow[j] = false;}
                 }
                 chart[singleChartIndex.config].data.datasets.push(
                     postLine(pL[0], WFL + name, colors[0], pLShow[0]),
                     postLine(pL[1], NFL + name, colors[1], pLShow[1]),
                 )
-            };
-            return () => configPost.forEach(singleItem);
+            }
         }
         return () => {
-            setXAxes()(); intializeStaticCharts()();
-            resizeAngleDependents(); initializePostCharts()();
-            addRefAngles()();
+            setXAxes(); intializeStaticCharts();
+            resizeAngleDependents(); initializePostCharts();
+            addRefAngles();
             //Add data
-            for(let i=0; i<graphData.numShells; i++){
+            for(let i=0, len=graphData.numShells; i<len; ++i){
                 const name = graphData.names[i], colors = graphData.colors[i];
-                generateStatic(i, name, colors)(); generatePost(i, name, colors)();
+                generateStatic(i, name, colors); generatePost(i, name, colors);
             }
             if(forceUpdate){ //For disabling rerender in constructor [will be rendered anyways]
                 this.updateCharts('impact'); //Only need to update charts not surrounding components

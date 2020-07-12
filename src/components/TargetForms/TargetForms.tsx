@@ -66,7 +66,8 @@ class AngleForm extends React.PureComponent<angleFormProps>{
     }
     private commonStyle = Object.freeze({
         formControl: {minWidth: '50%', maxWidth: '7rem', display: "inline-flex"},
-        formGroup: {flexFlow: 'unset', paddingBottom: 0}
+        formGroup: {flexFlow: 'unset', padding: 0,},
+        formLabel: {minWidth: '7rem'}
     });
     render(){
         const {props} = this;
