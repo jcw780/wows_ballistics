@@ -195,22 +195,22 @@ class App extends React.Component<{},{}> {
 				calculatedData.names[i] = value.name; 
 				calculatedData.colors[i] = value.colors;
 			});
-			for(let j=0; j<numShells; j++){
+			for(let j=0; j<numShells; ++j){
 				this.initializePoint(calculatedData.impact, j);
 				this.initializePoint(calculatedData.angle, j);
-				for(let i=0; i<numAngles; i++){
+				for(let i=0; i<numAngles; ++i){
 					calculatedData.post.notFused[i+j*numAngles] = [];
 					calculatedData.post.fused[i+j*numAngles] = [];
 				}
 			}
 			let maxDist = 0; //Maximum Distance for shipWidth
 			// Converts flat array data format to {x, y} format for chart.js
-			for(let j=0; j<numShells; j++){ // iterate through shells
-				for(let i=0; i<impactSize; i++){ // iterate through points at each range
+			for(let j=0; j<numShells; ++j){ // iterate through shells
+				for(let i=0; i<impactSize; ++i){ // iterate through points at each range
 					const dist : number = instance.getImpactPoint(i, arrayIndices.impactDataIndex.distance, j);
 					maxDist = Math.max(maxDist, dist);
 					this.makeImpactPoints(j, i, dist); this.makeAnglePoints(j, i, dist);
-					for(let k=0; k<numAngles; k++){
+					for(let k=0; k<numAngles; ++k){
 						const detDist : number
 							= instance.getPostPenPoint(i, arrayIndices.postPenDataIndex.x, k, j);
 						const fused : number // = detDist when fused, otherwise = -1
@@ -231,7 +231,7 @@ class App extends React.Component<{},{}> {
 			calculatedData.post.shipWidth = [[],];
 			calculatedData.post.shipWidth.forEach((singleShipWidth) => {
 				const length = this.referenceLineSize - 1;
-				for(let i=0; i < this.referenceLineSize; i++){
+				for(let i=0; i < this.referenceLineSize; ++i){
 					const xV : number = i / length * maxAdj;
 					singleShipWidth[i] = {
 						x: xV, 
@@ -242,10 +242,10 @@ class App extends React.Component<{},{}> {
 			//Angle Chart Annotations / Labels
 			calculatedData.refLabels = tgtData.refLabels;
 			calculatedData.refAngles = [];
-			for(let j=0; j<calculatedData.refLabels.length; j++){
+			for(let j=0, len=calculatedData.refLabels.length; j<len; ++j){
 				const temp : T.scatterPoint[] = [];
 				const length = this.referenceLineSize - 1;
-				for(let i=0; i < this.referenceLineSize; i++){
+				for(let i=0; i < this.referenceLineSize; ++i){
 					const xV : number = i / length * maxAdj;
 					temp[i] = {
 						x: xV, 

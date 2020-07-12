@@ -391,7 +391,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             const angleLengthDiff = graphData.angles.length - configPost.length;
             if(angleLengthDiff > 0){
                 updatePost = false; //need to add charts
-                for(let i=0; i<angleLengthDiff; i++){
+                for(let i=0; i<angleLengthDiff; ++i){
                     configPost.push([{data: {datasets : Array<any>(),}, options: {}}, React.createRef<SingleChart>(), '']);
                     this.props.links.post.push(['', React.createRef<SingleChart>()]); // navbar links
                 }
@@ -515,7 +515,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     postData.notFused[index + graphData.angles.length*i]
                 ];
                 let pLShow : boolean[] = [true, true];
-                for(let j=0; j<2; j++){ //react-chartjs-2 doesn't like undefined data
+                for(let j=0; j<2; ++j){ //react-chartjs-2 doesn't like undefined data
                     if(pL[j].length === 0){pL[j] = [{x: 0, y: 0}]; pLShow[j] = false;}
                 }
                 chart[singleChartIndex.config].data.datasets.push(
@@ -530,7 +530,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             resizeAngleDependents(); initializePostCharts()();
             addRefAngles()();
             //Add data
-            for(let i=0; i<graphData.numShells; i++){
+            for(let i=0, len=graphData.numShells; i<len; ++i){
                 const name = graphData.names[i], colors = graphData.colors[i];
                 generateStatic(i, name, colors)(); generatePost(i, name, colors)();
             }
