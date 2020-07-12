@@ -79,7 +79,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
     private generateForms = (forms, target, onChange, sm=4) => {
         const rendered = forms.map((value, i) => {
             return(
-                <>
+                <div key={i}>
                     <div>{value[1]}</div>
                     <div>
                         <ParameterForm 
@@ -91,7 +91,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                         style={this.defaultFormStyle}
                         />
                     </div>
-                </>
+                </div>
             );
         });
         const width = (sm / 12) * 100
@@ -187,12 +187,12 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
     }
     private generateColorFormsInternal = () => {
         const addForm = () => {
-            const singleRow = (rowGroup : any) => {
+            const singleRow = (rowGroup : any, j) => {
                 const rowLabel = rowGroup[0], row = rowGroup[1];
-                const singleForm = (form) => {
+                const singleForm = (form, i) => {
                     const id = form[0], label = form[1];
                     return(
-                        <div className="color-box">
+                        <div className="color-box" key={i}>
                             <ParameterForm
                                 controlId={id} 
                                 ariaLabel={`${label} ${rowLabel}`} 
@@ -206,33 +206,31 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                     );
                 }
                 return (
-                    <>
+                    <div key={j}>
                         <div className="color-box">
                             {rowLabel}
                         </div>
                         {row.map(singleForm)}
-                    </>
+                    </div>
                 );
             }
             return this.forms.colors.map(singleRow);
         }
-        const run = () => {
-            return (<>
+        return () => {
+            return (
                 <div className="color-wrapper">
                     <div className="color-box"/>
                     <div className="color-box">Minimum</div>
                     <div className="color-box">Maximum</div>
                     {addForm()}
                 </div>
-            </>)
+            )
         }
-        return run;
     }
     private generateColorForms = this.generateColorFormsInternal();
     render(){
         const {settings} = this.props, {format} = settings;
         return(
-    <>
         <div className="settings">
             <div className="graph-region">
                 <div className="graph-title">
@@ -293,7 +291,6 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                 </div>
             </div>
         </div>
-    </>
         );
     }
 }

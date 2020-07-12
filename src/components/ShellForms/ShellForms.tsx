@@ -440,7 +440,7 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 		//Key not needed - added later in surrounding component
 		if(!copied){
 			return(
-				<div>
+				<div key={key}>
 				<ShellForms keyProp={key} 
 					ref={ref}
 					index={index}
@@ -458,7 +458,7 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 			//pass a deep copied version so clones target the correct shell form
 			const copyTemp = this.copyTemp;
 			return( 
-				<div>
+				<div key={key}>
 				<ShellForms keyProp={key} 
 					ref={ref}
 					index={index}
