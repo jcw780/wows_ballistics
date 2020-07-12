@@ -267,6 +267,7 @@ export class TargetFormsContainer extends React.PureComponent<{}, targetFormsCon
         const {targetData} = this;
         const commonStyle = {
             formControl: {minWidth: '50%', maxWidth: '6rem', display: "inline-flex"},
+            formGroup: {marginBottom: '0rem'}
         };
         const singleLabel = ([key, value], i) => {
             return (

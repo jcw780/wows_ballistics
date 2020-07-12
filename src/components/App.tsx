@@ -280,12 +280,17 @@ class App extends React.Component<{},{}> {
 	/>
 	<h1>World of Warships Ballistics Calculator</h1>
 	<hr/>
-	<ShellFormsContainer 
-		ref={this.SFCref} 
-		settings={this.settings}
-	/>
-	<hr/>
-	<TargetFormsContainer ref={this.TFCref}/>
+	<div className="inputs">
+		<div className="shells">
+			<ShellFormsContainer 
+				ref={this.SFCref} 
+				settings={this.settings}
+			/>
+		</div>
+		<div className="target">
+			<TargetFormsContainer ref={this.TFCref}/>
+		</div>
+	</div>
 	<hr/>
 	<SettingsBar 
 		settings={this.settings} 

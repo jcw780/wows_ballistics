@@ -122,3 +122,18 @@ i.question.circle.icon{
 #tooltip-text {
   overflow-wrap: normal;
 }
+
+/* Page Layout */
+.inputs{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); 
+  grid-gap: 0;
+}
+
+.inputs > .shells{
+  grid-column: span 1;
+}
+
+.inputs > .target{
+  grid-column: span 1;
+}
