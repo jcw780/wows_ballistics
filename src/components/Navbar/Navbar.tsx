@@ -22,11 +22,11 @@ export class NavbarCustom extends React.Component<{links: T.linkT}>{
         }
     }
     updateAll = () => {
-        this.navDropdownContainers.forEach((container) => {
+        for(const[, container] of this.navDropdownContainers.entries()){
             if(container !== undefined){
                 container.current?.forceUpdate();
             }
-        })
+        }
     }
     private scrollToTop = _ => window.scrollTo(0, 0);
     render(){

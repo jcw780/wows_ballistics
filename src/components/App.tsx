@@ -229,23 +229,24 @@ class App extends React.Component<{},{}> {
 			const stepSize = this.settings.distance.stepSize !== undefined ? this.settings.distance.stepSize: 2000;
 			const maxAdj = Math.ceil(maxDist / stepSize) * stepSize;
 			calculatedData.post.shipWidth = [[],];
-			calculatedData.post.shipWidth.forEach((singleShipWidth) => {
+			const SWE = calculatedData.post.shipWidth.entries();
+			for(const [, singleShipWidth] of SWE){
 				const length = this.referenceLineSize - 1;
-				for(let i=0; i < this.referenceLineSize; ++i){
+				for(let i=0; i < length+1; ++i){
 					const xV : number = i / length * maxAdj;
 					singleShipWidth[i] = {
 						x: xV, 
 						y: tgtData.width
 					};
 				}
-			});
+			}
 			//Angle Chart Annotations / Labels
 			calculatedData.refLabels = tgtData.refLabels;
 			calculatedData.refAngles = [];
 			for(let j=0, len=calculatedData.refLabels.length; j<len; ++j){
 				const temp : T.scatterPoint[] = [];
 				const length = this.referenceLineSize - 1;
-				for(let i=0; i < this.referenceLineSize; ++i){
+				for(let i=0; i < length+1; ++i){
 					const xV : number = i / length * maxAdj;
 					temp[i] = {
 						x: xV, 

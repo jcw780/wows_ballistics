@@ -354,7 +354,8 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         });
         const intializeStaticCharts = () => {
             for(const [,key] of staticChartTypes.entries()){
-                const chartConfig = this.chartConfigs[key], staticOption = staticOptionSetup[key], setup = staticOption[0];
+                const chartConfig = this.chartConfigs[key], 
+                    staticOption = staticOptionSetup[key], setup = staticOption[0];
                 for(const[i, chart] of chartConfig.entries()){
                     const config = chart[singleChartIndex.config];
                     config.data.datasets.length = 0; //empty options and datasets
@@ -366,9 +367,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                         chartRef.chartRef.current.chartInstance.options = config.options;
                     }
                 }
-                //return () => chartConfig.forEach(singleChart);
             }
-            //return () => staticChartTypes.forEach(singleType);
         }
         //Post-Penetration Charts
         const configPost = this.chartConfigs.post, postData = graphData.post;
@@ -427,7 +426,6 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     legend: legend,
                     tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}},            
                 }
-                //This is kind of for future charupdate implementations
                 const chartRef = chart[singleChartIndex.ref].current;
                 if(chartRef){ 
                     //Inject title directly into chartInstance - otherwise won't display properly
@@ -469,7 +467,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 const CRA = configs[rowIndex].axes.entries();
                 for(const[, axis] of CRA){
                     const ALE = axis.lines.entries();
-                    for(const[lNdx, line] of ALE){
+                    for(const[, line] of ALE){
                         chart[singleChartIndex.config].data.datasets.push(addLine(
                             graphData[line.data][shellIndex], 
                             line.lineLabel + name, 
@@ -494,10 +492,9 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             }
         }
         const generateStatic = (i : number, name : string, colors : string[]) => {
-            const singleItem = (type) => {
+            for(const[, type] of staticChartTypes.entries()){
                 assignPredefined(i, name, this.chartConfigs[type], staticOptionSetup[type][1], graphData[type], colors);
             }
-            return () => staticChartTypes.forEach(singleItem); 
         }
         const generatePost = (i : number, name : string, colors : string[]) => {
             for(const [index, chart] of configPost.entries()) { //Post
@@ -514,7 +511,6 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     postLine(pL[1], NFL + name, colors[1], pLShow[1]),
                 )
             }
-            //return () => configPost.forEach(singleItem);
         }
         return () => {
             setXAxes(); intializeStaticCharts();
@@ -523,7 +519,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             //Add data
             for(let i=0, len=graphData.numShells; i<len; ++i){
                 const name = graphData.names[i], colors = graphData.colors[i];
-                generateStatic(i, name, colors)(); generatePost(i, name, colors);
+                generateStatic(i, name, colors); generatePost(i, name, colors);
             }
             if(forceUpdate){ //For disabling rerender in constructor [will be rendered anyways]
                 this.updateCharts('impact'); //Only need to update charts not surrounding components
