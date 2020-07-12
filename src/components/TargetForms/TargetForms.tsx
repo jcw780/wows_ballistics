@@ -325,7 +325,7 @@ export class TargetFormsContainer extends React.PureComponent<{}, targetFormsCon
                     </table>
                     *0° angle of fall and armor inclination.
                 </>}>
-                    <div>
+                    <div className="tooltip-target">
                         <h3 style={{display:"inline-block"}}>Target Angles</h3>
                         <Icon name='question circle outline' color='grey'/>
                     </div>
@@ -346,7 +346,7 @@ export class TargetFormsContainer extends React.PureComponent<{}, targetFormsCon
                     <>User generated labels for angle charts. 
                     <br/>These do not affect calculation values.</>}
                 >
-                    <div>
+                    <div className="tooltip-target">
                         <h3 style={{display:"inline-block", marginBottom: 0}}>Angle Labels</h3>
                         <Icon name='question circle outline' color='grey'/>
                     </div>

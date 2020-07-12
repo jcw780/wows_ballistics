@@ -303,7 +303,6 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 			onChange={this.toggleGraph} 
 			checked={this.graph}
 		/>
-		<hr style={{marginTop: 0}}/>
 		<DefaultShips ref={this.defaults}
 			sendDefault={this.getDefaultData} 
 			defaultData={this.defaultData}

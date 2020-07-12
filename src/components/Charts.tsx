@@ -569,7 +569,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         ** Scaled by x(1/3.1) ≈ game / real world  <br/>
         </>
     }>
-        <div>
+        <div className="tooltip-target">
             <h3 style={{textAlign: "center", display:"inline-block"}}>Impact Charts</h3>
             <Icon name='question circle outline' color='grey'/>
         </div>
@@ -584,7 +584,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         Note: Adjusts for angle of fall and armor inclination
         </>
     }>
-        <div>
+        <div className="tooltip-target">
             <h3 style={{textAlign: "center", display:"inline-block"}}>Angle Charts</h3>
             <Icon name='question circle outline' color='grey'/>
         </div>
@@ -600,7 +600,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         - Adjusts for angle of fall and armor inclination
         </>
     }>
-        <div>
+        <div className="tooltip-target">
             <h3 style={{textAlign: "center", display:"inline-block"}}>Post-Penetration Charts</h3>
             <Icon name='question circle outline' color='grey'/>
         </div>

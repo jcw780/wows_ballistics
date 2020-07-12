@@ -123,6 +123,10 @@ i.question.circle.icon{
   overflow-wrap: normal;
 }
 
+.tooltip-target{
+  display: inline-block;
+}
+
 /* Page Layout */
 .inputs{
   display: grid;
