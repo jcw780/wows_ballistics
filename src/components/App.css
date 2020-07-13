@@ -135,7 +135,7 @@ i.question.circle.icon{
 }
 
 .inputs > .shells{
-  grid-column: span 1;
+  grid-column: span 2;
 }
 
 .inputs > .target{

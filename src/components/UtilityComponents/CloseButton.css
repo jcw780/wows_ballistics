@@ -1,12 +1,24 @@
 .close-custom {
-    font-family: "Segoe UI";
+    float: right;
     font-size: 1.5rem;
     font-weight: 700;
     line-height: 1;
     color: #000;
     text-shadow: 0 1px 0 #fff;
+    opacity: .5;
+    padding: 1rem;
+}
+
+button.close-custom {
+    padding: 0;
+    background-color: transparent;
+    border: 0;
 }
 
 .close-custom:hover {
     color: #000;
+}
+
+.close-custom:not(:disabled):not(.disabled):focus, .close-custom:not(:disabled):not(.disabled):hover {
+    opacity: .75;
 }

@@ -72,7 +72,7 @@ class AngleForm extends React.PureComponent<angleFormProps>{
     render(){
         const {props} = this;
         return (
-            <Modal.Dialog style={{width: '100%', margin: 0, maxHeight: '57px'}}>
+            <Modal.Dialog style={{width: '13rem', margin: 0, maxHeight: '57px'}}>
                 <Modal.Header
                     style={{
                         padding: 0, 
@@ -81,7 +81,6 @@ class AngleForm extends React.PureComponent<angleFormProps>{
                         paddingLeft: '0.5rem',
                         maxHeight: '100%'
                     }}
-                    onHide={this.deleteElement}
                 >
                     <ParameterForm controlId={props.index} 
                         newValue={props.newValue}
@@ -277,7 +276,7 @@ export class TargetFormsContainer extends React.PureComponent<{}, targetFormsCon
                         newValue={String(targetData[key])} 
                         onChange={this.handleChange} 
                         type="number"
-                        labelWidth={5} 
+                        labelWidth={6} 
                         append={value[1]} 
                         ariaLabel={value[0]} 
                         style={commonStyle}

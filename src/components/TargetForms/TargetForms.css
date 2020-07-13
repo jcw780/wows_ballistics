@@ -2,17 +2,17 @@
     margin-bottom: 1rem;
     margin-left: 5%;
     margin-right: 5%; 
-    padding-left: 5%;
-    padding-right: 5%;
+    padding-left: .25rem;
+    padding-right: .25rem;
     padding-top: .5rem;
     padding-bottom: .5rem;
     background-color: #f2f2f2;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
 }
 
 .angleLabel-box{
-    max-width: 250px;
+    max-width: 13rem;
     background-color: #f2f2f2;
 }
 
@@ -22,7 +22,6 @@
     padding-left: 5%;
     padding-right: 5%;
     padding-top: .5rem;
+    padding-bottom: .5rem;
     background-color: #f2f2f2;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); 
 }
