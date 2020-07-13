@@ -46,7 +46,7 @@ export class ShellParameters extends React.PureComponent<shellParametersProps>{
 				style={commonStyle} 
 				ariaLabel={name}>
                     <Suspense fallback={<div>Loading...</div>}>
-                        <GeneralTooltip title={name} content={value[S.labelI.description]}>
+                        <GeneralTooltip title={name} content={value[S.labelI.description]} placement='top'>
 							<div>
 								{name}
 								<Icon name='question circle outline' color='grey'/>

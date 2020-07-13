@@ -269,7 +269,9 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		return(
 <Modal.Dialog>
 	<Modal.Header>
-		<Modal.Title style={{marginLeft: "calc(50% - 30.625px)", marginRight: "auto", width: '61.25px'}}>Shell {props.index + 1}</Modal.Title>
+		<Modal.Title style={{
+			marginLeft: "calc(50% - 50px)", marginRight: "auto", width: '100px', textAlign: 'center'
+		}}>Shell {props.index + 1}</Modal.Title>
 		<CloseButton onClick={this.deleteShip}/>
 	</Modal.Header>
 	<Modal.Body>

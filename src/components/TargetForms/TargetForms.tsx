@@ -24,11 +24,13 @@ class RefAngleForm extends React.PureComponent<refAngleFormProps>{
         const {props} = this;
         return (
             <Modal.Dialog style={{width: '100%', margin: 0}}>
-                <Modal.Header closeButton 
+                <Modal.Header
                     style={{padding: 0, paddingTop: '0.25rem', paddingRight: '0.25rem', paddingLeft: '0.25rem'}}
-                    onHide={this.deleteElement}
                 >
-                    <Modal.Title style={{justifyContent: 'center'}}>Label {props.index + 1}</Modal.Title>
+                    <Modal.Title style={{
+                        marginLeft: 'calc(50% - 60px)', marginRight: 'auto', width: '120px', textAlign: 'center'
+                    }}>Label {props.index + 1}</Modal.Title>
+                    <CloseButton onClick={this.deleteElement}/>
                 </Modal.Header>
             <Modal.Body>
             <ParameterForm controlId={this.props.index} 
@@ -334,7 +336,7 @@ export class TargetFormsContainer extends React.PureComponent<{}, targetFormsCon
 
             {this.renderAngleElements(angleElements)}
 
-            <Row className="justify-content-sm-center no-lr-margin" style={{marginBottom: "1rem"}}>
+            <Row className="justify-content-sm-center no-lr-margin" style={{marginBottom: ".5rem"}}>
                 <Col sm="6">
                     <Button className="form-control" variant="outline-secondary" onClick={this.addAngle}>
                         Add Angle
@@ -355,7 +357,7 @@ export class TargetFormsContainer extends React.PureComponent<{}, targetFormsCon
 
             {this.renderAngleElements(refAngleElements)}
             
-            <Row className="justify-content-sm-center no-lr-margin" style={{marginBottom: "1rem"}}>
+            <Row className="justify-content-sm-center no-lr-margin" style={{marginBottom: ".5rem"}}>
                 <Col sm="6">
                     <Button className="form-control" variant="outline-secondary" onClick={this.addRefAngle}>
                         Add Angle
