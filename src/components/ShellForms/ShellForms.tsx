@@ -6,7 +6,7 @@ import clonedeep from 'lodash.clonedeep';
 
 import * as T from '../commonTypes';
 import * as S from './Types';
-import {ParameterForm} from '../UtilityComponents';
+import {ParameterForm, CloseButton} from '../UtilityComponents';
 import DefaultShips from './DefaultForms'
 import {ShellParametersT} from './ShellParameters';
 import './ShellForms.css';
@@ -268,8 +268,9 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		const {props} = this;
 		return(
 <Modal.Dialog>
-	<Modal.Header closeButton onHide={this.deleteShip}>
-		<Modal.Title style={{marginLeft: "40%", marginRight: "auto", }}>Shell {props.index + 1}</Modal.Title>
+	<Modal.Header>
+		<Modal.Title style={{marginLeft: "calc(50% - 30.625px)", marginRight: "auto", width: '61.25px'}}>Shell {props.index + 1}</Modal.Title>
+		<CloseButton onClick={this.deleteShip}/>
 	</Modal.Header>
 	<Modal.Body>
 		<ParameterForm ref={this.nameForm}
