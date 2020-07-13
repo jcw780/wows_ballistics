@@ -9,9 +9,10 @@ interface propsT{
     links: T.singleLinkT[], title: string,
 }
 export class NavDropdownContainer extends React.Component<propsT>{
-    private makeScroller = (ref : T.chartRefT | T.parameterRefT) => {
-        const scrollToRef = (ref : T.chartRefT | T.parameterRefT) => {
-            window.scrollTo(0, ref.current!.scrollRef.current!.offsetTop);
+    private makeScroller = (ref : React.RefObject<any>) => {
+        const scrollToRef = (ref : React.RefObject<any>) => {
+            const {current} = ref;
+            if(current !== undefined || current !== null) window.scrollTo(0, ref.current!.offsetTop);
         }
         return _ => scrollToRef(ref);
     }

@@ -84,7 +84,7 @@ export type chartRefT = React.RefObject<SingleChart>;
 
 //Navbar Links
 export enum singleLinkIndex {name, ref}
-export type singleLinkT = [string, chartRefT | parameterRefT];
+export type singleLinkT = [string, React.RefObject<any>];
 export type parameterRefT = React.RefObject<ShellFormsContainer 
 | TargetFormsContainer | SettingsBar>;
 export type linkKeyT = chartT | 'parameters';

@@ -2,7 +2,7 @@ import React from 'react';
 import Chart from 'chart.js';
 import {Scatter, defaults} from 'react-chartjs-2';
 import 'chartjs-plugin-annotation';
-import {Button, Collapse, Row, Col, Carousel} from 'react-bootstrap';
+import {Button, Collapse, Row, Col, Carousel, ToggleButtonGroup, ToggleButton, ButtonGroup} from 'react-bootstrap';
 import {Icon} from 'semantic-ui-react';
 
 import * as T from './commonTypes';
@@ -103,7 +103,7 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
             );
         }else{
             return(
-                <div>
+                <div ref={this.scrollRef}>
                     {this.renderContent()}
                 </div>
             );
@@ -122,8 +122,27 @@ interface subGroupProps {
 class SubGroup extends React.Component<subGroupProps, {index: number}>{
     public static defaultProps = {updateLinks: false, carousel: true};
     state = {index: 0};
-    private handleSelect = (selectedIndex, e) => {
+    scrollRef = React.createRef<any>();
+    private handleSelect = (selectedIndex:number, e) => {
         this.setState({index: selectedIndex});
+    }
+    private handleSelectButton = event => {
+        this.setState({index: parseInt(event.target.value)});
+    }
+    private addButtons = () => {
+        return (
+            <ToggleButtonGroup toggle 
+                type="radio" name="radio" 
+                value={this.state.index}>
+                {this.props.config.map((config, i) => {
+                    return(
+                    <ToggleButton key={i} value={i} type="radio" onChange={this.handleSelectButton}>
+                        {config[singleChartIndex.name]}
+                    </ToggleButton>
+                    );
+                })}
+            </ToggleButtonGroup>
+        );
     }
     private addChart = () => {
         const {props} = this;
@@ -155,29 +174,34 @@ class SubGroup extends React.Component<subGroupProps, {index: number}>{
             return chartTarget.map(singleChart);
         }
     }
-    //private addChart = this.addChartInternal();
     render(){
         if(this.props.carousel){
             return (
-                <Carousel activeIndex={this.state.index} onSelect={this.handleSelect}>
-                    {this.addChart()}
-                </Carousel>
+                <div ref={this.scrollRef}>
+                    {this.addButtons()}
+                    <Carousel
+                        interval={null}
+                        activeIndex={this.state.index} 
+                        onSelect={this.handleSelect}>
+                        {this.addChart()}
+                    </Carousel>
+                </div>
             );
         }else{
-            return (
-                <>
-                    {this.addChart()}
-                </>
-            );
+            return (<>{this.addChart()}</>);
         }
     }
     private updateLinks = () => {
-        const {links, config} = this.props; //Initialize Links Names
+        const {links, config, carousel} = this.props; //Initialize Links Names
         for(const[i, chart] of config.entries()){
             if(links.length === i){ links.push(['', React.createRef<SingleChart>()]);}
             const link = links[i];
-            link[T.singleLinkIndex.name] = chart[singleChartIndex.name]; 
-            link[T.singleLinkIndex.ref] = chart[singleChartIndex.ref];
+            link[T.singleLinkIndex.name] = chart[singleChartIndex.name];
+            if(carousel){
+                link[T.singleLinkIndex.ref] = this.scrollRef;
+            }else{
+                link[T.singleLinkIndex.ref] = chart[singleChartIndex.ref].current!.scrollRef;
+            }
         }
     }
     componentDidMount(){this.updateLinks();}

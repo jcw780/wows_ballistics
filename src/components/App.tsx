@@ -321,9 +321,9 @@ class App extends React.Component<{},{}> {
 	}
 	componentDidMount(){
 		this.links.parameters.push(
-			['Shell Parameters', this.SFCref], 
-			['Target Parameters', this.TFCref], 
-			['Settings', this.Settingsref]
+			['Shell Parameters', this.SFCref.current!.scrollRef], 
+			['Target Parameters', this.TFCref.current!.scrollRef], 
+			['Settings', this.Settingsref.current!.scrollRef]
 		);
 		this.navRef.current!.updateAll();
 	}
