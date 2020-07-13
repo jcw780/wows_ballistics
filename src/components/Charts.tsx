@@ -2,7 +2,7 @@ import React from 'react';
 import Chart from 'chart.js';
 import {Scatter, defaults} from 'react-chartjs-2';
 import 'chartjs-plugin-annotation';
-import {Button, Collapse, Row, Col} from 'react-bootstrap';
+import {Button, Collapse, Row, Col, Carousel} from 'react-bootstrap';
 import {Icon} from 'semantic-ui-react';
 
 import * as T from './commonTypes';
@@ -15,15 +15,16 @@ type singleChartType = [chartDataOption, React.RefObject<SingleChart>, string]
 
 interface dimensionsT {height: number, width: number}
 interface singleChartProps{
-    config: singleChartType, dimensions: dimensionsT
+    config: singleChartType, dimensions: dimensionsT, collapse: boolean,
 }
 
 interface singleChartState{open: boolean}
 export class SingleChart extends React.Component<singleChartProps, singleChartState> {
+    public static defaultProps = {collapse: true};
     state = {open : true}; //apparently you need a value in state or else set state doesn't trigger rerender
     titles : T.collapseTitlesT = ["Hide: ", "Show: "]; // 0: Hide 1: Show
     chartRef : React.RefObject<Scatter> = React.createRef<Scatter>();
-    scrollRef : React.RefObject<Button & HTMLButtonElement> = React.createRef<Button & HTMLButtonElement>();
+    scrollRef = React.createRef<Button & HTMLButtonElement & HTMLDivElement>();
     DownloadRef : React.RefObject<DownloadButton>[] = [
         React.createRef<DownloadButton>(), React.createRef<DownloadButton>()
     ];
@@ -50,20 +51,10 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
     }
     // Fix bug where datasets with the same labels and different colors have the same colors
     datasetKeyProvider = dataset => `${dataset.label}${dataset.borderColor}`;
-    render(){
-        const {props, state} = this, {config, dimensions} = props; 
+    private renderContent = () => {
+        const {props} = this, {config, dimensions} = props; 
         const configData = config[singleChartIndex.config];
-        return(
-<>
-    <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
-        onClick={this.toggleCollapse} 
-        ref={this.scrollRef} 
-        variant="dark"
-        aria-controls={this.collapseId} 
-        aria-expanded={state.open}
-        className={state.open === true ? 'active' : ''}
-    >{this.titles[Number(!state.open)] + config[singleChartIndex.name]}</Button>
-    <Collapse in={state.open}>
+        return (
         <div id={this.collapseId}>
             <Scatter 
                 data={configData.data} 
@@ -90,9 +81,33 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
                 </Col>
             </Row>
         </div>
-    </Collapse> 
-</> 
         );
+    }
+    render(){
+        const {props, state} = this, {config} = props;
+        if(props.collapse){
+            return(
+            <>
+                <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
+                    onClick={this.toggleCollapse} 
+                    ref={this.scrollRef} 
+                    variant="dark"
+                    aria-controls={this.collapseId} 
+                    aria-expanded={state.open}
+                    className={state.open === true ? 'active' : ''}
+                >{this.titles[Number(!state.open)] + config[singleChartIndex.name]}</Button>
+                    <Collapse in={state.open}>
+                        {this.renderContent()}
+                </Collapse>
+            </> 
+            );
+        }else{
+            return(
+                <div>
+                    {this.renderContent()}
+                </div>
+            );
+        }
     }
     componentDidUpdate(){
         this.chartRef.current!.chartInstance.generateLegend();
@@ -101,24 +116,61 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
 
 interface subGroupProps {
     config: singleChartType[], links: T.singleLinkT[], updateLinks: boolean
-    onUpdate: Function,
+    onUpdate: Function, carousel: boolean,
     dimensions: {height: number, width: number},  
 } 
-class SubGroup extends React.Component<subGroupProps>{
-    public static defaultProps = {updateLinks: false};
-    private addChartInternal = () => {
-        const singleChart = (value, i) : JSX.Element => {
-            return (<SingleChart 
-                ref={value[singleChartIndex.ref]} key={i} 
-                config={value}
-                dimensions={this.props.dimensions} 
-                />);
-        }
-        const chartTarget = this.props.config;
-        return () => chartTarget.map(singleChart);
+class SubGroup extends React.Component<subGroupProps, {index: number}>{
+    public static defaultProps = {updateLinks: false, carousel: true};
+    state = {index: 0};
+    private handleSelect = (selectedIndex, e) => {
+        this.setState({index: selectedIndex});
     }
-    private addChart = this.addChartInternal();
-    render(){return(<>{this.addChart()}</>)}
+    private addChart = () => {
+        const {props} = this;
+        const singleChart = (value, i) : JSX.Element => {
+            return (
+                <SingleChart 
+                ref={value[singleChartIndex.ref]} 
+                config={value}
+                dimensions={props.dimensions} 
+                />
+            );
+        }
+        const singleChartCarousel = (value, i) : JSX.Element => {
+            return (
+            <Carousel.Item key={i}>
+                <SingleChart 
+                ref={value[singleChartIndex.ref]} 
+                config={value}
+                dimensions={props.dimensions}
+                collapse={!props.carousel}
+                />
+            </Carousel.Item>
+            );
+        }
+        const chartTarget = props.config;
+        if(props.carousel){
+            return chartTarget.map(singleChartCarousel);
+        }else{
+            return chartTarget.map(singleChart);
+        }
+    }
+    //private addChart = this.addChartInternal();
+    render(){
+        if(this.props.carousel){
+            return (
+                <Carousel activeIndex={this.state.index} onSelect={this.handleSelect}>
+                    {this.addChart()}
+                </Carousel>
+            );
+        }else{
+            return (
+                <>
+                    {this.addChart()}
+                </>
+            );
+        }
+    }
     private updateLinks = () => {
         const {links, config} = this.props; //Initialize Links Names
         for(const[i, chart] of config.entries()){
