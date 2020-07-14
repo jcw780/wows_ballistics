@@ -1,5 +1,20 @@
 .carousel-control{
     display: grid !important;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
     grid-gap: 0;
+    background-color: #6c757d;
+    font-size: 1.25rem;
+}
+
+.carousel-control>.carousel-button{
+    font-size: inherit;
+}
+
+.graph-icon:hover .graph-icon:focus{ 
+    opacity: 100;
+    background-color: black;
+}
+
+.graph-icon{
+    opacity: 0;
 }

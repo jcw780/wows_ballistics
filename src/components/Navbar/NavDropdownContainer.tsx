@@ -30,7 +30,7 @@ export class NavDropdownContainer extends React.Component<propsT>{
         })
     }
     render(){
-        const title = this.props.title;
+        const {title} = this.props;
         return(
             <Suspense fallback={<div>Loading...</div>}>
                 <NavDropdown title={title} id={title}>

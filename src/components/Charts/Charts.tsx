@@ -142,7 +142,9 @@ class SubGroup extends React.Component<subGroupProps, {index: number}>{
                         key={i} 
                         value={i} 
                         type="radio"
-                        variant="secondary">
+                        variant="secondary"
+                        className="carousel-button"
+                        style={{height: '3rem'}}>
                         {config[singleChartIndex.name]}
                     </ToggleButton>
                     );
@@ -152,12 +154,13 @@ class SubGroup extends React.Component<subGroupProps, {index: number}>{
     }
     private addChart = () => {
         const {props} = this;
+        const {config: chartTarget, carousel, dimensions} = props;
         const singleChart = (value, i) : JSX.Element => {
             return (
                 <SingleChart 
                 ref={value[singleChartIndex.ref]} 
                 config={value}
-                dimensions={props.dimensions} 
+                dimensions={dimensions} 
                 />
             );
         }
@@ -167,14 +170,13 @@ class SubGroup extends React.Component<subGroupProps, {index: number}>{
                 <SingleChart 
                 ref={value[singleChartIndex.ref]} 
                 config={value}
-                dimensions={props.dimensions}
-                collapse={!props.carousel}
+                dimensions={dimensions}
+                collapse={!carousel}
                 />
             </Carousel.Item>
             );
         }
-        const chartTarget = props.config;
-        if(props.carousel){
+        if(carousel){
             return chartTarget.map(singleChartCarousel);
         }else{
             return chartTarget.map(singleChart);
@@ -187,6 +189,9 @@ class SubGroup extends React.Component<subGroupProps, {index: number}>{
                     {this.addButtons()}
                     <Carousel
                         interval={null}
+                        indicators={false}
+                        prevIcon={<></>}
+                        nextIcon={<></>}
                         activeIndex={this.state.index} 
                         onSelect={this.handleSelect}>
                         {this.addChart()}

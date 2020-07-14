@@ -8,6 +8,7 @@ export const CloseButton : React.FunctionComponent<props> = ({onClick}) => {
     return(
         <button className="close-custom" onClick={onClick} type="button">
             <span aria-hidden="true">×</span>
+            <span className="sr-only">Close</span>
         </button>
     );
 }

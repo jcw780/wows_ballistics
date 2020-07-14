@@ -31,7 +31,8 @@ export class ShellParameters extends React.PureComponent<shellParametersProps>{
 		const {props} = this;
 		const commonStyle = {
 			inputGroup:{width: "50%"},
-			formLabel:{padding: 0}
+			formLabel:{padding: 0},
+			inputGroupAppend:{width: '35px', display: 'inline-block'}
 		}
 		const singleForm = ([key, value] : [S.formsT, S.labelT], i) => {
 			const name = value[S.labelI.name];

@@ -3,6 +3,7 @@ import {Nav, Navbar, NavDropdown as ND} from 'react-bootstrap';
 
 import * as T from '../commonTypes';
 import NavDropdownContainer from './NavDropdownContainer';
+import './Navbar.css';
 
 const NavDropdown = React.lazy(() => import('react-bootstrap/NavDropdown'));
 export class NavbarCustom extends React.Component<{links: T.linkT}>{
