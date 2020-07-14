@@ -120,15 +120,18 @@ interface subGroupProps {
     onUpdate: Function, carousel: boolean,
     dimensions: {height: number, width: number},  
 } 
-class SubGroup extends React.Component<subGroupProps, {index: number}>{
+class SubGroup extends React.Component<subGroupProps, {index: number, locked: boolean}>{
     public static defaultProps = {updateLinks: false, carousel: true};
-    state = {index: 0};
+    state = {index: 0, locked: true};
     scrollRef = React.createRef<any>();
     private handleSelect = (selectedIndex:number, e) => {
-        this.setState({index: selectedIndex});
+        if(!this.state.locked){
+            this.setState({index: selectedIndex});
+        }
     }
     private handleSelectButton = value => {
-        this.setState({index: parseInt(value)});
+        const intValue = parseInt(value);
+        this.setState({index: intValue});
     }
     private addButtons = () => {
         return (

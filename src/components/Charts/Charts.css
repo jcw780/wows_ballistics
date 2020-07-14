@@ -6,6 +6,14 @@
     font-size: 1.25rem;
 }
 
+.carousel-control-next{
+    width: 0;
+}
+
+.carousel-control-prev{
+    width: 0;
+}
+
 .carousel-control>.carousel-button{
     font-size: inherit;
 }
