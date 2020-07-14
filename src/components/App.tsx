@@ -5,7 +5,7 @@ import {Button, Col, Row} from 'react-bootstrap';
 import * as T from './commonTypes';
 import {ShellFormsContainer} from './ShellForms';
 import {TargetFormsContainer} from './TargetForms';
-import AllCharts from './Charts';
+import AllCharts from './Charts/Charts';
 import {NavbarCustom} from './Navbar';
 import {SettingsBar} from './SettingsBar';
 

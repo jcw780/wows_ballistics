@@ -5,8 +5,9 @@ import 'chartjs-plugin-annotation';
 import {Button, Collapse, Row, Col, Carousel, ToggleButtonGroup, ToggleButton, ButtonGroup} from 'react-bootstrap';
 import {Icon} from 'semantic-ui-react';
 
-import * as T from './commonTypes';
-import {DownloadButton, GeneralTooltip} from './UtilityComponents';
+import * as T from '../commonTypes';
+import {DownloadButton, GeneralTooltip} from '../UtilityComponents';
+import './Charts.css';
 
 // chartConfigs type
 interface chartDataOption{data: Record<string, any>, options: Record<string, any>}
@@ -126,17 +127,22 @@ class SubGroup extends React.Component<subGroupProps, {index: number}>{
     private handleSelect = (selectedIndex:number, e) => {
         this.setState({index: selectedIndex});
     }
-    private handleSelectButton = event => {
-        this.setState({index: parseInt(event.target.value)});
+    private handleSelectButton = value => {
+        this.setState({index: parseInt(value)});
     }
     private addButtons = () => {
         return (
             <ToggleButtonGroup toggle 
-                type="radio" name="radio" 
-                value={this.state.index}>
+                type="radio" name="radio" className="carousel-control"
+                value={this.state.index}
+                onChange={this.handleSelectButton}>
                 {this.props.config.map((config, i) => {
                     return(
-                    <ToggleButton key={i} value={i} type="radio" onChange={this.handleSelectButton}>
+                    <ToggleButton 
+                        key={i} 
+                        value={i} 
+                        type="radio"
+                        variant="secondary">
                         {config[singleChartIndex.name]}
                     </ToggleButton>
                     );
@@ -290,7 +296,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         this.chartConfigs.post.forEach((chart, i) => {
             chart[singleChartIndex.name] = 'Horizontal Impact Angle ' + (i + 1);});
         
-        const initialJson = require('../static/initialData.json');
+        const initialJson = require('../../static/initialData.json');
         this.updateData(initialJson, false);
     }
 

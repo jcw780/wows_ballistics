@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {SingleChart} from './Charts';
+import {SingleChart} from './Charts/Charts';
 import {ShellFormsContainer} from './ShellForms';
 import {TargetFormsContainer} from './TargetForms';
 import {SettingsBar} from './SettingsBar';
