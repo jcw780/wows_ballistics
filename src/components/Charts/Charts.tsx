@@ -204,7 +204,11 @@ class SubGroup extends React.Component<subGroupProps, {index: number}>{
             const link = links[i];
             link[T.singleLinkIndex.name] = chart[singleChartIndex.name];
             if(carousel){
-                link[T.singleLinkIndex.ref] = this.scrollRef;
+                link[T.singleLinkIndex.ref] = () => {
+                    const {current} = this.scrollRef;
+                    if(current !== undefined || current !== null) window.scrollTo(0, current!.offsetTop);
+                    this.handleSelectButton(String(i));
+                }
             }else{
                 link[T.singleLinkIndex.ref] = chart[singleChartIndex.ref].current!.scrollRef;
             }
@@ -294,7 +298,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         });
         //Preinitialize postpenetration names
         this.chartConfigs.post.forEach((chart, i) => {
-            chart[singleChartIndex.name] = 'Horizontal Impact Angle ' + (i + 1);});
+            chart[singleChartIndex.name] = `Horizontal Impact Angle $(i + 1)`;});
         
         const initialJson = require('../../static/initialData.json');
         this.updateData(initialJson, false);
