@@ -331,7 +331,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 						</Popover.Content>
 					</Popover>
 				}>
-				<Button className="footer-button" variant="warning">Raw Input</Button>
+				<Button className="footer-button btn-custom-blue" variant="warning">Raw Input</Button>
 			</OverlayTrigger>
 		</Col>
 		<Col className="footer-style">
@@ -513,7 +513,7 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 		{this.generateShellForms()}
 	<Row style={{marginBottom : "1rem"}} className="justify-content-sm-center">
 		<Col sm="6">
-			<Button className="form-control" variant="outline-secondary" onClick={this.addShip}>
+			<Button className="form-control" variant="warning" onClick={this.addShip}>
 				Add Ship
 			</Button>
 		</Col>

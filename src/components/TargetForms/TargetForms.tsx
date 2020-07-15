@@ -25,34 +25,34 @@ class RefAngleForm extends React.PureComponent<refAngleFormProps>{
         return (
             <Modal.Dialog style={{width: '100%', margin: 0}}>
                 <Modal.Header
-                    style={{padding: 0, paddingTop: '0.25rem', paddingRight: '0.25rem', paddingLeft: '0.25rem'}}
+                    style={{padding: 0, marginBottom: '.5rem'}}
                 >
                     <Modal.Title style={{
                         //marginLeft: 'calc(50% - 60px)', 
                         backgroundColor: 'var(--blue-c4)', color: 'white',
-                        marginRight: 'auto', width: '120px', textAlign: 'center'
-                    }}>Label {props.index + 1}</Modal.Title>
+                        marginRight: 'auto', width: '75px', textAlign: 'center'
+                    }}>{props.index + 1}</Modal.Title>
                     <CloseButton onClick={this.deleteElement}/>
                 </Modal.Header>
-            <Modal.Body>
-            <ParameterForm controlId={this.props.index} 
-                newValue={props.newValue[1]}
-                onChange={props.onChange[1]} 
-                type="text" ariaLabel="Text"
-                labelWidth={4} 
-                style={{formControl: {width: '60%'}, formGroup: {flexFlow: 'unset'}}}
-            >
-                Text
-            </ParameterForm>
-            <ParameterForm controlId={this.props.index} 
-                newValue={props.newValue[0]}
-                onChange={props.onChange[0]} 
-                type="number" ariaLabel="Angle"
-                labelWidth={4} style={this.angleStyle} append="°"
-            >
-                Angle
-            </ParameterForm>
-            </Modal.Body>
+                <Modal.Body>
+                <ParameterForm controlId={this.props.index} 
+                    newValue={props.newValue[1]}
+                    onChange={props.onChange[1]} 
+                    type="text" ariaLabel="Text"
+                    labelWidth={4} 
+                    style={{formControl: {width: '60%'}, formGroup: {flexFlow: 'unset'}}}
+                >
+                    Text
+                </ParameterForm>
+                <ParameterForm controlId={this.props.index} 
+                    newValue={props.newValue[0]}
+                    onChange={props.onChange[0]} 
+                    type="number" ariaLabel="Angle"
+                    labelWidth={4} style={this.angleStyle} append="°"
+                >
+                    Angle
+                </ParameterForm>
+                </Modal.Body>
             </Modal.Dialog>
         );
     }
@@ -341,7 +341,7 @@ export class TargetFormsContainer extends React.PureComponent<{}, targetFormsCon
 
             <Row className="justify-content-sm-center no-lr-margin" style={{marginBottom: ".5rem"}}>
                 <Col sm="6">
-                    <Button className="form-control" variant="outline-secondary" onClick={this.addAngle}>
+                    <Button className="form-control" variant="warning" onClick={this.addAngle}>
                         Add Angle
                     </Button>
                 </Col>
@@ -362,7 +362,7 @@ export class TargetFormsContainer extends React.PureComponent<{}, targetFormsCon
             
             <Row className="justify-content-sm-center no-lr-margin" style={{marginBottom: ".5rem"}}>
                 <Col sm="6">
-                    <Button className="form-control" variant="outline-secondary" onClick={this.addRefAngle}>
+                    <Button className="form-control" variant="warning" onClick={this.addRefAngle}>
                         Add Angle
                     </Button>
                 </Col>          
