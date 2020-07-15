@@ -33,7 +33,7 @@ export class NavbarCustom extends React.Component<{links: T.linkT}>{
     render(){
         const {links} = this.props;
         return(
-<Navbar collapseOnSelect variant="dark" bg="dark" expand="lg" fixed="top">
+<Navbar collapseOnSelect variant="dark" bg="dark" expand="lg" fixed="top" className="navbar-custom">
     <Navbar.Brand onClick={this.scrollToTop}>
         <img height='32' width='32' alt="logo"
         src={process.env.PUBLIC_URL + '/android-chrome-192x192.png'}/>
