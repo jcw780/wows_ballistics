@@ -16,13 +16,14 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
     private toggleCollapse = () => this.setState((current) => {return {open: !current.open}});
     render(){
         const {settings} = this.props, {open} = this.state;
+        const active = open === true ? 'active' : '';
         return(
         <>
             <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
                 onClick={this.toggleCollapse} ref={this.scrollRef}
                 aria-controls="collapseSettings"
                 aria-expanded={open} variant="dark"
-                className={open === true ? 'active' : ''}>
+                className={`${active} btn-custom-blue`}>
                 {this.titles[Number(!open)] + 'Settings'}
             </Button>
             <Collapse in={open}>

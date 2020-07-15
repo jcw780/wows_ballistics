@@ -268,9 +268,11 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		const {props} = this;
 		return(
 <Modal.Dialog>
-	<Modal.Header>
+	<Modal.Header style={{marginBottom: '.5rem'}}>
 		<Modal.Title style={{
-			marginLeft: "calc(50% - 50px)", marginRight: "auto", width: '100px', textAlign: 'center'
+			//marginLeft: "calc(50% - 50px)", 
+			backgroundColor: 'var(--blue-c4)', color: 'white',
+			marginRight: "auto", width: '100px', textAlign: 'center'
 		}}>Shell {props.index + 1}</Modal.Title>
 		<CloseButton onClick={this.deleteShip}/>
 	</Modal.Header>
@@ -329,11 +331,11 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 						</Popover.Content>
 					</Popover>
 				}>
-				<Button className="footer-button" variant="dark">Raw Input</Button>
+				<Button className="footer-button" variant="warning">Raw Input</Button>
 			</OverlayTrigger>
 		</Col>
 		<Col className="footer-style">
-			<Button variant="dark" className="footer-button" 
+			<Button variant="warning" className="footer-button" 
 				onClick={this.copyShip} 
 			>Clone</Button>
 		</Col>

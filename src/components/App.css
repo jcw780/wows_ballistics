@@ -141,3 +141,54 @@ i.question.circle.icon{
 .inputs > .target{
   grid-column: span 1;
 }
+
+/* Custom Colors */
+:root{
+  --blue-c1: #0071bc;
+  --blue-c2: #045da4;
+  --blue-c3: #07537d;
+  --blue-c3-t: rgba(7, 51, 125, 0.5);
+  --blue-c4: #205493;
+  --blue-c5: #5d8fe4;
+}
+
+
+/* Custom Button Coloring */
+.btn-custom-blue {
+  color: #fff!important;
+  background-color: var(--blue-c1)!important;
+  border-color: var(--blue-c1)!important;
+}
+
+.btn-custom-blue:hover {
+  color: #fff!important;
+  background-color: var(--blue-c2)!important;
+  border-color: var(--blue-c2)!important;
+}
+
+.btn-check:focus + .btn-custom-blue, .btn-custom-blue:focus, .btn-custom-blue.focus {
+  color: #fff!important;
+  background-color: var(--blue-c3)!important;
+  border-color: var(--blue-c3)!important;
+  box-shadow: 0 0 0 0.2rem var(--blue-c3-t)!important;
+}
+
+.btn-check:checked + .btn-custom-blue,
+.btn-check:active + .btn-custom-blue, .btn-custom-blue:active, .btn-custom-blue.active,
+.show > .btn-custom-blue.dropdown-toggle {
+  color: #fff!important;
+  background-color: var(--blue-c4)!important;
+  border-color: var(--blue-c3)!important;
+}
+
+.btn-check:checked + .btn-custom-blue:focus,
+.btn-check:active + .btn-custom-blue:focus, .btn-custom-blue:active:focus, .btn-custom-blue.active:focus,
+.show > .btn-custom-blue.dropdown-toggle:focus {
+  box-shadow: 0 0 0 0.2rem var(--blue-c3-t)!important;
+}
+
+.btn-custom-blue:disabled, .btn-custom-blue.disabled {
+  color: #fff!important;
+  background-color: var(--blue-c5)!important;
+  border-color: var(--blue-c5)!important;
+}

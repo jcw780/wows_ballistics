@@ -2,7 +2,7 @@
     display: grid !important;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
     grid-gap: 0;
-    background-color: #6c757d;
+    background-color: var(--blue-c5);
     font-size: 1.25rem;
 }
 

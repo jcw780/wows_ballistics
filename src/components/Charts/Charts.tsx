@@ -88,7 +88,7 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
         const {props, state} = this, {config} = props;
         if(props.collapse){
             return(
-            <>
+            <div style={{paddingBottom: '.5rem'}}>
                 <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
                     onClick={this.toggleCollapse} 
                     ref={this.scrollRef} 
@@ -100,11 +100,11 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
                     <Collapse in={state.open}>
                         {this.renderContent()}
                 </Collapse>
-            </> 
+            </div> 
             );
         }else{
             return(
-                <div ref={this.scrollRef}>
+                <div ref={this.scrollRef} style={{paddingBottom: '.5rem'}}>
                     {this.renderContent()}
                 </div>
             );
@@ -145,8 +145,7 @@ class SubGroup extends React.Component<subGroupProps, {index: number, locked: bo
                         key={i} 
                         value={i} 
                         type="radio"
-                        variant="secondary"
-                        className="carousel-button"
+                        className="carousel-button btn-custom-blue"
                         style={{height: '3rem'}}>
                         {config[singleChartIndex.name]}
                     </ToggleButton>
@@ -649,7 +648,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
     }
     render(){
         return(
-<>
+<div>
     <GeneralTooltip title="Impact Charts" content={
         <>
         <table id="tooltip-table">
@@ -700,7 +699,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         </div>
     </GeneralTooltip>
     {this.addChart('post')}
-</>
+</div>
         );
     }
     //componentDidMount(){}

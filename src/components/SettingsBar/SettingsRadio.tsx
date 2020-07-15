@@ -25,7 +25,7 @@ export const SettingsRadio: React.FunctionComponent<settingsRadioProps> = React.
                 <ToggleButton key={i} value={i} 
                     onChange={onChangeInternal} 
                     type="radio" 
-                    variant="secondary"
+                    className="btn-custom-blue"
                 >
                     {option}
                 </ToggleButton>);

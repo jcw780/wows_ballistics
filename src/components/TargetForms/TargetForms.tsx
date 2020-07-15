@@ -28,7 +28,9 @@ class RefAngleForm extends React.PureComponent<refAngleFormProps>{
                     style={{padding: 0, paddingTop: '0.25rem', paddingRight: '0.25rem', paddingLeft: '0.25rem'}}
                 >
                     <Modal.Title style={{
-                        marginLeft: 'calc(50% - 60px)', marginRight: 'auto', width: '120px', textAlign: 'center'
+                        //marginLeft: 'calc(50% - 60px)', 
+                        backgroundColor: 'var(--blue-c4)', color: 'white',
+                        marginRight: 'auto', width: '120px', textAlign: 'center'
                     }}>Label {props.index + 1}</Modal.Title>
                     <CloseButton onClick={this.deleteElement}/>
                 </Modal.Header>
@@ -69,7 +71,7 @@ class AngleForm extends React.PureComponent<angleFormProps>{
     private commonStyle = Object.freeze({
         formControl: {minWidth: '50%', maxWidth: '7rem', display: "inline-flex"},
         formGroup: {flexFlow: 'unset', padding: 0, marginBottom: '.5rem'},
-        formLabel: {backgroundColor: '#0f64f2', color: 'white', fontSize: '1.25rem', paddingTop: '.25rem', paddingBottom: '.25rem'}
+        formLabel: {backgroundColor: 'var(--blue-c4)', color: 'white', fontSize: '1.25rem', paddingTop: '.25rem', paddingBottom: '.25rem'}
     });
     render(){
         const {props} = this;
