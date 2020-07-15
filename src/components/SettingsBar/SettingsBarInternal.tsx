@@ -79,7 +79,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
     private generateForms = (forms, target, onChange, sm=4) => {
         const rendered = forms.map((value, i) => {
             return(
-                <div key={i}>
+                <React.Fragment key={i}>
                     <div>{value[1]}</div>
                     <div>
                         <ParameterForm 
@@ -91,7 +91,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                         style={this.defaultFormStyle}
                         />
                     </div>
-                </div>
+                </React.Fragment>
             );
         });
         const width = (sm / 12) * 100
@@ -206,12 +206,12 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                     );
                 }
                 return (
-                    <div key={j}>
+                    <React.Fragment key={j}>
                         <div className="color-box">
                             {rowLabel}
                         </div>
                         {row.map(singleForm)}
-                    </div>
+                    </React.Fragment>
                 );
             }
             return this.forms.colors.map(singleRow);
