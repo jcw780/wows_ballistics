@@ -299,12 +299,10 @@ class App extends React.Component<{},{}> {
 	/>
 	<hr/>
 	<Row className="justify-content-sm-center">
-		<Col sm="9">
-			<Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", fontSize: "1.25rem"}}
-				variant="warning" onClick={this.generate}>
-				Make Graphs!
-			</Button>
-		</Col>
+		<Button style={{width: "75%", paddingTop: "0.6rem", paddingBottom: "0.6rem", fontSize: "1.25rem"}}
+			variant="warning" onClick={this.generate}>
+			Make Graphs!
+		</Button>
 	</Row>
 	<hr/>
 	<AllCharts 
