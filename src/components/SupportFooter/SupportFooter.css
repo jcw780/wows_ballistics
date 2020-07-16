@@ -2,7 +2,7 @@
     padding-top: 1rem;
     padding-bottom: 5rem;
     color: white;
-    background-color: #212529;
+    background-color: var(--blue-c4);
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
@@ -14,7 +14,7 @@
   
   .support-link{
     color: white;
-    background-color: #212529;
+    background-color: var(--blue-c4);
     background-clip: content-box;
     padding-left: 25%;
     padding-right: 25%;
@@ -23,6 +23,6 @@
   }
   
   .support-link:hover{
-    color: black;
+    color: var(--blue-c4);
     background-color: white;
   }

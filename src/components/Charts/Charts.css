@@ -1,0 +1,28 @@
+.carousel-control{
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+    grid-gap: 0;
+    background-color: var(--blue-c5);
+    font-size: 1.25rem;
+}
+
+.carousel-control-next{
+    width: 0;
+}
+
+.carousel-control-prev{
+    width: 0;
+}
+
+.carousel-control>.carousel-button{
+    font-size: inherit;
+}
+
+.graph-icon:hover .graph-icon:focus{ 
+    opacity: 100;
+    background-color: black;
+}
+
+.graph-icon{
+    opacity: 0;
+}

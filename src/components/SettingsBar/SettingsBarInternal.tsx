@@ -71,7 +71,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
     });
     private defaultFormStyle = Object.freeze({
         formLabel: {display: "block ruby", padding: 0},
-        formControl: {minWidth: '50%', maxWidth: '5.5rem', display: "inline-flex"},
+        formControl: {minWidth: '50%', maxWidth: '6rem', display: "inline-flex"},
         inputGroup: {display: "inline-flex"},
         inputGroupAppend: {display: "inline-block"},
         formGroup: {display: "block ruby", marginBottom: ".5rem" },

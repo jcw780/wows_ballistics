@@ -3,7 +3,7 @@ import {Row, Col, Button, Modal} from 'react-bootstrap';
 import {Icon} from 'semantic-ui-react';
 
 import * as T from '../commonTypes';
-import {ParameterForm} from '../UtilityComponents';
+import {ParameterForm, CloseButton} from '../UtilityComponents';
 import "./TargetForms.css";
 //import GeneralTooltip from './Tooltips';
 const GeneralTooltip = React.lazy(() => import('../UtilityComponents/Tooltips'));
@@ -24,31 +24,35 @@ class RefAngleForm extends React.PureComponent<refAngleFormProps>{
         const {props} = this;
         return (
             <Modal.Dialog style={{width: '100%', margin: 0}}>
-                <Modal.Header closeButton 
-                    style={{padding: 0, paddingTop: '0.25rem', paddingRight: '0.25rem', paddingLeft: '0.25rem'}}
-                    onHide={this.deleteElement}
+                <Modal.Header
+                    style={{padding: 0, marginBottom: '.5rem'}}
                 >
-                    <Modal.Title style={{justifyContent: 'center'}}>Label {props.index + 1}</Modal.Title>
+                    <Modal.Title style={{
+                        //marginLeft: 'calc(50% - 60px)', 
+                        backgroundColor: 'var(--blue-c4)', color: 'white',
+                        marginRight: 'auto', width: '33.3%', textAlign: 'center'
+                    }}>L {props.index + 1}</Modal.Title>
+                    <CloseButton onClick={this.deleteElement}/>
                 </Modal.Header>
-            <Modal.Body>
-            <ParameterForm controlId={this.props.index} 
-                newValue={props.newValue[1]}
-                onChange={props.onChange[1]} 
-                type="text" ariaLabel="Text"
-                labelWidth={4} 
-                style={{formControl: {width: '60%'}, formGroup: {flexFlow: 'unset'}}}
-            >
-                Text
-            </ParameterForm>
-            <ParameterForm controlId={this.props.index} 
-                newValue={props.newValue[0]}
-                onChange={props.onChange[0]} 
-                type="number" ariaLabel="Angle"
-                labelWidth={4} style={this.angleStyle} append="°"
-            >
-                Angle
-            </ParameterForm>
-            </Modal.Body>
+                <Modal.Body>
+                <ParameterForm controlId={this.props.index} 
+                    newValue={props.newValue[1]}
+                    onChange={props.onChange[1]} 
+                    type="text" ariaLabel="Text"
+                    labelWidth={4} 
+                    style={{formControl: {width: '60%'}, formGroup: {flexFlow: 'unset'}}}
+                >
+                    Text
+                </ParameterForm>
+                <ParameterForm controlId={this.props.index} 
+                    newValue={props.newValue[0]}
+                    onChange={props.onChange[0]} 
+                    type="number" ariaLabel="Angle"
+                    labelWidth={4} style={this.angleStyle} append="°"
+                >
+                    Angle
+                </ParameterForm>
+                </Modal.Body>
             </Modal.Dialog>
         );
     }
@@ -66,14 +70,14 @@ class AngleForm extends React.PureComponent<angleFormProps>{
     }
     private commonStyle = Object.freeze({
         formControl: {minWidth: '50%', maxWidth: '7rem', display: "inline-flex"},
-        formGroup: {flexFlow: 'unset', padding: 0,},
-        formLabel: {minWidth: '7rem'}
+        formGroup: {flexFlow: 'unset', padding: 0, marginBottom: '.5rem'},
+        formLabel: {backgroundColor: 'var(--blue-c4)', color: 'white', fontSize: '1.25rem', paddingTop: '.25rem', paddingBottom: '.25rem'}
     });
     render(){
         const {props} = this;
         return (
-            <Modal.Dialog style={{width: '100%', margin: 0, maxHeight: '57px'}}>
-                <Modal.Header closeButton
+            <Modal.Dialog style={{width: '13rem', margin: 0, maxHeight: '57px'}}>
+                <Modal.Header
                     style={{
                         padding: 0, 
                         paddingTop: '0.5rem', 
@@ -81,7 +85,6 @@ class AngleForm extends React.PureComponent<angleFormProps>{
                         paddingLeft: '0.5rem',
                         maxHeight: '100%'
                     }}
-                    onHide={this.deleteElement}
                 >
                     <ParameterForm controlId={props.index} 
                         newValue={props.newValue}
@@ -92,8 +95,9 @@ class AngleForm extends React.PureComponent<angleFormProps>{
                         style={this.commonStyle} 
                         append="°"
                         >
-                        {props.label}
+                        <div>{`A ${props.label}`}</div>
                     </ParameterForm>
+                    <CloseButton onClick={this.deleteElement}/>
                 </Modal.Header>
             </Modal.Dialog>
         );
@@ -210,7 +214,7 @@ export class TargetFormsContainer extends React.PureComponent<{}, targetFormsCon
                     newValue={String(targetData.angles[i])} 
                     deleteElement={this.deleteAngle}
                     onChange={this.handleAngleChange}
-                    label={`Angle ${i + 1}`}
+                    label={`${i + 1}`}
                 /> //start at 1 for display
             );
         });
@@ -267,6 +271,8 @@ export class TargetFormsContainer extends React.PureComponent<{}, targetFormsCon
         const {targetData} = this;
         const commonStyle = {
             formControl: {minWidth: '50%', maxWidth: '6rem', display: "inline-flex"},
+            formGroup: {marginBottom: '0rem'},
+            inputGroupAppend: {width: '2.5rem', display: 'inline-block'}
         };
         const singleLabel = ([key, value], i) => {
             return (
@@ -275,7 +281,7 @@ export class TargetFormsContainer extends React.PureComponent<{}, targetFormsCon
                         newValue={String(targetData[key])} 
                         onChange={this.handleChange} 
                         type="number"
-                        labelWidth={5} 
+                        labelWidth={6} 
                         append={value[1]} 
                         ariaLabel={value[0]} 
                         style={commonStyle}
@@ -324,7 +330,7 @@ export class TargetFormsContainer extends React.PureComponent<{}, targetFormsCon
                     </table>
                     *0° angle of fall and armor inclination.
                 </>}>
-                    <div>
+                    <div className="tooltip-target">
                         <h3 style={{display:"inline-block"}}>Target Angles</h3>
                         <Icon name='question circle outline' color='grey'/>
                     </div>
@@ -333,19 +339,17 @@ export class TargetFormsContainer extends React.PureComponent<{}, targetFormsCon
 
             {this.renderAngleElements(angleElements)}
 
-            <Row className="justify-content-sm-center no-lr-margin" style={{marginBottom: "1rem"}}>
-                <Col sm="6">
-                    <Button className="form-control" variant="outline-secondary" onClick={this.addAngle}>
-                        Add Angle
-                    </Button>
-                </Col>
+            <Row className="justify-content-sm-center no-lr-margin" style={{marginBottom: ".5rem"}}>           
+                <Button className="form-control" variant="warning" onClick={this.addAngle} style={{width: '50%'}}>
+                    Add Angle
+                </Button>      
             </Row>
             <Suspense fallback={<div>Loading...</div>}>
                 <GeneralTooltip title="Angle Label" content={
                     <>User generated labels for angle charts. 
                     <br/>These do not affect calculation values.</>}
                 >
-                    <div>
+                    <div className="tooltip-target">
                         <h3 style={{display:"inline-block", marginBottom: 0}}>Angle Labels</h3>
                         <Icon name='question circle outline' color='grey'/>
                     </div>
@@ -354,12 +358,10 @@ export class TargetFormsContainer extends React.PureComponent<{}, targetFormsCon
 
             {this.renderAngleElements(refAngleElements)}
             
-            <Row className="justify-content-sm-center no-lr-margin" style={{marginBottom: "1rem"}}>
-                <Col sm="6">
-                    <Button className="form-control" variant="outline-secondary" onClick={this.addRefAngle}>
-                        Add Angle
-                    </Button>
-                </Col>          
+            <Row className="justify-content-sm-center no-lr-margin" style={{marginBottom: ".5rem"}}>
+                <Button className="form-control" variant="warning" onClick={this.addRefAngle} style={{width: '50%'}}>
+                    Add Angle
+                </Button>                        
             </Row>
         </>
         );

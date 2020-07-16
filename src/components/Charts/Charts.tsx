@@ -2,11 +2,12 @@ import React from 'react';
 import Chart from 'chart.js';
 import {Scatter, defaults} from 'react-chartjs-2';
 import 'chartjs-plugin-annotation';
-import {Button, Collapse, Row, Col} from 'react-bootstrap';
+import {Button, Collapse, Row, Col, Carousel, ToggleButtonGroup, ToggleButton} from 'react-bootstrap';
 import {Icon} from 'semantic-ui-react';
 
-import * as T from './commonTypes';
-import {DownloadButton, GeneralTooltip} from './UtilityComponents';
+import * as T from '../commonTypes';
+import {DownloadButton, GeneralTooltip} from '../UtilityComponents';
+import './Charts.css';
 
 // chartConfigs type
 interface chartDataOption{data: Record<string, any>, options: Record<string, any>}
@@ -15,15 +16,16 @@ type singleChartType = [chartDataOption, React.RefObject<SingleChart>, string]
 
 interface dimensionsT {height: number, width: number}
 interface singleChartProps{
-    config: singleChartType, dimensions: dimensionsT
+    config: singleChartType, dimensions: dimensionsT, collapse: boolean,
 }
 
 interface singleChartState{open: boolean}
 export class SingleChart extends React.Component<singleChartProps, singleChartState> {
+    public static defaultProps = {collapse: true};
     state = {open : true}; //apparently you need a value in state or else set state doesn't trigger rerender
     titles : T.collapseTitlesT = ["Hide: ", "Show: "]; // 0: Hide 1: Show
     chartRef : React.RefObject<Scatter> = React.createRef<Scatter>();
-    scrollRef : React.RefObject<Button & HTMLButtonElement> = React.createRef<Button & HTMLButtonElement>();
+    scrollRef = React.createRef<Button & HTMLButtonElement & HTMLDivElement>();
     DownloadRef : React.RefObject<DownloadButton>[] = [
         React.createRef<DownloadButton>(), React.createRef<DownloadButton>()
     ];
@@ -50,20 +52,10 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
     }
     // Fix bug where datasets with the same labels and different colors have the same colors
     datasetKeyProvider = dataset => `${dataset.label}${dataset.borderColor}`;
-    render(){
-        const {props, state} = this, {config, dimensions} = props; 
+    private renderContent = () => {
+        const {props} = this, {config, dimensions} = props; 
         const configData = config[singleChartIndex.config];
-        return(
-<>
-    <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
-        onClick={this.toggleCollapse} 
-        ref={this.scrollRef} 
-        variant="dark"
-        aria-controls={this.collapseId} 
-        aria-expanded={state.open}
-        className={state.open === true ? 'active' : ''}
-    >{this.titles[Number(!state.open)] + config[singleChartIndex.name]}</Button>
-    <Collapse in={state.open}>
+        return (
         <div id={this.collapseId}>
             <Scatter 
                 data={configData.data} 
@@ -90,9 +82,33 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
                 </Col>
             </Row>
         </div>
-    </Collapse> 
-</> 
         );
+    }
+    render(){
+        const {props, state} = this, {config} = props;
+        if(props.collapse){
+            return(
+            <div style={{paddingBottom: '.5rem'}}>
+                <Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem", height: "3rem"}}
+                    onClick={this.toggleCollapse} 
+                    ref={this.scrollRef} 
+                    variant="dark"
+                    aria-controls={this.collapseId} 
+                    aria-expanded={state.open}
+                    className={state.open === true ? 'active' : ''}
+                >{this.titles[Number(!state.open)] + config[singleChartIndex.name]}</Button>
+                    <Collapse in={state.open}>
+                        {this.renderContent()}
+                </Collapse>
+            </div> 
+            );
+        }else{
+            return(
+                <div ref={this.scrollRef} style={{paddingBottom: '.5rem'}}>
+                    {this.renderContent()}
+                </div>
+            );
+        }
     }
     componentDidUpdate(){
         this.chartRef.current!.chartInstance.generateLegend();
@@ -101,31 +117,108 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
 
 interface subGroupProps {
     config: singleChartType[], links: T.singleLinkT[], updateLinks: boolean
-    onUpdate: Function,
+    onUpdate: Function, carousel: boolean,
     dimensions: {height: number, width: number},  
 } 
-class SubGroup extends React.Component<subGroupProps>{
-    public static defaultProps = {updateLinks: false};
-    private addChartInternal = () => {
-        const singleChart = (value, i) : JSX.Element => {
-            return (<SingleChart 
-                ref={value[singleChartIndex.ref]} key={i} 
-                config={value}
-                dimensions={this.props.dimensions} 
-                />);
+class SubGroup extends React.Component<subGroupProps, {index: number, locked: boolean}>{
+    public static defaultProps = {updateLinks: false, carousel: true};
+    state = {index: 0, locked: true};
+    scrollRef = React.createRef<any>();
+    private handleSelect = (selectedIndex:number, e) => {
+        if(!this.state.locked){
+            this.setState({index: selectedIndex});
         }
-        const chartTarget = this.props.config;
-        return () => chartTarget.map(singleChart);
     }
-    private addChart = this.addChartInternal();
-    render(){return(<>{this.addChart()}</>)}
+    private handleSelectButton = value => {
+        const intValue = parseInt(value);
+        this.setState({index: intValue});
+    }
+    private addButtons = () => {
+        return (
+            <ToggleButtonGroup toggle 
+                type="radio" name="radio" className="carousel-control"
+                value={this.state.index}
+                onChange={this.handleSelectButton}>
+                {this.props.config.map((config, i) => {
+                    return(
+                    <ToggleButton 
+                        key={i} 
+                        value={i} 
+                        type="radio"
+                        className="carousel-button btn-custom-blue"
+                        style={{height: '3rem'}}>
+                        {config[singleChartIndex.name]}
+                    </ToggleButton>
+                    );
+                })}
+            </ToggleButtonGroup>
+        );
+    }
+    private addChart = () => {
+        const {props} = this;
+        const {config: chartTarget, carousel, dimensions} = props;
+        const singleChart = (value, i) : JSX.Element => {
+            return (
+                <SingleChart 
+                ref={value[singleChartIndex.ref]} 
+                config={value}
+                dimensions={dimensions} 
+                />
+            );
+        }
+        const singleChartCarousel = (value, i) : JSX.Element => {
+            return (
+            <Carousel.Item key={i}>
+                <SingleChart 
+                ref={value[singleChartIndex.ref]} 
+                config={value}
+                dimensions={dimensions}
+                collapse={!carousel}
+                />
+            </Carousel.Item>
+            );
+        }
+        if(carousel){
+            return chartTarget.map(singleChartCarousel);
+        }else{
+            return chartTarget.map(singleChart);
+        }
+    }
+    render(){
+        if(this.props.carousel){
+            return (
+                <div ref={this.scrollRef}>
+                    {this.addButtons()}
+                    <Carousel
+                        interval={null}
+                        indicators={false}
+                        prevIcon={<></>}
+                        nextIcon={<></>}
+                        activeIndex={this.state.index} 
+                        onSelect={this.handleSelect}>
+                        {this.addChart()}
+                    </Carousel>
+                </div>
+            );
+        }else{
+            return (<>{this.addChart()}</>);
+        }
+    }
     private updateLinks = () => {
-        const {links, config} = this.props; //Initialize Links Names
+        const {links, config, carousel} = this.props; //Initialize Links Names
         for(const[i, chart] of config.entries()){
             if(links.length === i){ links.push(['', React.createRef<SingleChart>()]);}
             const link = links[i];
-            link[T.singleLinkIndex.name] = chart[singleChartIndex.name]; 
-            link[T.singleLinkIndex.ref] = chart[singleChartIndex.ref];
+            link[T.singleLinkIndex.name] = chart[singleChartIndex.name];
+            if(carousel){
+                link[T.singleLinkIndex.ref] = () => {
+                    const {current} = this.scrollRef;
+                    if(current !== undefined || current !== null) window.scrollTo(0, current!.offsetTop);
+                    this.handleSelectButton(String(i));
+                }
+            }else{
+                link[T.singleLinkIndex.ref] = chart[singleChartIndex.ref].current!.scrollRef;
+            }
         }
     }
     componentDidMount(){this.updateLinks();}
@@ -212,9 +305,9 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         });
         //Preinitialize postpenetration names
         this.chartConfigs.post.forEach((chart, i) => {
-            chart[singleChartIndex.name] = 'Horizontal Impact Angle ' + (i + 1);});
+            chart[singleChartIndex.name] = `Horizontal Impact Angle $(i + 1)`;});
         
-        const initialJson = require('../static/initialData.json');
+        const initialJson = require('../../static/initialData.json');
         this.updateData(initialJson, false);
     }
 
@@ -460,6 +553,14 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 };
             }
         }
+
+        const injectData = (chart: singleChartType) : void => {
+            const {current: chartRef} = chart[singleChartIndex.ref];
+            if(chartRef !== undefined && chartRef !== null){
+                chartRef.chartRef.current!.chartInstance.data = chart[singleChartIndex.config].data;
+            }
+        }
+
         const assignPredefined = (shellIndex: number, name: string, target, configs : configsT[], 
             graphData, colors : string[]) => {
             for(const [rowIndex, chart] of target.entries()){
@@ -476,6 +577,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                         counter++;
                     }
                 }
+                injectData(chart);
             } 
         }
 
@@ -510,6 +612,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     postLine(pL[0], WFL + name, colors[0], pLShow[0]),
                     postLine(pL[1], NFL + name, colors[1], pLShow[1]),
                 )
+                injectData(chart);
             }
         }
         return () => {
@@ -555,7 +658,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
     }
     render(){
         return(
-<>
+<div>
     <GeneralTooltip title="Impact Charts" content={
         <>
         <table id="tooltip-table">
@@ -569,7 +672,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         ** Scaled by x(1/3.1) ≈ game / real world  <br/>
         </>
     }>
-        <div>
+        <div className="tooltip-target">
             <h3 style={{textAlign: "center", display:"inline-block"}}>Impact Charts</h3>
             <Icon name='question circle outline' color='grey'/>
         </div>
@@ -584,7 +687,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         Note: Adjusts for angle of fall and armor inclination
         </>
     }>
-        <div>
+        <div className="tooltip-target">
             <h3 style={{textAlign: "center", display:"inline-block"}}>Angle Charts</h3>
             <Icon name='question circle outline' color='grey'/>
         </div>
@@ -600,13 +703,13 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         - Adjusts for angle of fall and armor inclination
         </>
     }>
-        <div>
+        <div className="tooltip-target">
             <h3 style={{textAlign: "center", display:"inline-block"}}>Post-Penetration Charts</h3>
             <Icon name='question circle outline' color='grey'/>
         </div>
     </GeneralTooltip>
     {this.addChart('post')}
-</>
+</div>
         );
     }
     //componentDidMount(){}

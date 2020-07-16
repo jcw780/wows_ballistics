@@ -44,7 +44,7 @@
 }
 
 body{
-  padding: 3.5rem 0 0 0;
+  padding: 4.5rem 0 0 0;
 }
 
 .navbar {
@@ -115,10 +115,96 @@ i.question.circle.icon{
   padding-top: 8px;
   padding-bottom: 8px;
   text-align: left;
-  background-color: #000000;
+  background-color: var(--blue-c3);
   color: white;
 }
 
 #tooltip-text {
   overflow-wrap: normal;
+}
+
+.tooltip-target{
+  display: inline-block;
+}
+
+/* Page Layout */
+.inputs{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); 
+  grid-gap: 0;
+}
+
+.inputs > .shells{
+  grid-column: span 2;
+}
+
+.inputs > .target{
+  grid-column: span 1;
+}
+
+/* Custom Colors */
+:root{
+  --blue-c1: #0071bc;
+  --blue-c2: #045da4;
+  --blue-c3: #07537d;
+  --blue-c3-t: rgba(7, 51, 125, 0.5);
+  --blue-c4: #205493;
+  --blue-c5: #5d8fe4;
+
+  --green-c1: #2e8540;
+  --green-c2: #256a33;
+  --green-c3: #1e5529;
+  --green-c4: #184421;
+  --green-c4-t: rgba(24, 68, 33, 0.5);
+  --green-c5: #377c45;
+}
+
+
+/* Custom Button Coloring */
+/* Green */
+.switch-group > .btn-success{
+  background-color: var(--green-c1);
+}
+
+.switch-group > .btn-success:hover{
+  background-color: var(--green-c2);
+}
+/* Blue */
+.btn-custom-blue {
+  color: #fff!important;
+  background-color: var(--blue-c1)!important;
+  border-color: var(--blue-c1)!important;
+}
+
+.btn-custom-blue:hover {
+  color: #fff!important;
+  background-color: var(--blue-c2)!important;
+  border-color: var(--blue-c2)!important;
+}
+
+.btn-check:focus + .btn-custom-blue, .btn-custom-blue:focus, .btn-custom-blue.focus {
+  color: #fff!important;
+  background-color: var(--blue-c3)!important;
+  border-color: var(--blue-c3)!important;
+  box-shadow: 0 0 0 0.2rem var(--blue-c3-t)!important;
+}
+
+.btn-check:checked + .btn-custom-blue,
+.btn-check:active + .btn-custom-blue, .btn-custom-blue:active, .btn-custom-blue.active,
+.show > .btn-custom-blue.dropdown-toggle {
+  color: #fff!important;
+  background-color: var(--blue-c4)!important;
+  border-color: var(--blue-c3)!important;
+}
+
+.btn-check:checked + .btn-custom-blue:focus,
+.btn-check:active + .btn-custom-blue:focus, .btn-custom-blue:active:focus, .btn-custom-blue.active:focus,
+.show > .btn-custom-blue.dropdown-toggle:focus {
+  box-shadow: 0 0 0 0.2rem var(--blue-c3-t)!important;
+}
+
+.btn-custom-blue:disabled, .btn-custom-blue.disabled {
+  color: #fff!important;
+  background-color: var(--blue-c5)!important;
+  border-color: var(--blue-c5)!important;
 }

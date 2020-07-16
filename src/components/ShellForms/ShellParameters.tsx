@@ -23,15 +23,20 @@ export class ShellParameters extends React.PureComponent<shellParametersProps>{
 	}
 	updateShells = () => {this.updateShellsI()();}
 	updateDownloadJSON = () => {
-		const {formData} = this.props, selectedData = clonedeep(FormData); delete selectedData.colors;
-        const url = URL.createObjectURL(new Blob([JSON.stringify(selectedData)], {type: 'text/json;charset=utf-8'}));
+		const {formData} = this.props, selectedData = clonedeep(FormData); 
+		delete selectedData.colors;
+        const url = URL.createObjectURL(new Blob(
+			[JSON.stringify(selectedData)]
+			, {type: 'text/json;charset=utf-8'}
+		));
         this.downloadRef.current!.update(url, formData.name + '.json');
 	}
 	addForms = () => {
 		const {props} = this;
 		const commonStyle = {
 			inputGroup:{width: "50%"},
-			formLabel:{padding: 0}
+			formLabel:{padding: 0},
+			inputGroupAppend:{width: '35px', display: 'inline-block'}
 		}
 		const singleForm = ([key, value] : [S.formsT, S.labelT], i) => {
 			const name = value[S.labelI.name];
@@ -46,7 +51,7 @@ export class ShellParameters extends React.PureComponent<shellParametersProps>{
 				style={commonStyle} 
 				ariaLabel={name}>
                     <Suspense fallback={<div>Loading...</div>}>
-                        <GeneralTooltip title={name} content={value[S.labelI.description]}>
+                        <GeneralTooltip title={name} content={value[S.labelI.description]} placement='top'>
 							<div>
 								{name}
 								<Icon name='question circle outline' color='grey'/>

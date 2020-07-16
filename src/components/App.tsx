@@ -5,7 +5,7 @@ import {Button, Col, Row} from 'react-bootstrap';
 import * as T from './commonTypes';
 import {ShellFormsContainer} from './ShellForms';
 import {TargetFormsContainer} from './TargetForms';
-import AllCharts from './Charts';
+import AllCharts from './Charts/Charts';
 import {NavbarCustom} from './Navbar';
 import {SettingsBar} from './SettingsBar';
 
@@ -280,12 +280,17 @@ class App extends React.Component<{},{}> {
 	/>
 	<h1>World of Warships Ballistics Calculator</h1>
 	<hr/>
-	<ShellFormsContainer 
-		ref={this.SFCref} 
-		settings={this.settings}
-	/>
-	<hr/>
-	<TargetFormsContainer ref={this.TFCref}/>
+	<div className="inputs">
+		<div className="shells">
+			<ShellFormsContainer 
+				ref={this.SFCref} 
+				settings={this.settings}
+			/>
+		</div>
+		<div className="target">
+			<TargetFormsContainer ref={this.TFCref}/>
+		</div>
+	</div>
 	<hr/>
 	<SettingsBar 
 		settings={this.settings} 
@@ -294,12 +299,10 @@ class App extends React.Component<{},{}> {
 	/>
 	<hr/>
 	<Row className="justify-content-sm-center">
-		<Col sm="9">
-			<Button style={{width: "100%", paddingTop: "0.6rem", paddingBottom: "0.6rem"}}
-				variant="success" onClick={this.generate}>
-				Make Graphs!
-			</Button>
-		</Col>
+		<Button style={{width: "75%", paddingTop: "0.6rem", paddingBottom: "0.6rem", fontSize: "1.25rem"}}
+			variant="warning" onClick={this.generate}>
+			Make Graphs!
+		</Button>
 	</Row>
 	<hr/>
 	<AllCharts 
@@ -316,9 +319,9 @@ class App extends React.Component<{},{}> {
 	}
 	componentDidMount(){
 		this.links.parameters.push(
-			['Shell Parameters', this.SFCref], 
-			['Target Parameters', this.TFCref], 
-			['Settings', this.Settingsref]
+			['Shell Parameters', this.SFCref.current!.scrollRef], 
+			['Target Parameters', this.TFCref.current!.scrollRef], 
+			['Settings', this.Settingsref.current!.scrollRef]
 		);
 		this.navRef.current!.updateAll();
 	}
