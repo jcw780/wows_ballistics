@@ -129,14 +129,14 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 				</tbody>
 			</table>
 		</>], 
-		threshold: ['Fusing Threshold', 'mm', React.createRef(), 
+		threshold: ['Arming Threshold', 'mm', React.createRef(), 
 		<>
 			Thickness of armor needed for <br/>
-			fusing to occur. <br/>
+			fuze to arm. <br/>
 			Effects - All else equal:
 			<table id='tooltip-table'>
 				<tbody>
-					<tr><th>Fusing Threshold     </th><th>↑</th><th>↓</th></tr>
+					<tr><th>Arming Threshold     </th><th>↑</th><th>↓</th></tr>
 					<tr><td>Likelihood to Overpen</td><td>↑</td><td>↓</td></tr>
 				</tbody>
 			</table>
@@ -272,8 +272,8 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		<Modal.Title style={{
 			//marginLeft: "calc(50% - 50px)", 
 			backgroundColor: 'var(--blue-c4)', color: 'white',
-			marginRight: "auto", width: '100px', textAlign: 'center'
-		}}>Shell {props.index + 1}</Modal.Title>
+			marginRight: "auto", width: '25%', textAlign: 'center'
+		}}>S {props.index + 1}</Modal.Title>
 		<CloseButton onClick={this.deleteShip}/>
 	</Modal.Header>
 	<Modal.Body>
@@ -335,7 +335,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 			</OverlayTrigger>
 		</Col>
 		<Col className="footer-style">
-			<Button variant="warning" className="footer-button" 
+			<Button variant="warning" className="footer-button btn-custom-blue" 
 				onClick={this.copyShip} 
 			>Clone</Button>
 		</Col>

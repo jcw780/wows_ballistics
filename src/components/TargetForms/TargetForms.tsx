@@ -30,8 +30,8 @@ class RefAngleForm extends React.PureComponent<refAngleFormProps>{
                     <Modal.Title style={{
                         //marginLeft: 'calc(50% - 60px)', 
                         backgroundColor: 'var(--blue-c4)', color: 'white',
-                        marginRight: 'auto', width: '75px', textAlign: 'center'
-                    }}>{props.index + 1}</Modal.Title>
+                        marginRight: 'auto', width: '33.3%', textAlign: 'center'
+                    }}>L {props.index + 1}</Modal.Title>
                     <CloseButton onClick={this.deleteElement}/>
                 </Modal.Header>
                 <Modal.Body>
@@ -95,7 +95,7 @@ class AngleForm extends React.PureComponent<angleFormProps>{
                         style={this.commonStyle} 
                         append="°"
                         >
-                        {props.label}
+                        <div>{`A ${props.label}`}</div>
                     </ParameterForm>
                     <CloseButton onClick={this.deleteElement}/>
                 </Modal.Header>

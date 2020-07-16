@@ -44,7 +44,7 @@
 }
 
 body{
-  padding: 3.5rem 0 0 0;
+  padding: 4.5rem 0 0 0;
 }
 
 .navbar {
@@ -150,10 +150,23 @@ i.question.circle.icon{
   --blue-c3-t: rgba(7, 51, 125, 0.5);
   --blue-c4: #205493;
   --blue-c5: #5d8fe4;
+
+  --green-c1: #2e8540;
+  --green-c2: #256a33;
+
 }
 
 
 /* Custom Button Coloring */
+/* Green */
+.switch-group > .btn-success{
+  background-color: var(--green-c1);
+}
+
+.switch-group > .btn-success:hover{
+  background-color: var(--green-c2);
+}
+/* Blue */
 .btn-custom-blue {
   color: #fff!important;
   background-color: var(--blue-c1)!important;
