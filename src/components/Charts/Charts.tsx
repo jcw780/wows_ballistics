@@ -553,6 +553,14 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 };
             }
         }
+
+        const injectData = (chart: singleChartType) : void => {
+            const {current: chartRef} = chart[singleChartIndex.ref];
+            if(chartRef !== undefined && chartRef !== null){
+                chartRef.chartRef.current!.chartInstance.data = chart[singleChartIndex.config].data;
+            }
+        }
+
         const assignPredefined = (shellIndex: number, name: string, target, configs : configsT[], 
             graphData, colors : string[]) => {
             for(const [rowIndex, chart] of target.entries()){
@@ -569,6 +577,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                         counter++;
                     }
                 }
+                injectData(chart);
             } 
         }
 
@@ -603,6 +612,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     postLine(pL[0], WFL + name, colors[0], pLShow[0]),
                     postLine(pL[1], NFL + name, colors[1], pLShow[1]),
                 )
+                injectData(chart);
             }
         }
         return () => {

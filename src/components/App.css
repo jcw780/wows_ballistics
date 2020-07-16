@@ -115,7 +115,7 @@ i.question.circle.icon{
   padding-top: 8px;
   padding-bottom: 8px;
   text-align: left;
-  background-color: #000000;
+  background-color: var(--blue-c3);
   color: white;
 }
 
