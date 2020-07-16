@@ -23,8 +23,12 @@ export class ShellParameters extends React.PureComponent<shellParametersProps>{
 	}
 	updateShells = () => {this.updateShellsI()();}
 	updateDownloadJSON = () => {
-		const {formData} = this.props, selectedData = clonedeep(FormData); delete selectedData.colors;
-        const url = URL.createObjectURL(new Blob([JSON.stringify(selectedData)], {type: 'text/json;charset=utf-8'}));
+		const {formData} = this.props, selectedData = clonedeep(FormData); 
+		delete selectedData.colors;
+        const url = URL.createObjectURL(new Blob(
+			[JSON.stringify(selectedData)]
+			, {type: 'text/json;charset=utf-8'}
+		));
         this.downloadRef.current!.update(url, formData.name + '.json');
 	}
 	addForms = () => {

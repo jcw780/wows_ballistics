@@ -339,12 +339,10 @@ export class TargetFormsContainer extends React.PureComponent<{}, targetFormsCon
 
             {this.renderAngleElements(angleElements)}
 
-            <Row className="justify-content-sm-center no-lr-margin" style={{marginBottom: ".5rem"}}>
-                <Col sm="6">
-                    <Button className="form-control" variant="warning" onClick={this.addAngle}>
-                        Add Angle
-                    </Button>
-                </Col>
+            <Row className="justify-content-sm-center no-lr-margin" style={{marginBottom: ".5rem"}}>           
+                <Button className="form-control" variant="warning" onClick={this.addAngle} style={{width: '50%'}}>
+                    Add Angle
+                </Button>      
             </Row>
             <Suspense fallback={<div>Loading...</div>}>
                 <GeneralTooltip title="Angle Label" content={
@@ -361,11 +359,9 @@ export class TargetFormsContainer extends React.PureComponent<{}, targetFormsCon
             {this.renderAngleElements(refAngleElements)}
             
             <Row className="justify-content-sm-center no-lr-margin" style={{marginBottom: ".5rem"}}>
-                <Col sm="6">
-                    <Button className="form-control" variant="warning" onClick={this.addRefAngle}>
-                        Add Angle
-                    </Button>
-                </Col>          
+                <Button className="form-control" variant="warning" onClick={this.addRefAngle} style={{width: '50%'}}>
+                    Add Angle
+                </Button>                        
             </Row>
         </>
         );

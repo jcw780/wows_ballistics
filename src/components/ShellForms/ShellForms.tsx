@@ -205,11 +205,14 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		else return false;	
 	}
 	onNameChange = (value : string, id) => {this.formData.name = value};
-	handleValueChange = (value : string, k : S.formsT) => this.formData[k] = parseFloat(value);
+	handleValueChange = (value : string, k : S.formsT) => {this.formData[k] = parseFloat(value)};
 	getDefaultData = (data, nameUnprocessed : string) => { //Query Version End
-		let name = nameUnprocessed; const {formData, props} = this;
-		if(this.props.settings.format.shortNames) name = name.split("_").slice(1).join(" ");
-		formData.name = name; this.nameForm.current!.updateValue(name);
+		const {formData, props, parameters} = this;
+		let name = nameUnprocessed; 
+		if(props.settings.format.shortNames) name = name.split("_").slice(1).join(" ");
+		formData.name = name; 
+		this.nameForm.current!.updateValue(name); 
+		//Separate name form outside of shell parameters needs to be updated separately
 		formData.caliber = data.bulletDiametr;
 		formData.muzzleVelocity = data.bulletSpeed;
 		formData.dragCoefficient = data.bulletAirDrag;
@@ -222,8 +225,9 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		formData.ra1 = data.bulletAlwaysRicochetAt;
 		formData.HESAP = data.alphaPiercingHE > data.alphaPiercingCS ? data.alphaPiercingHE : data.alphaPiercingCS;
 		
-		if(this.parameters !== undefined && this.parameters !== null){
-			if(this.parameters.current !== undefined && this.parameters.current !== null) this.parameters.current!.updateShells();
+		if(parameters !== undefined && parameters !== null){
+			const {current} = parameters;
+			if(current !== undefined && current !== null) current!.updateShells();
 		}
 		//only resets add / delete when last item has finished mounting
 		//otherwise potential for crashes when adding ships
@@ -231,18 +235,17 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 	}
 	deleteShip = () => this.props.deleteShip(this.props.keyProp, this.props.index);
 	copyShip = () => this.props.copyShip(this.defaultData, this.formData, this.graph);
-	updateCanvas = () => {
-		//Draws colors 
-		const {formData, props} = this;
-		formData.colors = props.colors.slice(props.index * 3, props.index * 3 + 3);
-		const ctx = this.canvasRef.current!.getContext('2d');
-		const height : number = this.canvasRef.current!.height;
-		const width : number = this.canvasRef.current!.width;
-
-		const arrayLength = formData.colors.length;
-		const interval : number = width / arrayLength;
-		const shift : number = 10;
-		formData.colors.forEach((color, i) => {
+	updateCanvas = () => { //Draws colors 
+		const {formData, props, canvasRef} = this, 
+			{index} = props, {colors} = formData;
+		colors.splice(0, colors.length, 
+			...props.colors.slice(index * 3, index * 3 + 3)
+		);
+		const {current} = canvasRef, {height, width} = current!;
+		const ctx = current!.getContext('2d');
+		const arrayLength = colors.length;
+		const interval : number = width / arrayLength, shift : number = 10;
+		for(const [i, color] of colors.entries()){
 			const region = new Path2D();
 			if(i === 0){
 				region.moveTo(0, 0);
@@ -261,7 +264,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 				region.lineTo(i2 * interval - shift, 0);
 			}
 			ctx!.fillStyle = color; ctx!.fill(region);
-		});
+		}
 	}
 	toggleGraph = checked => {this.graph = checked};
 	render() {
@@ -302,7 +305,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		</Row>
 		<BootstrapSwitchButton style='switch-toggle common-margin'
 			onlabel='Graph' 
-			offlabel='Do Not Graph' 
+			offlabel='Hide' 
 			onstyle='success' 
 			offstyle='danger'
 			onChange={this.toggleGraph} 
@@ -434,7 +437,7 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 	reset = () : void => {
 		if(this.state.disabled){
 			this.setState((current) => {
-				return {keys: current.keys, disabled: false}
+				return {...current, disabled: false}
 			});
 		}
 	}
@@ -512,11 +515,9 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 	<h2 ref={this.scrollRef}>Shell Parameters</h2>
 		{this.generateShellForms()}
 	<Row style={{marginBottom : "1rem"}} className="justify-content-sm-center">
-		<Col sm="6">
-			<Button className="form-control" variant="warning" onClick={this.addShip}>
-				Add Ship
-			</Button>
-		</Col>
+		<Button className="form-control" variant="warning" onClick={this.addShip} style={{width: '50%'}}>
+			Add Ship
+		</Button>
 	</Row>
 </>
 		);
