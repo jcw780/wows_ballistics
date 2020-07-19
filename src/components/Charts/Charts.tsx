@@ -243,7 +243,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
     chartConfigs : Record<T.chartT, singleChartType[]> = {
         impact: [ //impact charts
             [{data: {datasets : Array<any>(),}, options: {}}, 
-                React.createRef<SingleChart>(), 'Horizontal Penetration and Impact Angle'],
+                React.createRef<SingleChart>(), 'Belt Penetration and Impact Angle'],
             [{data: {datasets : Array<any>(),}, options: {}}, 
                 React.createRef<SingleChart>(), 'Deck Penetration and Impact Angle'],
             [{data: {datasets : Array<any>(),}, options: {}}, 
