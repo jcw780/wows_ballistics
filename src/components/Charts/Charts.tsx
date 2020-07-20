@@ -452,65 +452,8 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         
         let updatePost = true;
 
-        //Resizing chartConfigs.post and props.links upon addition or deletion of angles
-        const resizeAngleDependents = () => {
-            const angleLengthDiff = graphData.angles.length - configPost.length;
-            if(angleLengthDiff > 0){
-                updatePost = false; //need to add charts
-                for(let i=0; i<angleLengthDiff; ++i){
-                    configPost.push([{data: {datasets : Array<any>(),}, options: {}}, React.createRef<SingleChart>(), '']);
-                    this.props.links.post.push(['', React.createRef<SingleChart>()]); // navbar links
-                }
-            }else if(angleLengthDiff < 0){
-                updatePost = false; //need to delete charts
-                configPost.length = graphData.angles.length;
-                this.props.links.post.length = graphData.angles.length; // navbar links
-            }
-        }
-
         //Colons are used to denote split between label and name
         const WFL = "Fuzed: ", NFL = "Unfuzed: ";
-        const initializePostCharts = () => {
-            for(const[i, chart] of configPost.entries()){
-                chart[singleChartIndex.config].data.datasets.length = 0; // clear dataset
-                chart[singleChartIndex.config].data.datasets.push( // add ship width line
-                {
-                    data: postData.shipWidth[0], showLine: showLineValue, borderDash: [5, 5], label: ":Ship Width", 
-                    yAxisID: 'detDist', borderColor: "#505050", fill: false, 
-                    pointRadius: commonPointRadius, pointHitRadius: 5 ,
-                });
-                //tabbed weirdly so actual string doesn't have tabs in it
-                const fullName = `Internal Width Traveled before Detonation | ${
-                    targetedArmor} | ${targetInclination} | Horizontal Impact Angle: ${    
-                    graphData.angles[i]}°`;
-                //avoid mutations so we can use chart.js update instead of forceUpdate
-                chart[singleChartIndex.config].options = {
-                    title: {display: true, text: fullName},
-                    scales: {
-                        xAxes: xAxesDistance,
-                        yAxes: [{
-                            id: 'detDist',
-                            scaleLabel: {
-                                display: true,
-                                labelString: "Shell Detonation Distance (m)",
-                            },
-                        }],
-                    },
-                    legend: legend,
-                    tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}},            
-                }
-                const chartRef = chart[singleChartIndex.ref].current;
-                if(chartRef){ 
-                    //Inject title directly into chartInstance - otherwise won't display properly
-                    chartRef.chartRef.current!.chartInstance.options = chart[singleChartIndex.config].options;
-                }
-                const shortName = `Horizontal Impact Angle ${i + 1}: ${graphData.angles[i]}°`;
-                if(shortName !== chart[singleChartIndex.name]){
-                    updatePost = false; //need to update buttons to match 
-                    chart[singleChartIndex.name] = shortName;
-                }
-            } 
-        }
         //Add Lines
         const addLine = (data : T.scatterPoint[], 
                             label: string, yAxisID : string, 
@@ -557,7 +500,6 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                         counter++;
                     }
                 }
-                //injectData(chart);
             } 
         }
 
@@ -601,7 +543,61 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 }
             }
 
-            resizeAngleDependents(); initializePostCharts();
+            //Resizing chartConfigs.post and props.links upon addition or deletion of angles
+            const angleLengthDiff = graphData.angles.length - configPost.length;
+            if(angleLengthDiff > 0){
+                updatePost = false; //need to add charts
+                for(let i=0; i<angleLengthDiff; ++i){
+                    configPost.push([{data: {datasets : Array<any>(),}, options: {}}, React.createRef<SingleChart>(), '']);
+                    this.props.links.post.push(['', React.createRef<SingleChart>()]); // navbar links
+                }
+            }else if(angleLengthDiff < 0){
+                updatePost = false; //need to delete charts
+                configPost.length = graphData.angles.length;
+                this.props.links.post.length = graphData.angles.length; // navbar links
+            }
+            
+            //Initialize Post-Penetration Charts
+            for(const[i, chart] of configPost.entries()){
+                chart[singleChartIndex.config].data.datasets.length = 0; // clear dataset
+                chart[singleChartIndex.config].data.datasets.push( // add ship width line
+                {
+                    data: postData.shipWidth[0], showLine: showLineValue, borderDash: [5, 5], label: ":Ship Width", 
+                    yAxisID: 'detDist', borderColor: "#505050", fill: false, 
+                    pointRadius: commonPointRadius, pointHitRadius: 5 ,
+                });
+                //tabbed weirdly so actual string doesn't have tabs in it
+                const fullName = `Internal Width Traveled before Detonation | ${
+                    targetedArmor} | ${targetInclination} | Horizontal Impact Angle: ${    
+                    graphData.angles[i]}°`;
+                //avoid mutations so we can use chart.js update instead of forceUpdate
+                chart[singleChartIndex.config].options = {
+                    title: {display: true, text: fullName},
+                    scales: {
+                        xAxes: xAxesDistance,
+                        yAxes: [{
+                            id: 'detDist',
+                            scaleLabel: {
+                                display: true,
+                                labelString: "Shell Detonation Distance (m)",
+                            },
+                        }],
+                    },
+                    legend: legend,
+                    tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}},            
+                }
+                const chartRef = chart[singleChartIndex.ref].current;
+                if(chartRef){ 
+                    //Inject title directly into chartInstance - otherwise won't display properly
+                    chartRef.chartRef.current!.chartInstance.options = chart[singleChartIndex.config].options;
+                }
+                const shortName = `Horizontal Impact Angle ${i + 1}: ${graphData.angles[i]}°`;
+                if(shortName !== chart[singleChartIndex.name]){
+                    updatePost = false; //need to update buttons to match 
+                    chart[singleChartIndex.name] = shortName;
+                }
+            } 
+
             //Ref Angles
             const CAE = configAngle.entries();
             for(const[, data] of graphData.refAngles.entries()){
