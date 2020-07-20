@@ -620,7 +620,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             for(const [i, data] of graphData.startRicochet.entries()){
                 const color = graphData.colors[i][2];
                 configImpact[1][singleChartIndex.config].data.datasets.push({
-                    data: data, showLine: showLineValue, label: `Start Ricochet:${graphData.names[i]}`, 
+                    data: data, showLine: showLineValue, label: `Start Ricochet: ${graphData.names[i]}`, 
                     yAxisID: 'Angle', borderColor: color, backgroundColor: color, fill: false, 
                     pointRadius: commonPointRadius, pointHitRadius: 5 ,
                 });
@@ -628,13 +628,12 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             for(const [i, data] of graphData.alwaysRicochet.entries()){
                 const color = graphData.colors[i][2];
                 configImpact[1][singleChartIndex.config].data.datasets.push({
-                    data: data, showLine: showLineValue, label: `Always Ricochet:${graphData.names[i]}`, 
+                    data: data, showLine: showLineValue, label: `Always Ricochet: ${graphData.names[i]}`, 
                     yAxisID: 'Angle', borderColor: color, backgroundColor: color, fill: false, 
                     pointRadius: commonPointRadius, pointHitRadius: 5 ,
                 });
             }
             
-
             //Inject Static
             for(const [, chart] of this.chartConfigs.impact.entries()){
                 injectData(chart);
