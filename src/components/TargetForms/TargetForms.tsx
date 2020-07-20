@@ -1,5 +1,5 @@
 import React, {Suspense} from 'react';
-import {Row, Col, Button, Modal} from 'react-bootstrap';
+import {Row, Button, Modal} from 'react-bootstrap';
 import {Icon} from 'semantic-ui-react';
 
 import * as T from '../commonTypes';

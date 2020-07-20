@@ -75,7 +75,8 @@ export interface postData {
 export interface calculatedData {
     impact: impactData, angle: angleData, post: postData, numShells: number, 
     names: Array<string>, colors: Array<Array<string>>, targets: Array<targetDataNoAngleT>, 
-    angles: Array<number>, refAngles : pointArrays, refLabels : string[]
+    angles: Array<number>, refAngles : pointArrays, refLabels : string[],
+    startRicochet: pointArrays, alwaysRicochet: pointArrays
 }
 
 //Chart Types

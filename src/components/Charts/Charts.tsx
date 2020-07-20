@@ -577,11 +577,11 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                         counter++;
                     }
                 }
-                injectData(chart);
+                //injectData(chart);
             } 
         }
 
-        const addRefAngles = () => {
+        /*const addRefAngles = () => {
             const CAE = configAngle.entries();
             for(const[, data] of graphData.refAngles.entries()){
                 for(const[i, chart] of CAE){
@@ -592,7 +592,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     });
                 }
             }
-        }
+        }*/
         const generateStatic = (i : number, name : string, colors : string[]) => {
             for(const[, type] of staticChartTypes.entries()){
                 assignPredefined(i, name, this.chartConfigs[type], staticOptionSetup[type][1], graphData[type], colors);
@@ -618,12 +618,53 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         return () => {
             setXAxes(); intializeStaticCharts();
             resizeAngleDependents(); initializePostCharts();
-            addRefAngles();
+            //Ref Angles
+            const CAE = configAngle.entries();
+            for(const[, data] of graphData.refAngles.entries()){
+                for(const[i, chart] of CAE){
+                    chart[singleChartIndex.config].data.datasets.push({
+                        data: data, showLine: showLineValue, borderDash: [5, 5], label: `:${graphData.refLabels[i]}`, 
+                        yAxisID: 'angle', borderColor: "#505050", backgroundColor: "#505050", fill: false, 
+                        pointRadius: commonPointRadius, pointHitRadius: 5 ,
+                    });
+                }
+            }
+
             //Add data
             for(let i=0, len=graphData.numShells; i<len; ++i){
                 const name = graphData.names[i], colors = graphData.colors[i];
                 generateStatic(i, name, colors); generatePost(i, name, colors);
             }
+
+            //Ricochet Angles
+            if(graphData.alwaysRicochet !== undefined){
+                for(const [i, data] of graphData.startRicochet.entries()){
+                    const color = graphData.colors[i][2];
+                    configImpact[1][singleChartIndex.config].data.datasets.push({
+                        data: data, showLine: showLineValue, label: `Start Ricochet:${graphData.names[i]}`, 
+                        yAxisID: 'Angle', borderColor: color, backgroundColor: color, fill: false, 
+                        pointRadius: commonPointRadius, pointHitRadius: 5 ,
+                    });
+                }
+                for(const [i, data] of graphData.alwaysRicochet.entries()){
+                    const color = graphData.colors[i][2];
+                    configImpact[1][singleChartIndex.config].data.datasets.push({
+                        data: data, showLine: showLineValue, label: `Always Ricochet:${graphData.names[i]}`, 
+                        yAxisID: 'Angle', borderColor: color, backgroundColor: color, fill: false, 
+                        pointRadius: commonPointRadius, pointHitRadius: 5 ,
+                    });
+                }
+            }
+
+            //Inject Static
+            for(const [, chart] of this.chartConfigs.impact.entries()){
+                injectData(chart);
+            }
+            for(const [, chart] of this.chartConfigs.angle.entries()){
+                injectData(chart);
+            }
+            
+            //Update Charts
             if(forceUpdate){ //For disabling rerender in constructor [will be rendered anyways]
                 this.updateCharts('impact'); //Only need to update charts not surrounding components
                 this.updateCharts('angle');
