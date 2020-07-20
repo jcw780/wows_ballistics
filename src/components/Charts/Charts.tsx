@@ -347,11 +347,9 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             type: 'linear', ticks:{callback: addCommas}
         }];
         const legend = {display: true, position: settings.format.legendPosition};
-        const setXAxes = () => {
-            const SDE = Object.entries(settings.distance);
-            for(const[key, value] of SDE){
-                if(value !== null || true ) xAxesDistance[0].ticks[key] = value;
-            }
+        const SDE = Object.entries(settings.distance);
+        for(const[key, value] of SDE){
+            if(value !== null || true ) xAxesDistance[0].ticks[key] = value;
         }
 
         const targetedArmor = `Armor Thickness: ${graphData.targets[0].armor}mm`;
@@ -445,27 +443,9 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 ]
             ],
         });
-        const intializeStaticCharts = () => {
-            for(const [,key] of staticChartTypes.entries()){
-                const chartConfig = this.chartConfigs[key], 
-                    staticOption = staticOptionSetup[key], setup = staticOption[0];
-                for(const[i, chart] of chartConfig.entries()){
-                    const config = chart[singleChartIndex.config];
-                    config.data.datasets.length = 0; //empty options and datasets
-                    //avoid mutations so we can use chart.js update instead of forceUpdate
-                    config.options = setup(staticOption[1][i]); //set options
-                    const chartRef = chart[singleChartIndex.ref].current;
-                    if(chartRef){ 
-                        //Inject title directly into chartInstance - otherwise won't display properly
-                        chartRef.chartRef.current.chartInstance.options = config.options;
-                    }
-                }
-            }
-        }
-        //Post-Penetration Charts
-        const configPost = this.chartConfigs.post, postData = graphData.post;
 
-        
+        //Post-Penetration Charts
+        const configPost = this.chartConfigs.post, postData = graphData.post;        
         // Whether to use Chart.js update or groupUpdate post
         //     true: use Chart.js update
         //     false: groupUpdate post
@@ -581,18 +561,6 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             } 
         }
 
-        /*const addRefAngles = () => {
-            const CAE = configAngle.entries();
-            for(const[, data] of graphData.refAngles.entries()){
-                for(const[i, chart] of CAE){
-                    chart[singleChartIndex.config].data.datasets.push({
-                        data: data, showLine: showLineValue, borderDash: [5, 5], label: `:${graphData.refLabels[i]}`, 
-                        yAxisID: 'angle', borderColor: "#505050", backgroundColor: "#505050", fill: false, 
-                        pointRadius: commonPointRadius, pointHitRadius: 5 ,
-                    });
-                }
-            }
-        }*/
         const generateStatic = (i : number, name : string, colors : string[]) => {
             for(const[, type] of staticChartTypes.entries()){
                 assignPredefined(i, name, this.chartConfigs[type], staticOptionSetup[type][1], graphData[type], colors);
@@ -616,7 +584,23 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             }
         }
         return () => {
-            setXAxes(); intializeStaticCharts();
+            //Initialize Static Charts
+            for(const [,key] of staticChartTypes.entries()){
+                const chartConfig = this.chartConfigs[key], 
+                    staticOption = staticOptionSetup[key], setup = staticOption[0];
+                for(const[i, chart] of chartConfig.entries()){
+                    const config = chart[singleChartIndex.config];
+                    config.data.datasets.length = 0; //empty options and datasets
+                    //avoid mutations so we can use chart.js update instead of forceUpdate
+                    config.options = setup(staticOption[1][i]); //set options
+                    const chartRef = chart[singleChartIndex.ref].current;
+                    if(chartRef){ 
+                        //Inject title directly into chartInstance - otherwise won't display properly
+                        chartRef.chartRef.current.chartInstance.options = config.options;
+                    }
+                }
+            }
+
             resizeAngleDependents(); initializePostCharts();
             //Ref Angles
             const CAE = configAngle.entries();
