@@ -1,5 +1,5 @@
 import React, {Suspense} from 'react'; import './App.css';
-import {Button, Col, Row} from 'react-bootstrap';
+import {Button, Row} from 'react-bootstrap';
 //import { saveAs } from 'file-saver';
 
 import * as T from './commonTypes';
@@ -93,6 +93,7 @@ class App extends React.Component<{},{}> {
 			numShells : 2, names : [], colors : [],
 			targets : Array<T.targetDataNoAngleT>(1), angles : [], 
 			refAngles : [], refLabels : [],
+			startRicochet: [], alwaysRicochet: [],
 		}
 	}
 
@@ -239,6 +240,26 @@ class App extends React.Component<{},{}> {
 						y: tgtData.width
 					};
 				}
+			}
+			//Impact Ricochet Angles
+			calculatedData.startRicochet.length = 0;
+			calculatedData.alwaysRicochet.length = 0;
+			for(const [, shell] of shellData.entries()){
+				const start : T.scatterPoint[] = [], always : T.scatterPoint[] = [];
+				const length = this.referenceLineSize - 1;
+				for(let i=0; i < length+1; ++i){
+					const xV : number = i / length * maxAdj;
+					start[i] = {
+						x: xV, 
+						y: shell.ra0
+					};
+					always[i] = {
+						x: xV,
+						y: shell.ra1
+					}
+				}
+				calculatedData.startRicochet.push(start);
+				calculatedData.alwaysRicochet.push(always);
 			}
 			//Angle Chart Annotations / Labels
 			calculatedData.refLabels = tgtData.refLabels;
