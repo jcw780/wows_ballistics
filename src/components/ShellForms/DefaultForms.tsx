@@ -62,7 +62,7 @@ export class DefaultForm extends React.PureComponent<defaultFormProps, defaultFo
 	//componentDidUpdate(){}
 }
 
-const dataURL = "https://jcw780.github.io/LiveGameData2/data_uncompressed/"
+const dataURL = "https://jcw780.github.io/LiveGameData2/data_accuracy/"
 
 const fetchJsonData = (target) => {
     return fetch(target)
@@ -178,11 +178,11 @@ export class DefaultShips extends React.PureComponent
 			this.updateForm('artillery', options, options);
 		}
 		const queryShellType = () => {
-			const options = Object.keys(qDataS[nation][type][ship].artillery[artillery]);
+			const options = Object.keys(qDataS[nation][type][ship].artillery[artillery].shells);
 			this.updateForm('shellType', options, options);
 		}
 		const sendData = () => {
-			const shellName = qDataS[nation][type][ship].artillery[artillery][shellType];
+			const shellName = qDataS[nation][type][ship].artillery[artillery].shells[shellType];
 			this.props.sendDefault(dData.queriedData.shells[shellName], ship);
 		}
 		const queries = [
