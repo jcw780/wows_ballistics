@@ -183,7 +183,12 @@ export class DefaultShips extends React.PureComponent
 		}
 		const sendData = () => {
 			const shellName = qDataS[nation][type][ship].artillery[artillery].shells[shellType];
-			this.props.sendDefault(dData.queriedData.shells[shellName], ship);
+			const dispersionData = {}
+			const artilleryData = qDataS[nation][type][ship].artillery[artillery];
+			for(const [k,v] of Object.entries(artilleryData)){
+				if(k !== 'shells') dispersionData[k] = v;
+			}
+			this.props.sendDefault({...dData.queriedData.shells[shellName], ...dispersionData}, ship);
 		}
 		const queries = [
 			queryNation, queryType, queryShip,

@@ -208,6 +208,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 	handleValueChange = (value : string, k : S.formsT) => {this.formData[k] = parseFloat(value)};
 	getDefaultData = (data, nameUnprocessed : string) => { //Query Version End
 		const {formData, props, parameters} = this;
+		console.log(data);
 		let name = nameUnprocessed; 
 		if(props.settings.format.shortNames) name = name.split("_").slice(1).join(" ");
 		formData.name = name; 
