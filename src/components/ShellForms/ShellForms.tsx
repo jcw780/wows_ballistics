@@ -35,6 +35,8 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		mass: 0, krupp: 0, fusetime: 0, threshold: 0, 
 		normalization: 0, ra0: 0, ra1: 0, HESAP: 0,
 		name : '', colors : [],
+		delim: 0, idealRadius: 0, minRadius: 0, radiusOnDelim: 0, 
+		radiusOnMax: 0, radiusOnZero: 0, sigmaCount: 0, taperDist: 0,
 	})
 	parameters : React.RefObject<ShellParametersT> = React.createRef<ShellParametersT>()
 	defaults : React.RefObject<DefaultShips> = React.createRef<DefaultShips>()
@@ -214,18 +216,33 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		formData.name = name; 
 		this.nameForm.current!.updateValue(name); 
 		//Separate name form outside of shell parameters needs to be updated separately
-		formData.caliber = data.bulletDiametr;
-		formData.muzzleVelocity = data.bulletSpeed;
-		formData.dragCoefficient = data.bulletAirDrag;
-		formData.mass = data.bulletMass;
-		formData.krupp = data.bulletKrupp;
-		formData.fusetime = data.bulletDetonator;
-		formData.threshold = data.bulletDetonatorThreshold;
-		formData.normalization = data.bulletCapNormalizeMaxAngle;
-		formData.ra0 = data.bulletRicochetAt;
-		formData.ra1 = data.bulletAlwaysRicochetAt;
-		formData.HESAP = data.alphaPiercingHE > data.alphaPiercingCS ? data.alphaPiercingHE : data.alphaPiercingCS;
+		const conversionKeys : [string, string][] = [
+			['caliber', 'bulletDiametr'],
+			['muzzleVelocity', 'bulletSpeed'],
+			['dragCoefficient', 'bulletAirDrag'],
+			['mass', 'bulletMass'],
+			['krupp', 'bulletKrupp'],
+			['fusetime', 'bulletDetonator'],
+			['threshold', 'bulletDetonatorThreshold'],
+			['normalization', 'bulletCapNormalizeMaxAngle'],
+			['ra0', 'bulletRicochetAt'],
+			['ra1', 'bulletAlwaysRicochetAt'],
+			['delim', 'delim'],
+			['idealRadius', 'idealRadius'],
+			['minRadius', 'minRadius'],
+			['radiusOnDelim', 'radiusOnDelim'],
+			['radiusOnMax', 'radiusOnMax'],
+			['radiusOnZero', 'radiusOnZero'],
+			['sigmaCount', 'sigmaCount'],
+			['taperDist', 'taperDist'],
+		];
+		for(const [, [fKey, dKey]] of conversionKeys.entries()){
+			formData[fKey] = data[dKey];
+		}
 		
+		formData.HESAP = data.alphaPiercingHE > data.alphaPiercingCS ? data.alphaPiercingHE : data.alphaPiercingCS;
+		console.log(formData);
+
 		if(parameters !== undefined && parameters !== null){
 			const {current} = parameters;
 			if(current !== undefined && current !== null) current!.updateShells();

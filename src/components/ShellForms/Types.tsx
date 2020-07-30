@@ -6,7 +6,10 @@ export type labelT = [string, string,React.RefObject<ParameterForm>, string | JS
 export interface formTemplate<K>{
 	caliber: K, muzzleVelocity: K, dragCoefficient: K, mass: K,
 	krupp: K, fusetime: K, threshold: K, normalization: K, 
-	ra0: K, ra1: K, HESAP: K,
+	ra0: K, ra1: K, HESAP: K, 
+	delim?: K, idealRadius?: K, minRadius?: K, radiusOnDelim?: K, 
+	radiusOnMax?: K, radiusOnZero?: K, sigmaCount?: K, taperDist?: K,
+
 }
 export type formLabelsT = formTemplate<labelT>;
 export type formsT = keyof(formLabelsT);
