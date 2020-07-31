@@ -272,6 +272,12 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 React.createRef<SingleChart>(), ''],
             [{data: {datasets : Array<any>(),}, options: {}}, 
                 React.createRef<SingleChart>(), ''],
+        ],
+        dispersion: [
+            [{data: {datasets : Array<any>(),}, options: {}}, 
+                React.createRef<SingleChart>(), 'Horizontal Dispersion'],
+            [{data: {datasets : Array<any>(),}, options: {}}, 
+                React.createRef<SingleChart>(), 'Vertical Dispersion'],
         ]
     }
     groupRefs = {
@@ -286,6 +292,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         Time: (x, y) => {return `(${x}m, ${y}s)`;},
         angle: (x, y) => {return `(${x}m, ${y}°)`;},
         detDist: (x, y) => {return `(${x}m, ${y}m)`;},
+        dispersion: (x, y) => {return `(${x}m, ${y}m)`;},
     }
 
     constructor(props){
@@ -356,7 +363,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         const targetInclination = `Vertical Inclination: ${graphData.targets[0].inclination}°`; 
 
         //Static Charts [Never changes in number]
-        const staticChartTypes = Object.freeze(['impact', 'angle']);
+        const staticChartTypes = Object.freeze(['impact', 'angle', 'dispersion']);
         //Impact Charts
         const configImpact = this.chartConfigs.impact;
         const setupImpact = (row : configsT) => {
@@ -393,9 +400,24 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         }
 
         const angleNameTemplate = (name: string) : string => `${name} | ${targetedArmor} | ${targetInclination}`;
+        //Dispersion Charts
+        const configDispersion = this.chartConfigs.dispersion;
+        const setupDispersion = (row : configsT) => {
+            return {
+                title: {display: true, text: row.title},
+                scales: {xAxes: xAxesDistance,
+                    yAxes: [{id: "dispersion", postition: "left",
+                        scaleLabel: {display: true, labelString: "Dispersion (m)",},
+                        ticks:{min: 0}
+                    }]
+                },
+                legend: legend,
+                tooltips: {callbacks: {label: this.callbackFunction, labelColor: this.callbackColor}},
+            }
+        }
 
         //Colons are used to denote split between label and name
-        const staticOptionSetup : Record<'impact' | 'angle', [(configsT) => any, configsT[]]> = Object.freeze({
+        const staticOptionSetup : Record<'impact' | 'angle' | 'dispersion', [(configsT) => any, configsT[]]> = Object.freeze({
             impact: [setupImpact, 
                 [
                     {title: configImpact[0][singleChartIndex.name], axes: [
@@ -442,6 +464,24 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     ]}
                 ]
             ],
+            dispersion: [setupDispersion,
+                [
+                    {title: configDispersion[0][singleChartIndex.name], axes: [
+                        {id: 'dispersion',
+                        lines: [
+                            {lineLabel: 'Max: ', data: 'horizontal'}, 
+                            {lineLabel: 'Std: ', data: 'horizontalStd'}, 
+                        ]},
+                    ]},
+                    {title: configDispersion[1][singleChartIndex.name], axes: [
+                        {id: 'dispersion',
+                        lines: [
+                            {lineLabel: 'Max: ', data: 'vertical'}, 
+                            {lineLabel: 'Std: ', data: 'verticalStd'}, 
+                        ]},
+                    ]},
+                ]
+            ]
         });
 
         //Post-Penetration Charts
@@ -486,21 +526,23 @@ export class ChartGroup extends React.Component<chartGroupProps>{
 
         const assignPredefined = (shellIndex: number, name: string, target, configs : configsT[], 
             graphData, colors : string[]) => {
-            for(const [rowIndex, chart] of target.entries()){
-                let counter = 0;
-                const CRA = configs[rowIndex].axes.entries();
-                for(const[, axis] of CRA){
-                    const ALE = axis.lines.entries();
-                    for(const[, line] of ALE){
-                        chart[singleChartIndex.config].data.datasets.push(addLine(
-                            graphData[line.data][shellIndex], 
-                            line.lineLabel + name, 
-                            axis.id, 
-                            colors[counter]));
-                        counter++;
+            if(graphData !== undefined){
+                for(const [rowIndex, chart] of target.entries()){
+                    let counter = 0;
+                    const CRA = configs[rowIndex].axes.entries();
+                    for(const[, axis] of CRA){
+                        const ALE = axis.lines.entries();
+                        for(const[, line] of ALE){
+                            chart[singleChartIndex.config].data.datasets.push(addLine(
+                                graphData[line.data][shellIndex], 
+                                line.lineLabel + name, 
+                                axis.id, 
+                                colors[counter]));
+                            counter++;
+                        }
                     }
-                }
-            } 
+                } 
+            }
         }
 
         const generateStatic = (i : number, name : string, colors : string[]) => {
@@ -646,6 +688,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             if(forceUpdate){ //For disabling rerender in constructor [will be rendered anyways]
                 this.updateCharts('impact'); //Only need to update charts not surrounding components
                 this.updateCharts('angle');
+                this.updateCharts('dispersion');
                 if(updatePost){
                     this.updateCharts('post');
                 }else{
@@ -728,6 +771,21 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         </div>
     </GeneralTooltip>
     {this.addChart('post')}
+    <GeneralTooltip title="Dispersion Charts" content={
+        <>
+        Predicts maximum and standard deviation of dispersion. <br/>
+        - Horizontal Axis <br/>
+        - Vertical Axis <br/>
+        *Note: Still experimental - results may differ from the game <br/>
+         and will be corrected if errors are reported
+        </>
+    }>
+        <div className="tooltip-target">
+            <h3 style={{textAlign: "center", display:"inline-block"}}>Dispersion Charts</h3>
+            <Icon name='question circle outline' color='grey'/>
+        </div>
+    </GeneralTooltip>
+    {this.addChart('dispersion')}
 </div>
         );
     }

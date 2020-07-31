@@ -210,38 +210,28 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 	handleValueChange = (value : string, k : S.formsT) => {this.formData[k] = parseFloat(value)};
 	getDefaultData = (data, nameUnprocessed : string) => { //Query Version End
 		const {formData, props, parameters} = this;
-		console.log(data);
 		let name = nameUnprocessed; 
 		if(props.settings.format.shortNames) name = name.split("_").slice(1).join(" ");
 		formData.name = name; 
 		this.nameForm.current!.updateValue(name); 
 		//Separate name form outside of shell parameters needs to be updated separately
 		const conversionKeys : [string, string][] = [
-			['caliber', 'bulletDiametr'],
-			['muzzleVelocity', 'bulletSpeed'],
-			['dragCoefficient', 'bulletAirDrag'],
-			['mass', 'bulletMass'],
-			['krupp', 'bulletKrupp'],
-			['fusetime', 'bulletDetonator'],
-			['threshold', 'bulletDetonatorThreshold'],
-			['normalization', 'bulletCapNormalizeMaxAngle'],
-			['ra0', 'bulletRicochetAt'],
-			['ra1', 'bulletAlwaysRicochetAt'],
-			['delim', 'delim'],
-			['idealRadius', 'idealRadius'],
-			['minRadius', 'minRadius'],
-			['radiusOnDelim', 'radiusOnDelim'],
-			['radiusOnMax', 'radiusOnMax'],
-			['radiusOnZero', 'radiusOnZero'],
-			['sigmaCount', 'sigmaCount'],
-			['taperDist', 'taperDist'],
+			['caliber'        , 'bulletDiametr'             ], ['muzzleVelocity', 'bulletSpeed'             ],
+			['dragCoefficient', 'bulletAirDrag'             ], ['mass'          , 'bulletMass'              ], ['krupp'       , 'bulletKrupp' ], 
+			['fusetime'       , 'bulletDetonator'           ], ['threshold'     , 'bulletDetonatorThreshold'], 
+			['normalization'  , 'bulletCapNormalizeMaxAngle'],
+			['ra0'            , 'bulletRicochetAt'          ], ['ra1'           , 'bulletAlwaysRicochetAt'  ],
+			['delim'          , 'delim'                     ],
+			['idealRadius'    , 'idealRadius'               ], ['minRadius'     , 'minRadius'               ],
+			['radiusOnDelim'  , 'radiusOnDelim'             ], ['radiusOnMax'   , 'radiusOnMax'             ], ['radiusOnZero', 'radiusOnZero'],
+			['sigmaCount'     , 'sigmaCount'                ], ['taperDist'     , 'taperDist'               ],
 		];
 		for(const [, [fKey, dKey]] of conversionKeys.entries()){
 			formData[fKey] = data[dKey];
 		}
 		
-		formData.HESAP = data.alphaPiercingHE > data.alphaPiercingCS ? data.alphaPiercingHE : data.alphaPiercingCS;
-		console.log(formData);
+		formData.HESAP = data.alphaPiercingHE > data.alphaPiercingCS ? 
+			data.alphaPiercingHE : data.alphaPiercingCS;
 
 		if(parameters !== undefined && parameters !== null){
 			const {current} = parameters;
