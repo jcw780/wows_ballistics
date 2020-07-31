@@ -64,6 +64,11 @@ export class NavbarCustom extends React.Component<{links: T.linkT}>{
                 links={links['post']} 
                 ref={this.navDropdownContainers[3]}
             />
+            <NavDropdownContainer 
+                title="Dispersion Charts" 
+                links={links['dispersion']} 
+                ref={this.navDropdownContainers[3]}
+            />
         </Nav>
         <Nav>
             <Suspense fallback={<div>Loading...</div>}>

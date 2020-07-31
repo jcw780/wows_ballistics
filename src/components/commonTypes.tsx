@@ -72,15 +72,20 @@ export interface postData {
     shipWidth : pointArrays, notFused : pointArrays,
     fused : pointArrays,
 }
+export interface dispersionData {
+    horizontal: pointArrays, horizontalStd: pointArrays, 
+    vertical: pointArrays, verticalStd: pointArrays,
+}
 export interface calculatedData {
-    impact: impactData, angle: angleData, post: postData, numShells: number, 
-    names: Array<string>, colors: Array<Array<string>>, targets: Array<targetDataNoAngleT>, 
-    angles: Array<number>, refAngles : pointArrays, refLabels : string[],
+    impact: impactData, angle: angleData, post: postData, dispersion: dispersionData,
+    numShells: number, names: Array<string>, colors: Array<Array<string>>, 
+    targets: Array<targetDataNoAngleT>, angles: Array<number>, 
+    refAngles : pointArrays, refLabels : string[],
     startRicochet: pointArrays, alwaysRicochet: pointArrays
 }
 
 //Chart Types
-export type chartT = 'impact' | 'angle' | 'post';
+export type chartT = 'impact' | 'angle' | 'post' | 'dispersion';
 export type chartRefT = React.RefObject<SingleChart>;
 
 //Navbar Links
@@ -91,5 +96,6 @@ export type parameterRefT = React.RefObject<ShellFormsContainer
 export type linkKeyT = chartT | 'parameters';
 export interface linkT {
     impact: singleLinkT[], angle: singleLinkT[], 
-    post: singleLinkT[], parameters: singleLinkT[],
+    post: singleLinkT[], dispersion: singleLinkT[],
+    parameters: singleLinkT[],
 }

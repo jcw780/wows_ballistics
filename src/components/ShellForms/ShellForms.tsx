@@ -35,6 +35,8 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		mass: 0, krupp: 0, fusetime: 0, threshold: 0, 
 		normalization: 0, ra0: 0, ra1: 0, HESAP: 0,
 		name : '', colors : [],
+		delim: 0, idealRadius: 0, minRadius: 0, radiusOnDelim: 0, 
+		radiusOnMax: 0, radiusOnZero: 0, sigmaCount: 0, taperDist: 0,
 	})
 	parameters : React.RefObject<ShellParametersT> = React.createRef<ShellParametersT>()
 	defaults : React.RefObject<DefaultShips> = React.createRef<DefaultShips>()
@@ -192,6 +194,45 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 			</table>
 		</>],
 	})
+	formLabels2 : S.dispersionLabelsT = Object.freeze({
+		idealRadius: ['Ideal Radius', 'm/km', React.createRef<ParameterForm>(), 
+		<>
+			Contributes to maximum horizontal dispersion. <br/>
+			= (Ideal Radius-Min Radius) * Range(km) + 30*Min Radius
+		</>],
+		minRadius: ['Min Radius', 'm/km', React.createRef<ParameterForm>(), 
+		<>
+			Contributes to maximum horizontal dispersion. <br/>
+			= (Ideal Radius-Min Radius) * Range(km) + 30*Min Radius
+		</>],
+		delim: ['Delim', '(1)', React.createRef<ParameterForm>(), 
+		<>
+			Experimental - TBD
+		</>],
+		radiusOnZero: ['Zero Radius', '(1)', React.createRef<ParameterForm>(), 
+		<>
+			Experimental - TBD
+		</>],
+		radiusOnDelim: ['Delim Radius', '(1)', React.createRef<ParameterForm>(), 
+		<>
+			Experimental - TBD
+		</>],
+		radiusOnMax: ['Max Radius', '(1)', React.createRef<ParameterForm>(), 
+		<>
+			Experimental - TBD
+		</>],
+		taperDist: ['Taper Distance', 'm', React.createRef<ParameterForm>(), 
+		<>
+			Distance where dispersion rapidly converges <br/>
+			as range approaches zero.
+		</>],
+		sigmaCount: ['Sigma', '(1)', React.createRef<ParameterForm>(), 
+		<>
+			Parameter based off of standard deviation <br/>
+			that determines dispersion clustering towards <br/>
+			the point of aim. 
+		</>],
+	});
 	constructor(props){
 		super(props);
 		// Use this instead of defaultProps to prevent weird shallow copy things from happening
@@ -213,18 +254,23 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		formData.name = name; 
 		this.nameForm.current!.updateValue(name); 
 		//Separate name form outside of shell parameters needs to be updated separately
-		formData.caliber = data.bulletDiametr;
-		formData.muzzleVelocity = data.bulletSpeed;
-		formData.dragCoefficient = data.bulletAirDrag;
-		formData.mass = data.bulletMass;
-		formData.krupp = data.bulletKrupp;
-		formData.fusetime = data.bulletDetonator;
-		formData.threshold = data.bulletDetonatorThreshold;
-		formData.normalization = data.bulletCapNormalizeMaxAngle;
-		formData.ra0 = data.bulletRicochetAt;
-		formData.ra1 = data.bulletAlwaysRicochetAt;
-		formData.HESAP = data.alphaPiercingHE > data.alphaPiercingCS ? data.alphaPiercingHE : data.alphaPiercingCS;
-		
+		const conversionKeys : [string, string][] = [
+			['caliber'        , 'bulletDiametr'             ], ['muzzleVelocity', 'bulletSpeed'             ],
+			['dragCoefficient', 'bulletAirDrag'             ], ['mass'          , 'bulletMass'              ], ['krupp'       , 'bulletKrupp' ], 
+			['fusetime'       , 'bulletDetonator'           ], ['threshold'     , 'bulletDetonatorThreshold'], 
+			['normalization'  , 'bulletCapNormalizeMaxAngle'],
+			['ra0'            , 'bulletRicochetAt'          ], ['ra1'           , 'bulletAlwaysRicochetAt'  ],
+			['delim'          , 'delim'                     ], ['idealRadius'    , 'idealRadius'            ], ['minRadius'     , 'minRadius' ],
+			['radiusOnDelim'  , 'radiusOnDelim'             ], ['radiusOnMax'   , 'radiusOnMax'             ], ['radiusOnZero', 'radiusOnZero'],
+			['sigmaCount'     , 'sigmaCount'                ], ['taperDist'     , 'taperDist'               ],
+		];
+		for(const [, [fKey, dKey]] of conversionKeys.entries()){
+			formData[fKey] = data[dKey];
+		}
+
+		formData.HESAP = data.alphaPiercingHE > data.alphaPiercingCS ? 
+			data.alphaPiercingHE : data.alphaPiercingCS;
+
 		if(parameters !== undefined && parameters !== null){
 			const {current} = parameters;
 			if(current !== undefined && current !== null) current!.updateShells();
@@ -334,7 +380,24 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 						</Popover.Content>
 					</Popover>
 				}>
-				<Button className="footer-button btn-custom-blue" variant="warning">Raw Input</Button>
+				<Button className="footer-button btn-custom-blue" variant="warning">Ballistics</Button>
+			</OverlayTrigger>
+		</Col>
+		<Col className="footer-style">
+			<OverlayTrigger trigger="click" placement="bottom-start" overlay={
+					<Popover id='popover'>
+						<Popover.Content>
+							<Suspense fallback={<div>Loading...</div>}>
+								<ShellParameters ref={this.parameters} 
+									handleValueChange={this.handleValueChange}
+									formLabels={this.formLabels2} 
+									formData={this.formData}
+								/>
+							</Suspense>
+						</Popover.Content>
+					</Popover>
+				}>
+				<Button className="footer-button btn-custom-blue" variant="warning">Dispersion</Button>
 			</OverlayTrigger>
 		</Col>
 		<Col className="footer-style">

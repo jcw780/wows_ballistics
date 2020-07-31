@@ -26,6 +26,7 @@ class App extends React.Component<{},{}> {
 		impact : [], 
 		angle : [], 
 		post : [],
+		dispersion: [],
 	});
 
 	// Wasm
@@ -89,6 +90,12 @@ class App extends React.Component<{},{}> {
 				shipWidth : [],
 				notFused: [],
 				fused: [],
+			},
+			dispersion: {
+				horizontal: [],
+				horizontalStd: [],
+				vertical: [],
+				verticalStd: [],
 			},
 			numShells : 2, names : [], colors : [],
 			targets : Array<T.targetDataNoAngleT>(1), angles : [], 
@@ -199,18 +206,76 @@ class App extends React.Component<{},{}> {
 			for(let j=0; j<numShells; ++j){
 				this.initializePoint(calculatedData.impact, j);
 				this.initializePoint(calculatedData.angle, j);
+				this.initializePoint(calculatedData.dispersion, j);
 				for(let i=0; i<numAngles; ++i){
 					calculatedData.post.notFused[i+j*numAngles] = [];
 					calculatedData.post.fused[i+j*numAngles] = [];
 				}
 			}
+			
+
 			let maxDist = 0; //Maximum Distance for shipWidth
 			// Converts flat array data format to {x, y} format for chart.js
 			for(let j=0; j<numShells; ++j){ // iterate through shells
+				const currentShell = shellData[j];
+				//Dispersion
+				const idealRadius = currentShell.idealRadius!, minRadius = currentShell.minRadius!,
+					taperDist = currentShell.taperDist! / 1000, sigma = currentShell.sigmaCount!, 
+					radiusOnZero = currentShell.radiusOnZero!, radiusOnDelim = currentShell.radiusOnDelim!,
+					radiusOnMax = currentShell.radiusOnMax!, delim = currentShell.delim!;
+				//Horizontal
+				const hSlope = idealRadius - minRadius, hConst = minRadius * 30;
+				const taperSlope = (hSlope * (taperDist) + hConst) / taperDist!;
+				//Vertical
+				const delimSplit = delim * 30; 
+				const zdSlope = (radiusOnDelim - radiusOnZero) / delimSplit;
+				const zdConst = radiusOnZero;
+
+				const dmSlope = (radiusOnMax - radiusOnDelim) / (30 - delimSplit);
+				const dmConst = radiusOnDelim - delimSplit * dmSlope;
+
 				for(let i=0; i<impactSize; ++i){ // iterate through points at each range
 					const dist : number = instance.getImpactPoint(i, arrayIndices.impactDataIndex.distance, j);
 					maxDist = Math.max(maxDist, dist);
-					this.makeImpactPoints(j, i, dist); this.makeAnglePoints(j, i, dist);
+					//Dispersion
+					//Note: Sigma correction is technically an approximation. 
+					//It's just that it is very similar to the exact solution.
+					//And the exact solution is computationally intensive
+					//Exact Solution: 
+					//std dev = 2 * k sqrt( erf(sigma / sqrt(2))/(4sigma^2) - e^(-sigma^2/2)/(2sqrt(2pi)sigma) + n.cdf(-sigma, 1)/12)
+					//Approximation:
+					//std dev = k / sigma
+
+					const distKm = dist / 1000;
+					let maxDispersion = 0;
+					if(distKm > taperDist){
+						maxDispersion = hSlope * distKm + hConst;
+					}else{
+						maxDispersion = taperSlope * distKm;	
+					}
+					calculatedData.dispersion.horizontal[j].push({
+						x: dist, y: maxDispersion
+					});
+					calculatedData.dispersion.horizontalStd[j].push({
+						x: dist, y: maxDispersion / sigma
+					});
+					let maxVertical = maxDispersion / 
+						Math.sin(this.instance.getImpactPoint(i, arrayIndices.impactDataIndex.impactAHR, j) * - 1);
+					if(distKm < delimSplit){
+						maxVertical *= (zdSlope * distKm + zdConst);
+					}else{
+						maxVertical *= (dmSlope * distKm + dmConst);
+					}
+					calculatedData.dispersion.vertical[j].push({
+						x: dist, y: maxVertical
+					});
+					calculatedData.dispersion.verticalStd[j].push({
+						x: dist, y: maxVertical / sigma
+					});
+
+					
+					/*Impact*/this.makeImpactPoints(j, i, dist); /*Angle*/this.makeAnglePoints(j, i, dist);
+					//Post-Pen
 					for(let k=0; k<numAngles; ++k){
 						const detDist : number
 							= instance.getPostPenPoint(i, arrayIndices.postPenDataIndex.x, k, j);
