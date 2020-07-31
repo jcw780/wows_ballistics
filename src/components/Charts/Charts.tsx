@@ -278,6 +278,8 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 React.createRef<SingleChart>(), '**Experimental** Horizontal Dispersion'],
             [{data: {datasets : Array<any>(),}, options: {}}, 
                 React.createRef<SingleChart>(), '**Experimental** Vertical Dispersion'],
+            [{data: {datasets : Array<any>(),}, options: {}}, 
+                React.createRef<SingleChart>(), '**Experimental** Dispersion Area'],
         ]
     }
     groupRefs = {
@@ -293,6 +295,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         angle: (x, y) => {return `(${x}m, ${y}°)`;},
         detDist: (x, y) => {return `(${x}m, ${y}m)`;},
         dispersion: (x, y) => {return `(${x}m, ${y}m)`;},
+        dispersionArea: (x, y) => {return `(${x}m, ${y}m²)`;},
     }
 
     constructor(props){
@@ -406,8 +409,8 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             return {
                 title: {display: true, text: row.title},
                 scales: {xAxes: xAxesDistance,
-                    yAxes: [{id: "dispersion", postition: "left",
-                        scaleLabel: {display: true, labelString: "Dispersion (m)",},
+                    yAxes: [{id: row.axes[0].id, postition: "left",
+                        scaleLabel: {display: true, labelString: row.axes[0].axLabel!,},
                         ticks:{min: 0}
                     }]
                 },
@@ -467,17 +470,24 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             dispersion: [setupDispersion,
                 [
                     {title: configDispersion[0][singleChartIndex.name], axes: [
-                        {id: 'dispersion',
+                        {id: 'dispersion', axLabel: 'Linear Dispersion (m)',
                         lines: [
                             {lineLabel: 'Max: ', data: 'horizontal'}, 
                             {lineLabel: 'Std: ', data: 'horizontalStd'}, 
                         ]},
                     ]},
                     {title: configDispersion[1][singleChartIndex.name], axes: [
-                        {id: 'dispersion',
+                        {id: 'dispersion', axLabel: 'Linear Dispersion (m)',
                         lines: [
                             {lineLabel: 'Max: ', data: 'vertical'}, 
                             {lineLabel: 'Std: ', data: 'verticalStd'}, 
+                        ]},
+                    ]},
+                    {title: configDispersion[2][singleChartIndex.name], axes: [
+                        {id: 'dispersionArea', axLabel: 'Dispersion Area (m²)',
+                        lines: [
+                            {lineLabel: 'Max: ', data: 'area'}, 
+                            {lineLabel: 'Std: ', data: 'areaStd'}, 
                         ]},
                     ]},
                 ]
@@ -533,12 +543,14 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     for(const[, axis] of CRA){
                         const ALE = axis.lines.entries();
                         for(const[, line] of ALE){
-                            chart[singleChartIndex.config].data.datasets.push(addLine(
-                                graphData[line.data][shellIndex], 
-                                line.lineLabel + name, 
-                                axis.id, 
-                                colors[counter]));
-                            counter++;
+                            if(graphData[line.data] !== undefined){
+                                chart[singleChartIndex.config].data.datasets.push(addLine(
+                                    graphData[line.data][shellIndex], 
+                                    line.lineLabel + name, 
+                                    axis.id, 
+                                    colors[counter]));
+                                counter++;
+                            }
                         }
                     }
                 } 
@@ -782,6 +794,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         Predicts maximum and standard deviation of dispersion. <br/>
         - Horizontal Axis <br/>
         - Vertical Axis <br/>
+        - Dispersion Area <br/>
         *Note: Still experimental - results may differ from the game <br/>
          and will be corrected if errors are reported
         </>

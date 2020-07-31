@@ -96,6 +96,8 @@ class App extends React.Component<{},{}> {
 				horizontalStd: [],
 				vertical: [],
 				verticalStd: [],
+				area: [],
+				areaStd: [],
 			},
 			numShells : 2, names : [], colors : [],
 			targets : Array<T.targetDataNoAngleT>(1), angles : [], 
@@ -253,11 +255,12 @@ class App extends React.Component<{},{}> {
 					}else{
 						maxDispersion = taperSlope * distKm;	
 					}
+					const maxDispersionStd = maxDispersion / sigma;
 					calculatedData.dispersion.horizontal[j].push({
 						x: dist, y: maxDispersion
 					});
 					calculatedData.dispersion.horizontalStd[j].push({
-						x: dist, y: maxDispersion / sigma
+						x: dist, y: maxDispersionStd
 					});
 					let maxVertical = maxDispersion / 
 						Math.sin(this.instance.getImpactPoint(i, arrayIndices.impactDataIndex.impactAHR, j) * - 1);
@@ -266,12 +269,21 @@ class App extends React.Component<{},{}> {
 					}else{
 						maxVertical *= (dmSlope * distKm + dmConst);
 					}
+					const maxVerticalStd = maxVertical / sigma;
 					calculatedData.dispersion.vertical[j].push({
 						x: dist, y: maxVertical
 					});
 					calculatedData.dispersion.verticalStd[j].push({
-						x: dist, y: maxVertical / sigma
+						x: dist, y: maxVerticalStd
 					});
+					const area = Math.PI * (maxDispersion/2) * (maxVertical/2), areaStd = Math.PI * (maxDispersionStd/2) * (maxVerticalStd/2);
+					calculatedData.dispersion.area[j].push({
+						x: dist, y: area
+					});
+					calculatedData.dispersion.areaStd[j].push({
+						x: dist, y: areaStd
+					});
+
 
 					
 					/*Impact*/this.makeImpactPoints(j, i, dist); /*Angle*/this.makeAnglePoints(j, i, dist);

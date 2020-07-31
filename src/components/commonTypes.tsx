@@ -75,6 +75,7 @@ export interface postData {
 export interface dispersionData {
     horizontal: pointArrays, horizontalStd: pointArrays, 
     vertical: pointArrays, verticalStd: pointArrays,
+    area: pointArrays, areaStd: pointArrays
 }
 export interface calculatedData {
     impact: impactData, angle: angleData, post: postData, dispersion: dispersionData,
