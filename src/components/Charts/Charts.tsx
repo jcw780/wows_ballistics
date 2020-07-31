@@ -683,6 +683,9 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             for(const [, chart] of this.chartConfigs.angle.entries()){
                 injectData(chart);
             }
+            for(const [, chart] of this.chartConfigs.dispersion.entries()){
+                injectData(chart);
+            }
             
             //Update Charts
             if(forceUpdate){ //For disabling rerender in constructor [will be rendered anyways]
@@ -781,7 +784,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         </>
     }>
         <div className="tooltip-target">
-            <h3 style={{textAlign: "center", display:"inline-block"}}>Dispersion Charts</h3>
+            <h3 style={{textAlign: "center", display:"inline-block"}}><i>**Experimental**</i> Dispersion Charts</h3>
             <Icon name='question circle outline' color='grey'/>
         </div>
     </GeneralTooltip>
