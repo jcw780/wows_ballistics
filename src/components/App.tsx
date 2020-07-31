@@ -255,11 +255,12 @@ class App extends React.Component<{},{}> {
 					}else{
 						maxDispersion = taperSlope * distKm;	
 					}
+					const maxDispersionStd = maxDispersion / sigma;
 					calculatedData.dispersion.horizontal[j].push({
 						x: dist, y: maxDispersion
 					});
 					calculatedData.dispersion.horizontalStd[j].push({
-						x: dist, y: maxDispersion / sigma
+						x: dist, y: maxDispersionStd
 					});
 					let maxVertical = maxDispersion / 
 						Math.sin(this.instance.getImpactPoint(i, arrayIndices.impactDataIndex.impactAHR, j) * - 1);
@@ -268,13 +269,14 @@ class App extends React.Component<{},{}> {
 					}else{
 						maxVertical *= (dmSlope * distKm + dmConst);
 					}
+					const maxVerticalStd = maxVertical / sigma;
 					calculatedData.dispersion.vertical[j].push({
 						x: dist, y: maxVertical
 					});
 					calculatedData.dispersion.verticalStd[j].push({
-						x: dist, y: maxVertical / sigma
+						x: dist, y: maxVerticalStd
 					});
-					const area = Math.PI * (maxDispersion/2) * (maxVertical/2), areaStd = Math.PI * (maxDispersion/2/sigma) * (maxVertical/2/sigma);
+					const area = Math.PI * (maxDispersion/2) * (maxVertical/2), areaStd = Math.PI * (maxDispersionStd/2) * (maxVerticalStd/2);
 					calculatedData.dispersion.area[j].push({
 						x: dist, y: area
 					});
