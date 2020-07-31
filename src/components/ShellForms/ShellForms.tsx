@@ -195,15 +195,17 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		</>],
 	})
 	formLabels2 : S.dispersionLabelsT = Object.freeze({
-		delim: ['Delim', '(1)', React.createRef<ParameterForm>(), 
-		<>
-			Experimental - TBD
-		</>],
 		idealRadius: ['Ideal Radius', 'm/km', React.createRef<ParameterForm>(), 
 		<>
-			Experimental - TBD
+			Contributes to maximum horizontal dispersion. <br/>
+			= (Ideal Radius-Min Radius) * Range(km) + 30*Min Radius
 		</>],
 		minRadius: ['Min Radius', 'm/km', React.createRef<ParameterForm>(), 
+		<>
+			Contributes to maximum horizontal dispersion. <br/>
+			= (Ideal Radius-Min Radius) * Range(km) + 30*Min Radius
+		</>],
+		delim: ['Delim', '(1)', React.createRef<ParameterForm>(), 
 		<>
 			Experimental - TBD
 		</>],
@@ -221,11 +223,14 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		</>],
 		taperDist: ['Taper Distance', 'm', React.createRef<ParameterForm>(), 
 		<>
-			Experimental - TBD
+			Distance where dispersion rapidly converges <br/>
+			as range approaches zero.
 		</>],
 		sigmaCount: ['Sigma', '(1)', React.createRef<ParameterForm>(), 
 		<>
-			Experimental - TBD
+			Parameter based off of standard deviation <br/>
+			that determines dispersion clustering towards <br/>
+			the point of aim. 
 		</>],
 	});
 	constructor(props){
