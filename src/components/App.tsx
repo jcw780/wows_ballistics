@@ -96,6 +96,8 @@ class App extends React.Component<{},{}> {
 				horizontalStd: [],
 				vertical: [],
 				verticalStd: [],
+				area: [],
+				areaStd: [],
 			},
 			numShells : 2, names : [], colors : [],
 			targets : Array<T.targetDataNoAngleT>(1), angles : [], 
@@ -272,6 +274,14 @@ class App extends React.Component<{},{}> {
 					calculatedData.dispersion.verticalStd[j].push({
 						x: dist, y: maxVertical / sigma
 					});
+					const area = Math.PI * (maxDispersion/2) * (maxVertical/2), areaStd = Math.PI * (maxDispersion/2/sigma) * (maxVertical/2/sigma);
+					calculatedData.dispersion.area[j].push({
+						x: dist, y: area
+					});
+					calculatedData.dispersion.areaStd[j].push({
+						x: dist, y: areaStd
+					});
+
 
 					
 					/*Impact*/this.makeImpactPoints(j, i, dist); /*Angle*/this.makeAnglePoints(j, i, dist);
