@@ -283,8 +283,6 @@ class App extends React.Component<{},{}> {
 					calculatedData.dispersion.areaStd[j].push({
 						x: dist, y: areaStd
 					});
-
-
 					
 					/*Impact*/this.makeImpactPoints(j, i, dist); /*Angle*/this.makeAnglePoints(j, i, dist);
 					//Post-Pen
