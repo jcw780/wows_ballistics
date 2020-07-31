@@ -194,6 +194,40 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 			</table>
 		</>],
 	})
+	formLabels2 : S.dispersionLabelsT = Object.freeze({
+		delim: ['Delim', '(1)', React.createRef<ParameterForm>(), 
+		<>
+			Experimental - TBD
+		</>],
+		idealRadius: ['Ideal Radius', 'm/km', React.createRef<ParameterForm>(), 
+		<>
+			Experimental - TBD
+		</>],
+		minRadius: ['Min Radius', 'm/km', React.createRef<ParameterForm>(), 
+		<>
+			Experimental - TBD
+		</>],
+		radiusOnZero: ['Zero Radius', '(1)', React.createRef<ParameterForm>(), 
+		<>
+			Experimental - TBD
+		</>],
+		radiusOnDelim: ['Delim Radius', '(1)', React.createRef<ParameterForm>(), 
+		<>
+			Experimental - TBD
+		</>],
+		radiusOnMax: ['Max Radius', '(1)', React.createRef<ParameterForm>(), 
+		<>
+			Experimental - TBD
+		</>],
+		taperDist: ['Taper Distance', 'm', React.createRef<ParameterForm>(), 
+		<>
+			Experimental - TBD
+		</>],
+		sigmaCount: ['Sigma', '(1)', React.createRef<ParameterForm>(), 
+		<>
+			Experimental - TBD
+		</>],
+	});
 	constructor(props){
 		super(props);
 		// Use this instead of defaultProps to prevent weird shallow copy things from happening
@@ -221,15 +255,14 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 			['fusetime'       , 'bulletDetonator'           ], ['threshold'     , 'bulletDetonatorThreshold'], 
 			['normalization'  , 'bulletCapNormalizeMaxAngle'],
 			['ra0'            , 'bulletRicochetAt'          ], ['ra1'           , 'bulletAlwaysRicochetAt'  ],
-			['delim'          , 'delim'                     ],
-			['idealRadius'    , 'idealRadius'               ], ['minRadius'     , 'minRadius'               ],
+			['delim'          , 'delim'                     ], ['idealRadius'    , 'idealRadius'            ], ['minRadius'     , 'minRadius' ],
 			['radiusOnDelim'  , 'radiusOnDelim'             ], ['radiusOnMax'   , 'radiusOnMax'             ], ['radiusOnZero', 'radiusOnZero'],
 			['sigmaCount'     , 'sigmaCount'                ], ['taperDist'     , 'taperDist'               ],
 		];
 		for(const [, [fKey, dKey]] of conversionKeys.entries()){
 			formData[fKey] = data[dKey];
 		}
-		
+
 		formData.HESAP = data.alphaPiercingHE > data.alphaPiercingCS ? 
 			data.alphaPiercingHE : data.alphaPiercingCS;
 
@@ -342,7 +375,24 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 						</Popover.Content>
 					</Popover>
 				}>
-				<Button className="footer-button btn-custom-blue" variant="warning">Raw Input</Button>
+				<Button className="footer-button btn-custom-blue" variant="warning">Ballistics</Button>
+			</OverlayTrigger>
+		</Col>
+		<Col className="footer-style">
+			<OverlayTrigger trigger="click" placement="bottom-start" overlay={
+					<Popover id='popover'>
+						<Popover.Content>
+							<Suspense fallback={<div>Loading...</div>}>
+								<ShellParameters ref={this.parameters} 
+									handleValueChange={this.handleValueChange}
+									formLabels={this.formLabels2} 
+									formData={this.formData}
+								/>
+							</Suspense>
+						</Popover.Content>
+					</Popover>
+				}>
+				<Button className="footer-button btn-custom-blue" variant="warning">Dispersion</Button>
 			</OverlayTrigger>
 		</Col>
 		<Col className="footer-style">

@@ -275,9 +275,9 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         ],
         dispersion: [
             [{data: {datasets : Array<any>(),}, options: {}}, 
-                React.createRef<SingleChart>(), 'Horizontal Dispersion'],
+                React.createRef<SingleChart>(), '**Experimental** Horizontal Dispersion'],
             [{data: {datasets : Array<any>(),}, options: {}}, 
-                React.createRef<SingleChart>(), 'Vertical Dispersion'],
+                React.createRef<SingleChart>(), '**Experimental** Vertical Dispersion'],
         ]
     }
     groupRefs = {
@@ -743,6 +743,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         </div>
     </GeneralTooltip>
     {this.addChart('impact')}
+    <hr/>
     <GeneralTooltip title="Angle Charts" content={
         <>
         Shows at what target angles and ranges shells will: <br/>
@@ -758,6 +759,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         </div>
     </GeneralTooltip>
     {this.addChart('angle')}
+    <hr/>
     <GeneralTooltip title="Post-Penetration Charts" content={
         <>
         Show how far shells would travel into a ship after penetrating armor. <br/>
@@ -774,6 +776,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         </div>
     </GeneralTooltip>
     {this.addChart('post')}
+    <hr/>
     <GeneralTooltip title="Dispersion Charts" content={
         <>
         Predicts maximum and standard deviation of dispersion. <br/>
@@ -784,7 +787,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         </>
     }>
         <div className="tooltip-target">
-            <h3 style={{textAlign: "center", display:"inline-block"}}><i>**Experimental**</i> Dispersion Charts</h3>
+            <h3 style={{textAlign: "center", display:"inline-block"}}><i style={{color: 'red'}}>**Experimental**</i> Dispersion Charts</h3>
             <Icon name='question circle outline' color='grey'/>
         </div>
     </GeneralTooltip>

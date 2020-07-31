@@ -7,14 +7,20 @@ export interface formTemplate<K>{
 	caliber: K, muzzleVelocity: K, dragCoefficient: K, mass: K,
 	krupp: K, fusetime: K, threshold: K, normalization: K, 
 	ra0: K, ra1: K, HESAP: K, 
+}
+
+export interface dispersionTemplate<K>{
 	delim?: K, idealRadius?: K, minRadius?: K, radiusOnDelim?: K, 
 	radiusOnMax?: K, radiusOnZero?: K, sigmaCount?: K, taperDist?: K,
-
 }
-export type formLabelsT = formTemplate<labelT>;
-export type formsT = keyof(formLabelsT);
 
-export interface formDataT extends formTemplate<number>{name: string, colors: string[]}
+export type formLabelsT = formTemplate<labelT>;
+export type dispersionLabelsT = dispersionTemplate<labelT>;
+export type formsT = keyof formLabelsT;
+
+export interface formDataT extends formTemplate<number>, dispersionTemplate<number>{
+	name: string, colors: string[]
+}
 
 export enum DefaultDataRowI {value, options, values}
 export type DefaultDataRowT = [string, string[], string[]]

@@ -8,7 +8,7 @@ import {ParameterForm, DownloadButton} from '../UtilityComponents';
 
 const GeneralTooltip = React.lazy(() => import('../UtilityComponents/Tooltips'));
 
-interface shellParametersProps {handleValueChange: any, formLabels : S.formLabelsT, formData: S.formDataT}
+interface shellParametersProps {handleValueChange: any, formLabels : S.formLabelsT | S.dispersionLabelsT, formData: S.formDataT}
 export class ShellParameters extends React.PureComponent<shellParametersProps>{
 	nameForm = React.createRef<ParameterForm>();
 	downloadRef = React.createRef<DownloadButton>();
@@ -36,7 +36,7 @@ export class ShellParameters extends React.PureComponent<shellParametersProps>{
 		const commonStyle = {
 			inputGroup:{width: "50%"},
 			formLabel:{padding: 0},
-			inputGroupAppend:{width: '35px', display: 'inline-block'}
+			inputGroupAppend:{width: '45px', display: 'inline-block'}
 		}
 		const singleForm = ([key, value] : [S.formsT, S.labelT], i) => {
 			const name = value[S.labelI.name];
