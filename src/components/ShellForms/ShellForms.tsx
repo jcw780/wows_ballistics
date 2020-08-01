@@ -267,9 +267,13 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		for(const [, [fKey, dKey]] of conversionKeys.entries()){
 			formData[fKey] = data[dKey];
 		}
-
-		formData.HESAP = data.alphaPiercingHE > data.alphaPiercingCS ? 
-			data.alphaPiercingHE : data.alphaPiercingCS;
+		
+		if(data.hasOwnProperty('alphaPiercingCS')){
+			formData.HESAP = data.alphaPiercingHE > data.alphaPiercingCS ? 
+				data.alphaPiercingHE : data.alphaPiercingCS;
+		}else{
+			formData.HESAP = data.alphaPiercingHE;
+		}
 
 		if(parameters !== undefined && parameters !== null){
 			const {current} = parameters;
