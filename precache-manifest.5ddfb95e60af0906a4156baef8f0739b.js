@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "9e91454463d585e633615b86c1e270c6",
+    "revision": "55bc5757e90a72d5c18998d4fedfb7a1",
     "url": "/wows_ballistics/index.html"
   },
   {
@@ -12,7 +12,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/wows_ballistics/static/css/3.1d1f2d54.chunk.css"
   },
   {
-    "revision": "468fa68dab40d4f225eb",
+    "revision": "49be968a9df19ef44f1d",
     "url": "/wows_ballistics/static/css/main.7224e6ba.chunk.css"
   },
   {
@@ -32,8 +32,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/wows_ballistics/static/js/4.6aa7b469.chunk.js"
   },
   {
-    "revision": "468fa68dab40d4f225eb",
-    "url": "/wows_ballistics/static/js/main.b07e460b.chunk.js"
+    "revision": "49be968a9df19ef44f1d",
+    "url": "/wows_ballistics/static/js/main.f5d23fdb.chunk.js"
   },
   {
     "revision": "1c2479b0cb60e9905810",
