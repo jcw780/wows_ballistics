@@ -221,20 +221,18 @@ class App extends React.Component<{},{}> {
 			for(let j=0; j<numShells; ++j){ // iterate through shells
 				const currentShell = shellData[j];
 				//Dispersion
-				const idealRadius = currentShell.idealRadius!, minRadius = currentShell.minRadius!,
-					taperDist = currentShell.taperDist! / 1000, sigma = currentShell.sigmaCount!, 
-					radiusOnZero = currentShell.radiusOnZero!, radiusOnDelim = currentShell.radiusOnDelim!,
-					radiusOnMax = currentShell.radiusOnMax!, delim = currentShell.delim!;
+				const {idealRadius, minRadius, sigmaCount, taperDist,
+					radiusOnZero, radiusOnDelim, radiusOnMax, delim} = currentShell;
 				//Horizontal
-				const hSlope = idealRadius - minRadius, hConst = minRadius * 30;
+				const hSlope = (idealRadius - minRadius) / 1000, hConst = minRadius * 30;
 				const taperSlope = (hSlope * (taperDist) + hConst) / taperDist!;
 				//Vertical
-				const delimSplit = delim * 30; 
-				const zdSlope = (radiusOnDelim - radiusOnZero) / delimSplit;
+				const delimSplit = delim * 30000; 
+				const zdSlope = ((radiusOnDelim - radiusOnZero) / delimSplit);
 				const zdConst = radiusOnZero;
 
-				const dmSlope = (radiusOnMax - radiusOnDelim) / (30 - delimSplit);
-				const dmConst = radiusOnDelim - delimSplit * dmSlope;
+				const dmSlope = ((radiusOnMax - radiusOnDelim) / (30000 - delimSplit));
+				const dmConst = radiusOnDelim - (delimSplit * dmSlope);
 
 				for(let i=0; i<impactSize; ++i){ // iterate through points at each range
 					const dist : number = instance.getImpactPoint(i, arrayIndices.impactDataIndex.distance, j);
@@ -248,14 +246,13 @@ class App extends React.Component<{},{}> {
 					//Approximation:
 					//std dev = k / sigma
 
-					const distKm = dist / 1000;
 					let maxDispersion = 0;
-					if(distKm > taperDist){
-						maxDispersion = hSlope * distKm + hConst;
+					if(dist > taperDist){
+						maxDispersion = hSlope * dist + hConst;
 					}else{
-						maxDispersion = taperSlope * distKm;	
+						maxDispersion = taperSlope * dist;	
 					}
-					const maxDispersionStd = maxDispersion / sigma;
+					const maxDispersionStd = maxDispersion / sigmaCount;
 					calculatedData.dispersion.horizontal[j].push({
 						x: dist, y: maxDispersion
 					});
@@ -264,19 +261,20 @@ class App extends React.Component<{},{}> {
 					});
 					let maxVertical = maxDispersion / 
 						Math.sin(this.instance.getImpactPoint(i, arrayIndices.impactDataIndex.impactAHR, j) * - 1);
-					if(distKm < delimSplit){
-						maxVertical *= (zdSlope * distKm + zdConst);
+					if(dist < delimSplit){
+						maxVertical *= (zdSlope * dist + zdConst);
 					}else{
-						maxVertical *= (dmSlope * distKm + dmConst);
+						maxVertical *= (dmSlope * dist + dmConst);
 					}
-					const maxVerticalStd = maxVertical / sigma;
+					const maxVerticalStd = maxVertical / sigmaCount;
 					calculatedData.dispersion.vertical[j].push({
 						x: dist, y: maxVertical
 					});
 					calculatedData.dispersion.verticalStd[j].push({
 						x: dist, y: maxVerticalStd
 					});
-					const area = Math.PI * (maxDispersion/2) * (maxVertical/2), areaStd = Math.PI * (maxDispersionStd/2) * (maxVerticalStd/2);
+					const area = Math.PI * (maxDispersion/2) * (maxVertical/2), 
+					areaStd = Math.PI * (maxDispersionStd/2) * (maxVerticalStd/2);
 					calculatedData.dispersion.area[j].push({
 						x: dist, y: area
 					});
