@@ -87,9 +87,12 @@ const getTier = (str : string) : number => {
 enum singleFormIndex {name, ref, queryIndex}
 type singleFormT = [string, React.RefObject<DefaultForm>, number]
 type defaultFormType = T.defaultFormGeneric<singleFormT>
+interface defaultShipsProps {
+	sendDefault: Function, reset: Function, formatSettings: T.formatSettingsT
+	index: number, keyProp: number, defaultData: S.defaultDataT
+}
 
-export class DefaultShips extends React.PureComponent
-<{sendDefault: Function, reset: Function, index: number, keyProp: number, defaultData: S.defaultDataT}> {
+export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 	defaultForms : defaultFormType = Object.seal({
 		version:   ['Version'   , React.createRef<DefaultForm>(), 0],
 		nation:    ['Nation'    , React.createRef<DefaultForm>(), 1], 
@@ -152,7 +155,8 @@ export class DefaultShips extends React.PureComponent
 		this.changeForm(reversed[0], 'version');
 	}
 	postVersion = (index: number) => {
-		const dData = this.props.defaultData, qDataS = dData.queriedData.ships, 
+		const {props} = this;
+		const dData = props.defaultData, qDataS = dData.queriedData.ships, 
 			DDI = S.DefaultDataRowI.value;
 		const queryNation = () => {
 			const options = Object.keys(qDataS);
@@ -169,8 +173,12 @@ export class DefaultShips extends React.PureComponent
 		const queryShip = () => {
 			const ships = qDataS[nation][type];
 			const values = Object.keys(ships), options : string[] = [];
-			values.sort((a, b) => {return ships[a]['Tier'] - ships[b]['Tier']});
-			values.forEach((ship, i) => {options.push(`(${ships[ship]['Tier']}) ${ship}`);});
+			values.sort((a, b) => {return ships[a].Tier - ships[b].Tier});
+			if(props.formatSettings.shortNames){
+				values.forEach((ship, i) => {options.push(`(${ships[ship].Tier}) ${ships[ship].Name}`);});
+			}else{
+				values.forEach((ship, i) => {options.push(`(${ships[ship].Tier}) ${ship}`);});
+			}
 			this.updateForm('ship', options, values);
 		}
 		const queryArtillery = () => {
@@ -188,7 +196,13 @@ export class DefaultShips extends React.PureComponent
 			for(const [k,v] of Object.entries(artilleryData)){
 				if(k !== 'shells') dispersionData[k] = v;
 			}
-			this.props.sendDefault({...dData.queriedData.shells[shellName], ...dispersionData}, ship);
+
+			let name = ship;
+			if(props.formatSettings.shortNames){
+				name = qDataS[nation][type][ship].Name
+			}
+
+			this.props.sendDefault({...dData.queriedData.shells[shellName], ...dispersionData}, name);
 		}
 		const queries = [
 			queryNation, queryType, queryShip,

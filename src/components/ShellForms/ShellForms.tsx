@@ -247,10 +247,8 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 	}
 	onNameChange = (value : string, id) => {this.formData.name = value};
 	handleValueChange = (value : string, k : S.formsT) => {this.formData[k] = parseFloat(value)};
-	getDefaultData = (data, nameUnprocessed : string) => { //Query Version End
+	getDefaultData = (data, name: string) => { //Query Version End
 		const {formData, props, parameters} = this;
-		let name = nameUnprocessed; 
-		if(props.settings.format.shortNames) name = name.split("_").slice(1).join(" ");
 		formData.name = name; 
 		this.nameForm.current!.updateValue(name); 
 		//Separate name form outside of shell parameters needs to be updated separately
@@ -364,6 +362,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		<DefaultShips ref={this.defaults}
 			sendDefault={this.getDefaultData} 
 			defaultData={this.defaultData}
+			formatSettings={props.settings.format}
 			keyProp={props.keyProp}
 			reset={props.reset} 
 			index={props.index} 

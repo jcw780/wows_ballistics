@@ -14,6 +14,7 @@ export class NavbarCustom extends React.Component<{links: T.linkT}>{
         React.createRef<NavDropdownContainer>(),
         React.createRef<NavDropdownContainer>(),
         React.createRef<NavDropdownContainer>(),
+        React.createRef<NavDropdownContainer>(),
     ]);
     update = () => { 
         //only update one section - other sections dont get updated
@@ -67,7 +68,7 @@ export class NavbarCustom extends React.Component<{links: T.linkT}>{
             <NavDropdownContainer 
                 title="Dispersion Charts" 
                 links={links['dispersion']} 
-                ref={this.navDropdownContainers[3]}
+                ref={this.navDropdownContainers[4]}
             />
         </Nav>
         <Nav>

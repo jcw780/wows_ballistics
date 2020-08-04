@@ -157,8 +157,8 @@ class App extends React.Component<{},{}> {
 		const shellData = this.SFCref.current!.returnShellData();
 		const tgtData = this.TFCref.current!.returnData();
 		const numShells: number = shellData.length;
-		if(this.instance === undefined) return;
-		if(numShells <= 0){return
+		if(this.instance === undefined) return; //WASM component needs to be compiled
+		if(numShells <= 0){return //No shells sent - no work needed
 		}else{
 			const {instance, arrayIndices, calculatedData} = this;
 			instance.resize(numShells); calculatedData.numShells = numShells;
@@ -205,6 +205,9 @@ class App extends React.Component<{},{}> {
 				calculatedData.names[i] = value.name; 
 				calculatedData.colors[i] = value.colors;
 			});
+
+			const {dispersion, post} = calculatedData;
+
 			for(let j=0; j<numShells; ++j){
 				this.initializePoint(calculatedData.impact, j);
 				this.initializePoint(calculatedData.angle, j);
@@ -215,29 +218,27 @@ class App extends React.Component<{},{}> {
 				}
 			}
 			
-
+			const {impactDataIndex, postPenDataIndex} = arrayIndices;
 			let maxDist = 0; //Maximum Distance for shipWidth
 			// Converts flat array data format to {x, y} format for chart.js
 			for(let j=0; j<numShells; ++j){ // iterate through shells
 				const currentShell = shellData[j];
 				//Dispersion
-				const idealRadius = currentShell.idealRadius!, minRadius = currentShell.minRadius!,
-					taperDist = currentShell.taperDist! / 1000, sigma = currentShell.sigmaCount!, 
-					radiusOnZero = currentShell.radiusOnZero!, radiusOnDelim = currentShell.radiusOnDelim!,
-					radiusOnMax = currentShell.radiusOnMax!, delim = currentShell.delim!;
+				const {idealRadius, minRadius, sigmaCount, taperDist,
+					radiusOnZero, radiusOnDelim, radiusOnMax, delim} = currentShell;
 				//Horizontal
-				const hSlope = idealRadius - minRadius, hConst = minRadius * 30;
+				const hSlope = (idealRadius - minRadius) / 1000, hConst = minRadius * 30;
 				const taperSlope = (hSlope * (taperDist) + hConst) / taperDist!;
 				//Vertical
-				const delimSplit = delim * 30; 
-				const zdSlope = (radiusOnDelim - radiusOnZero) / delimSplit;
+				const delimSplit = delim * 30000; 
+				const zdSlope = ((radiusOnDelim - radiusOnZero) / delimSplit);
 				const zdConst = radiusOnZero;
 
-				const dmSlope = (radiusOnMax - radiusOnDelim) / (30 - delimSplit);
-				const dmConst = radiusOnDelim - delimSplit * dmSlope;
+				const dmSlope = ((radiusOnMax - radiusOnDelim) / (30000 - delimSplit));
+				const dmConst = radiusOnDelim - (delimSplit * dmSlope);
 
 				for(let i=0; i<impactSize; ++i){ // iterate through points at each range
-					const dist : number = instance.getImpactPoint(i, arrayIndices.impactDataIndex.distance, j);
+					const dist : number = instance.getImpactPoint(i, impactDataIndex.distance, j);
 					maxDist = Math.max(maxDist, dist);
 					//Dispersion
 					//Note: Sigma correction is technically an approximation. 
@@ -248,39 +249,39 @@ class App extends React.Component<{},{}> {
 					//Approximation:
 					//std dev = k / sigma
 
-					const distKm = dist / 1000;
 					let maxDispersion = 0;
-					if(distKm > taperDist){
-						maxDispersion = hSlope * distKm + hConst;
+					if(dist > taperDist){
+						maxDispersion = hSlope * dist + hConst;
 					}else{
-						maxDispersion = taperSlope * distKm;	
+						maxDispersion = taperSlope * dist;	
 					}
-					const maxDispersionStd = maxDispersion / sigma;
-					calculatedData.dispersion.horizontal[j].push({
+					const maxDispersionStd = maxDispersion / sigmaCount;
+					dispersion.horizontal[j].push({
 						x: dist, y: maxDispersion
 					});
-					calculatedData.dispersion.horizontalStd[j].push({
+					dispersion.horizontalStd[j].push({
 						x: dist, y: maxDispersionStd
 					});
 					let maxVertical = maxDispersion / 
-						Math.sin(this.instance.getImpactPoint(i, arrayIndices.impactDataIndex.impactAHR, j) * - 1);
-					if(distKm < delimSplit){
-						maxVertical *= (zdSlope * distKm + zdConst);
+						Math.sin(this.instance.getImpactPoint(i, impactDataIndex.impactAHR, j) * - 1);
+					if(dist < delimSplit){
+						maxVertical *= (zdSlope * dist + zdConst);
 					}else{
-						maxVertical *= (dmSlope * distKm + dmConst);
+						maxVertical *= (dmSlope * dist + dmConst);
 					}
-					const maxVerticalStd = maxVertical / sigma;
-					calculatedData.dispersion.vertical[j].push({
+					const maxVerticalStd = maxVertical / sigmaCount;
+					dispersion.vertical[j].push({
 						x: dist, y: maxVertical
 					});
-					calculatedData.dispersion.verticalStd[j].push({
+					dispersion.verticalStd[j].push({
 						x: dist, y: maxVerticalStd
 					});
-					const area = Math.PI * (maxDispersion/2) * (maxVertical/2), areaStd = Math.PI * (maxDispersionStd/2) * (maxVerticalStd/2);
-					calculatedData.dispersion.area[j].push({
+					const area = Math.PI * (maxDispersion/2) * (maxVertical/2), 
+					areaStd = Math.PI * (maxDispersionStd/2) * (maxVerticalStd/2);
+					dispersion.area[j].push({
 						x: dist, y: area
 					});
-					calculatedData.dispersion.areaStd[j].push({
+					dispersion.areaStd[j].push({
 						x: dist, y: areaStd
 					});
 					
@@ -288,24 +289,25 @@ class App extends React.Component<{},{}> {
 					//Post-Pen
 					for(let k=0; k<numAngles; ++k){
 						const detDist : number
-							= instance.getPostPenPoint(i, arrayIndices.postPenDataIndex.x, k, j);
+							= instance.getPostPenPoint(i, postPenDataIndex.x, k, j);
 						const fused : number // = detDist when fused, otherwise = -1
-							= instance.getPostPenPoint(i, arrayIndices.postPenDataIndex.xwf, k, j);
+							= instance.getPostPenPoint(i, postPenDataIndex.xwf, k, j);
 						const point : T.scatterPoint = {x: dist, y: detDist};
 						// Only draw fused line if fused (fused >= 0); reverse for notFused
 						if(fused < 0){
-							calculatedData.post.notFused[k+j*numAngles].push(point);
+							post.notFused[k+j*numAngles].push(point);
 						}else{
-							calculatedData.post.fused[k+j*numAngles].push(point);
+							post.fused[k+j*numAngles].push(point);
 						}
 					}
 				}
 			}
 			//Generate Ship Width Line 
-			const stepSize = this.settings.distance.stepSize !== undefined ? this.settings.distance.stepSize: 2000;
+			const {stepSize: sSize} = this.settings.distance;
+			const stepSize = sSize !== undefined ? sSize: 2000;
 			const maxAdj = Math.ceil(maxDist / stepSize) * stepSize;
-			calculatedData.post.shipWidth = [[],];
-			const SWE = calculatedData.post.shipWidth.entries();
+			post.shipWidth = [[],];
+			const SWE = post.shipWidth.entries();
 			for(const [, singleShipWidth] of SWE){
 				const length = this.referenceLineSize - 1;
 				for(let i=0; i < length+1; ++i){
@@ -317,8 +319,9 @@ class App extends React.Component<{},{}> {
 				}
 			}
 			//Impact Ricochet Angles
-			calculatedData.startRicochet.length = 0;
-			calculatedData.alwaysRicochet.length = 0;
+			const {startRicochet, alwaysRicochet} = calculatedData;
+			startRicochet.length = 0;
+			alwaysRicochet.length = 0;
 			for(const [, shell] of shellData.entries()){
 				const start : T.scatterPoint[] = [], always : T.scatterPoint[] = [];
 				const length = this.referenceLineSize - 1;
@@ -333,8 +336,8 @@ class App extends React.Component<{},{}> {
 						y: shell.ra1
 					}
 				}
-				calculatedData.startRicochet.push(start);
-				calculatedData.alwaysRicochet.push(always);
+				startRicochet.push(start);
+				alwaysRicochet.push(always);
 			}
 			//Angle Chart Annotations / Labels
 			calculatedData.refLabels = tgtData.refLabels;
