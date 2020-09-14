@@ -32,7 +32,7 @@ class App extends React.Component<{},{}> {
 	// Wasm
 	instance : any; // Wasm Instance
 	arrayIndices : Record<string, Record<string, number>> = Object.seal({
-		impactDataIndex: {}, angleDataIndex: {}, postPenDataIndex: {} 
+		impactIndices: {}, angleIndices: {}, postPenIndices: {} 
 	}); //Condensed wasm enums
 
 	// Settings Data
@@ -137,13 +137,13 @@ class App extends React.Component<{},{}> {
 	}
 	private makeImpactPoints = (shell, index, dist) => {
 		const pointFunction = (index, dataType, shell) => {
-			return this.instance.getImpactPoint(index, this.arrayIndices.impactDataIndex[dataType], shell);
+			return this.instance.getImpactPoint(index, this.arrayIndices.impactIndices[dataType], shell);
 		}
 		return this.makePoint(shell, index, dist, 'impact', pointFunction);
 	}
 	private makeAnglePoints = (shell, index, dist) => {
 		const pointFunction = (index, dataType, shell) => {
-			return this.instance.getAnglePoint(index, this.arrayIndices.angleDataIndex[dataType], shell);
+			return this.instance.getAnglePoint(index, this.arrayIndices.angleIndices[dataType], shell);
 		}
 		return this.makePoint(shell, index, dist, 'angle', pointFunction);
 	}
@@ -218,7 +218,7 @@ class App extends React.Component<{},{}> {
 				}
 			}
 			
-			const {impactDataIndex, postPenDataIndex} = arrayIndices;
+			const {impactIndices, postPenIndices} = arrayIndices;
 			let maxDist = 0; //Maximum Distance for shipWidth
 			// Converts flat array data format to {x, y} format for chart.js
 			for(let j=0; j<numShells; ++j){ // iterate through shells
@@ -238,7 +238,7 @@ class App extends React.Component<{},{}> {
 				const dmConst = radiusOnDelim - (delimSplit * dmSlope);
 
 				for(let i=0; i<impactSize; ++i){ // iterate through points at each range
-					const dist : number = instance.getImpactPoint(i, impactDataIndex.distance, j);
+					const dist : number = instance.getImpactPoint(i, impactIndices.distance, j);
 					maxDist = Math.max(maxDist, dist);
 					//Dispersion
 					//Note: Sigma correction is technically an approximation. 
@@ -263,7 +263,7 @@ class App extends React.Component<{},{}> {
 						x: dist, y: maxDispersionStd
 					});
 					let maxVertical = maxDispersion / 
-						Math.sin(this.instance.getImpactPoint(i, impactDataIndex.impactAHR, j) * - 1);
+						Math.sin(this.instance.getImpactPoint(i, impactIndices.impactAHR, j) * - 1);
 					if(dist < delimSplit){
 						maxVertical *= (zdSlope * dist + zdConst);
 					}else{
@@ -289,9 +289,9 @@ class App extends React.Component<{},{}> {
 					//Post-Pen
 					for(let k=0; k<numAngles; ++k){
 						const detDist : number
-							= instance.getPostPenPoint(i, postPenDataIndex.x, k, j);
+							= instance.getPostPenPoint(i, postPenIndices.x, k, j);
 						const fused : number // = detDist when fused, otherwise = -1
-							= instance.getPostPenPoint(i, postPenDataIndex.xwf, k, j);
+							= instance.getPostPenPoint(i, postPenIndices.xwf, k, j);
 						const point : T.scatterPoint = {x: dist, y: detDist};
 						// Only draw fused line if fused (fused >= 0); reverse for notFused
 						if(fused < 0){
