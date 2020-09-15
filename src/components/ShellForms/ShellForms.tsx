@@ -226,7 +226,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		</>],
 		maxDist: ['Max Distance', 'm', React.createRef<ParameterForm>(), 
 		<>
-			Contributes to maximum vertical dispersion. <br/>
+			Scales points of delim and maximum vertical radii. <br/>
 		</>],
 		taperDist: ['Taper Distance', 'm', React.createRef<ParameterForm>(), 
 		<>
