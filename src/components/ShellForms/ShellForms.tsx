@@ -35,8 +35,9 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		mass: 0, krupp: 0, fusetime: 0, threshold: 0, 
 		normalization: 0, ra0: 0, ra1: 0, HESAP: 0,
 		name : '', colors : [],
-		delim: 0, idealRadius: 0, minRadius: 0, radiusOnDelim: 0, 
-		radiusOnMax: 0, radiusOnZero: 0, sigmaCount: 0, taperDist: 0,
+		delim: 0, idealRadius: 0, minRadius: 0, idealDistance: 0,
+		radiusOnDelim: 0, radiusOnMax: 0, radiusOnZero: 0, 
+		sigmaCount: 0, taperDist: 0, maxDist: 0
 	})
 	parameters : React.RefObject<ShellParametersT> = React.createRef<ShellParametersT>()
 	defaults : React.RefObject<DefaultShips> = React.createRef<DefaultShips>()
@@ -205,6 +206,10 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 			Contributes to maximum horizontal dispersion. <br/>
 			= (Ideal Radius-Min Radius) * Range(km) + 30*Min Radius
 		</>],
+		idealDistance: ['Ideal Distance', '30m', React.createRef<ParameterForm>(), 
+		<>
+			Range where max horizontal dispersion equals idealRadius. <br/>
+		</>],
 		delim: ['Delim', '(1)', React.createRef<ParameterForm>(), 
 		<>
 			Experimental - TBD
@@ -220,6 +225,10 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		radiusOnMax: ['Max Radius', '(1)', React.createRef<ParameterForm>(), 
 		<>
 			Experimental - TBD
+		</>],
+		maxDist: ['Max Distance', 'm', React.createRef<ParameterForm>(), 
+		<>
+			Contributes to maximum vertical dispersion. <br/>
 		</>],
 		taperDist: ['Taper Distance', 'm', React.createRef<ParameterForm>(), 
 		<>
