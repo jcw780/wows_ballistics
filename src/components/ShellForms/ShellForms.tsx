@@ -196,15 +196,13 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		</>],
 	})
 	formLabels2 : S.dispersionLabelsT = Object.freeze({
-		idealRadius: ['Ideal Radius', 'm/km', React.createRef<ParameterForm>(), 
+		idealRadius: ['Ideal Radius', '30m', React.createRef<ParameterForm>(), 
 		<>
-			Contributes to maximum horizontal dispersion. <br/>
-			= (Ideal Radius-Min Radius) * Range(km) + 30*Min Radius
+			Horizontal dispersion at Ideal Distance. <br/>
 		</>],
-		minRadius: ['Min Radius', 'm/km', React.createRef<ParameterForm>(), 
+		minRadius: ['Min Radius', '30m', React.createRef<ParameterForm>(), 
 		<>
-			Contributes to maximum horizontal dispersion. <br/>
-			= (Ideal Radius-Min Radius) * Range(km) + 30*Min Radius
+			Horizontal dispersion at a range of zero. <br/>
 		</>],
 		idealDistance: ['Ideal Distance', '30m', React.createRef<ParameterForm>(), 
 		<>
