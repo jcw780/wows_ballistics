@@ -35,8 +35,9 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		mass: 0, krupp: 0, fusetime: 0, threshold: 0, 
 		normalization: 0, ra0: 0, ra1: 0, HESAP: 0,
 		name : '', colors : [],
-		delim: 0, idealRadius: 0, minRadius: 0, radiusOnDelim: 0, 
-		radiusOnMax: 0, radiusOnZero: 0, sigmaCount: 0, taperDist: 0,
+		delim: 0, idealRadius: 0, minRadius: 0, idealDistance: 0,
+		radiusOnDelim: 0, radiusOnMax: 0, radiusOnZero: 0, 
+		sigmaCount: 0, taperDist: 0, maxDist: 0
 	})
 	parameters : React.RefObject<ShellParametersT> = React.createRef<ShellParametersT>()
 	defaults : React.RefObject<DefaultShips> = React.createRef<DefaultShips>()
@@ -195,15 +196,17 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		</>],
 	})
 	formLabels2 : S.dispersionLabelsT = Object.freeze({
-		idealRadius: ['Ideal Radius', 'm/km', React.createRef<ParameterForm>(), 
+		idealRadius: ['Ideal Radius', '30m', React.createRef<ParameterForm>(), 
 		<>
-			Contributes to maximum horizontal dispersion. <br/>
-			= (Ideal Radius-Min Radius) * Range(km) + 30*Min Radius
+			Horizontal dispersion at Ideal Distance. <br/>
 		</>],
-		minRadius: ['Min Radius', 'm/km', React.createRef<ParameterForm>(), 
+		minRadius: ['Min Radius', '30m', React.createRef<ParameterForm>(), 
 		<>
-			Contributes to maximum horizontal dispersion. <br/>
-			= (Ideal Radius-Min Radius) * Range(km) + 30*Min Radius
+			Horizontal dispersion at a range of zero. <br/>
+		</>],
+		idealDistance: ['Ideal Distance', '30m', React.createRef<ParameterForm>(), 
+		<>
+			Range where max horizontal dispersion equals idealRadius. <br/>
 		</>],
 		delim: ['Delim', '(1)', React.createRef<ParameterForm>(), 
 		<>
@@ -220,6 +223,10 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		radiusOnMax: ['Max Radius', '(1)', React.createRef<ParameterForm>(), 
 		<>
 			Experimental - TBD
+		</>],
+		maxDist: ['Max Distance', 'm', React.createRef<ParameterForm>(), 
+		<>
+			Scales points of delim and maximum vertical radii. <br/>
 		</>],
 		taperDist: ['Taper Distance', 'm', React.createRef<ParameterForm>(), 
 		<>
@@ -254,12 +261,13 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		//Separate name form outside of shell parameters needs to be updated separately
 		const conversionKeys : [string, string][] = [
 			['caliber'        , 'bulletDiametr'             ], ['muzzleVelocity', 'bulletSpeed'             ],
-			['dragCoefficient', 'bulletAirDrag'             ], ['mass'          , 'bulletMass'              ], ['krupp'       , 'bulletKrupp' ], 
+			['dragCoefficient', 'bulletAirDrag'             ], ['mass'          , 'bulletMass'              ], ['krupp'        , 'bulletKrupp'  ], 
 			['fusetime'       , 'bulletDetonator'           ], ['threshold'     , 'bulletDetonatorThreshold'], 
 			['normalization'  , 'bulletCapNormalizeMaxAngle'],
 			['ra0'            , 'bulletRicochetAt'          ], ['ra1'           , 'bulletAlwaysRicochetAt'  ],
-			['delim'          , 'delim'                     ], ['idealRadius'    , 'idealRadius'            ], ['minRadius'     , 'minRadius' ],
-			['radiusOnDelim'  , 'radiusOnDelim'             ], ['radiusOnMax'   , 'radiusOnMax'             ], ['radiusOnZero', 'radiusOnZero'],
+			['delim'          , 'delim'                     ], ['maxDist'       , 'maxDist'                 ],
+			['idealRadius'    , 'idealRadius'               ], ['minRadius'     , 'minRadius'               ], ['idealDistance', 'idealDistance'],
+			['radiusOnDelim'  , 'radiusOnDelim'             ], ['radiusOnMax'   , 'radiusOnMax'             ], ['radiusOnZero' , 'radiusOnZero' ],
 			['sigmaCount'     , 'sigmaCount'                ], ['taperDist'     , 'taperDist'               ],
 		];
 		for(const [, [fKey, dKey]] of conversionKeys.entries()){

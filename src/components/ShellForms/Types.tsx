@@ -10,8 +10,8 @@ export interface formTemplate<K>{
 }
 
 export interface dispersionTemplate<K>{
-	delim: K, idealRadius: K, minRadius: K, radiusOnDelim: K, 
-	radiusOnMax: K, radiusOnZero: K, sigmaCount: K, taperDist: K,
+	delim: K, idealRadius: K, minRadius: K, idealDistance: K, radiusOnDelim: K, 
+	radiusOnMax: K, radiusOnZero: K, maxDist: K, sigmaCount: K, taperDist: K,
 }
 
 export type formLabelsT = formTemplate<labelT>;

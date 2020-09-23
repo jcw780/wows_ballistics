@@ -8,6 +8,7 @@ import {TargetFormsContainer} from './TargetForms';
 import AllCharts from './Charts/Charts';
 import {NavbarCustom} from './Navbar';
 import {SettingsBar} from './SettingsBar';
+import NormalDistribution from 'normal-distribution';
 
 import ShellWasm from '../wasm/shellWasm.wasm';
 const SupportFooter = React.lazy(() => import('./SupportFooter'));
@@ -217,29 +218,35 @@ class App extends React.Component<{},{}> {
 					calculatedData.post.fused[i+j*numAngles] = [];
 				}
 			}
-			
+			const distribution = new NormalDistribution(0,1);
 			const {impactIndices, postPenIndices} = arrayIndices;
-			let maxDist = 0; //Maximum Distance for shipWidth
+			let maxRange = 0; //Maximum Distance for shipWidth
 			// Converts flat array data format to {x, y} format for chart.js
 			for(let j=0; j<numShells; ++j){ // iterate through shells
 				const currentShell = shellData[j];
 				//Dispersion
-				const {idealRadius, minRadius, sigmaCount, taperDist,
-					radiusOnZero, radiusOnDelim, radiusOnMax, delim} = currentShell;
+				const {idealRadius, minRadius, idealDistance, sigmaCount, taperDist,
+					radiusOnZero, radiusOnDelim, radiusOnMax, delim, maxDist} = currentShell;
 				//Horizontal
-				const hSlope = (idealRadius - minRadius) / 1000, hConst = minRadius * 30;
+				const hSlope = (idealRadius - minRadius) / idealDistance, hConst = minRadius * 30;
 				const taperSlope = (hSlope * (taperDist) + hConst) / taperDist!;
 				//Vertical
-				const delimSplit = delim * 30000; 
+				const delimSplit = delim * maxDist; 
 				const zdSlope = ((radiusOnDelim - radiusOnZero) / delimSplit);
 				const zdConst = radiusOnZero;
 
-				const dmSlope = ((radiusOnMax - radiusOnDelim) / (30000 - delimSplit));
+				const dmSlope = ((radiusOnMax - radiusOnDelim) / (maxDist - delimSplit));
 				const dmConst = radiusOnDelim - (delimSplit * dmSlope);
+				
+				//Sigma
+				const nS = -1*sigmaCount, pS = sigmaCount;
+				const phiA = distribution.pdf(nS), phiB = distribution.pdf(pS);
+				const Z =distribution.cdf(pS) - distribution.cdf(nS);
+				const stdFactor = Math.pow(1 + ((nS*phiA - pS*phiB) / Z) - Math.pow((phiA - phiB) / Z, 2), .5) / (sigmaCount);
 
 				for(let i=0; i<impactSize; ++i){ // iterate through points at each range
 					const dist : number = instance.getImpactPoint(i, impactIndices.distance, j);
-					maxDist = Math.max(maxDist, dist);
+					maxRange = Math.max(maxRange, dist);
 					//Dispersion
 					//Note: Sigma correction is technically an approximation. 
 					//It's just that it is very similar to the exact solution.
@@ -255,7 +262,7 @@ class App extends React.Component<{},{}> {
 					}else{
 						maxDispersion = taperSlope * dist;	
 					}
-					const maxDispersionStd = maxDispersion / sigmaCount;
+					const maxDispersionStd = maxDispersion * stdFactor;
 					dispersion.horizontal[j].push({
 						x: dist, y: maxDispersion
 					});
@@ -266,10 +273,12 @@ class App extends React.Component<{},{}> {
 						Math.sin(this.instance.getImpactPoint(i, impactIndices.impactAHR, j) * - 1);
 					if(dist < delimSplit){
 						maxVertical *= (zdSlope * dist + zdConst);
-					}else{
+					}else if(dist < 30 * idealDistance){
 						maxVertical *= (dmSlope * dist + dmConst);
+					}else{
+						maxVertical *= (radiusOnMax);
 					}
-					const maxVerticalStd = maxVertical / sigmaCount;
+					const maxVerticalStd = maxVertical * stdFactor;
 					dispersion.vertical[j].push({
 						x: dist, y: maxVertical
 					});
@@ -305,7 +314,7 @@ class App extends React.Component<{},{}> {
 			//Generate Ship Width Line 
 			const {stepSize: sSize} = this.settings.distance;
 			const stepSize = sSize !== undefined ? sSize: 2000;
-			const maxAdj = Math.ceil(maxDist / stepSize) * stepSize;
+			const maxAdj = Math.ceil(maxRange / stepSize) * stepSize;
 			post.shipWidth = [[],];
 			const SWE = post.shipWidth.entries();
 			for(const [, singleShipWidth] of SWE){
