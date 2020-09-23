@@ -10212,6 +10212,13 @@ nopt@^4.0.1:
     abbrev "1"
     osenv "^0.1.4"
 
+normal-distribution@^0.0.9:
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/normal-distribution/-/normal-distribution-0.0.9.tgz#e912f3bfeee5961af4624a722c11bc7a47ba9ebf"
+  integrity sha512-iSoTLfMEsLQLND6dagsbDZ0+YBP/7BOhqsV+lpDKXGq2n00FJ6W9cLV2GqbVGV29kFvwkW3W7fqotI7HRv47vA==
+  dependencies:
+    prettier "^1.9.1"
+
 normalize-package-data@^2.3.2:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/normalize-package-data/-/normalize-package-data-2.5.0.tgz#e66db1838b200c1dfc233225d12cb36520e234a8"
@@ -11785,7 +11792,7 @@ preserve@^0.2.0:
   resolved "https://registry.yarnpkg.com/preserve/-/preserve-0.2.0.tgz#815ed1f6ebc65926f865b310c0713bcb3315ce4b"
   integrity sha1-gV7R9uvGWSb4ZbMQwHE7yzMVzks=
 
-prettier@^1.14.2:
+prettier@^1.14.2, prettier@^1.9.1:
   version "1.19.1"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.19.1.tgz#f7d7f5ff8a9cd872a7be4ca142095956a60797cb"
   integrity sha512-s7PoyDv/II1ObgQunCbB9PdLmUcBZcnWOcxDh7O0N/UwDEsHyqkW+Qh28jW+mVuCdx7gLB0BotYI1Y6uI9iyew==

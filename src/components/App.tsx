@@ -8,6 +8,7 @@ import {TargetFormsContainer} from './TargetForms';
 import AllCharts from './Charts/Charts';
 import {NavbarCustom} from './Navbar';
 import {SettingsBar} from './SettingsBar';
+import NormalDistribution from 'normal-distribution';
 
 import ShellWasm from '../wasm/shellWasm.wasm';
 const SupportFooter = React.lazy(() => import('./SupportFooter'));
@@ -217,7 +218,7 @@ class App extends React.Component<{},{}> {
 					calculatedData.post.fused[i+j*numAngles] = [];
 				}
 			}
-			
+			const distribution = new NormalDistribution(0,1);
 			const {impactIndices, postPenIndices} = arrayIndices;
 			let maxRange = 0; //Maximum Distance for shipWidth
 			// Converts flat array data format to {x, y} format for chart.js
@@ -236,6 +237,13 @@ class App extends React.Component<{},{}> {
 
 				const dmSlope = ((radiusOnMax - radiusOnDelim) / (maxDist - delimSplit));
 				const dmConst = radiusOnDelim - (delimSplit * dmSlope);
+				
+				//Sigma
+				const nS = -1*sigmaCount, pS = sigmaCount;
+				const phiA = distribution.pdf(nS), phiB = distribution.pdf(pS);
+				const Z =distribution.cdf(pS) - distribution.cdf(nS);
+				const stdFactor = Math.pow(1 + ((nS*phiA - pS*phiB) / Z) - Math.pow((phiA - phiB) / Z, 2), .5) / (sigmaCount);
+				console.log(stdFactor);
 
 				for(let i=0; i<impactSize; ++i){ // iterate through points at each range
 					const dist : number = instance.getImpactPoint(i, impactIndices.distance, j);
@@ -255,7 +263,7 @@ class App extends React.Component<{},{}> {
 					}else{
 						maxDispersion = taperSlope * dist;	
 					}
-					const maxDispersionStd = maxDispersion / sigmaCount;
+					const maxDispersionStd = maxDispersion * stdFactor;
 					dispersion.horizontal[j].push({
 						x: dist, y: maxDispersion
 					});
@@ -271,7 +279,7 @@ class App extends React.Component<{},{}> {
 					}else{
 						maxVertical *= (radiusOnMax);
 					}
-					const maxVerticalStd = maxVertical / sigmaCount;
+					const maxVerticalStd = maxVertical * stdFactor;
 					dispersion.vertical[j].push({
 						x: dist, y: maxVertical
 					});
