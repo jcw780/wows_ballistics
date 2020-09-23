@@ -243,7 +243,6 @@ class App extends React.Component<{},{}> {
 				const phiA = distribution.pdf(nS), phiB = distribution.pdf(pS);
 				const Z =distribution.cdf(pS) - distribution.cdf(nS);
 				const stdFactor = Math.pow(1 + ((nS*phiA - pS*phiB) / Z) - Math.pow((phiA - phiB) / Z, 2), .5) / (sigmaCount);
-				console.log(stdFactor);
 
 				for(let i=0; i<impactSize; ++i){ // iterate through points at each range
 					const dist : number = instance.getImpactPoint(i, impactIndices.distance, j);
