@@ -273,7 +273,7 @@ class App extends React.Component<{},{}> {
 						Math.sin(this.instance.getImpactPoint(i, impactIndices.impactAHR, j) * - 1);
 					if(dist < delimSplit){
 						maxVertical *= (zdSlope * dist + zdConst);
-					}else if(dist < 30 * idealDistance){
+					}else if(dist < maxDist){
 						maxVertical *= (dmSlope * dist + dmConst);
 					}else{
 						maxVertical *= (radiusOnMax);
