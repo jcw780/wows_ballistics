@@ -248,13 +248,6 @@ class App extends React.Component<{},{}> {
 					const dist : number = instance.getImpactPoint(i, impactIndices.distance, j);
 					maxRange = Math.max(maxRange, dist);
 					//Dispersion
-					//Note: Sigma correction is technically an approximation. 
-					//It's just that it is very similar to the exact solution.
-					//And the exact solution is computationally intensive
-					//Exact Solution: 
-					//std dev = 2 * k sqrt( erf(sigma / sqrt(2))/(4sigma^2) - e^(-sigma^2/2)/(2sqrt(2pi)sigma) + n.cdf(-sigma, 1)/12)
-					//Approximation:
-					//std dev = k / sigma
 
 					let maxDispersion = 0;
 					if(dist > taperDist){
