@@ -1,6 +1,6 @@
 import React, {Suspense} from 'react'; import './App.css';
 import {Button, Row} from 'react-bootstrap';
-//import { saveAs } from 'file-saver';
+//import {updateInitialData} from './UtilityComponents';
 
 import * as T from './commonTypes';
 import {ShellFormsContainer} from './ShellForms';
@@ -356,18 +356,10 @@ class App extends React.Component<{},{}> {
 				}
 				calculatedData.refAngles.push(temp);
 			}
-			//this.updateInitialData(calculatedData);
+			//updateInitialData(calculatedData);
 			if(this.graphsRef.current){this.graphsRef.current.updateData(calculatedData);}
 		}
 	}
-	/*private updateInitialData = (data) => { //Only used to for replacing initialData = not useful in release
-		const fileToSave = new Blob([JSON.stringify(data)], {type: 'application/json',});
-		saveAs(fileToSave, 'initialData.json');
-		//const compressed = pako.deflate(JSON.stringify(data));
-		//console.log(compressed);
-		//const fileToSave2 = new Blob([compressed], {type: 'text/plain',});
-		//saveAs(fileToSave2, 'initialData.deflate');
-	}*/
 	onUpdate = () => {this.navRef.current!.update();} // Update Navbar when charts are updated
 	updateColors = () => { // For updating when color settings change
 		if(this.SFCref.current) this.SFCref.current.updateAllCanvas();
