@@ -62,7 +62,7 @@ class App extends React.Component<{},{}> {
 	//Compile Wasm 
 	compile = () : void => {
 		return ShellWasm().then((M) => {
-			this.instance = new M.shell(2);
+			this.instance = new M.shellCombined(2);
 			Object.entries(this.arrayIndices).forEach(([k, v]: any) => {
 				Object.entries(M[k]).forEach(([k1, v1]: any) => {
 					if(k1 !== "values"){v[k1] = v1.value;}
