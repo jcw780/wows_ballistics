@@ -40,7 +40,7 @@ export class NavbarCustom extends React.Component<{links: T.linkT}>{
         src={process.env.PUBLIC_URL + '/android-chrome-192x192.png'}/>
     </Navbar.Brand>
     <Navbar.Brand onClick={this.scrollToTop}>
-        WoWS Ballisitics Calculator
+        WoWS Ballistics Calculator
     </Navbar.Brand>
     <Navbar.Toggle aria-controls="responsive-navbar-nav" label="Toggle Navigation"/>
     <Navbar.Collapse id="responsive-navbar-nav">
