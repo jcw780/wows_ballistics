@@ -1,6 +1,6 @@
 import React, {Suspense} from 'react'; import './App.css';
 import {Button, Row} from 'react-bootstrap';
-//import {updateInitialData} from './UtilityComponents';
+import {updateInitialData} from './UtilityComponents';
 
 import * as T from './commonTypes';
 import {ShellFormsContainer} from './ShellForms';
@@ -41,7 +41,7 @@ class App extends React.Component<{},{}> {
 		distance: {min: 0, max: undefined, stepSize: 1000, },
 		calculationSettings: {
 			calculationMethod: 1, timeStep: 0.02,
-			launchAngle : {min: 0, max: 25, precision: 0.1},
+			launchAngle : {min: 0, max: 30, precision: 0.1},
 		},
 		format: {
 			rounding: 3, shortNames: true, legendPosition: 'right',
@@ -356,7 +356,7 @@ class App extends React.Component<{},{}> {
 				}
 				calculatedData.refAngles.push(temp);
 			}
-			//updateInitialData(calculatedData);
+			updateInitialData(calculatedData);
 			if(this.graphsRef.current){this.graphsRef.current.updateData(calculatedData);}
 		}
 	}
