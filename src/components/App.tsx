@@ -1,6 +1,6 @@
 import React, {Suspense} from 'react'; import './App.css';
 import {Button, Row} from 'react-bootstrap';
-//import { saveAs } from 'file-saver';
+//import {updateInitialData} from './UtilityComponents';
 
 import * as T from './commonTypes';
 import {ShellFormsContainer} from './ShellForms';
@@ -41,7 +41,7 @@ class App extends React.Component<{},{}> {
 		distance: {min: 0, max: undefined, stepSize: 1000, },
 		calculationSettings: {
 			calculationMethod: 1, timeStep: 0.02,
-			launchAngle : {min: 0, max: 25, precision: 0.1},
+			launchAngle : {min: 0, max: 30, precision: 0.1},
 		},
 		format: {
 			rounding: 3, shortNames: true, legendPosition: 'right',
@@ -62,7 +62,7 @@ class App extends React.Component<{},{}> {
 	//Compile Wasm 
 	compile = () : void => {
 		return ShellWasm().then((M) => {
-			this.instance = new M.shell(2);
+			this.instance = new M.shellCombined(2);
 			Object.entries(this.arrayIndices).forEach(([k, v]: any) => {
 				Object.entries(M[k]).forEach(([k1, v1]: any) => {
 					if(k1 !== "values"){v[k1] = v1.value;}
@@ -208,8 +208,12 @@ class App extends React.Component<{},{}> {
 			});
 
 			const {dispersion, post} = calculatedData;
-
-			for(let j=0; j<numShells; ++j){
+			const distribution = new NormalDistribution(0,1);
+			const {impactIndices, postPenIndices} = arrayIndices;
+			let maxRange = 0; //Maximum Distance for shipWidth
+			// Converts flat array data format to {x, y} format for chart.js
+			for(let j=0; j<numShells; ++j){ // iterate through shells
+				//Initializes arrays
 				this.initializePoint(calculatedData.impact, j);
 				this.initializePoint(calculatedData.angle, j);
 				this.initializePoint(calculatedData.dispersion, j);
@@ -217,12 +221,8 @@ class App extends React.Component<{},{}> {
 					calculatedData.post.notFused[i+j*numAngles] = [];
 					calculatedData.post.fused[i+j*numAngles] = [];
 				}
-			}
-			const distribution = new NormalDistribution(0,1);
-			const {impactIndices, postPenIndices} = arrayIndices;
-			let maxRange = 0; //Maximum Distance for shipWidth
-			// Converts flat array data format to {x, y} format for chart.js
-			for(let j=0; j<numShells; ++j){ // iterate through shells
+
+				//Post Processing and Point Generation
 				const currentShell = shellData[j];
 				//Dispersion
 				const {idealRadius, minRadius, idealDistance, sigmaCount, taperDist,
@@ -356,18 +356,12 @@ class App extends React.Component<{},{}> {
 				}
 				calculatedData.refAngles.push(temp);
 			}
-			//this.updateInitialData(calculatedData);
-			if(this.graphsRef.current){this.graphsRef.current.updateData(calculatedData);}
+			//updateInitialData(calculatedData);
+			if(this.graphsRef.current){
+				this.graphsRef.current.updateData(calculatedData);
+			}
 		}
 	}
-	/*private updateInitialData = (data) => { //Only used to for replacing initialData = not useful in release
-		const fileToSave = new Blob([JSON.stringify(data)], {type: 'application/json',});
-		saveAs(fileToSave, 'initialData.json');
-		//const compressed = pako.deflate(JSON.stringify(data));
-		//console.log(compressed);
-		//const fileToSave2 = new Blob([compressed], {type: 'text/plain',});
-		//saveAs(fileToSave2, 'initialData.deflate');
-	}*/
 	onUpdate = () => {this.navRef.current!.update();} // Update Navbar when charts are updated
 	updateColors = () => { // For updating when color settings change
 		if(this.SFCref.current) this.SFCref.current.updateAllCanvas();
@@ -427,7 +421,5 @@ class App extends React.Component<{},{}> {
 		this.navRef.current!.updateAll();
 	}
 }
-
-
 
 export default App;
