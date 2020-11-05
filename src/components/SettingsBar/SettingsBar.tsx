@@ -3,13 +3,11 @@ import {Button, Collapse} from 'react-bootstrap';
 
 import * as T from '../commonTypes';
 import './SettingsBar.css';
+import {settingsBarProps} from './index';
 
 const SettingsBarInternal = React.lazy(() => import('./SettingsBarInternal'));
 
 interface settingsBarState{open: boolean}
-interface settingsBarProps{
-    settings: T.settingsT, updateColors: Function
-}
 export class SettingsBar extends React.Component<settingsBarProps, settingsBarState>{
     state = {open : false}; scrollRef = React.createRef<Button & HTMLButtonElement>();
     titles : T.collapseTitlesT = ["Hide: ", "Show: "]; // 0: Hide 1: Show
@@ -29,7 +27,10 @@ export class SettingsBar extends React.Component<settingsBarProps, settingsBarSt
             <Collapse in={open}>
                 <div id="collapseSettings">
                     <Suspense fallback={<div>Loading...</div>}>
-                        <SettingsBarInternal settings={settings} updateColors={this.props.updateColors}/>
+                        <SettingsBarInternal 
+                        settings={settings} 
+                        updateColors={this.props.updateColors}
+                        updateCharts={this.props.updateCharts}/>
                     </Suspense>
                 </div>
             </Collapse> 
