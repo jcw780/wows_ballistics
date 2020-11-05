@@ -15,16 +15,6 @@
       "src":"android-chrome-512x512.png",
       "sizes":"512x512",
       "type":"image/png"
-    },
-    {
-      "src":"GitHub-Mark-Light-32px.png",
-      "sizes":"32x32",
-      "type":"image/png"
-    },
-    {
-      "src":"Discord-Logo-White.png",
-      "sizes": "245x240",
-      "type":"image/png"
     }
   ],
   "start_url": ".",
