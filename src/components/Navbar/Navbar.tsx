@@ -30,6 +30,7 @@ export class NavbarCustom extends React.Component<{links: T.linkT}>{
             }
         }
     }
+    openInNewTab = (url: string) => {window.open(url, '_blank');}
     private scrollToTop = _ => window.scrollTo(0, 0);
     render(){
         const {links} = this.props;
@@ -72,19 +73,19 @@ export class NavbarCustom extends React.Component<{links: T.linkT}>{
             />
         </Nav>
         <Nav>
-            <Nav.Link href="https://discord.gg/fpDB9y5">
+            <Navbar.Brand onClick={()=>{this.openInNewTab("https://discord.gg/fpDB9y5")}}>
                 <img height='32' width='32' alt="logo"
                 src={process.env.PUBLIC_URL + '/Discord-Logo-White.png'}/>
-            </Nav.Link>
-            <Nav.Link href="https://github.com/jcw780/wows_ballistics">
+            </Navbar.Brand>
+            <Navbar.Brand onClick={()=>{this.openInNewTab("https://github.com/jcw780/wows_ballistics")}}>
                 <img height='32' width='32' alt="logo"
                 src={process.env.PUBLIC_URL + '/Github-Mark-Light-32px.png'}/>
-            </Nav.Link>
+            </Navbar.Brand>
             <Suspense fallback={<div>Loading...</div>}>
                 <NavDropdown title="Support" id="support" alignRight>
-                    <ND.Item href="https://discord.gg/fpDB9y5">Discord</ND.Item>
-                    <ND.Item href="https://github.com/jcw780/wows_ballistics">Github</ND.Item>
-                    <ND.Item href="https://github.com/jcw780/wows_ballistics/issues">Issues</ND.Item>
+                    <ND.Item onClick={()=>{this.openInNewTab("https://discord.gg/fpDB9y5")}}>Discord</ND.Item>
+                    <ND.Item onClick={()=>{this.openInNewTab("https://github.com/jcw780/wows_ballistics")}}>Github</ND.Item>
+                    <ND.Item onClick={()=>{this.openInNewTab("https://github.com/jcw780/wows_ballistics/issues")}}>Issues</ND.Item>
                 </NavDropdown>
             </Suspense>
         </Nav>
