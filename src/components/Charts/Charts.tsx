@@ -539,16 +539,16 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             if(graphData !== undefined){
                 for(const [rowIndex, chart] of target.entries()){
                     let counter = 0;
-                    const CRA = configs[rowIndex].axes.entries();
-                    for(const[, axis] of CRA){
-                        const ALE = axis.lines.entries();
-                        for(const[, line] of ALE){
+                    for(const[, axis] of configs[rowIndex].axes.entries()){
+                        for(const[, line] of axis.lines.entries()){
                             if(graphData[line.data] !== undefined){
-                                chart[singleChartIndex.config].data.datasets.push(addLine(
-                                    graphData[line.data][shellIndex], 
-                                    line.lineLabel + name, 
-                                    axis.id, 
-                                    colors[counter]));
+                                chart[singleChartIndex.config].data.datasets.push(
+                                    addLine(
+                                        graphData[line.data][shellIndex], 
+                                        line.lineLabel + name, 
+                                        axis.id, 
+                                        colors[counter])
+                                    );
                                 counter++;
                             }
                         }

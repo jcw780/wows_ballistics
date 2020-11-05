@@ -357,9 +357,12 @@ class App extends React.Component<{},{}> {
 				calculatedData.refAngles.push(temp);
 			}
 			//updateInitialData(calculatedData);
-			if(this.graphsRef.current){
-				this.graphsRef.current.updateData(calculatedData);
-			}
+			this.updateCharts();
+		}
+	}
+	updateCharts = () => {
+		if(this.graphsRef.current){
+			this.graphsRef.current.updateData(this.calculatedData);
 		}
 	}
 	onUpdate = () => {this.navRef.current!.update();} // Update Navbar when charts are updated
@@ -391,6 +394,7 @@ class App extends React.Component<{},{}> {
 		settings={this.settings} 
 		ref={this.Settingsref} 
 		updateColors={this.updateColors}
+		updateCharts={this.updateCharts}
 	/>
 	<hr/>
 	<Row className="justify-content-sm-center">

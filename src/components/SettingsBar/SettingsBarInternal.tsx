@@ -1,9 +1,11 @@
 import React from 'react';
 import BootstrapSwitchButton from 'bootstrap-switch-button-react';
+import {Row, Button} from 'react-bootstrap';
 
 import * as T from '../commonTypes';
 import {ParameterForm} from '../UtilityComponents';
 import {SettingsRadio, CommonRadioFormat} from './SettingsRadio';
+import {settingsBarProps} from './index';
 
 
 const PositionRadio : React.FunctionComponent<{settings: T.settingsT}> = React.memo(({settings}) => {
@@ -35,9 +37,6 @@ const CalculationRadio : React.FunctionComponent<{settings: T.settingsT}> = Reac
     );
 });
 
-interface settingsBarProps{
-    settings: T.settingsT, updateColors: Function
-}
 export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
     titles : T.collapseTitlesT = ["Hide: ", "Show: "]; // 0: Hide 1: Show
     private forms = Object.freeze({
@@ -231,65 +230,73 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
     render(){
         const {settings} = this.props, {format} = settings;
         return(
-        <div className="settings">
-            <div className="graph-region">
-                <div className="graph-title">
-                    <h3>Graphs</h3>
+        <div>
+            <div className="settings">
+                <div className="graph-region">
+                    <div className="graph-title">
+                        <h3>Graphs</h3>
+                    </div>
+                    <div className="content-box">
+                        <h4>Line</h4>
+                        <BootstrapSwitchButton 
+                            style='switch-toggle'
+                            onlabel='Show Line' 
+                            offlabel='Show Point' 
+                            onstyle='success' 
+                            offstyle='danger'
+                            onChange={this.onShowLineChange} 
+                            checked={settings.line.showLine}
+                        />
+                        <h5>Point</h5>
+                        {this.generateLineForms()}
+                    </div>
+                    <div className="content-box">
+                        <h4>Labeling</h4>
+                        <BootstrapSwitchButton 
+                            style='switch-toggle'
+                            onlabel='Short Names' 
+                            offlabel='Long Names' 
+                            onstyle='success' 
+                            offstyle='danger'
+                            onChange={this.onShortNameChange} 
+                            checked={format.shortNames}
+                        />                
+                        {this.generateFormatForms()}
+                    </div>
+                    <div className="content-box">
+                        <h4>Legend Position</h4>
+                        <PositionRadio settings={settings}/>
+                    </div>
+                    <div className="content-box">
+                        <h4>Range Axis</h4>
+                        {this.generateGraphForm()}
+                    </div>
+                    <div className="content-box">
+                        <h4>Color Generation</h4>
+                        {this.generateColorForms()}
+                    </div>
                 </div>
-                <div className="content-box">
-                    <h4>Line</h4>
-                    <BootstrapSwitchButton 
-                        style='switch-toggle'
-                        onlabel='Show Line' 
-                        offlabel='Show Point' 
-                        onstyle='success' 
-                        offstyle='danger'
-                        onChange={this.onShowLineChange} 
-                        checked={settings.line.showLine}
-                    />
-                    <h5>Point</h5>
-                    {this.generateLineForms()}
-                </div>
-                <div className="content-box">
-                    <h4>Labeling</h4>
-                    <BootstrapSwitchButton 
-                        style='switch-toggle'
-                        onlabel='Short Names' 
-                        offlabel='Long Names' 
-                        onstyle='success' 
-                        offstyle='danger'
-                        onChange={this.onShortNameChange} 
-                        checked={format.shortNames}
-                    />                
-                    {this.generateFormatForms()}
-                </div>
-                <div className="content-box">
-                    <h4>Legend Position</h4>
-                    <PositionRadio settings={settings}/>
-                </div>
-                <div className="content-box">
-                    <h4>Range Axis</h4>
-                    {this.generateGraphForm()}
-                </div>
-                <div className="content-box">
-                    <h4>Color Generation</h4>
-                    {this.generateColorForms()}
+                <div className="calc-region">
+                    <div className="calc-title">
+                        <h3>Calculations</h3>
+                    </div>
+                    <div className="content-box">
+                        <h4>Launch Angle</h4>
+                        {this.generateLaunchAngleForm()}
+                    </div>
+                    <div className="content-box">
+                        <h4>Numerical Analysis</h4>
+                        <CalculationRadio settings={settings}/>
+                        {this.generateNumericalMethodForm()}
+                    </div>
                 </div>
             </div>
-            <div className="calc-region">
-                <div className="calc-title">
-                    <h3>Calculations</h3>
-                </div>
-                <div className="content-box">
-                    <h4>Launch Angle</h4>
-                    {this.generateLaunchAngleForm()}
-                </div>
-                <div className="content-box">
-                    <h4>Numerical Analysis</h4>
-                    <CalculationRadio settings={settings}/>
-                    {this.generateNumericalMethodForm()}
-                </div>
-            </div>
+            <Row className="justify-content-sm-center">
+                <Button style={{width: "50%", paddingTop: "0.6rem", paddingBottom: "0.6rem", fontSize: "1.25rem"}}
+                    variant="warning" onClick={() => {this.props.updateCharts();}}>
+                    Update Graph Layouts
+                </Button>
+            </Row>
         </div>
         );
     }
