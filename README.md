@@ -8,7 +8,7 @@
 ## Code Information
 ### Languages and Major Libraries
 - CSS, JavaScript, (React) TypeScript
-- Wasm backend: [jcw780/ShellCPP](https://github.com/jcw780/ShellCPP)
+- Wasm backend: [jcw780/wows_shell](https://github.com/jcw780/wows_shell)
 - Shell Data: [jcw780/LiveGameData2](https://github.com/jcw780/LiveGameData2)
 ## Legal
 - All copyrighted material provided by Wargaming.net are owned by Wargaming.net.
