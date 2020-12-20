@@ -1,7 +1,6 @@
 import React from 'react';
 import Chart from 'chart.js';
 import {Scatter, defaults} from 'react-chartjs-2';
-import 'chartjs-plugin-annotation';
 import {Button, Collapse, Row, Col, Carousel, ToggleButtonGroup, ToggleButton} from 'react-bootstrap';
 import {Icon} from 'semantic-ui-react';
 
