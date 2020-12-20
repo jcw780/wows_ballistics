@@ -13,7 +13,7 @@
     "normal-distribution": "^0.0.9",
     "pako": "^1.0.11",
     "react": "^16.13.1",
-    "react-bootstrap": "1.0.1",
+    "react-bootstrap": "^1.4.0",
     "react-chartjs-2": "^2.11.1",
     "react-dom": "^16.13.1",
     "react-ga": "^3.0.0",

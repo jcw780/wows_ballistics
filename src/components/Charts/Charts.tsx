@@ -134,7 +134,7 @@ class SubGroup extends React.Component<subGroupProps, {index: number, locked: bo
     }
     private addButtons = () => {
         return (
-            <ToggleButtonGroup toggle 
+            <ToggleButtonGroup
                 type="radio" name="radio" className="carousel-control"
                 value={this.state.index}
                 onChange={this.handleSelectButton}>
