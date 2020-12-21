@@ -1,48 +1,27 @@
 {
   "compilerOptions": {
-    "traceResolution": true,
-    "noImplicitAny": false,
-    "allowSyntheticDefaultImports": true,
-    "sourceMap": true,
-    "target": "esNext",
-    "jsx": "react",
-    "types": [
-      "react"
-    ],
-    "module": "esNext",
-    "moduleResolution": "node",
-    "experimentalDecorators": true,
-    "declaration": false,
-    "removeComments": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": false,
-    "strict": false,
-    "outDir": "dist",
-    "baseUrl": "src",
-    "typeRoots": [
-      "./types",
-      "node_modules/@types"
-    ],
-    "strictNullChecks": true,
-    "allowJs": true,
+    "target": "es5",
     "lib": [
       "dom",
       "dom.iterable",
-      "esnext",
-      "es6"
+      "esnext"
     ],
+    "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
     "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true
+    "noEmit": true,
+    "jsx": "react"
   },
-  "exclude": [
-    "dist",
-    "node_modules"
-  ],
   "include": [
-    "src"
+    "src",
+    "node_modules"
   ]
 }
