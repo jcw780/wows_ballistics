@@ -1,31 +1,29 @@
 {
   "files": {
-    "main.css": "/wows_ballistics/static/css/main.7224e6ba.chunk.css",
-    "main.js": "/wows_ballistics/static/js/main.40f07246.chunk.js",
-    "main.js.map": "/wows_ballistics/static/js/main.40f07246.chunk.js.map",
-    "runtime-main.js": "/wows_ballistics/static/js/runtime-main.abed5940.js",
-    "runtime-main.js.map": "/wows_ballistics/static/js/runtime-main.abed5940.js.map",
-    "static/css/2.af3c1da9.chunk.css": "/wows_ballistics/static/css/2.af3c1da9.chunk.css",
-    "static/js/2.5781516a.chunk.js": "/wows_ballistics/static/js/2.5781516a.chunk.js",
-    "static/js/2.5781516a.chunk.js.map": "/wows_ballistics/static/js/2.5781516a.chunk.js.map",
-    "static/css/3.1d1f2d54.chunk.css": "/wows_ballistics/static/css/3.1d1f2d54.chunk.css",
-    "static/js/3.a0a47921.chunk.js": "/wows_ballistics/static/js/3.a0a47921.chunk.js",
-    "static/js/3.a0a47921.chunk.js.map": "/wows_ballistics/static/js/3.a0a47921.chunk.js.map",
-    "static/js/4.9852d0ec.chunk.js": "/wows_ballistics/static/js/4.9852d0ec.chunk.js",
-    "static/js/4.9852d0ec.chunk.js.map": "/wows_ballistics/static/js/4.9852d0ec.chunk.js.map",
+    "main.css": "/wows_ballistics/static/css/main.75a4cfb0.chunk.css",
+    "main.js": "/wows_ballistics/static/js/main.0b277817.chunk.js",
+    "main.js.map": "/wows_ballistics/static/js/main.0b277817.chunk.js.map",
+    "runtime-main.js": "/wows_ballistics/static/js/runtime-main.37259216.js",
+    "runtime-main.js.map": "/wows_ballistics/static/js/runtime-main.37259216.js.map",
+    "static/css/2.20aa2d7b.chunk.css": "/wows_ballistics/static/css/2.20aa2d7b.chunk.css",
+    "static/js/2.fc6ca182.chunk.js": "/wows_ballistics/static/js/2.fc6ca182.chunk.js",
+    "static/js/2.fc6ca182.chunk.js.map": "/wows_ballistics/static/js/2.fc6ca182.chunk.js.map",
+    "static/css/3.7ff293c7.chunk.css": "/wows_ballistics/static/css/3.7ff293c7.chunk.css",
+    "static/js/3.a0b652a2.chunk.js": "/wows_ballistics/static/js/3.a0b652a2.chunk.js",
+    "static/js/3.a0b652a2.chunk.js.map": "/wows_ballistics/static/js/3.a0b652a2.chunk.js.map",
+    "static/js/4.bf21aa51.chunk.js": "/wows_ballistics/static/js/4.bf21aa51.chunk.js",
+    "static/js/4.bf21aa51.chunk.js.map": "/wows_ballistics/static/js/4.bf21aa51.chunk.js.map",
     "index.html": "/wows_ballistics/index.html",
-    "precache-manifest.8ccea4bb81209f68308e03a0b55667e3.js": "/wows_ballistics/precache-manifest.8ccea4bb81209f68308e03a0b55667e3.js",
-    "service-worker.js": "/wows_ballistics/service-worker.js",
-    "static/css/2.af3c1da9.chunk.css.map": "/wows_ballistics/static/css/2.af3c1da9.chunk.css.map",
-    "static/css/3.1d1f2d54.chunk.css.map": "/wows_ballistics/static/css/3.1d1f2d54.chunk.css.map",
-    "static/css/main.7224e6ba.chunk.css.map": "/wows_ballistics/static/css/main.7224e6ba.chunk.css.map",
-    "static/js/2.5781516a.chunk.js.LICENSE.txt": "/wows_ballistics/static/js/2.5781516a.chunk.js.LICENSE.txt"
+    "static/css/2.20aa2d7b.chunk.css.map": "/wows_ballistics/static/css/2.20aa2d7b.chunk.css.map",
+    "static/css/3.7ff293c7.chunk.css.map": "/wows_ballistics/static/css/3.7ff293c7.chunk.css.map",
+    "static/css/main.75a4cfb0.chunk.css.map": "/wows_ballistics/static/css/main.75a4cfb0.chunk.css.map",
+    "static/js/2.fc6ca182.chunk.js.LICENSE.txt": "/wows_ballistics/static/js/2.fc6ca182.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.abed5940.js",
-    "static/css/2.af3c1da9.chunk.css",
-    "static/js/2.5781516a.chunk.js",
-    "static/css/main.7224e6ba.chunk.css",
-    "static/js/main.40f07246.chunk.js"
+    "static/js/runtime-main.37259216.js",
+    "static/css/2.20aa2d7b.chunk.css",
+    "static/js/2.fc6ca182.chunk.js",
+    "static/css/main.75a4cfb0.chunk.css",
+    "static/js/main.0b277817.chunk.js"
   ]
 }
