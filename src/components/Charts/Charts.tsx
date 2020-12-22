@@ -657,16 +657,15 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             } 
 
             //Ref Angles
-            const CAE = configAngle.entries();
-            for(const[, data] of graphData.refAngles.entries()){
-                for(const[i, chart] of CAE){
+            graphData.refAngles.forEach((data, i) => {
+                configAngle.forEach((chart) => {
                     chart[singleChartIndex.config].data.datasets.push({
                         data: data, showLine: showLineValue, borderDash: [5, 5], label: `:${graphData.refLabels[i]}`, 
                         yAxisID: 'angle', borderColor: "#505050", backgroundColor: "#505050", fill: false, 
                         pointRadius: commonPointRadius, pointHitRadius: 5 ,
                     });
-                }
-            }
+                });
+            });
 
             //Add data
             for(let i=0, len=graphData.numShells; i<len; ++i){
