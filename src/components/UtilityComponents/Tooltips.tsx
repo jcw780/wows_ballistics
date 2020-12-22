@@ -7,7 +7,7 @@ type placementT = 'auto-start' | 'auto' | 'auto-end' |
                 'bottom-end' | 'bottom' | 'bottom-start' |
                 'left-end' | 'left' | 'left-start';
 interface generalTooltipProps {
-    title: JSX.Element | string, content: JSX.Element | string, children: JSX.Element | string, placement?: placementT,
+    title: JSX.Element | string, content: JSX.Element | string, children: JSX.Element, placement?: placementT,
 }
 export const GeneralTooltip : React.SFC<generalTooltipProps> = ({title, content, children, placement='auto'} : generalTooltipProps) => {
     return (

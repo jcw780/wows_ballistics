@@ -16,7 +16,7 @@ export const SettingsRadio: React.FunctionComponent<settingsRadioProps> = React.
         onChange(values[value]);
     }
     return (
-        <ToggleButtonGroup toggle vertical 
+        <ToggleButtonGroup vertical 
             type="radio" name="radio" 
             value={value}
         >
