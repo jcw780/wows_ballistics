@@ -473,6 +473,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                         lines: [
                             {lineLabel: 'Max: ', data: 'maxHorizontal'}, 
                             {lineLabel: 'Std: ', data: 'standardHorizontal'}, 
+                            {lineLabel: 'Half: ', data: 'halfHorizontal'}
                         ]},
                     ]},
                     {title: configDispersion[1][singleChartIndex.name], axes: [
@@ -480,6 +481,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                         lines: [
                             {lineLabel: 'Max: ', data: 'maxVertical'}, 
                             {lineLabel: 'Std: ', data: 'standardVertical'}, 
+                            {lineLabel: 'Half: ', data: 'halfVertical'}, 
                         ]},
                     ]},
                     {title: configDispersion[2][singleChartIndex.name], axes: [
@@ -487,6 +489,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                         lines: [
                             {lineLabel: 'Max: ', data: 'maxArea'}, 
                             {lineLabel: 'Std: ', data: 'standardArea'}, 
+                            {lineLabel: 'Half: ', data: 'halfArea'}, 
                         ]},
                     ]},
                 ]
