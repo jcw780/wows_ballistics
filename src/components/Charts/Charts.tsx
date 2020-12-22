@@ -471,22 +471,22 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     {title: configDispersion[0][singleChartIndex.name], axes: [
                         {id: 'dispersion', axLabel: 'Linear Dispersion (m)',
                         lines: [
-                            {lineLabel: 'Max: ', data: 'horizontal'}, 
-                            {lineLabel: 'Std: ', data: 'horizontalStd'}, 
+                            {lineLabel: 'Max: ', data: 'maxHorizontal'}, 
+                            {lineLabel: 'Std: ', data: 'standardHorizontal'}, 
                         ]},
                     ]},
                     {title: configDispersion[1][singleChartIndex.name], axes: [
                         {id: 'dispersion', axLabel: 'Linear Dispersion (m)',
                         lines: [
-                            {lineLabel: 'Max: ', data: 'vertical'}, 
-                            {lineLabel: 'Std: ', data: 'verticalStd'}, 
+                            {lineLabel: 'Max: ', data: 'maxVertical'}, 
+                            {lineLabel: 'Std: ', data: 'standardVertical'}, 
                         ]},
                     ]},
                     {title: configDispersion[2][singleChartIndex.name], axes: [
                         {id: 'dispersionArea', axLabel: 'Dispersion Area (m²)',
                         lines: [
-                            {lineLabel: 'Max: ', data: 'area'}, 
-                            {lineLabel: 'Std: ', data: 'areaStd'}, 
+                            {lineLabel: 'Max: ', data: 'maxArea'}, 
+                            {lineLabel: 'Std: ', data: 'standardArea'}, 
                         ]},
                     ]},
                 ]
@@ -549,6 +549,8 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                                         colors[counter])
                                     );
                                 counter++;
+                            }else{
+                                console.log(`Line ${line.data} Not Found`);
                             }
                         }
                     }
