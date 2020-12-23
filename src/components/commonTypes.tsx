@@ -73,12 +73,13 @@ export interface postData {
     fused : pointArrays,
 }
 export interface dispersionData {
-    horizontal: pointArrays, horizontalStd: pointArrays, 
-    vertical: pointArrays, verticalStd: pointArrays,
-    area: pointArrays, areaStd: pointArrays
+    maxHorizontal: pointArrays, standardHorizontal: pointArrays, halfHorizontal: pointArrays,
+    maxVertical: pointArrays, standardVertical: pointArrays, halfVertical: pointArrays,
+    maxArea: pointArrays, standardArea: pointArrays, halfArea: pointArrays
 }
 export interface calculatedData {
-    impact: impactData, angle: angleData, post: postData, dispersion: dispersionData,
+    impact: impactData, angle: angleData, 
+    post: postData, dispersion: dispersionData,
     numShells: number, names: Array<string>, colors: Array<Array<string>>, 
     targets: Array<targetDataNoAngleT>, angles: Array<number>, 
     refAngles : pointArrays, refLabels : string[],

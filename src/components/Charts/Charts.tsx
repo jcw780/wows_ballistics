@@ -471,22 +471,25 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                     {title: configDispersion[0][singleChartIndex.name], axes: [
                         {id: 'dispersion', axLabel: 'Linear Dispersion (m)',
                         lines: [
-                            {lineLabel: 'Max: ', data: 'horizontal'}, 
-                            {lineLabel: 'Std: ', data: 'horizontalStd'}, 
+                            {lineLabel: 'Max: ', data: 'maxHorizontal'}, 
+                            {lineLabel: 'Std: ', data: 'standardHorizontal'}, 
+                            {lineLabel: 'Half: ', data: 'halfHorizontal'}
                         ]},
                     ]},
                     {title: configDispersion[1][singleChartIndex.name], axes: [
                         {id: 'dispersion', axLabel: 'Linear Dispersion (m)',
                         lines: [
-                            {lineLabel: 'Max: ', data: 'vertical'}, 
-                            {lineLabel: 'Std: ', data: 'verticalStd'}, 
+                            {lineLabel: 'Max: ', data: 'maxVertical'}, 
+                            {lineLabel: 'Std: ', data: 'standardVertical'}, 
+                            {lineLabel: 'Half: ', data: 'halfVertical'}, 
                         ]},
                     ]},
                     {title: configDispersion[2][singleChartIndex.name], axes: [
                         {id: 'dispersionArea', axLabel: 'Dispersion Area (m²)',
                         lines: [
-                            {lineLabel: 'Max: ', data: 'area'}, 
-                            {lineLabel: 'Std: ', data: 'areaStd'}, 
+                            {lineLabel: 'Max: ', data: 'maxArea'}, 
+                            {lineLabel: 'Std: ', data: 'standardArea'}, 
+                            {lineLabel: 'Half: ', data: 'halfArea'}, 
                         ]},
                     ]},
                 ]
@@ -549,6 +552,8 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                                         colors[counter])
                                     );
                                 counter++;
+                            }else{
+                                console.log(`Line ${line.data} Not Found`);
                             }
                         }
                     }
@@ -652,16 +657,15 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             } 
 
             //Ref Angles
-            const CAE = configAngle.entries();
-            for(const[, data] of graphData.refAngles.entries()){
-                for(const[i, chart] of CAE){
+            graphData.refAngles.forEach((data, i) => {
+                configAngle.forEach((chart) => {
                     chart[singleChartIndex.config].data.datasets.push({
                         data: data, showLine: showLineValue, borderDash: [5, 5], label: `:${graphData.refLabels[i]}`, 
                         yAxisID: 'angle', borderColor: "#505050", backgroundColor: "#505050", fill: false, 
                         pointRadius: commonPointRadius, pointHitRadius: 5 ,
                     });
-                }
-            }
+                });
+            });
 
             //Add data
             for(let i=0, len=graphData.numShells; i<len; ++i){
