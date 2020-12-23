@@ -78,11 +78,11 @@ export class NavbarCustom extends React.Component<{links: T.linkT}>{
         <Nav>
             <Navbar.Brand onClick={()=>{this.openInNewTab("https://discord.gg/fpDB9y5")}}>
                 <img height='32' width='32' alt="logo"
-                src={`${process.env.PUBLIC_URL}/Discord-Logo-White.png`}/>
+                src={DiscordLogo}/>
             </Navbar.Brand>
             <Navbar.Brand onClick={()=>{this.openInNewTab("https://github.com/jcw780/wows_ballistics")}}>
                 <img height='32' width='32' alt="logo"
-                src={`${process.env.PUBLIC_URL}/GitHub-Mark-Light-32px.png`}/>
+                src={GithubLogo}/>
             </Navbar.Brand>
             <Suspense fallback={<div>Loading...</div>}>
                 <NavDropdown title="Support" id="support" alignRight>
