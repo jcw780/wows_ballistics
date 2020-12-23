@@ -71,7 +71,9 @@ class App extends React.Component<{},{}> {
 
 	//Compile Wasm 
 	compile = () : void => {
-		return ShellWasm().then((M) => {
+		return ShellWasm({
+			locateFile: (path : string, ) => `${process.env.PUBLIC_URL}/${path}`,
+		}).then((M) => {
 			this.module = M;
 			this.calculator = new M.shellCalc();
 			this.parameters.shell = new M.shellParams();
