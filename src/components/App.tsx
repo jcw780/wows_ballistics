@@ -84,7 +84,7 @@ class App extends React.Component<{},{}> {
 					if(k1 !== "values"){v[k1] = v1.value;}
 				});
 			});
-			console.log(this.arrayIndices);
+			//console.log(this.arrayIndices);
 			console.log('compilation successful');
 			//return "done";
 		});
@@ -153,7 +153,7 @@ class App extends React.Component<{},{}> {
 			const {shells, arrayIndices, calculatedData, calculator, module} = this;
 			const {calcIndices, postPenIndices} = arrayIndices;
 			calculatedData.numShells = numShells;
-			console.log(shellData);
+			//console.log(shellData);
 
 			//resize this.shells
 			for(let i=this.shells.length; i<numShells; i++)
@@ -204,7 +204,7 @@ class App extends React.Component<{},{}> {
 			let maxRange = 0;
 			this.applyCalculationSettings();
 			const impactFunction = this.calcImpact();
-			console.log(impactFunction);
+			//console.log(impactFunction);
 			shells.forEach(shell => {
 				impactFunction(shell);
 				calculator.calcDispersion(shell);
@@ -252,7 +252,7 @@ class App extends React.Component<{},{}> {
 					));
 				}
 			});
-			console.log(calculatedData);
+			//console.log(calculatedData);
 			
 			//Generate Ship Width Line 
 			const {stepSize: sSize} = this.settings.distance;
@@ -304,7 +304,7 @@ class App extends React.Component<{},{}> {
 				}
 				calculatedData.refAngles.push(temp);
 			}
-			console.log(calculatedData);
+			//console.log(calculatedData);
 			//updateInitialData(calculatedData);
 			this.updateCharts();
 		}
