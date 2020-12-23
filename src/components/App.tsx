@@ -91,32 +91,22 @@ class App extends React.Component<{},{}> {
 		super(props); this.compile();
 		this.calculatedData = {
 			impact: {
-				rawPen : [],
-				ePenHN : [],
-				impactAHD : [],
-				ePenDN : [],
-				impactADD : [],
-				impactV: [],
-				tToTargetA: [],
+				rawPen : [], ePenHN : [], impactAHD : [], 
+				ePenDN : [], impactADD : [],
+				impactV: [], tToTargetA: [],
 			}, angle: {
-				armorD : [],
-				fuseD : [],
-				ra0D : [],
-				ra1D : [],
+				armorD : [], fuseD : [],
+				ra0D : [], ra1D : [],
 			}, post: {
-				shipWidth : [],
-				notFused: [],
+				shipWidth : [], notFused: [],
 				fused: [],
 			},
 			dispersion: {
-				maxHorizontal: [],
-				standardHorizontal: [],
+				maxHorizontal: [], standardHorizontal: [],
 				halfHorizontal: [],
-				maxVertical: [],
-				standardVertical: [],
+				maxVertical: [], standardVertical: [],
 				halfVertical: [],
-				maxArea: [],
-				standardArea: [],
+				maxArea: [], standardArea: [],
 				halfArea: []
 			},
 			numShells : 2, names : [], colors : [],
@@ -158,14 +148,14 @@ class App extends React.Component<{},{}> {
 		if(this.module === undefined) return; //WASM component needs to be compiled
 		if(numShells <= 0){return //No shells sent - no work needed
 		}else{
-			const {shells, arrayIndices, calculatedData, calculator} = this;
+			const {shells, arrayIndices, calculatedData, calculator, module} = this;
 			const {calcIndices, postPenIndices} = arrayIndices;
 			calculatedData.numShells = numShells;
 			console.log(shellData);
 
 			//resize this.shells
 			for(let i=this.shells.length; i<numShells; i++)
-				shells.push(new this.module.shell());			
+				shells.push(new module.shell());			
 			shells.length = numShells;
 
 			shellData.forEach((value, i) => {
@@ -236,8 +226,8 @@ class App extends React.Component<{},{}> {
 			['impact', 'angle', 'dispersion'].forEach((key : indexType) => {
 				Object.entries(calculatedData[key]).forEach(([k,v]) => {
 					v.length = 0;
-					shells.forEach((shell, i) => {
-						v.push(this.module.getImpactSizedPointArray(shell,
+					shells.forEach(shell => {
+						v.push(module.getImpactSizedPointArray(shell,
 							distanceCoordinates,
 							[calcIndices[key], arrayIndices[indexConversion[key]][k]]
 						));
@@ -250,11 +240,11 @@ class App extends React.Component<{},{}> {
 
 			shells.forEach(shell => {
 				for(let j=0; j<numAngles; j++){
-					calculatedData.post.fused.push(this.module.getImpactSizedPointArrayFuseStatus(shell,
+					calculatedData.post.fused.push(module.getImpactSizedPointArrayFuseStatus(shell,
 						distanceCoordinates, [calcIndices.post, postPenIndices.x, j],
 						j, true
 					));
-					calculatedData.post.notFused.push(this.module.getImpactSizedPointArrayFuseStatus(shell,
+					calculatedData.post.notFused.push(module.getImpactSizedPointArrayFuseStatus(shell,
 						distanceCoordinates, [calcIndices.post, postPenIndices.x, j],
 						j, false
 					));
@@ -266,27 +256,26 @@ class App extends React.Component<{},{}> {
 			const {stepSize: sSize} = this.settings.distance;
 			const stepSize = sSize !== undefined ? sSize: 2000;
 			const maxAdj = Math.ceil(maxRange / stepSize) * stepSize;
+			const length = this.referenceLineSize - 1;
+			const increment = maxAdj / length;
+
 			calculatedData.post.shipWidth = [[],];
-			const SWE = calculatedData.post.shipWidth.entries();
-			for(const [, singleShipWidth] of SWE){
-				const length = this.referenceLineSize - 1;
+			calculatedData.post.shipWidth.forEach(singleShipWidth => {
 				for(let i=0; i < length+1; ++i){
-					const xV : number = i / length * maxAdj;
+					const xV : number = i * increment;
 					singleShipWidth[i] = {
 						x: xV, 
 						y: tgtData.width
 					};
 				}
-			}
+			});
 			//Impact Ricochet Angles
 			const {startRicochet, alwaysRicochet} = calculatedData;
-			startRicochet.length = 0;
-			alwaysRicochet.length = 0;
-			for(const [, shell] of shellData.entries()){
+			startRicochet.length = 0; alwaysRicochet.length = 0;
+			shellData.forEach((shell) => {
 				const start : T.scatterPoint[] = [], always : T.scatterPoint[] = [];
-				const length = this.referenceLineSize - 1;
 				for(let i=0; i < length+1; ++i){
-					const xV : number = i / length * maxAdj;
+					const xV : number = i * increment;
 					start[i] = {
 						x: xV, 
 						y: shell.ra0
@@ -298,15 +287,14 @@ class App extends React.Component<{},{}> {
 				}
 				startRicochet.push(start);
 				alwaysRicochet.push(always);
-			}
+			});
 			//Angle Chart Annotations / Labels
 			calculatedData.refLabels = tgtData.refLabels;
 			calculatedData.refAngles = [];
 			for(let j=0, len=calculatedData.refLabels.length; j<len; ++j){
 				const temp : T.scatterPoint[] = [];
-				const length = this.referenceLineSize - 1;
 				for(let i=0; i < length+1; ++i){
-					const xV : number = i / length * maxAdj;
+					const xV : number = i * increment;
 					temp[i] = {
 						x: xV, 
 						y: tgtData.refAngles[j]
