@@ -274,11 +274,11 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         ],
         dispersion: [
             [{data: {datasets : Array<any>(),}, options: {}}, 
-                React.createRef<SingleChart>(), '**Experimental** Horizontal Dispersion'],
+                React.createRef<SingleChart>(), 'Horizontal Dispersion'],
             [{data: {datasets : Array<any>(),}, options: {}}, 
-                React.createRef<SingleChart>(), '**Experimental** Vertical Dispersion'],
+                React.createRef<SingleChart>(), 'Vertical Dispersion'],
             [{data: {datasets : Array<any>(),}, options: {}}, 
-                React.createRef<SingleChart>(), '**Experimental** Dispersion Area'],
+                React.createRef<SingleChart>(), 'Dispersion Area'],
         ]
     }
     groupRefs = {
@@ -794,16 +794,37 @@ export class ChartGroup extends React.Component<chartGroupProps>{
     <hr/>
     <GeneralTooltip title="Dispersion Charts" content={
         <>
-        Predicts maximum and standard deviation of dispersion. <br/>
-        - Horizontal Axis <br/>
-        - Vertical Axis <br/>
-        - Dispersion Area <br/>
-        *Note: Still experimental - results may differ from the game <br/>
-         and will be corrected if errors are reported
+        Predicts: <br/>
+        - Maximum Dispersion Ellipse<br/> 
+        - Standard Deviation Ellipse<br/>
+        - Half* Dispersion Ellipse<br/>
+        For each ellipse the following values are provided: <br/>
+        <table id="tooltip-table">
+            <tbody>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Corresponding Chart</th>
+                </tr>
+                <tr>
+                    <td>Horizontal Semi Axis</td>
+                    <td>Horizontal Dispersion</td>
+                </tr>
+                <tr>
+                    <td>Vertical Semi Axis</td>
+                    <td>Vertical Dispersion</td>
+                </tr>
+                <tr>
+                    <td>Ellipse Area</td>
+                    <td>Dispersion Area</td>
+                </tr>
+            </tbody>
+        </table>
+        Note: Ellipse is projected onto water surface. <br/>
+        *Half refers to the ellipse where 50% of shells will land <br/>
         </>
     }>
         <div className="tooltip-target">
-            <h3 style={{textAlign: "center", display:"inline-block"}}><i style={{color: 'red'}}>**Experimental**</i> Dispersion Charts</h3>
+            <h3 style={{textAlign: "center", display:"inline-block"}}>Dispersion Charts</h3>
             <Icon name='question circle outline' color='grey'/>
         </div>
     </GeneralTooltip>
