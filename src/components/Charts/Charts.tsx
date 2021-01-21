@@ -40,14 +40,16 @@ export class SingleChart extends React.Component<singleChartProps, singleChartSt
     }
     toggleCollapse = () => this.setState((current) => {return {open: !current.open}});
     updateDownloadGraph = () => {
-        const url = this.chartRef.current!.chartInstance.toBase64Image();
-        this.DownloadRef[0].current!.update(url, this.chartRef.current!.chartInstance.options.title.text + '.png');
+        const {chartInstance} = this.chartRef.current!;
+        const url = chartInstance.toBase64Image();
+        this.DownloadRef[0].current!.update(url, chartInstance.options.title.text + '.png');
     }
     updateDownloadJSON = () => {
-        const data = this.chartRef.current!.chartInstance.config.data.datasets;
+        const {chartInstance} = this.chartRef.current!;
+        const data = chartInstance.config.data.datasets;
         const selectedData = data.map((line) => {return {label: line.label, data: line.data}});
         const url = URL.createObjectURL(new Blob([JSON.stringify(selectedData)], {type: 'text/json;charset=utf-8'}));
-        this.DownloadRef[1].current!.update(url, this.chartRef.current!.chartInstance.options.title.text + '.json');
+        this.DownloadRef[1].current!.update(url, chartInstance.options.title.text + '.json');
     }
     // Fix bug where datasets with the same labels and different colors have the same colors
     datasetKeyProvider = dataset => `${dataset.label}${dataset.borderColor}`;
@@ -274,11 +276,11 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         ],
         dispersion: [
             [{data: {datasets : Array<any>(),}, options: {}}, 
-                React.createRef<SingleChart>(), '**Experimental** Horizontal Dispersion'],
+                React.createRef<SingleChart>(), 'Horizontal Dispersion'],
             [{data: {datasets : Array<any>(),}, options: {}}, 
-                React.createRef<SingleChart>(), '**Experimental** Vertical Dispersion'],
+                React.createRef<SingleChart>(), 'Vertical Dispersion'],
             [{data: {datasets : Array<any>(),}, options: {}}, 
-                React.createRef<SingleChart>(), '**Experimental** Dispersion Area'],
+                React.createRef<SingleChart>(), 'Dispersion Area'],
         ]
     }
     groupRefs = {
@@ -673,7 +675,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 generateStatic(i, name, colors); generatePost(i, name, colors);
             }
 
-            //Ricochet Angles
+            //Ricochet Angles for Deck Penetration
             for(const [i, data] of graphData.startRicochet.entries()){
                 const color = graphData.colors[i][2];
                 configImpact[1][singleChartIndex.config].data.datasets.push({
@@ -692,15 +694,10 @@ export class ChartGroup extends React.Component<chartGroupProps>{
             }
             
             //Inject Static
-            for(const [, chart] of this.chartConfigs.impact.entries()){
-                injectData(chart);
-            }
-            for(const [, chart] of this.chartConfigs.angle.entries()){
-                injectData(chart);
-            }
-            for(const [, chart] of this.chartConfigs.dispersion.entries()){
-                injectData(chart);
-            }
+            staticChartTypes.forEach(chartType => {
+                const charts = this.chartConfigs[chartType];
+                charts.forEach(chart => {injectData(chart);});
+            });
             
             //Update Charts
             if(forceUpdate){ //For disabling rerender in constructor [will be rendered anyways]
@@ -794,16 +791,37 @@ export class ChartGroup extends React.Component<chartGroupProps>{
     <hr/>
     <GeneralTooltip title="Dispersion Charts" content={
         <>
-        Predicts maximum and standard deviation of dispersion. <br/>
-        - Horizontal Axis <br/>
-        - Vertical Axis <br/>
-        - Dispersion Area <br/>
-        *Note: Still experimental - results may differ from the game <br/>
-         and will be corrected if errors are reported
+        Predicts: <br/>
+        - Maximum Dispersion Ellipse<br/> 
+        - Standard Deviation Ellipse<br/>
+        - Half* Dispersion Ellipse<br/>
+        For each ellipse the following values are provided: <br/>
+        <table id="tooltip-table">
+            <tbody>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Corresponding Chart</th>
+                </tr>
+                <tr>
+                    <td>Horizontal Semi Axis</td>
+                    <td>Horizontal Dispersion</td>
+                </tr>
+                <tr>
+                    <td>Vertical Semi Axis</td>
+                    <td>Vertical Dispersion</td>
+                </tr>
+                <tr>
+                    <td>Ellipse Area</td>
+                    <td>Dispersion Area</td>
+                </tr>
+            </tbody>
+        </table>
+        Note: Ellipse is projected onto water surface. <br/>
+        *Half refers to the ellipse where 50% of shells will land <br/>
         </>
     }>
         <div className="tooltip-target">
-            <h3 style={{textAlign: "center", display:"inline-block"}}><i style={{color: 'red'}}>**Experimental**</i> Dispersion Charts</h3>
+            <h3 style={{textAlign: "center", display:"inline-block"}}>Dispersion Charts</h3>
             <Icon name='question circle outline' color='grey'/>
         </div>
     </GeneralTooltip>
