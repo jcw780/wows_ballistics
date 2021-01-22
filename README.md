@@ -11,7 +11,7 @@
 - Wasm backend: [jcw780/wows_shell](https://github.com/jcw780/wows_shell)
 - Shell Data: [jcw780/LiveGameData2](https://github.com/jcw780/LiveGameData2)
 ### Contribution 
-- Will accept pull requests ranging from bug fixes to new features.
+- Will be willing to accept pull requests ranging from bug fixes to new features.
 ## Legal
 - All copyrighted material provided by Wargaming.net are owned by Wargaming.net.
 - All other material is available under the MIT License.
