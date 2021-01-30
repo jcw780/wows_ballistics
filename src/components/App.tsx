@@ -207,7 +207,7 @@ class App extends React.Component<{},{}> {
 			//console.log(impactFunction);
 			shells.forEach(shell => {
 				impactFunction(shell);
-				calculator.calcDispersion(shell);
+				calculator.calcDispersion(shell, this.module.verticalTypes.normal.value);
 				calculator.calcAngles(shell, 
 					tgtData.armor, tgtData.inclination
 				);
