@@ -51,7 +51,8 @@ class App extends React.Component<{},{}> {
 		distance: {min: 0, max: undefined, stepSize: 1000, },
 		calculationSettings: {
 			calculationMethod: 1, timeStep: 0.02,
-			launchAngle : {min: 0, max: 30, precision: 0.1},
+			launchAngle: {min: 0, max: 30, precision: 0.1},
+			verticalType: 0
 		},
 		format: {
 			rounding: 3, shortNames: true, legendPosition: 'right',
@@ -140,9 +141,21 @@ class App extends React.Component<{},{}> {
 			3: (shell) : void => calculator.calcImpactRungeKutta4(shell)
 		};
 		if (method in calcImpactFunc) return calcImpactFunc[method];
-		else{console.error('Error', method); throw new Error('Invalid parameter');}
+		else{console.error('Error', method); throw new Error('Invalid calculation method');}
 	}
-	
+
+	calcDispersion = () => {
+		const {calculator} = this;
+		const {verticalType} = this.settings.calculationSettings;
+		const dispersionFunction = {
+			0: (shell) : void => calculator.calcDispersion(shell, this.module.verticalTypes.horizontal.value),
+			1: (shell) : void => calculator.calcDispersion(shell, this.module.verticalTypes.normal.value),
+			2: (shell) : void => calculator.calcDispersion(shell, this.module.verticalTypes.vertical.value)
+		}
+		if (verticalType in dispersionFunction) return dispersionFunction[verticalType];
+		else {console.error('Error', verticalType); throw new Error('Invalid verticalType');}
+	}
+
 	generate = () : void => {
 		const shellData = this.SFCref.current!.returnShellData();
 		const tgtData = this.TFCref.current!.returnData();
@@ -204,10 +217,11 @@ class App extends React.Component<{},{}> {
 			let maxRange = 0;
 			this.applyCalculationSettings();
 			const impactFunction = this.calcImpact();
+			const dispersionFunction = this.calcDispersion();
 			//console.log(impactFunction);
 			shells.forEach(shell => {
 				impactFunction(shell);
-				calculator.calcDispersion(shell, this.module.verticalTypes.normal.value);
+				dispersionFunction(shell);
 				calculator.calcAngles(shell, 
 					tgtData.armor, tgtData.inclination
 				);
