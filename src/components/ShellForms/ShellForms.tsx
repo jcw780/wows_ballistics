@@ -459,7 +459,7 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 			}
 			this.shellRefs.push(React.createRef<ShellForms>());
 			this.setState((current) => {
-				let set = current.keys;
+				const set = current.keys;
 				return {keys: set.add(index), disabled: true};
 			});
 		}
@@ -469,7 +469,7 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 		if(state.disabled){return;}
 		else{
 			if(state.keys.size > 0){
-				let set = state.keys; set.delete(key); this.deletedKeys.push(key);
+				const set = state.keys; set.delete(key); this.deletedKeys.push(key);
 				this.shellRefs.splice(index, 1);
 				this.setState((current) => {
 					return {keys: set, disabled: true};
@@ -482,7 +482,7 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 		this.copied = true; this.addShip();
 	}
 	returnShellData = () => {
-		let data = Array<S.formDataT>();
+		const data = Array<S.formDataT>();
 		this.shellRefs.forEach((reference, i) => {
 			const returnedData : S.formDataT | false = reference.current!.returnData();
 			if(returnedData !== false){

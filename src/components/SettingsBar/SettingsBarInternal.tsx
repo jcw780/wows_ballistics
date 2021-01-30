@@ -36,6 +36,20 @@ const CalculationRadio : React.FunctionComponent<{settings: T.settingsT}> = Reac
         </CommonRadioFormat>
     );
 });
+const VerticalTypeRadio : React.FunctionComponent<{settings: T.settingsT}> = React.memo(({settings}) => {
+    const options = ["Horizontal Plane", "Trajectory Normal", "Vertical Plane"];
+    const values = [0, 1, 2];
+    const {calculationSettings} = settings;
+    const onChange = (value: number) => {calculationSettings.verticalType = value;};
+    return(
+        <CommonRadioFormat>
+            <SettingsRadio options={options} values={values}
+                defaultValue={calculationSettings.verticalType}
+                onChange={onChange}
+            />
+        </CommonRadioFormat>
+    );
+});
 
 export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
     titles : T.collapseTitlesT = ["Hide: ", "Show: "]; // 0: Hide 1: Show
@@ -113,7 +127,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
     }
     //Distance Axis
     private handleGraphChange = (value: string, id: string) => {
-        var numValue : number | undefined;
+        let numValue : number | undefined;
         if(value === ''){numValue = undefined;} 
         else{numValue = parseFloat(value);}
         this.props.settings.distance[id] = numValue; 
@@ -288,6 +302,10 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                         <h4>Numerical Analysis</h4>
                         <CalculationRadio settings={settings}/>
                         {this.generateNumericalMethodForm()}
+                    </div>
+                    <div className="content-box">
+                        <h4>Vertical Dispersion Type</h4>
+                        <VerticalTypeRadio settings={settings}/>
                     </div>
                 </div>
             </div>

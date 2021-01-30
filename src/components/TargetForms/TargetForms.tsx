@@ -183,12 +183,12 @@ export class TargetFormsContainer extends React.PureComponent<{}, targetFormsCon
         if(this.deletedKeys[id].length > 0){index = this.deletedKeys[id].pop()!;}
         else{index = this.state.keys[id].size;}
 		this.setState((current) => {
-            let set = current.keys[id]; set.add(index);
+            const set = current.keys[id]; set.add(index);
 			return {...current, keys : {...current.keys, id: set}};
         });
     }
     deleteForm = (key: number, index: number, id : multiFormT) : void => {
-        let set = this.state.keys[id];
+        const set = this.state.keys[id];
         set.delete(key); this.deletedKeys[id].push(key);
 		this.setState((current) => {return {...current, keys : {...current.keys, id: set} }});
     }
@@ -204,7 +204,7 @@ export class TargetFormsContainer extends React.PureComponent<{}, targetFormsCon
     }
     private handleAngleChange = (value: string, id : number) : void => {this.targetData.angles[id] = parseFloat(value);}
     private generateAngleElements = (elementsPerColumn : number) => {
-        const stateKeys = this.state.keys, {targetData} = this; let angleElements : Array<Array<JSX.Element>> = [];
+        const stateKeys = this.state.keys, {targetData} = this; const angleElements : Array<Array<JSX.Element>> = [];
         Array.from(stateKeys.angles).forEach((key, i) => {
             const columnIndex = Math.floor(i / elementsPerColumn);
             if(i % elementsPerColumn === 0){angleElements.push([]);}
@@ -233,7 +233,7 @@ export class TargetFormsContainer extends React.PureComponent<{}, targetFormsCon
     }
     private onRefAngleChange = (value: string, id : string) : void => {this.targetData.refAngles[id] = parseFloat(value);}
     private generateRefAngleElements = (elementsPerColumn : number) => {
-        const stateKeys = this.state.keys; let angleElements : Array<Array<JSX.Element>> = [];
+        const stateKeys = this.state.keys; const angleElements : Array<Array<JSX.Element>> = [];
         Array.from(stateKeys.refAngles).forEach((key, i) => {
             const columnIndex = Math.floor(i / elementsPerColumn);
             if(i % elementsPerColumn === 0) angleElements.push([]);

@@ -36,7 +36,8 @@ export interface distanceSettingsT {
 }
 export interface calculationSettingsT {
     calculationMethod: number, timeStep: number, 
-    launchAngle: {min: number, max: number, precision: number}
+    launchAngle: {min: number, max: number, precision: number},
+    verticalType: number
 }
 export interface colorSettingsT{
     hueMin: number, hueMax: number,
