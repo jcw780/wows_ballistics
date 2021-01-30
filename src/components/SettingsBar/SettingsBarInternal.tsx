@@ -127,7 +127,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
     }
     //Distance Axis
     private handleGraphChange = (value: string, id: string) => {
-        var numValue : number | undefined;
+        let numValue : number | undefined;
         if(value === ''){numValue = undefined;} 
         else{numValue = parseFloat(value);}
         this.props.settings.distance[id] = numValue; 

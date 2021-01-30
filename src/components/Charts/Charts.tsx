@@ -304,7 +304,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         defaults.global.animation = false;
         Chart.plugins.register({ //Allows viewing of downloaded image on bright backgrounds
             beforeDraw: function(chartInstance) {
-                let ctx = chartInstance.chart.ctx;
+                const ctx = chartInstance.chart.ctx;
                 ctx.fillStyle = "white";
                 ctx.fillRect(0, 0, chartInstance.chart.width, chartInstance.chart.height);
             },
@@ -570,11 +570,11 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         }
         const generatePost = (i : number, name : string, colors : string[]) => {
             for(const [index, chart] of configPost.entries()) { //Post
-                let pL : Array<any> = [
+                const pL : Array<any> = [
                     postData.fused[index + graphData.angles.length*i],
                     postData.notFused[index + graphData.angles.length*i]
                 ];
-                let pLShow : boolean[] = [true, true];
+                const pLShow : boolean[] = [true, true];
                 for(let j=0; j<2; ++j){ //react-chartjs-2 doesn't like undefined data
                     if(pL[j].length === 0){pL[j] = [{x: 0, y: 0}]; pLShow[j] = false;}
                 }

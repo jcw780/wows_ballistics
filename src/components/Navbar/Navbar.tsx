@@ -5,9 +5,6 @@ import * as T from '../commonTypes';
 import NavDropdownContainer from './NavDropdownContainer';
 import './Navbar.css';
 
-import GithubLogo from './GitHub-Mark-Light-32px.png';
-import DiscordLogo from './Discord-Logo-White.png';
-
 const NavDropdown = React.lazy(() => import('react-bootstrap/NavDropdown'));
 export class NavbarCustom extends React.Component<{links: T.linkT}>{
     state = {update: true};
