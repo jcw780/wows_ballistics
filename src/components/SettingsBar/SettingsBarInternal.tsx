@@ -37,7 +37,7 @@ const CalculationRadio : React.FunctionComponent<{settings: T.settingsT}> = Reac
     );
 });
 const VerticalTypeRadio : React.FunctionComponent<{settings: T.settingsT}> = React.memo(({settings}) => {
-    const options = ["Horizontal Plane", "Normal", "Vertical Plane"];
+    const options = ["Horizontal Plane", "Trajectory Normal", "Vertical Plane"];
     const values = [0, 1, 2];
     const {calculationSettings} = settings;
     const onChange = (value: number) => {calculationSettings.verticalType = value;};
