@@ -816,7 +816,8 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                 </tr>
             </tbody>
         </table>
-        Note: Ellipse is projected onto water surface. <br/>
+        Note: Ellipse projection can be altered in settings. <br/>
+        Default is horizontal plane (water) <br/>
         *Half refers to the ellipse where 50% of shells will land <br/>
         </>
     }>

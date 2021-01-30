@@ -304,7 +304,7 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                         {this.generateNumericalMethodForm()}
                     </div>
                     <div className="content-box">
-                        <h4>Vertical Dispersion Type</h4>
+                        <h4>Dispersion Plane</h4>
                         <VerticalTypeRadio settings={settings}/>
                     </div>
                 </div>
