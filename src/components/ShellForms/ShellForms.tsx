@@ -402,7 +402,7 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 						</Popover.Content>
 					</Popover>
 				}>
-				<Button className="footer-button btn-custom-blue" variant="warning">Ballistics</Button>
+				<Button className="footer-button btn-custom-blue" variant="warning">Shell</Button>
 			</OverlayTrigger>
 		</Col>
 		<Col className="footer-style">
@@ -614,7 +614,7 @@ export class ShellFormsContainer extends React.Component<{settings : T.settingsT
 		this.updateColors();
 		return(
 <>
-	<h2 ref={this.scrollRef}>Shell Parameters</h2>
+	<h2 ref={this.scrollRef}>Artillery Parameters</h2>
 		{this.generateShellForms()}
 	<Row style={{marginBottom : "1rem"}} className="justify-content-sm-center">
 		<Button className="form-control" variant="warning" onClick={this.addShip} style={{width: '50%'}}>
