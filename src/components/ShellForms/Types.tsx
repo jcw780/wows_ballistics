@@ -14,11 +14,16 @@ export interface dispersionTemplate<K>{
 	radiusOnMax: K, radiusOnZero: K, maxDist: K, sigmaCount: K, taperDist: K,
 }
 
+export interface modifierTemplates<K>{
+	GMIdealRadius: K, maxDistCoef: K
+}
+
 export type formLabelsT = formTemplate<labelT>;
 export type dispersionLabelsT = dispersionTemplate<labelT>;
+export type modifierLabelsT = modifierTemplates<labelT>;
 export type formsT = keyof formLabelsT;
 
-export interface formDataT extends formTemplate<number>, dispersionTemplate<number>{
+export interface formDataT extends formTemplate<number>, dispersionTemplate<number>, modifierTemplates<number>{
 	name: string, colors: string[]
 }
 
