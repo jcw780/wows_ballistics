@@ -29,10 +29,10 @@
 ### Calculate AP performance post penetration
 - Shell detonation distance after penetration 
 - Checking whether the armor is thick enough to arm the shell
-### Predict Ship Dispersion *Experimental*
-- Predict maximum and standard deviation of horizontal dispersion
-- Predict maximum and standard deviation of vertical dispersion
-- Predict maximum and standard deviation of dispersion area
+### Predict Ship Dispersion
+- Predict maximum, standard deviation and 50% impact zone of horizontal dispersion
+- Predict maximum, standard deviation and 50% impact zone of vertical dispersion
+- Predict maximum, standard deviation and 50% impact zone of dispersion area
 ## Development Status
 - [Issues](https://github.com/jcw780/wows_ballistics/issues)
 - Feel free to open an issue for questions, bugs, feature requests etc. 
