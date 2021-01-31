@@ -188,11 +188,16 @@ class App extends React.Component<{},{}> {
 					value.ra1, 
 					value.HESAP, 
 				);
+				
+				let {idealRadius, minRadius, maxDist, GMIdealRadius, maxDistCoef} = value;
+				idealRadius = idealRadius * GMIdealRadius;
+				minRadius = minRadius * GMIdealRadius;
+				maxDist = maxDist * maxDistCoef;
 
 				dispersion!.setValues(
-					value.idealRadius, value.minRadius, value.idealDistance,
+					idealRadius, minRadius, value.idealDistance,
 					value.taperDist, value.delim, value.radiusOnZero, 
-					value.radiusOnDelim, value.radiusOnMax, value.maxDist,
+					value.radiusOnDelim, value.radiusOnMax, maxDist,
 					value.sigmaCount
 				);
 					

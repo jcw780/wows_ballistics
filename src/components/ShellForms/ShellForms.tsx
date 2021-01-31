@@ -37,8 +37,9 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 		name : '', colors : [],
 		delim: 0, idealRadius: 0, minRadius: 0, idealDistance: 0,
 		radiusOnDelim: 0, radiusOnMax: 0, radiusOnZero: 0, 
-		sigmaCount: 0, taperDist: 0, maxDist: 0
-	})
+		sigmaCount: 0, taperDist: 0, maxDist: 0,
+		GMIdealRadius: 1.0, maxDistCoef: 1.0 
+	});
 	parameters : React.RefObject<ShellParametersT> = React.createRef<ShellParametersT>()
 	defaults : React.RefObject<DefaultShips> = React.createRef<DefaultShips>()
 	nameForm : React.RefObject<ParameterForm> = React.createRef<ParameterForm>()
@@ -240,6 +241,16 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 			the point of aim. 
 		</>],
 	});
+	modifierLabels : S.modifierLabelsT = Object.freeze({
+		GMIdealRadius: ['GMIdealRadius', '(1)', React.createRef<ParameterForm>(), 
+		<>
+			Scales horizontal dispersion. <br/>
+		</>],
+		maxDistCoef: ['maxDistCoef', '(1)', React.createRef<ParameterForm>(), 
+		<>
+			Scales max range. <br/>
+		</>],
+	});
 	constructor(props){
 		super(props);
 		// Use this instead of defaultProps to prevent weird shallow copy things from happening
@@ -412,9 +423,26 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 			</OverlayTrigger>
 		</Col>
 		<Col className="footer-style">
-			<Button variant="warning" className="footer-button btn-custom-blue" 
-				onClick={this.copyShip} 
-			>Clone</Button>
+			<OverlayTrigger trigger="click" placement="bottom-start" overlay={
+					<Popover id='popover'>
+						<Popover.Content>
+							<Suspense fallback={<div>Loading...</div>}>
+								<ShellParameters ref={this.parameters} 
+									handleValueChange={this.handleValueChange}
+									formLabels={this.modifierLabels} 
+									formData={this.formData}
+								/>
+							</Suspense>
+						</Popover.Content>
+					</Popover>
+				}>
+				<Button className="footer-button btn-custom-blue" variant="warning">Modifiers</Button>
+			</OverlayTrigger>
+		</Col>
+		<Col className="footer-style">
+			<Button variant="warning" className="footer-button" onClick={this.copyShip}>
+				Clone
+			</Button>
 		</Col>
 	</Modal.Footer>
 </Modal.Dialog>
