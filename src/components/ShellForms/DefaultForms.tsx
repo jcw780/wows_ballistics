@@ -1,7 +1,91 @@
-import React from 'react';
-import {Form} from 'react-bootstrap';
+import React, {useState} from 'react';
+import {Button, Form, Popover, OverlayTrigger, Col} from 'react-bootstrap';
 import * as T from '../commonTypes';
 import * as S from './Types';
+
+function UpgradeSingle({active, name, img_target, onClick} : 
+	{active: boolean, name: string, img_target: [string, string], onClick: () => void}){
+	return (
+	<figure onClick={() => {onClick()}}>
+		<img src={`${process.env.PUBLIC_URL}/upgrades/${img_target[active?1:0]}.png`} alt={name}/>
+		<figcaption>{name}</figcaption>
+	</figure>);
+}
+
+function UpgradeColumn({column, value, rows_max, img_target, sendValue} : 
+	{column: [string, string, any][], value: number, rows_max: number, img_target: [string, string], sendValue: (index: number) => void}){
+	const [value_state, setValue] = useState(value);
+	const changeSelected = (index: number) => {
+		if (value_state !== index){
+			sendValue(index);
+			setValue(index);
+		}
+	}
+
+	return (
+		<div>
+			{column.map((row, i: number) => {
+				const name = row[1];
+				return (
+					<UpgradeSingle 
+					key={i}
+					active={i === value_state} 
+					name={name} 
+					img_target={img_target} 
+					onClick={() => {changeSelected(i)}}/>
+				);	
+			})}
+			{
+				Array(rows_max - column.length).fill(<div style={{height: '60px', width: '60px'}}></div>)
+			}
+		</div>
+	);
+}
+
+const upgrade_order = ['_Artillery', '_Hull', '_Torpedoes', '_Suo', '_Engine'];
+const upgrade_img_src_table = Object.freeze({
+	'_Artillery': ['icon_module_Artillery', 'icon_module_Artillery_installed'],
+	'_Hull': ['icon_module_Hull', 'icon_module_Hull_installed'],
+	'_Torpedoes': ['icon_module_Torpedoes', 'icon_module_Torpedoes_installed'],
+	'_Suo': ['icon_module_Suo', 'icon_module_Suo_installed'],
+	'_Engine': ['icon_module_Engine', 'icon_module_Engine_installed'] 
+});
+
+const UpgradeTable = React.forwardRef((
+	{upgrades, values}: {upgrades: Record<string, [string, string, any][]>, values: Record<string, number>}, 
+	ref) => {
+
+	const upgrade_lists = Object.entries(upgrades);
+	const rows_max: number = (()=>{
+		let rows_max_current = 0;
+		upgrade_lists.forEach(([type, data]) => {
+			rows_max_current = Math.max(rows_max_current, data.length);
+		});
+		return rows_max_current;
+	})();
+	upgrade_lists.sort((a, b) => upgrade_order.indexOf(a[0]) - upgrade_order.indexOf(b[0]));
+	
+	const updateValue = (type: string, value: number) => {values[type] = value;}
+	
+	console.log('Rendering');
+	return (
+		<div style={{columnCount: upgrade_lists.length}}>
+		{upgrade_lists.map(([type, data], i) => {
+			console.log(type, data);
+			return (
+				<UpgradeColumn 
+				key={i}
+				column={data} 
+				value={0} 
+				rows_max={rows_max}
+				img_target={upgrade_img_src_table[type]} 
+				sendValue={(index: number) => {updateValue(type, index);}}
+				/>
+			);
+		})}
+		</div>
+	);
+});
 
 interface defaultFormProps{
 	controlId: string, keyProp: number, ariaLabel : string, children : string | JSX.Element, 
@@ -62,7 +146,7 @@ export class DefaultForm extends React.PureComponent<defaultFormProps, defaultFo
 	//componentDidUpdate(){}
 }
 
-const dataURL = "https://jcw780.github.io/LiveGameData2/data_accuracy/"
+const dataURL = "https://jcw780.github.io/LiveGameData2/data_upgrades/"
 
 const fetchJsonData = (target) => {
     return fetch(target)
@@ -228,10 +312,119 @@ export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 			</DefaultForm>
 			);
 		}
-		const run = () => Object.entries(this.defaultForms).map(singleForm); return run;
+		//const run = () => Object.entries(this.defaultForms).map(singleForm); return run;
+		return <>
+			{singleForm(['version', this.defaultForms.version], 0)}
+			{singleForm(['nation', this.defaultForms.nation], 1)}
+			{singleForm(['shipType', this.defaultForms.shipType], 2)}
+			{singleForm(['ship', this.defaultForms.ship], 3)}
+			<OverlayTrigger trigger="click" placement="bottom-start" overlay={
+				<Popover>
+					<Popover.Content>
+					<UpgradeTable upgrades={{
+                        "_Torpedoes": [
+                            [
+                                "PWUT401_DD5_TORP_STOCK",
+                                "Torped M1913 mod\u00a01",
+                                {
+                                    "components": {}
+                                }
+                            ],
+                            [
+                                "PWUT402_DD5_TORP_TOP",
+                                "Torped M1929",
+                                {
+                                    "components": {}
+                                }
+                            ]
+                        ],
+                        "_Suo": [
+                            [
+                                "PWUS401_DD5_SUO_STOCK",
+                                "SUO Mk\u00a05 Mod.\u00a01",
+                                {
+                                    "components": {
+                                        "fireControl": [
+                                            "AB1_FireControl"
+                                        ]
+                                    }
+                                }
+                            ],
+                            [
+                                "PWUS402_DD5_SUO_TOP",
+                                "SUO Mk\u00a05 Mod.\u00a02",
+                                {
+                                    "components": {
+                                        "fireControl": [
+                                            "AB2_FireControl"
+                                        ]
+                                    }
+                                }
+                            ]
+                        ],
+                        "_Engine": [
+                            [
+                                "PWUE401_DD5_ENG_STOCK",
+                                "Propulsion: 36,000 hp",
+                                {
+                                    "components": {}
+                                }
+                            ]
+                        ],
+                        "_Artillery": [
+                            [
+                                "PWUA402_DD5_ART_TOP",
+                                "120 mm/50 Bofors M1924",
+                                {
+                                    "components": {
+                                        "artillery": [
+                                            "A1_Artillery",
+                                            "B1_Artillery"
+                                        ]
+                                    }
+                                }
+                            ]
+                        ],
+                        "_Hull": [
+                            [
+                                "PWUH401_DD5_HULL_STOCK",
+                                "Visby (A)",
+                                {
+                                    "components": {
+                                        "artillery": [
+                                            "A1_Artillery"
+                                        ]
+                                    }
+                                }
+                            ],
+                            [
+                                "PWUH402_DD5_HULL_TOP",
+                                "Visby (B)",
+                                {
+                                    "components": {
+                                        "artillery": [
+                                            "B1_Artillery"
+                                        ]
+                                    }
+                                }
+                            ]
+                        ]
+                    }} values={{"_Engine": 0, "_Hull": 0, "_Artillery": 0, "_Suo": 0}}
+					/>
+					</Popover.Content>
+				</Popover>
+				}
+			>
+				<Button className="footer-button btn-custom-blue" variant="warning" >
+					Ship Upgrades
+				</Button>
+			</OverlayTrigger>
+			{singleForm(['artillery', this.defaultForms.artillery], 4)}
+			{singleForm(['shellType', this.defaultForms.shellType], 5)}
+		</>;
 	}
 	render(){
-		return(<>{this.addDefaultForms()()}</>);
+		return(<>{this.addDefaultForms()}</>);
 	}
 	//componentDidUpdate(){}
 }
