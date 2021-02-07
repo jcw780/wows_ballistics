@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useImperativeHandle} from 'react';
 import {Button, Form, Popover, OverlayTrigger, Col} from 'react-bootstrap';
 import * as T from '../commonTypes';
 import * as S from './Types';
@@ -23,9 +23,9 @@ function UpgradeColumn({column, value, rows_max, img_target, sendValue} :
 	}
 
 	return (
-		<div>
+		<>
 			{column.map((row, i: number) => {
-				const name = row[1];
+				const name = row[1] !== "" ? row[1]: row[0];
 				return (
 					<UpgradeSingle 
 					key={i}
@@ -38,7 +38,7 @@ function UpgradeColumn({column, value, rows_max, img_target, sendValue} :
 			{
 				Array(rows_max - column.length).fill(<div style={{height: '60px', width: '60px'}}></div>)
 			}
-		</div>
+		</>
 	);
 }
 
@@ -54,29 +54,58 @@ const upgrade_img_src_table = Object.freeze({
 const UpgradeTable = React.forwardRef((
 	{upgrades, values}: {upgrades: Record<string, [string, string, any][]>, values: Record<string, number>}, 
 	ref) => {
+	const makeUpgradeLists = (raw_upgrades: Record<string, [string, string, any][]>) => {
+		const upgrade_lists = Object.entries(raw_upgrades);
+		upgrade_lists.sort((a, b) => upgrade_order.indexOf(a[0]) - upgrade_order.indexOf(b[0]));
+		return upgrade_lists;
+	}
+	const [upgrade_lists, changeUpgradeLists] = useState(makeUpgradeLists(upgrades));
 
-	const upgrade_lists = Object.entries(upgrades);
+	useImperativeHandle(ref, () => ({
+		updateUpgradeListsRaw: (raw_upgrades: Record<string, [string, string, any][]>) => {
+			changeUpgradeLists(makeUpgradeLists(raw_upgrades));
+		}
+	}));
+
+	const updateSelectedComponents = () => {
+		const temp: Record<string, string[]> = {};
+		Object.entries(values).forEach(([k, v]) => {
+			const current_data = upgrades[k][v][2];
+			Object.entries(current_data.components).forEach(([cType, cList]: [string, string[]]) => {
+				if(cType in temp){
+					temp[cType] = temp[cType].filter(value => cList.includes(value));
+				}else{
+					temp[cType] = cList;
+				}
+			});
+			
+		});
+		console.log(temp);
+		
+	}
+	
+	const updateValue = (type: string, value: number) => {
+		console.log(upgrades[type][value]);
+		values[type] = value;
+		updateSelectedComponents();
+	}
+	
 	const rows_max: number = (()=>{
 		let rows_max_current = 0;
-		upgrade_lists.forEach(([type, data]) => {
+		upgrade_lists.forEach(([, data]) => {
 			rows_max_current = Math.max(rows_max_current, data.length);
 		});
 		return rows_max_current;
 	})();
-	upgrade_lists.sort((a, b) => upgrade_order.indexOf(a[0]) - upgrade_order.indexOf(b[0]));
-	
-	const updateValue = (type: string, value: number) => {values[type] = value;}
-	
-	console.log('Rendering');
+
 	return (
 		<div style={{columnCount: upgrade_lists.length}}>
 		{upgrade_lists.map(([type, data], i) => {
-			console.log(type, data);
 			return (
 				<UpgradeColumn 
 				key={i}
 				column={data} 
-				value={0} 
+				value={values[type]} 
 				rows_max={rows_max}
 				img_target={upgrade_img_src_table[type]} 
 				sendValue={(index: number) => {updateValue(type, index);}}
@@ -185,6 +214,11 @@ export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 		artillery: ['Artillery' , React.createRef<DefaultForm>(), 4], 
 		shellType: ['Shell Type', React.createRef<DefaultForm>(), 5],
 	})
+
+	upgradesRef = React.createRef<typeof UpgradeTable>();
+	upgrades: Record<string, [string, string, any][]> = {};
+	values: Record<string, number> = {};
+
 	changeForm = async (value: string, id: keyof(defaultFormType)) => {
 		//this.defaultForms[id][singleFormIndex.value] = value;
 		let queryIndex = this.defaultForms[id][singleFormIndex.queryIndex];
@@ -266,6 +300,16 @@ export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 			this.updateForm('ship', options, values);
 		}
 		const queryArtillery = () => {
+			Object.keys(this.upgrades).forEach((key) => {
+				delete this.upgrades[key];
+				delete this.values[key];
+			});
+			Object.entries(qDataS[nation][type][ship].upgrades).forEach(([k, v]) => {
+				this.upgrades[k] = v; this.values[k] = 0;
+			});
+			if (this.upgradesRef.current)
+				this.upgradesRef.current.updateUpgradeListsRaw(this.upgrades);
+			
 			const options = Object.keys(qDataS[nation][type][ship].artillery);
 			this.updateForm('artillery', options, options);
 		}
@@ -313,6 +357,7 @@ export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 			);
 		}
 		//const run = () => Object.entries(this.defaultForms).map(singleForm); return run;
+		//const {defaultData} = this.props;
 		return <>
 			{singleForm(['version', this.defaultForms.version], 0)}
 			{singleForm(['nation', this.defaultForms.nation], 1)}
@@ -321,95 +366,10 @@ export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 			<OverlayTrigger trigger="click" placement="bottom-start" overlay={
 				<Popover>
 					<Popover.Content>
-					<UpgradeTable upgrades={{
-                        "_Torpedoes": [
-                            [
-                                "PWUT401_DD5_TORP_STOCK",
-                                "Torped M1913 mod\u00a01",
-                                {
-                                    "components": {}
-                                }
-                            ],
-                            [
-                                "PWUT402_DD5_TORP_TOP",
-                                "Torped M1929",
-                                {
-                                    "components": {}
-                                }
-                            ]
-                        ],
-                        "_Suo": [
-                            [
-                                "PWUS401_DD5_SUO_STOCK",
-                                "SUO Mk\u00a05 Mod.\u00a01",
-                                {
-                                    "components": {
-                                        "fireControl": [
-                                            "AB1_FireControl"
-                                        ]
-                                    }
-                                }
-                            ],
-                            [
-                                "PWUS402_DD5_SUO_TOP",
-                                "SUO Mk\u00a05 Mod.\u00a02",
-                                {
-                                    "components": {
-                                        "fireControl": [
-                                            "AB2_FireControl"
-                                        ]
-                                    }
-                                }
-                            ]
-                        ],
-                        "_Engine": [
-                            [
-                                "PWUE401_DD5_ENG_STOCK",
-                                "Propulsion: 36,000 hp",
-                                {
-                                    "components": {}
-                                }
-                            ]
-                        ],
-                        "_Artillery": [
-                            [
-                                "PWUA402_DD5_ART_TOP",
-                                "120 mm/50 Bofors M1924",
-                                {
-                                    "components": {
-                                        "artillery": [
-                                            "A1_Artillery",
-                                            "B1_Artillery"
-                                        ]
-                                    }
-                                }
-                            ]
-                        ],
-                        "_Hull": [
-                            [
-                                "PWUH401_DD5_HULL_STOCK",
-                                "Visby (A)",
-                                {
-                                    "components": {
-                                        "artillery": [
-                                            "A1_Artillery"
-                                        ]
-                                    }
-                                }
-                            ],
-                            [
-                                "PWUH402_DD5_HULL_TOP",
-                                "Visby (B)",
-                                {
-                                    "components": {
-                                        "artillery": [
-                                            "B1_Artillery"
-                                        ]
-                                    }
-                                }
-                            ]
-                        ]
-                    }} values={{"_Engine": 0, "_Hull": 0, "_Artillery": 0, "_Suo": 0}}
+					<UpgradeTable 
+					ref={this.upgradesRef}
+					upgrades={this.upgrades} 
+					values={this.values}
 					/>
 					</Popover.Content>
 				</Popover>
