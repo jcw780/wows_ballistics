@@ -8,7 +8,7 @@ function UpgradeSingle({active, name, img_target, onClick} :
 	return (
 	<figure onClick={() => {onClick()}}>
 		<img src={`${process.env.PUBLIC_URL}/upgrades/${img_target[active?1:0]}.png`} alt={name}/>
-		<figcaption>{name}</figcaption>
+		<figcaption style={{wordWrap: 'normal'}}>{name}</figcaption>
 	</figure>);
 }
 
@@ -23,7 +23,7 @@ function UpgradeColumn({column, value, rows_max, img_target, sendValue} :
 	}
 
 	return (
-		<>
+		<div>
 			{column.map((row, i: number) => {
 				const name = row[1] !== "" ? row[1]: row[0];
 				return (
@@ -38,7 +38,7 @@ function UpgradeColumn({column, value, rows_max, img_target, sendValue} :
 			{
 				Array(rows_max - column.length).fill(<div style={{height: '60px', width: '60px'}}></div>)
 			}
-		</>
+		</div>
 	);
 }
 
@@ -50,22 +50,6 @@ const upgrade_img_src_table = Object.freeze({
 	'_Suo': ['icon_module_Suo', 'icon_module_Suo_installed'],
 	'_Engine': ['icon_module_Engine', 'icon_module_Engine_installed'] 
 });
-
-const updateSelectedComponents = (upgrades: Record<string, [string, string, any][]>, values: Record<string, number>) => {
-	const temp: Record<string, string[]> = {};
-	Object.entries(values).forEach(([k, v]) => {
-		const current_data = upgrades[k][v][2];
-		Object.entries(current_data.components).forEach(([cType, cList]: [string, string[]]) => {
-			if(cType in temp){
-				temp[cType] = temp[cType].filter(value => cList.includes(value));
-			}else{
-				temp[cType] = cList;
-			}
-		});
-		
-	});
-	return temp;
-}
 
 const UpgradeTable = React.forwardRef((
 	{upgrades, values, onChange}: {
@@ -101,7 +85,11 @@ const UpgradeTable = React.forwardRef((
 	})();
 
 	return (
-		<div style={{columnCount: upgrade_lists.length}}>
+		<div style={{
+			display: 'grid', 
+			gridTemplateColumns: `repeat(${upgrade_lists.length}, 1fr)`,
+			columnGap: `.5rem`
+		}}>
 		{upgrade_lists.map(([type, data], i) => {
 			return (
 				<UpgradeColumn 
@@ -334,7 +322,6 @@ export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 				this.upgradesRef.current.updateUpgradeListsRaw(upgrades);
 		}
 		const queryArtillery = () => {			
-			//const options = Object.keys(qDataS[nation][type][ship].artillery);
 			const options = dData.components.artillery !== undefined ? dData.components.artillery: [];
 			this.updateForm('artillery', options, options);
 		}
