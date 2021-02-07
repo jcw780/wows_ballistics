@@ -253,7 +253,6 @@ export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 			});
 		});
 		this.props.defaultData.components = temp;
-		console.log(this.props.defaultData.components);
 	}
 	updateForm = (target: keyof(defaultFormType), options: string[], values: string[]) => {
 		const {current} = this.defaultForms[target][singleFormIndex.ref];
@@ -356,6 +355,12 @@ export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 				name = qDataS[nation][type][ship].Name
 			}
 
+			if('fireControl' in dData.components){
+				const fireControlSystem = dData.components.fireControl[0];
+				const fireControlParameters = qDataS[nation][type][ship].fireControl[fireControlSystem];
+				dispersionData.maxDist *= fireControlParameters.maxDistCoef;
+				dispersionData.sigmaCount *= fireControlParameters.sigmaCountCoef;
+			}
 			this.props.sendDefault({...dData.queriedData.shells[shellName], ...dispersionData}, name);
 		}
 		const queries = [
