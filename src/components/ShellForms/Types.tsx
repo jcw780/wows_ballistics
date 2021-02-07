@@ -34,5 +34,11 @@ export interface defaultFormGeneric<T>{
 
 export enum DefaultDataRowI {value, options, values}
 export type DefaultDataRowT = [string, string[], string[]]
-interface queriedDataT {queriedData: Record<string, Record<string, any>>}
-export type defaultDataT = defaultFormGeneric<DefaultDataRowT> & queriedDataT
+interface queriedDataT {
+	queriedData: Record<string, Record<string, any>>
+}
+interface upgradeDataT {
+	upgrades: Record<string, [string, string, any][]>, values: Record<string, number>,
+	components: Record<string, string[]>
+}
+export type defaultDataT = defaultFormGeneric<DefaultDataRowT> & queriedDataT & upgradeDataT

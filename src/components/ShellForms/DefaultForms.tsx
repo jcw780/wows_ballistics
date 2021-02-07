@@ -51,8 +51,28 @@ const upgrade_img_src_table = Object.freeze({
 	'_Engine': ['icon_module_Engine', 'icon_module_Engine_installed'] 
 });
 
+const updateSelectedComponents = (upgrades: Record<string, [string, string, any][]>, values: Record<string, number>) => {
+	const temp: Record<string, string[]> = {};
+	Object.entries(values).forEach(([k, v]) => {
+		const current_data = upgrades[k][v][2];
+		Object.entries(current_data.components).forEach(([cType, cList]: [string, string[]]) => {
+			if(cType in temp){
+				temp[cType] = temp[cType].filter(value => cList.includes(value));
+			}else{
+				temp[cType] = cList;
+			}
+		});
+		
+	});
+	return temp;
+}
+
 const UpgradeTable = React.forwardRef((
-	{upgrades, values}: {upgrades: Record<string, [string, string, any][]>, values: Record<string, number>}, 
+	{upgrades, values, onChange}: {
+		upgrades: Record<string, [string, string, any][]>, 
+		values: Record<string, number>
+		onChange: () => void
+	}, 
 	ref) => {
 	const makeUpgradeLists = (raw_upgrades: Record<string, [string, string, any][]>) => {
 		const upgrade_lists = Object.entries(raw_upgrades);
@@ -66,27 +86,10 @@ const UpgradeTable = React.forwardRef((
 			changeUpgradeLists(makeUpgradeLists(raw_upgrades));
 		}
 	}));
-
-	const updateSelectedComponents = () => {
-		const temp: Record<string, string[]> = {};
-		Object.entries(values).forEach(([k, v]) => {
-			const current_data = upgrades[k][v][2];
-			Object.entries(current_data.components).forEach(([cType, cList]: [string, string[]]) => {
-				if(cType in temp){
-					temp[cType] = temp[cType].filter(value => cList.includes(value));
-				}else{
-					temp[cType] = cList;
-				}
-			});
-			
-		});
-		console.log(temp);
-		
-	}
 	
 	const updateValue = (type: string, value: number) => {
 		values[type] = value;
-		updateSelectedComponents();
+		onChange();
 	}
 	
 	const rows_max: number = (()=>{
@@ -210,13 +213,11 @@ export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 		nation:    ['Nation'    , React.createRef<DefaultForm>(), 1], 
 		shipType:  ['Type'      , React.createRef<DefaultForm>(), 2], 
 		ship:      ['Ship'      , React.createRef<DefaultForm>(), 3], 
-		artillery: ['Artillery' , React.createRef<DefaultForm>(), 4], 
-		shellType: ['Shell Type', React.createRef<DefaultForm>(), 5],
+		artillery: ['Artillery' , React.createRef<DefaultForm>(), 5], 
+		shellType: ['Shell Type', React.createRef<DefaultForm>(), 6],
 	})
 
 	upgradesRef = React.createRef<typeof UpgradeTable>();
-	upgrades: Record<string, [string, string, any][]> = {};
-	values: Record<string, number> = {};
 
 	changeForm = async (value: string, id: keyof(defaultFormType)) => {
 		//this.defaultForms[id][singleFormIndex.value] = value;
@@ -228,9 +229,31 @@ export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 		}
 		defaultData[id][S.DefaultDataRowI.value] = value;
 		// Now iterative - instead of waiting for rerenders and clogging stack depth
-		for(; queryIndex <= 5; ++queryIndex){
+		for(; queryIndex <= 6; ++queryIndex){
 			this.postVersion(queryIndex)();
 		}
+	}
+	changeUpgrades = () => {
+		this.updateUpgrades();
+		for(let queryIndex = 4; queryIndex <= 6; ++queryIndex){
+			this.postVersion(queryIndex)();
+		}
+	}
+	updateUpgrades = () => {
+		const {upgrades, values} = this.props.defaultData; 
+		const temp: Record<string, string[]> = {};
+		Object.entries(values).forEach(([k, v]) => {
+			const current_data = upgrades[k][v][2];
+			Object.entries(current_data.components).forEach(([cType, cList]: [string, string[]]) => {
+				if(cType in temp){
+					temp[cType] = temp[cType].filter(value => cList.includes(value));
+				}else{
+					temp[cType] = cList;
+				}
+			});
+		});
+		this.props.defaultData.components = temp;
+		console.log(this.props.defaultData.components);
 	}
 	updateForm = (target: keyof(defaultFormType), options: string[], values: string[]) => {
 		const {current} = this.defaultForms[target][singleFormIndex.ref];
@@ -298,18 +321,22 @@ export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 			}
 			this.updateForm('ship', options, values);
 		}
-		const queryArtillery = () => {
-			Object.keys(this.upgrades).forEach((key) => {
-				delete this.upgrades[key];
-				delete this.values[key];
+		const queryUpgrades = () => {
+			const {upgrades, values} = this.props.defaultData; 
+			Object.keys(upgrades).forEach((key) => {
+				delete upgrades[key];
+				delete values[key];
 			});
 			Object.entries(qDataS[nation][type][ship].upgrades).forEach(([k, v]) => {
-				this.upgrades[k] = v; this.values[k] = 0;
+				upgrades[k] = v; values[k] = 0;
 			});
+			this.updateUpgrades();
 			if (this.upgradesRef.current)
-				this.upgradesRef.current.updateUpgradeListsRaw(this.upgrades);
-			
-			const options = Object.keys(qDataS[nation][type][ship].artillery);
+				this.upgradesRef.current.updateUpgradeListsRaw(upgrades);
+		}
+		const queryArtillery = () => {			
+			//const options = Object.keys(qDataS[nation][type][ship].artillery);
+			const options = dData.components.artillery !== undefined ? dData.components.artillery: [];
 			this.updateForm('artillery', options, options);
 		}
 		const queryShellType = () => {
@@ -332,7 +359,7 @@ export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 			this.props.sendDefault({...dData.queriedData.shells[shellName], ...dispersionData}, name);
 		}
 		const queries = [
-			queryNation, queryType, queryShip,
+			queryNation, queryType, queryShip, queryUpgrades,
 			queryArtillery, queryShellType, sendData
 		];
 		return queries[index];
@@ -367,8 +394,9 @@ export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 					<Popover.Content>
 					<UpgradeTable 
 					ref={this.upgradesRef}
-					upgrades={this.upgrades} 
-					values={this.values}
+					upgrades={this.props.defaultData.upgrades} 
+					values={this.props.defaultData.values}
+					onChange={this.changeUpgrades}
 					/>
 					</Popover.Content>
 				</Popover>
