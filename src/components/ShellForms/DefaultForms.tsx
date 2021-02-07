@@ -1,7 +1,8 @@
 import React from 'react';
-import {Form} from 'react-bootstrap';
+import {Button, Form, Popover, OverlayTrigger} from 'react-bootstrap';
 import * as T from '../commonTypes';
 import * as S from './Types';
+import {UpgradeTable} from './UpgradeForms';
 
 interface defaultFormProps{
 	controlId: string, keyProp: number, ariaLabel : string, children : string | JSX.Element, 
@@ -62,7 +63,7 @@ export class DefaultForm extends React.PureComponent<defaultFormProps, defaultFo
 	//componentDidUpdate(){}
 }
 
-const dataURL = "https://jcw780.github.io/LiveGameData2/data_accuracy/"
+const dataURL = "https://jcw780.github.io/LiveGameData2/data_upgrades/"
 
 const fetchJsonData = (target) => {
     return fetch(target)
@@ -98,9 +99,12 @@ export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 		nation:    ['Nation'    , React.createRef<DefaultForm>(), 1], 
 		shipType:  ['Type'      , React.createRef<DefaultForm>(), 2], 
 		ship:      ['Ship'      , React.createRef<DefaultForm>(), 3], 
-		artillery: ['Artillery' , React.createRef<DefaultForm>(), 4], 
-		shellType: ['Shell Type', React.createRef<DefaultForm>(), 5],
+		artillery: ['Artillery' , React.createRef<DefaultForm>(), 5], 
+		shellType: ['Shell Type', React.createRef<DefaultForm>(), 6],
 	})
+
+	upgradesRef = React.createRef<typeof UpgradeTable>();
+
 	changeForm = async (value: string, id: keyof(defaultFormType)) => {
 		//this.defaultForms[id][singleFormIndex.value] = value;
 		let queryIndex = this.defaultForms[id][singleFormIndex.queryIndex];
@@ -111,9 +115,30 @@ export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 		}
 		defaultData[id][S.DefaultDataRowI.value] = value;
 		// Now iterative - instead of waiting for rerenders and clogging stack depth
-		for(; queryIndex <= 5; ++queryIndex){
+		for(; queryIndex <= 6; ++queryIndex){
 			this.postVersion(queryIndex)();
 		}
+	}
+	changeUpgrades = () => {
+		this.updateUpgrades();
+		for(let queryIndex = 4; queryIndex <= 6; ++queryIndex){
+			this.postVersion(queryIndex)();
+		}
+	}
+	updateUpgrades = () => {
+		const {upgrades, values} = this.props.defaultData; 
+		const temp: Record<string, string[]> = {};
+		Object.entries(values).forEach(([k, v]) => {
+			const current_data = upgrades[k][v][2];
+			Object.entries(current_data.components).forEach(([cType, cList]: [string, string[]]) => {
+				if(cType in temp){
+					temp[cType] = temp[cType].filter(value => cList.includes(value));
+				}else{
+					temp[cType] = cList;
+				}
+			});
+		});
+		this.props.defaultData.components = temp;
 	}
 	updateForm = (target: keyof(defaultFormType), options: string[], values: string[]) => {
 		const {current} = this.defaultForms[target][singleFormIndex.ref];
@@ -181,8 +206,21 @@ export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 			}
 			this.updateForm('ship', options, values);
 		}
-		const queryArtillery = () => {
-			const options = Object.keys(qDataS[nation][type][ship].artillery);
+		const queryUpgrades = () => {
+			const {upgrades, values} = this.props.defaultData; 
+			Object.keys(upgrades).forEach((key) => {
+				delete upgrades[key];
+				delete values[key];
+			});
+			Object.entries(qDataS[nation][type][ship].upgrades).forEach(([k, v]) => {
+				upgrades[k] = v; values[k] = 0;
+			});
+			this.updateUpgrades();
+			if (this.upgradesRef.current)
+				this.upgradesRef.current.updateUpgradeListsRaw(upgrades);
+		}
+		const queryArtillery = () => {			
+			const options = dData.components.artillery !== undefined ? dData.components.artillery: [];
 			this.updateForm('artillery', options, options);
 		}
 		const queryShellType = () => {
@@ -202,10 +240,16 @@ export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 				name = qDataS[nation][type][ship].Name
 			}
 
+			if('fireControl' in dData.components){
+				const fireControlSystem = dData.components.fireControl[0];
+				const fireControlParameters = qDataS[nation][type][ship].fireControl[fireControlSystem];
+				dispersionData.maxDist *= fireControlParameters.maxDistCoef;
+				dispersionData.sigmaCount *= fireControlParameters.sigmaCountCoef;
+			}
 			this.props.sendDefault({...dData.queriedData.shells[shellName], ...dispersionData}, name);
 		}
 		const queries = [
-			queryNation, queryType, queryShip,
+			queryNation, queryType, queryShip, queryUpgrades,
 			queryArtillery, queryShellType, sendData
 		];
 		return queries[index];
@@ -228,10 +272,37 @@ export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 			</DefaultForm>
 			);
 		}
-		const run = () => Object.entries(this.defaultForms).map(singleForm); return run;
+		//const run = () => Object.entries(this.defaultForms).map(singleForm); return run;
+		//const {defaultData} = this.props;
+		return <>
+			{singleForm(['version', this.defaultForms.version], 0)}
+			{singleForm(['nation', this.defaultForms.nation], 1)}
+			{singleForm(['shipType', this.defaultForms.shipType], 2)}
+			{singleForm(['ship', this.defaultForms.ship], 3)}
+			<OverlayTrigger trigger="click" placement="bottom-start" overlay={
+				<Popover>
+					<Popover.Content>
+					<UpgradeTable 
+					ref={this.upgradesRef}
+					upgrades={this.props.defaultData.upgrades} 
+					values={this.props.defaultData.values}
+					localized={this.props.formatSettings.shortNames}
+					onChange={this.changeUpgrades}
+					/>
+					</Popover.Content>
+				</Popover>
+				}
+			>
+				<Button className="footer-button btn-custom-blue" variant="warning" >
+					Ship Upgrades
+				</Button>
+			</OverlayTrigger>
+			{singleForm(['artillery', this.defaultForms.artillery], 4)}
+			{singleForm(['shellType', this.defaultForms.shellType], 5)}
+		</>;
 	}
 	render(){
-		return(<>{this.addDefaultForms()()}</>);
+		return(<>{this.addDefaultForms()}</>);
 	}
 	//componentDidUpdate(){}
 }

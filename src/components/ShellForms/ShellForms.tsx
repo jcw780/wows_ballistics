@@ -28,7 +28,9 @@ export class ShellForms extends React.PureComponent<shellFormsProps> {
 	defaultData : S.defaultDataT = Object.seal({
 		version: ['', [''], ['']], nation: ['', [''], ['']], shipType: ['', [''], ['']], 
 		ship: ['', [''], ['']], artillery: ['', [''], ['']], shellType: ['', [''], ['']],
-		queriedData: {}
+		queriedData: {},
+
+		upgrades: {}, values: {}, components: {}
 	});
 	formData : S.formDataT = Object.seal({
 		caliber: 0, muzzleVelocity: 0, dragCoefficient: 0,

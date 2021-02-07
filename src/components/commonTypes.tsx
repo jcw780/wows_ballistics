@@ -15,12 +15,6 @@ export interface styleT{
 
 export type handleValueChangeT = (value: string, id: string | number) => void | string;
 
-//DefaultForms
-export interface defaultFormGeneric<T>{
-    version: T, nation: T, shipType: T, 
-	ship: T, artillery: T, shellType: T,
-}
-
 //Target Data
 export interface targetDataNoAngleT {
     armor: number, inclination: number, width: number, 
