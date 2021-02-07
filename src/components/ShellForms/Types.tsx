@@ -27,7 +27,12 @@ export interface formDataT extends formTemplate<number>, dispersionTemplate<numb
 	name: string, colors: string[]
 }
 
+export interface defaultFormGeneric<T>{
+    version: T, nation: T, shipType: T, 
+	ship: T, artillery: T, shellType: T,
+}
+
 export enum DefaultDataRowI {value, options, values}
 export type DefaultDataRowT = [string, string[], string[]]
 interface queriedDataT {queriedData: Record<string, Record<string, any>>}
-export type defaultDataT = T.defaultFormGeneric<DefaultDataRowT> & queriedDataT
+export type defaultDataT = defaultFormGeneric<DefaultDataRowT> & queriedDataT

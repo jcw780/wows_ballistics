@@ -85,7 +85,6 @@ const UpgradeTable = React.forwardRef((
 	}
 	
 	const updateValue = (type: string, value: number) => {
-		console.log(upgrades[type][value]);
 		values[type] = value;
 		updateSelectedComponents();
 	}
