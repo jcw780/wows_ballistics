@@ -1,18 +1,18 @@
 {
   "files": {
     "main.css": "/wows_ballistics/static/css/main.c032f08f.chunk.css",
-    "main.js": "/wows_ballistics/static/js/main.77baac06.chunk.js",
-    "main.js.map": "/wows_ballistics/static/js/main.77baac06.chunk.js.map",
-    "runtime-main.js": "/wows_ballistics/static/js/runtime-main.afc35964.js",
-    "runtime-main.js.map": "/wows_ballistics/static/js/runtime-main.afc35964.js.map",
+    "main.js": "/wows_ballistics/static/js/main.64c08458.chunk.js",
+    "main.js.map": "/wows_ballistics/static/js/main.64c08458.chunk.js.map",
+    "runtime-main.js": "/wows_ballistics/static/js/runtime-main.3996445c.js",
+    "runtime-main.js.map": "/wows_ballistics/static/js/runtime-main.3996445c.js.map",
     "static/css/2.20aa2d7b.chunk.css": "/wows_ballistics/static/css/2.20aa2d7b.chunk.css",
     "static/js/2.f3a12553.chunk.js": "/wows_ballistics/static/js/2.f3a12553.chunk.js",
     "static/js/2.f3a12553.chunk.js.map": "/wows_ballistics/static/js/2.f3a12553.chunk.js.map",
     "static/css/3.7ff293c7.chunk.css": "/wows_ballistics/static/css/3.7ff293c7.chunk.css",
     "static/js/3.1b06567b.chunk.js": "/wows_ballistics/static/js/3.1b06567b.chunk.js",
     "static/js/3.1b06567b.chunk.js.map": "/wows_ballistics/static/js/3.1b06567b.chunk.js.map",
-    "static/js/4.db4eadc7.chunk.js": "/wows_ballistics/static/js/4.db4eadc7.chunk.js",
-    "static/js/4.db4eadc7.chunk.js.map": "/wows_ballistics/static/js/4.db4eadc7.chunk.js.map",
+    "static/js/4.747e1372.chunk.js": "/wows_ballistics/static/js/4.747e1372.chunk.js",
+    "static/js/4.747e1372.chunk.js.map": "/wows_ballistics/static/js/4.747e1372.chunk.js.map",
     "index.html": "/wows_ballistics/index.html",
     "static/css/2.20aa2d7b.chunk.css.map": "/wows_ballistics/static/css/2.20aa2d7b.chunk.css.map",
     "static/css/3.7ff293c7.chunk.css.map": "/wows_ballistics/static/css/3.7ff293c7.chunk.css.map",
@@ -20,10 +20,10 @@
     "static/js/2.f3a12553.chunk.js.LICENSE.txt": "/wows_ballistics/static/js/2.f3a12553.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.afc35964.js",
+    "static/js/runtime-main.3996445c.js",
     "static/css/2.20aa2d7b.chunk.css",
     "static/js/2.f3a12553.chunk.js",
     "static/css/main.c032f08f.chunk.css",
-    "static/js/main.77baac06.chunk.js"
+    "static/js/main.64c08458.chunk.js"
   ]
 }
