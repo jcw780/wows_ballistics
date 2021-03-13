@@ -406,6 +406,11 @@ export class ChartGroup extends React.Component<chartGroupProps>{
         const angleNameTemplate = (name: string) : string => `${name} | ${targetedArmor} | ${targetInclination}`;
         //Dispersion Charts
         const configDispersion = this.chartConfigs.dispersion;
+        const dispersionProjectionTemplate = (name: string) : string => {
+            const projectionName = ['Horizontal', 'Impact Normal', 'Vertical'];
+            const dispersionProjection = settings.calculationSettings.verticalType;    
+            return `${name} | Projection Plane: ${projectionName[dispersionProjection]}`;
+        }
         const setupDispersion = (row : configsT) => {
             return {
                 title: {display: true, text: row.title},
@@ -478,7 +483,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                             {lineLabel: 'Half: ', data: 'halfHorizontal'}
                         ]},
                     ]},
-                    {title: configDispersion[1][singleChartIndex.name], axes: [
+                    {title: dispersionProjectionTemplate(configDispersion[1][singleChartIndex.name]), axes: [
                         {id: 'dispersion', axLabel: 'Linear Dispersion (m)',
                         lines: [
                             {lineLabel: 'Max: ', data: 'maxVertical'}, 
@@ -486,7 +491,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                             {lineLabel: 'Half: ', data: 'halfVertical'}, 
                         ]},
                     ]},
-                    {title: configDispersion[2][singleChartIndex.name], axes: [
+                    {title: dispersionProjectionTemplate(configDispersion[2][singleChartIndex.name]), axes: [
                         {id: 'dispersionArea', axLabel: 'Dispersion Area (m²)',
                         lines: [
                             {lineLabel: 'Max: ', data: 'maxArea'}, 
