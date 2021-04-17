@@ -294,7 +294,7 @@ export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 				}
 			>
 				<Button className="footer-button btn-custom-blue" variant="warning" >
-					Ship Upgrades
+					Ship Modules
 				</Button>
 			</OverlayTrigger>
 			{singleForm(['artillery', this.defaultForms.artillery], 4)}
