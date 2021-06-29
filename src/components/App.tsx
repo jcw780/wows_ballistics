@@ -55,7 +55,10 @@ class App extends React.Component<{},{}> {
 			verticalType: 0
 		},
 		format: {
-			rounding: 3, shortNames: true, legendPosition: 'right',
+			rounding: 3, 
+			shortNames: true, 
+			shellNames: false,
+			legendPosition: 'right',
 			colors : {
 				hueMin: 0, hueMax: 360,
 				chromaMin: 40, chromaMax: 70,

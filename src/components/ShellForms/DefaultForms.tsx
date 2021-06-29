@@ -224,8 +224,17 @@ export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 			this.updateForm('artillery', options, options);
 		}
 		const queryShellType = () => {
-			const options = Object.keys(qDataS[nation][type][ship].artillery[artillery].shells);
-			this.updateForm('shellType', options, options);
+			const values = Object.keys(qDataS[nation][type][ship].artillery[artillery].shells);
+			const options = (() => {
+				if (props.formatSettings.shellNames){
+					return Object.entries(qDataS[nation][type][ship].artillery[artillery].shells).map(([type, name]) => {
+						return `${type}: ${name}`;
+					}); 
+				}else{
+					return values;
+				}				
+			})();
+			this.updateForm('shellType', options, values);
 		}
 		const sendData = () => {
 			const shellName = qDataS[nation][type][ship].artillery[artillery].shells[shellType];
