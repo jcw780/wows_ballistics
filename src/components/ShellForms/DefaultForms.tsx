@@ -34,23 +34,21 @@ export class DefaultForm extends React.PureComponent<defaultFormProps, defaultFo
 		});
 	}
 	private addOptions = () => {
-		const {state} = this;
 		const singleOption = (option,i) => {
 			return (
-				<option aria-label={option} key={i} value={state.values[i]}>
+				<option aria-label={option} key={i} value={this.state.values[i]}>
 					{option}
 				</option>
 			);
 		}
-		return () => state.options.map(singleOption);
+		return () => this.state.options.map(singleOption);
 	}
 	render(){
-		const {props} = this;
 		return (
 			<Form.Group className="form-inline" style={{marginBottom: ".25rem"}}>
-				<Form.Label column sm="3">{props.children}</Form.Label>
+				<Form.Label column sm="3">{this.props.children}</Form.Label>
 				<Form.Control as="select" 
-					aria-label={props.ariaLabel}
+					aria-label={this.props.ariaLabel}
 					onChange={this.handleChange} 
 					ref={this.form} 
 					style={{width: "70%"}} 
@@ -60,7 +58,6 @@ export class DefaultForm extends React.PureComponent<defaultFormProps, defaultFo
 			</Form.Group>
 		);
 	}
-	//componentDidUpdate(){}
 }
 
 const dataURL = "https://jcw780.github.io/LiveGameData2/data_upgrades/"
