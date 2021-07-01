@@ -8,20 +8,22 @@ import {ParameterForm, DownloadButton} from '../UtilityComponents';
 
 const GeneralTooltip = React.lazy(() => import('../UtilityComponents/Tooltips'));
 
-interface shellParametersProps {handleValueChange: any, formLabels : S.formLabelsT | S.dispersionLabelsT | S.modifierLabelsT, formData: S.formDataT}
+type combinedFormLabelsT = S.formLabelsT | S.dispersionLabelsT | S.modifierLabelsT;
+type combinedFormLabelsK = keyof combinedFormLabelsT
+
+interface shellParametersProps {handleValueChange: any, formLabels : combinedFormLabelsT, formData: S.formDataT}
 export class ShellParameters extends React.PureComponent<shellParametersProps>{
 	nameForm = React.createRef<ParameterForm>();
 	downloadRef = React.createRef<DownloadButton>();
 	onChange = (value, k) => {this.props.handleValueChange(value, k);}
-	private updateShellsI = () => {
-		const {props} = this;
-		const updateItem = ([key, value] : [S.formsT, S.labelT]): void => {
-			value[S.labelI.ref].current!.updateValue(props.formData[key]);
-		}
-		const run = () => Object.entries(props.formLabels).forEach(updateItem);
-		return run;
+	private updateShellsI() {
+		Object.entries(this.props.formLabels).forEach(
+			([key, value] : [S.formsT, S.labelT]): void => {
+				value[S.labelI.ref].current!.updateValue(this.props.formData[key]);
+			}
+		);
 	}
-	updateShells = () => {this.updateShellsI()();}
+	updateShells = () => {this.updateShellsI();}
 	updateDownloadJSON = () => {
 		const {formData} = this.props, selectedData = clonedeep(FormData); 
 		delete selectedData.colors;
@@ -31,42 +33,44 @@ export class ShellParameters extends React.PureComponent<shellParametersProps>{
 		));
         this.downloadRef.current!.update(url, formData.name + '.json');
 	}
-	addForms = () => {
+	addForms(){
 		const {props} = this;
 		const commonStyle = {
 			inputGroup:{width: "50%"},
 			formLabel:{padding: 0},
 			inputGroupAppend:{width: '45px', display: 'inline-block'}
 		}
-		const singleForm = ([key, value] : [S.formsT, S.labelT], i) => {
-			const name = value[S.labelI.name];
-			return (
-			<ParameterForm ref={value[S.labelI.ref]}
-				key={i} 
-				controlId={key}
-				newValue={String(props.formData[key])}
-				onChange={this.onChange} 
-				type="number" 
-				append={value[S.labelI.unit]}
-				style={commonStyle} 
-				ariaLabel={name}>
-                    <Suspense fallback={<div>Loading...</div>}>
-                        <GeneralTooltip title={name} content={value[S.labelI.description]} placement='top'>
-							<div>
-								{name}
-								<Icon name='question circle outline' color='grey'/>
-							</div>
-                        </GeneralTooltip>
-                    </Suspense>
-			</ParameterForm>);
-		}
-		const run = () => Object.entries(props.formLabels).map(singleForm); return run;
+		return Object.entries(props.formLabels).map(
+			([key, value] : [combinedFormLabelsK, S.labelT], i: number) => {
+				const name = value[S.labelI.name];
+				return (
+				<ParameterForm ref={value[S.labelI.ref]}
+					key={i} 
+					controlId={key}
+					newValue={String(props.formData[key])}
+					onChange={this.onChange} 
+					type="number" 
+					append={value[S.labelI.unit]}
+					style={commonStyle} 
+					ariaLabel={name}>
+						<Suspense fallback={<div>Loading...</div>}>
+							<GeneralTooltip title={name} content={value[S.labelI.description]} placement='top'>
+								<div>
+									{name}
+									<Icon name='question circle outline' color='grey'/>
+								</div>
+							</GeneralTooltip>
+						</Suspense>
+				</ParameterForm>
+				);
+			}
+		);
 	}
 	render() {
 		return(
 <>
 	<Form>
-		{this.addForms()()}	
+		{this.addForms()}	
 	</Form>
 	<Row className="justify-content-sm-center">
 		<Col sm="6">
