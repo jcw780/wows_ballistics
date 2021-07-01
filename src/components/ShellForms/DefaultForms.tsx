@@ -299,7 +299,12 @@ export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 				</Popover>
 				}
 			>
-				<Button className="footer-button btn-custom-blue" variant="warning" >
+				<Button className="footer-button btn-custom-blue" variant="warning" 
+				style={{
+					marginBottom: '0.25rem',
+					marginLeft: "0.25rem",
+					marginRight: "0.25rem"
+				}}>
 					Ship Modules
 				</Button>
 			</OverlayTrigger>
