@@ -74,7 +74,7 @@ class App extends React.Component<{},{}> {
 	referenceLineSize: Readonly<number> = 251;
 
 	//Compile Wasm 
-	compile = () : void => {
+	compile() {
 		return ShellWasm({
 			locateFile: (path : string, ) => `${process.env.PUBLIC_URL}/${path}`,
 		}).then((M) => {
@@ -93,7 +93,7 @@ class App extends React.Component<{},{}> {
 			//return "done";
 		});
 	}
-	constructor(props){
+	constructor(props) {
 		super(props); this.compile();
 		this.calculatedData = {
 			impact: {
@@ -123,7 +123,7 @@ class App extends React.Component<{},{}> {
 	}
 
 	// Setup calculations - update with new general settings
-	applyCalculationSettings = () : void => {
+	applyCalculationSettings() {
 		const {calculator} = this;
 		const calcSettings = this.settings.calculationSettings;
 		const {launchAngle} = calcSettings;
@@ -134,7 +134,7 @@ class App extends React.Component<{},{}> {
 	}
 
 	// Select calculation [numerical analysis algorithm] type
-	calcImpact = () => {
+	calcImpact() {
 		const method = this.settings.calculationSettings.calculationMethod;
 		const {calculator} = this;
 		const calcImpactFunc = {
@@ -147,7 +147,7 @@ class App extends React.Component<{},{}> {
 		else{console.error('Error', method); throw new Error('Invalid calculation method');}
 	}
 
-	calcDispersion = () => {
+	calcDispersion() {
 		const {calculator} = this;
 		const {verticalType} = this.settings.calculationSettings;
 		const dispersionFunction = {
