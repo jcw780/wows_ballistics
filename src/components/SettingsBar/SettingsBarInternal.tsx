@@ -268,12 +268,23 @@ export class SettingsBarInternal extends React.PureComponent<settingsBarProps>{
                         <h4>Labeling</h4>
                         <BootstrapSwitchButton 
                             style='switch-toggle'
-                            onlabel='Short Names' 
-                            offlabel='Long Names' 
+                            onlabel='Localized Names' 
+                            offlabel='Gameparams Names' 
                             onstyle='success' 
                             offstyle='danger'
                             onChange={this.onShortNameChange} 
                             checked={format.shortNames}
+                        />
+                        <BootstrapSwitchButton 
+                            style='switch-toggle'
+                            onlabel='Hide Shell Names' 
+                            offlabel='Show Shell Names' 
+                            onstyle='success' 
+                            offstyle='danger'
+                            onChange={(checked: boolean) => {
+                                this.props.settings.format.shellNames = checked;
+                            }} 
+                            checked={this.props.settings.format.shellNames}
                         />                
                         {this.generateFormatForms()}
                     </div>

@@ -43,6 +43,7 @@ export interface lineSettingsT {
 }
 export interface formatSettingsT {
     rounding: number | null, shortNames: boolean,
+    shellNames: boolean,
     colors: colorSettingsT, legendPosition: string,
 }
 export interface settingsT{

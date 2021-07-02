@@ -28,39 +28,37 @@ export class DefaultForm extends React.PureComponent<defaultFormProps, defaultFo
 		});
 		this.props.onChange(newValue, this.props.controlId);
 	}
-	updateOptions = (newOptions: string[], newValues: string[], newValue: string) => {
+	updateOptions(newOptions: string[], newValues: string[], newValue: string) {
 		this.setState(current => {
 			return {options: newOptions, values: newValues, value: newValue};
 		});
 	}
-	private addOptions = () => {
-		const {state} = this;
-		const singleOption = (option,i) => {
-			return (
-				<option aria-label={option} key={i} value={state.values[i]}>
-					{option}
-				</option>
-			);
-		}
-		return () => state.options.map(singleOption);
+	private addOptions(){
+		return this.state.options.map(
+			(option, i) => {
+				return (
+					<option aria-label={option} key={i} value={this.state.values[i]}>
+						{option}
+					</option>
+				);
+			}
+		);
 	}
 	render(){
-		const {props} = this;
 		return (
 			<Form.Group className="form-inline" style={{marginBottom: ".25rem"}}>
-				<Form.Label column sm="3">{props.children}</Form.Label>
+				<Form.Label column sm="3">{this.props.children}</Form.Label>
 				<Form.Control as="select" 
-					aria-label={props.ariaLabel}
+					aria-label={this.props.ariaLabel}
 					onChange={this.handleChange} 
 					ref={this.form} 
 					style={{width: "70%"}} 
 					value={this.state.value}>
-					{this.addOptions()()}
+					{this.addOptions()}
 				</Form.Control>
 			</Form.Group>
 		);
 	}
-	//componentDidUpdate(){}
 }
 
 const dataURL = "https://jcw780.github.io/LiveGameData2/data_upgrades/"
@@ -125,7 +123,7 @@ export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 			this.postVersion(queryIndex)();
 		}
 	}
-	updateUpgrades = () => {
+	updateUpgrades() {
 		const {upgrades, values} = this.props.defaultData; 
 		const temp: Record<string, string[]> = {};
 		Object.entries(values).forEach(([k, v]) => {
@@ -140,7 +138,7 @@ export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 		});
 		this.props.defaultData.components = temp;
 	}
-	updateForm = (target: keyof(defaultFormType), options: string[], values: string[]) => {
+	updateForm(target: keyof(defaultFormType), options: string[], values: string[]) {
 		const {current} = this.defaultForms[target][singleFormIndex.ref];
 		if(current){ 
 			//apparently prevents async calls from updating deleted refs I guess...
@@ -174,12 +172,13 @@ export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 		}
 	}
 	queryVersion = async () => { //probably should be called initialize since it is never called ever again...
+		//Note: Triggered externally
 		const data = await fetchJsonData(`${dataURL}versions.json`);
 		const reversed = data.reverse();
 		this.updateForm('version', reversed, reversed);
 		this.changeForm(reversed[0], 'version');
 	}
-	postVersion = (index: number) => {
+	postVersion(index: number) {
 		const {props} = this;
 		const dData = props.defaultData, qDataS = dData.queriedData.ships, 
 			DDI = S.DefaultDataRowI.value;
@@ -224,8 +223,17 @@ export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 			this.updateForm('artillery', options, options);
 		}
 		const queryShellType = () => {
-			const options = Object.keys(qDataS[nation][type][ship].artillery[artillery].shells);
-			this.updateForm('shellType', options, options);
+			const values = Object.keys(qDataS[nation][type][ship].artillery[artillery].shells);
+			const options = (() => {
+				if (props.formatSettings.shellNames){
+					return Object.entries(qDataS[nation][type][ship].artillery[artillery].shells).map(([type, name]) => {
+						return `${type}: ${name}`;
+					}); 
+				}else{
+					return values;
+				}				
+			})();
+			this.updateForm('shellType', options, values);
 		}
 		const sendData = () => {
 			const shellName = qDataS[nation][type][ship].artillery[artillery].shells[shellType];
@@ -254,7 +262,7 @@ export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 		];
 		return queries[index];
 	}
-	private addDefaultForms = () => {
+	private addDefaultForms() {
 		const {defaultData} = this.props;
 		const singleForm = ([name, v] : [keyof(defaultFormType), singleFormT], i) : JSX.Element => {
 			const form = defaultData[name], DDI = S.DefaultDataRowI;
@@ -293,7 +301,12 @@ export class DefaultShips extends React.PureComponent<defaultShipsProps> {
 				</Popover>
 				}
 			>
-				<Button className="footer-button btn-custom-blue" variant="warning" >
+				<Button className="footer-button btn-custom-blue" variant="warning" 
+				style={{
+					marginBottom: '0.25rem',
+					marginLeft: "0.25rem",
+					marginRight: "0.25rem"
+				}}>
 					Ship Modules
 				</Button>
 			</OverlayTrigger>
