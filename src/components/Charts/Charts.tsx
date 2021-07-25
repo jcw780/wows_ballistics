@@ -433,7 +433,7 @@ export class ChartGroup extends React.Component<chartGroupProps>{
                             {id: 'Penetration', axLabel: 'Belt Penetration (mm)', 
                             lines: [
                                 {lineLabel: 'Belt Penetration: ', data: 'ePenHN'},
-                                //{lineLabel: 'Raw Penetration: ', data: 'rawPen'}
+                                {lineLabel: 'Raw Penetration: ', data: 'rawPen'}
                             ]},
                             {id: 'Angle', axLabel: 'Belt Impact Angle (°)', 
                             lines: [{lineLabel: 'Impact Angle: ', data: 'impactAHD'}]}
